@@ -2,6 +2,9 @@
 
 Milkwave is a music visualizer based on the [Milkdrop2](https://www.geisswerks.com/milkdrop/) visualizer. Milkwave's main new feature is a standalone window called **Milkwave Remote** which allows you to send common key combinations using buttons. You can also send customized messages to display in the visualizer, either directly by tying or from a file.
 
+![image](https://github.com/user-attachments/assets/91a4b01d-e38d-4b9a-867a-61aa067cc749)
+
+
 ## Features
 
 * Customize message text, color, font size, position and other parameters
