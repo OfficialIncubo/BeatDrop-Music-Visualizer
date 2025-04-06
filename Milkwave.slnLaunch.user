@@ -1,0 +1,17 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "Remote\\MilkwaveRemote.csproj",
+        "Action": "Start",
+        "DebugTarget": "MilkwaveRemote"
+      },
+      {
+        "Path": "Visualizer\\vis_milk2\\plugin.vcxproj",
+        "Action": "Start",
+        "DebugTarget": "Local Windows Debugger"
+      }
+    ]
+  }
+]
