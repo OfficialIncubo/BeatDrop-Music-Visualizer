@@ -31,6 +31,9 @@
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MilkwaveRemoteForm));
       statusStrip1 = new StatusStrip();
       statusBar = new ToolStripStatusLabel();
+      statusHelp = new ToolStripStatusLabel();
+      statusSupporters = new ToolStripStatusLabel();
+      statusGitHub = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
       pnlColor = new Panel();
       bnAppendColor = new Button();
@@ -85,8 +88,6 @@
       btnF7 = new Button();
       btnF3 = new Button();
       btnShiftK = new Button();
-      panel1 = new Panel();
-      linkLabel2 = new LinkLabel();
       statusStrip1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)txtBeats).BeginInit();
       ((System.ComponentModel.ISupportInitialize)txtBPM).BeginInit();
@@ -94,23 +95,58 @@
       S.SuspendLayout();
       groupBox2.SuspendLayout();
       tableLayoutPanel1.SuspendLayout();
-      panel1.SuspendLayout();
       SuspendLayout();
       // 
       // statusStrip1
       // 
       statusStrip1.ImageScalingSize = new Size(20, 20);
-      statusStrip1.Items.AddRange(new ToolStripItem[] { statusBar });
-      statusStrip1.Location = new Point(0, 639);
+      statusStrip1.Items.AddRange(new ToolStripItem[] { statusBar, statusHelp, statusSupporters, statusGitHub });
+      statusStrip1.Location = new Point(0, 579);
       statusStrip1.Name = "statusStrip1";
-      statusStrip1.Size = new Size(869, 22);
+      statusStrip1.Size = new Size(869, 26);
       statusStrip1.TabIndex = 5;
       statusStrip1.Text = "statusStrip1";
       // 
       // statusBar
       // 
+      statusBar.Margin = new Padding(7, 4, 0, 2);
       statusBar.Name = "statusBar";
-      statusBar.Size = new Size(0, 16);
+      statusBar.Size = new Size(618, 20);
+      statusBar.Spring = true;
+      statusBar.TextAlign = ContentAlignment.TopLeft;
+      // 
+      // statusHelp
+      // 
+      statusHelp.IsLink = true;
+      statusHelp.Name = "statusHelp";
+      statusHelp.Padding = new Padding(2, 0, 2, 0);
+      statusHelp.Size = new Size(45, 20);
+      statusHelp.Text = "Help";
+      statusHelp.TextAlign = ContentAlignment.TopCenter;
+      statusHelp.VisitedLinkColor = Color.Blue;
+      statusHelp.Click += statusHelp_Click;
+      // 
+      // statusSupporters
+      // 
+      statusSupporters.IsLink = true;
+      statusSupporters.Name = "statusSupporters";
+      statusSupporters.Padding = new Padding(2, 0, 2, 0);
+      statusSupporters.Size = new Size(85, 20);
+      statusSupporters.Text = "Supporters";
+      statusSupporters.TextAlign = ContentAlignment.TopCenter;
+      statusSupporters.VisitedLinkColor = Color.Blue;
+      statusSupporters.Click += statusSupporters_Click;
+      // 
+      // statusGitHub
+      // 
+      statusGitHub.IsLink = true;
+      statusGitHub.Name = "statusGitHub";
+      statusGitHub.Padding = new Padding(2, 0, 2, 0);
+      statusGitHub.Size = new Size(60, 20);
+      statusGitHub.Text = "GitHub";
+      statusGitHub.TextAlign = ContentAlignment.TopCenter;
+      statusGitHub.VisitedLinkColor = Color.Blue;
+      statusGitHub.Click += statusGitHub_Click;
       // 
       // pnlColor
       // 
@@ -330,7 +366,7 @@
       btnSpace.Dock = DockStyle.Fill;
       btnSpace.Location = new Point(8, 8);
       btnSpace.Name = "btnSpace";
-      btnSpace.Size = new Size(200, 69);
+      btnSpace.Size = new Size(200, 62);
       btnSpace.TabIndex = 0;
       btnSpace.Text = "Next Preset\r\n(Space)";
       toolTip1.SetToolTip(btnSpace, "F3");
@@ -343,7 +379,7 @@
       btnBackspace.Dock = DockStyle.Fill;
       btnBackspace.Location = new Point(214, 8);
       btnBackspace.Name = "btnBackspace";
-      btnBackspace.Size = new Size(200, 69);
+      btnBackspace.Size = new Size(200, 62);
       btnBackspace.TabIndex = 1;
       btnBackspace.Text = "Previous Preset\r\n(Backspace)";
       toolTip1.SetToolTip(btnBackspace, "F4");
@@ -489,9 +525,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnF4, 2);
       btnF4.Dock = DockStyle.Fill;
-      btnF4.Location = new Point(420, 83);
+      btnF4.Location = new Point(420, 76);
       btnF4.Name = "btnF4";
-      btnF4.Size = new Size(200, 69);
+      btnF4.Size = new Size(200, 62);
       btnF4.TabIndex = 6;
       btnF4.Text = "Preset Info\r\n(F4)";
       btnF4.UseVisualStyleBackColor = true;
@@ -561,7 +597,7 @@
       groupBox2.Controls.Add(tableLayoutPanel1);
       groupBox2.Location = new Point(12, 270);
       groupBox2.Name = "groupBox2";
-      groupBox2.Size = new Size(844, 338);
+      groupBox2.Size = new Size(844, 310);
       groupBox2.TabIndex = 27;
       groupBox2.TabStop = false;
       groupBox2.Text = "Send Keys";
@@ -607,15 +643,15 @@
       tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
       tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
       tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-      tableLayoutPanel1.Size = new Size(838, 312);
+      tableLayoutPanel1.Size = new Size(838, 284);
       tableLayoutPanel1.TabIndex = 33;
       // 
       // btn77
       // 
       btn77.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn77.Location = new Point(729, 233);
+      btn77.Location = new Point(729, 212);
       btn77.Name = "btn77";
-      btn77.Size = new Size(101, 71);
+      btn77.Size = new Size(101, 64);
       btn77.TabIndex = 19;
       btn77.Text = "77";
       btn77.UseVisualStyleBackColor = true;
@@ -624,9 +660,9 @@
       // btn66
       // 
       btn66.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn66.Location = new Point(626, 233);
+      btn66.Location = new Point(626, 212);
       btn66.Name = "btn66";
-      btn66.Size = new Size(97, 71);
+      btn66.Size = new Size(97, 64);
       btn66.TabIndex = 18;
       btn66.Text = "66";
       btn66.UseVisualStyleBackColor = true;
@@ -635,9 +671,9 @@
       // btn55
       // 
       btn55.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn55.Location = new Point(523, 233);
+      btn55.Location = new Point(523, 212);
       btn55.Name = "btn55";
-      btn55.Size = new Size(97, 71);
+      btn55.Size = new Size(97, 64);
       btn55.TabIndex = 17;
       btn55.Text = "55";
       btn55.UseVisualStyleBackColor = true;
@@ -646,9 +682,9 @@
       // btn44
       // 
       btn44.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn44.Location = new Point(420, 233);
+      btn44.Location = new Point(420, 212);
       btn44.Name = "btn44";
-      btn44.Size = new Size(97, 71);
+      btn44.Size = new Size(97, 64);
       btn44.TabIndex = 16;
       btn44.Text = "44";
       btn44.UseVisualStyleBackColor = true;
@@ -657,9 +693,9 @@
       // btn33
       // 
       btn33.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn33.Location = new Point(317, 233);
+      btn33.Location = new Point(317, 212);
       btn33.Name = "btn33";
-      btn33.Size = new Size(97, 71);
+      btn33.Size = new Size(97, 64);
       btn33.TabIndex = 15;
       btn33.Text = "33";
       btn33.UseVisualStyleBackColor = true;
@@ -668,9 +704,9 @@
       // btnm22
       // 
       btnm22.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btnm22.Location = new Point(214, 233);
+      btnm22.Location = new Point(214, 212);
       btnm22.Name = "btnm22";
-      btnm22.Size = new Size(97, 71);
+      btnm22.Size = new Size(97, 64);
       btnm22.TabIndex = 14;
       btnm22.Text = "22";
       btnm22.UseVisualStyleBackColor = true;
@@ -680,9 +716,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnK, 2);
       btnK.Dock = DockStyle.Fill;
-      btnK.Location = new Point(214, 158);
+      btnK.Location = new Point(214, 144);
       btnK.Name = "btnK";
-      btnK.Size = new Size(200, 69);
+      btnK.Size = new Size(200, 62);
       btnK.TabIndex = 9;
       btnK.Text = "Sprite Mode\r\n(K)";
       btnK.UseVisualStyleBackColor = true;
@@ -692,9 +728,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnF2, 2);
       btnF2.Dock = DockStyle.Fill;
-      btnF2.Location = new Point(8, 83);
+      btnF2.Location = new Point(8, 76);
       btnF2.Name = "btnF2";
-      btnF2.Size = new Size(200, 69);
+      btnF2.Size = new Size(200, 62);
       btnF2.TabIndex = 4;
       btnF2.Text = "Borderless \r\n(F2)";
       btnF2.UseVisualStyleBackColor = true;
@@ -706,7 +742,7 @@
       btnN.Dock = DockStyle.Fill;
       btnN.Location = new Point(420, 8);
       btnN.Name = "btnN";
-      btnN.Size = new Size(200, 69);
+      btnN.Size = new Size(200, 62);
       btnN.TabIndex = 2;
       btnN.Text = "Music Info\r\n(N)";
       btnN.UseVisualStyleBackColor = true;
@@ -716,9 +752,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnAltEnter, 2);
       btnAltEnter.Dock = DockStyle.Fill;
-      btnAltEnter.Location = new Point(8, 158);
+      btnAltEnter.Location = new Point(8, 144);
       btnAltEnter.Name = "btnAltEnter";
-      btnAltEnter.Size = new Size(200, 69);
+      btnAltEnter.Size = new Size(200, 62);
       btnAltEnter.TabIndex = 8;
       btnAltEnter.Text = "Fullscreen\r\n(Alt+Enter)";
       btnAltEnter.UseVisualStyleBackColor = true;
@@ -728,9 +764,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnY, 2);
       btnY.Dock = DockStyle.Fill;
-      btnY.Location = new Point(420, 158);
+      btnY.Location = new Point(420, 144);
       btnY.Name = "btnY";
-      btnY.Size = new Size(200, 69);
+      btnY.Size = new Size(200, 62);
       btnY.TabIndex = 10;
       btnY.Text = "Message Mode\r\n(Y)";
       btnY.UseVisualStyleBackColor = true;
@@ -739,9 +775,9 @@
       // btn11
       // 
       btn11.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn11.Location = new Point(111, 233);
+      btn11.Location = new Point(111, 212);
       btn11.Name = "btn11";
-      btn11.Size = new Size(97, 71);
+      btn11.Size = new Size(97, 64);
       btn11.TabIndex = 13;
       btn11.Text = "11";
       btn11.UseVisualStyleBackColor = true;
@@ -753,7 +789,7 @@
       btnTilde.Dock = DockStyle.Fill;
       btnTilde.Location = new Point(626, 8);
       btnTilde.Name = "btnTilde";
-      btnTilde.Size = new Size(204, 69);
+      btnTilde.Size = new Size(204, 62);
       btnTilde.TabIndex = 3;
       btnTilde.Text = "Preset Lock \r\n(~)";
       btnTilde.UseVisualStyleBackColor = true;
@@ -762,9 +798,9 @@
       // btn00
       // 
       btn00.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn00.Location = new Point(8, 233);
+      btn00.Location = new Point(8, 212);
       btn00.Name = "btn00";
-      btn00.Size = new Size(97, 71);
+      btn00.Size = new Size(97, 64);
       btn00.TabIndex = 12;
       btn00.Text = "00";
       btn00.UseVisualStyleBackColor = true;
@@ -774,9 +810,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnF7, 2);
       btnF7.Dock = DockStyle.Fill;
-      btnF7.Location = new Point(626, 83);
+      btnF7.Location = new Point(626, 76);
       btnF7.Name = "btnF7";
-      btnF7.Size = new Size(204, 69);
+      btnF7.Size = new Size(204, 62);
       btnF7.TabIndex = 7;
       btnF7.Text = "Always On Top\r\n(F7)";
       btnF7.UseVisualStyleBackColor = true;
@@ -786,9 +822,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnF3, 2);
       btnF3.Dock = DockStyle.Fill;
-      btnF3.Location = new Point(214, 83);
+      btnF3.Location = new Point(214, 76);
       btnF3.Name = "btnF3";
-      btnF3.Size = new Size(200, 69);
+      btnF3.Size = new Size(200, 62);
       btnF3.TabIndex = 5;
       btnF3.Text = "Change FPS\r\n(F3)";
       btnF3.UseVisualStyleBackColor = true;
@@ -798,42 +834,20 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnShiftK, 2);
       btnShiftK.Dock = DockStyle.Fill;
-      btnShiftK.Location = new Point(626, 158);
+      btnShiftK.Location = new Point(626, 144);
       btnShiftK.Name = "btnShiftK";
-      btnShiftK.Size = new Size(204, 69);
+      btnShiftK.Size = new Size(204, 62);
       btnShiftK.TabIndex = 11;
       btnShiftK.Text = "Clear Latest Sprite\r\n(Delete)";
       btnShiftK.UseVisualStyleBackColor = true;
       btnShiftK.Click += btnDelete_Click;
       // 
-      // panel1
-      // 
-      panel1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      panel1.Controls.Add(linkLabel2);
-      panel1.Location = new Point(15, 614);
-      panel1.Name = "panel1";
-      panel1.Size = new Size(838, 30);
-      panel1.TabIndex = 28;
-      // 
-      // linkLabel2
-      // 
-      linkLabel2.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-      linkLabel2.AutoSize = true;
-      linkLabel2.Location = new Point(687, 5);
-      linkLabel2.Name = "linkLabel2";
-      linkLabel2.Size = new Size(143, 20);
-      linkLabel2.TabIndex = 1;
-      linkLabel2.TabStop = true;
-      linkLabel2.Text = "Milkwave on GitHub";
-      linkLabel2.LinkClicked += linkLabel2_LinkClicked;
-      // 
       // MilkwaveRemoteForm
       // 
       AutoScaleDimensions = new SizeF(8F, 20F);
       AutoScaleMode = AutoScaleMode.Font;
-      ClientSize = new Size(869, 661);
+      ClientSize = new Size(869, 605);
       Controls.Add(statusStrip1);
-      Controls.Add(panel1);
       Controls.Add(groupBox2);
       Controls.Add(S);
       Icon = (Icon)resources.GetObject("$this.Icon");
@@ -853,8 +867,6 @@
       S.PerformLayout();
       groupBox2.ResumeLayout(false);
       tableLayoutPanel1.ResumeLayout(false);
-      panel1.ResumeLayout(false);
-      panel1.PerformLayout();
       ResumeLayout(false);
       PerformLayout();
     }
@@ -907,8 +919,6 @@
     private Button btn44;
     private Button btn33;
     private Button btnm22;
-    private Panel panel1;
-    private LinkLabel linkLabel2;
     private CheckBox chkFileRandom;
     private NumericUpDown txtBPM;
     private Label label3;
@@ -918,5 +928,8 @@
     private NumericUpDown txtSize;
     private Label lblSize;
     private CheckBox chkPreview;
+    private ToolStripStatusLabel statusHelp;
+    private ToolStripStatusLabel statusSupporters;
+    private ToolStripStatusLabel statusGitHub;
   }
 }

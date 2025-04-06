@@ -273,10 +273,6 @@ namespace MilkwaveRemote {
       }
     }
 
-    private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-      OpenURL("https://github.com/IkeC/Milkwave");
-    }
-
     private void MainForm_Shown(object sender, EventArgs e) {
       txtMessage.Focus();
       txtMessage.SelectAll();
@@ -866,7 +862,7 @@ namespace MilkwaveRemote {
       }
     }
 
-    private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {      
+    private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
       global::MilkwaveRemote.Properties.Settings.Default.Parameters.Clear();
 
       // Hold the Ctrl key while closing the form to reset local settings to dewfault
@@ -1124,5 +1120,18 @@ namespace MilkwaveRemote {
     private void lblWindow_DoubleClick(object sender, EventArgs e) {
       SetVisualizerWindowSizeAndPosition();
     }
+
+    private void statusHelp_Click(object sender, EventArgs e) {
+
+    }
+
+    private void statusSupporters_Click(object sender, EventArgs e) {
+
+    }
+
+    private void statusGitHub_Click(object sender, EventArgs e) {
+      OpenURL("https://github.com/IkeC/Milkwave");
+    }
+
   }
 }

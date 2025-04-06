@@ -4,7 +4,6 @@ Milkwave is a music visualizer based on the [Milkdrop2](https://www.geisswerks.c
 
 ![image](https://github.com/user-attachments/assets/91a4b01d-e38d-4b9a-867a-61aa067cc749)
 
-
 ## Features
 
 * Customize message text, color, font size, position and other parameters
@@ -15,7 +14,7 @@ Milkwave is a music visualizer based on the [Milkdrop2](https://www.geisswerks.c
 
 There are many tooltips explaining all features when you hover over the form elements.
 
-* ## History
+## History
 
 The original Milkdrop 2 WinAMP plugin created by Ryan Geiss was turned into a Windows standalone application by Maxim Volskiy as [BeatDrop](https://github.com/mvsoft74/BeatDrop) and been improved upon eg. in the [BeatDrop-Music-Visualizer](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer) and [MilkDrop3](https://github.com/milkdrop2077/MilkDrop3) projects.
 
