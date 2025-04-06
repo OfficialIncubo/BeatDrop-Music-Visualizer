@@ -36,10 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="milkwave-default.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="MilkwaveRemote.txt">
+    <None Update="script-default.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Properties\Settings.settings">

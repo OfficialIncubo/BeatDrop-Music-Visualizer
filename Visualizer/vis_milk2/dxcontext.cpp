@@ -114,14 +114,14 @@ void DXContext::SaveWindow() { }
 
 void DXContext::WriteSafeWindowPos()
 {
-    WritePrivateProfileIntW(64, L"nMainWndTop", m_szIniFile, L"settings");
-    WritePrivateProfileIntW(64, L"nMainWndLeft", m_szIniFile, L"settings");
-    WritePrivateProfileIntW(64 + 256, L"nMainWndRight", m_szIniFile, L"settings");
-    WritePrivateProfileIntW(64 + 256, L"nMainWndBottom", m_szIniFile, L"settings");
-    WritePrivateProfileIntW(64, L"avs_wx", m_szIniFile, L"settings");
-    WritePrivateProfileIntW(64, L"avs_wy", m_szIniFile, L"settings");
-    WritePrivateProfileIntW(256, L"avs_ww", m_szIniFile, L"settings");
-    WritePrivateProfileIntW(256, L"avs_wh", m_szIniFile, L"settings");
+    WritePrivateProfileIntW(64, L"nMainWndTop", m_szIniFile, L"Settings");
+    WritePrivateProfileIntW(64, L"nMainWndLeft", m_szIniFile, L"Settings");
+    WritePrivateProfileIntW(64 + 256, L"nMainWndRight", m_szIniFile, L"Settings");
+    WritePrivateProfileIntW(64 + 256, L"nMainWndBottom", m_szIniFile, L"Settings");
+    WritePrivateProfileIntW(64, L"avs_wx", m_szIniFile, L"Settings");
+    WritePrivateProfileIntW(64, L"avs_wy", m_szIniFile, L"Settings");
+    WritePrivateProfileIntW(256, L"avs_ww", m_szIniFile, L"Settings");
+    WritePrivateProfileIntW(256, L"avs_wh", m_szIniFile, L"Settings");
 }
 
 bool DXContext::OnUserResizeWindow(RECT *new_window_rect, RECT *new_client_rect)

@@ -281,7 +281,7 @@
       txtAutoplay.ReadOnly = true;
       txtAutoplay.Size = new Size(360, 27);
       txtAutoplay.TabIndex = 13;
-      toolTip1.SetToolTip(txtAutoplay, "Next line from file milkwave-default.txt");
+      toolTip1.SetToolTip(txtAutoplay, "Next line from file script-default.txt");
       // 
       // btnSaveParam
       // 

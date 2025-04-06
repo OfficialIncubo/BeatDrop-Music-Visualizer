@@ -57,17 +57,17 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // SUBDIR puts milkdrop's documentation, INI file, presets folder, etc.
 // in a subdir underneath Winamp\Plugins.
-#define SUBDIR  L"Milkwave Resources\\"   //""
+#define SUBDIR  L"resources\\"   //""
 
 // INIFILE is the name of the .INI file that will save the user's
 // config panel settings.  Do not include a path; just give the filename.
 // The actual file will be stored in the WINAMP\PLUGINS directory,
 // OR POSSIBLY c:\application data\...(user)...\winamp\plugins!!! - if
 // they have sep. settings for each user!
-#define INIFILE         L"milkwave.ini"      //*** DO NOT PUT IN A SUBDIR because on save, if dir doesn't already exist,
+#define INIFILE         L"settings.ini"      //*** DO NOT PUT IN A SUBDIR because on save, if dir doesn't already exist,
                                          //     it won't be able to save the INI file.
-#define MSG_INIFILE     L"milkwave_msg.ini"  //*** could be in c:\program files\winamp\plugins, or in
-#define IMG_INIFILE     L"milkwave_img.ini"  //                c:\application data\...user...\winamp\plugins !!
+#define MSG_INIFILE     L"messages.ini"  //*** could be in c:\program files\winamp\plugins, or in
+#define IMG_INIFILE     L"sprites.ini"  //                c:\application data\...user...\winamp\plugins !!
 #define ADAPTERSFILE	L"beatdrop_adapters.txt"
 
 // DOCFILE is the name of the documentation file that you'll write

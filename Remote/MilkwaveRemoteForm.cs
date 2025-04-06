@@ -1,8 +1,6 @@
 using DarkModeForms;
 using System.Diagnostics;
-using System.Drawing;
 using System.Drawing.Text;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using static DarkModeForms.DarkModeCS;
@@ -59,8 +57,10 @@ namespace MilkwaveRemote {
     private List<string> lines = new List<string>();
     private List<Preset> PresetList = new List<Preset>();
 
-    private string lastFileName = "milkwave-default.txt";
+    private string lastFileName = "script-default.txt";
     private string windowNotFound = "Milkwave Visualizer window not found";
+    private string foundWindowTitle = "";
+    private string defaultFontName = "Segoe UI";
 
     Random rnd = new Random();
 
@@ -116,7 +116,6 @@ namespace MilkwaveRemote {
     private class Preset {
       public required string Name { get; set; }
       public required string Value { get; set; }
-
       public override string ToString() {
         return Name + ": " + Value;
       }
@@ -124,6 +123,15 @@ namespace MilkwaveRemote {
 
     public MilkwaveRemoteForm() {
       InitializeComponent();
+
+      if (FindVisualizerWindow() == IntPtr.Zero) {
+        // Try to run MilkwaveVisualizer.exe from the same directory as the assembly
+        string visualizerPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MilkwaveVisualizer.exe");
+        if (File.Exists(visualizerPath)) {
+          Process.Start(new ProcessStartInfo(visualizerPath) { UseShellExecute = true });
+        }
+      }
+
       FixNumericUpDownMouseWheel(this);
 
       /*
@@ -164,6 +172,9 @@ namespace MilkwaveRemote {
         foreach (FontFamily font in fontsCollection.Families) {
           cboFonts.Items.Add(font.Name);
         }
+        if (cboFonts.Items.Contains(defaultFontName)) {
+          cboFonts.SelectedItem = defaultFontName;
+        }
       }
 
       LoadMessages(lastFileName);
@@ -171,42 +182,49 @@ namespace MilkwaveRemote {
       autoplayTimer = new System.Windows.Forms.Timer();
       autoplayTimer.Tick += AutoplayTimer_Tick;
 
-      // MilkwaveRemote.Properties.Settings.Default.Reset();
-
       Location = global::MilkwaveRemote.Properties.Settings.Default.Location;
       Size = global::MilkwaveRemote.Properties.Settings.Default.Size;
 
+      int maxWait = 30; // 3 seconds
+      while (FindVisualizerWindow() == IntPtr.Zero && maxWait > 0) {
+        // Wait for the visualizer window to be found
+        Thread.Sleep(100);
+        maxWait--;
+      }
       SetVisualizerWindowSizeAndPosition();
     }
 
     private void SetVisualizerWindowSizeAndPosition() {
 
-      IntPtr foundWindow = IntPtr.Zero;
-
       Point VisualizerLocation = global::MilkwaveRemote.Properties.Settings.Default.VisualizerLocation;
       Size VisualizerSize = global::MilkwaveRemote.Properties.Settings.Default.VisualizerSize;
 
       if (VisualizerSize.Height > 0 && VisualizerSize.Width > 0) {
-        EnumWindows((hWnd, lParam) => {
-          int length = GetWindowTextLength(hWnd);
-          if (length == 0) return true;
-
-          StringBuilder windowTitle = new StringBuilder(length + 1);
-          GetWindowText(hWnd, windowTitle, windowTitle.Capacity);
-
-          if (windowTitle.ToString().Contains(txtWindowTitle.Text)) {
-            foundWindow = hWnd;
-            return false; // Stop enumeration
-          }
-
-          return true; // Continue enumeration
-        }, IntPtr.Zero);
-
+        IntPtr foundWindow = FindVisualizerWindow();
         if (foundWindow != IntPtr.Zero) {
-
           SetWindowPos(foundWindow, IntPtr.Zero, VisualizerLocation.X, VisualizerLocation.Y, VisualizerSize.Width, VisualizerSize.Height, SWP_NOZORDER | SWP_NOACTIVATE);
         }
       }
+    }
+
+    private nint FindVisualizerWindow() {
+      IntPtr foundWindow = IntPtr.Zero;
+      EnumWindows((hWnd, lParam) => {
+        int length = GetWindowTextLength(hWnd);
+        if (length == 0) return true;
+
+        StringBuilder windowTitle = new StringBuilder(length + 1);
+        GetWindowText(hWnd, windowTitle, windowTitle.Capacity);
+
+        if (windowTitle.ToString().Contains(txtWindowTitle.Text)) {
+          foundWindow = hWnd;
+          foundWindowTitle = windowTitle.ToString();
+          return false; // Stop enumeration
+        }
+
+        return true; // Continue enumeration
+      }, IntPtr.Zero);
+      return foundWindow;
     }
 
     private void btnSend_Click(object sender, EventArgs e) {
@@ -218,25 +236,8 @@ namespace MilkwaveRemote {
     private void SendToMilkwaveVisualizer(string messageToSend) {
       statusBar.Text = "";
       string partialTitle = txtWindowTitle.Text;
-      IntPtr foundWindow = IntPtr.Zero;
-      StringBuilder foundWindowTitle = new StringBuilder();
 
-      EnumWindows((hWnd, lParam) => {
-        int length = GetWindowTextLength(hWnd);
-        if (length == 0) return true;
-
-        StringBuilder windowTitle = new StringBuilder(length + 1);
-        GetWindowText(hWnd, windowTitle, windowTitle.Capacity);
-
-        if (windowTitle.ToString().Contains(partialTitle)) {
-          foundWindow = hWnd;
-          foundWindowTitle = windowTitle;
-          return false; // Stop enumeration
-        }
-
-        return true; // Continue enumeration
-      }, IntPtr.Zero);
-
+      IntPtr foundWindow = FindVisualizerWindow();
       if (foundWindow != IntPtr.Zero) {
         string message = "MSG|text=" + messageToSend;
         if (cboParameters.Text.Length > 0) {
@@ -477,27 +478,11 @@ namespace MilkwaveRemote {
     }
 
     private void SendPostMessage(int VKKey, string keyName) {
-      IntPtr foundWindow = IntPtr.Zero;
-
-      StringBuilder windowTitle = new StringBuilder();
-
-      EnumWindows((hWnd, lParam) => {
-        int length = GetWindowTextLength(hWnd);
-        if (length == 0) return true;
-        windowTitle = new StringBuilder(length + 1);
-        GetWindowText(hWnd, windowTitle, windowTitle.Capacity);
-
-        if (windowTitle.ToString().Contains(txtWindowTitle.Text)) {
-          foundWindow = hWnd;
-          return false; // Stop enumeration
-        }
-
-        return true; // Continue enumeration
-      }, IntPtr.Zero);
+      IntPtr foundWindow = FindVisualizerWindow();
 
       if (foundWindow != IntPtr.Zero) {
         PostMessage(foundWindow, WM_KEYDOWN, (IntPtr)VKKey, IntPtr.Zero);
-        statusBar.Text = $"Pressed {keyName} in '{windowTitle}'";
+        statusBar.Text = $"Pressed {keyName} in '{foundWindowTitle}'";
       } else {
         statusBar.Text = windowNotFound;
       }
@@ -508,24 +493,7 @@ namespace MilkwaveRemote {
 
     private void SendInput(int VKKey, string keyName, bool doShift, bool doAlt) {
       IntPtr currentWindow = GetForegroundWindow();
-      string partialTitle = txtWindowTitle.Text;
-      IntPtr foundWindow = IntPtr.Zero;
-      StringBuilder windowTitle = new StringBuilder();
-      EnumWindows((hWnd, lParam) => {
-        int length = GetWindowTextLength(hWnd);
-        if (length == 0) return true;
-
-        windowTitle = new StringBuilder(length + 1);
-        GetWindowText(hWnd, windowTitle, windowTitle.Capacity);
-
-        if (windowTitle.ToString().Contains(partialTitle)) {
-          foundWindow = hWnd;
-          return false; // Stop enumeration
-        }
-
-        return true; // Continue enumeration
-      }, IntPtr.Zero);
-
+      IntPtr foundWindow = FindVisualizerWindow();
       if (foundWindow != IntPtr.Zero) {
         SetForegroundWindow(foundWindow);
 
@@ -640,7 +608,7 @@ namespace MilkwaveRemote {
         }
 
         SendInput((uint)inputs.Length, inputs, Marshal.SizeOf(typeof(INPUT)));
-        statusBar.Text = $"Pressed {keyName} in '{windowTitle}'";
+        statusBar.Text = $"Pressed {keyName} in '{foundWindowTitle}'";
 
         SetForegroundWindow(currentWindow);
       } else {
@@ -666,12 +634,6 @@ namespace MilkwaveRemote {
       SendPostMessage(VK_F7, "F7");
     }
 
-    private const int VK_K = 0x4B;
-
-    private void btnShiftK_Click(object sender, EventArgs e) {
-      SendInput(VK_K, "Shift+K", true, false);
-    }
-
     private const int VK_SPACE = 0x20;
 
     private void btnSpace_Click(object sender, EventArgs e) {
@@ -685,23 +647,8 @@ namespace MilkwaveRemote {
     }
 
     private void SendUnicodeChars(string inputString) {
-      IntPtr foundWindow = IntPtr.Zero;
       IntPtr currentWindow = GetForegroundWindow();
-      StringBuilder windowTitle = new StringBuilder();
-      EnumWindows((hWnd, lParam) => {
-        int length = GetWindowTextLength(hWnd);
-        if (length == 0) return true;
-
-        windowTitle = new StringBuilder(length + 1);
-        GetWindowText(hWnd, windowTitle, windowTitle.Capacity);
-
-        if (windowTitle.ToString().Contains(txtWindowTitle.Text)) {
-          foundWindow = hWnd;
-          return false; // Stop enumeration
-        }
-
-        return true; // Continue enumeration
-      }, IntPtr.Zero);
+      IntPtr foundWindow = FindVisualizerWindow();
 
       if (foundWindow != IntPtr.Zero) {
         SetForegroundWindow(foundWindow);
@@ -724,7 +671,7 @@ namespace MilkwaveRemote {
           Thread.Sleep(50);
         }
 
-        statusBar.Text = $"Pressed {inputString.ToUpper()} in '{windowTitle}'";
+        statusBar.Text = $"Pressed {inputString.ToUpper()} in '{foundWindowTitle}'";
 
         SetForegroundWindow(currentWindow);
 
@@ -865,7 +812,7 @@ namespace MilkwaveRemote {
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
       global::MilkwaveRemote.Properties.Settings.Default.Parameters.Clear();
 
-      // Hold the Ctrl key while closing the form to reset local settings to dewfault
+      // Hold the Ctrl key while closing the form to reset local settings to default
       if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
         global::MilkwaveRemote.Properties.Settings.Default.Reset();
         global::MilkwaveRemote.Properties.Settings.Default.Save();
@@ -883,30 +830,16 @@ namespace MilkwaveRemote {
         global::MilkwaveRemote.Properties.Settings.Default.Size = RestoreBounds.Size;
       }
 
-      IntPtr foundWindow = IntPtr.Zero;
-
-      EnumWindows((hWnd, lParam) => {
-        int length = GetWindowTextLength(hWnd);
-        if (length == 0) return true;
-
-        StringBuilder windowTitle = new StringBuilder(length + 1);
-        GetWindowText(hWnd, windowTitle, windowTitle.Capacity);
-
-        if (windowTitle.ToString().Contains(txtWindowTitle.Text)) {
-          foundWindow = hWnd;
-          return false; // Stop enumeration
-        }
-
-        return true; // Continue enumeration
-      }, IntPtr.Zero);
-
+      IntPtr foundWindow = FindVisualizerWindow();
       if (foundWindow != IntPtr.Zero) {
-
         RECT savedWindowRect;
         GetWindowRect(foundWindow, out savedWindowRect);
 
         global::MilkwaveRemote.Properties.Settings.Default.VisualizerLocation = new Point(savedWindowRect.Left, savedWindowRect.Top);
         global::MilkwaveRemote.Properties.Settings.Default.VisualizerSize = new Size(savedWindowRect.Right - savedWindowRect.Left, savedWindowRect.Bottom - savedWindowRect.Top);
+
+        // Close the Visualizer window
+        PostMessage(foundWindow, 0x0010, IntPtr.Zero, IntPtr.Zero); // WM_CLOSE message
       }
 
       global::MilkwaveRemote.Properties.Settings.Default.Parameters.AddRange(PresetList.Select(x => x.Name + "##" + x.Value).ToArray());

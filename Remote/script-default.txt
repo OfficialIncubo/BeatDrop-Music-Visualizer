@@ -1,4 +1,6 @@
+# Example script file for Milkwave Remote
 # Lines starting with # are ignored when parsing this file.
+# You can load other files by right-clicking "From File" in the Milkwave Remote window.
 #
 # You can add 0..n commands per line separated by | 
 # If it's not a known command, the text is treated as message
@@ -18,7 +20,7 @@
 # The same can be achieved by double-clicking the "BPM"-label in the Milkwave Remote window.
 #
 Welcome to Milkwave!
-PRESET=Preset B|Switched preset
+PRESET=Preset 2|Switch to "Preset 2"
 SEND=00|A wild sprite appears!
 Looks cool right?
 Something new now...|NEXT

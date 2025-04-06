@@ -1096,7 +1096,10 @@ void CPlugin::MyPreInitialize()
   m_fBlendTimeAuto = 2.7f;
   m_fTimeBetweenPresets = 16.0f;
   m_fTimeBetweenPresetsRand = 10.0f;
-  m_bSequentialPresetOrder = false;
+  
+  //m_bSequentialPresetOrder = false;
+  m_bSequentialPresetOrder = true;
+  
   m_bHardCutsDisabled = true;
   m_fHardCutLoudnessThresh = 2.5f;
   m_fHardCutHalflife = 60.0f;
@@ -1230,6 +1233,7 @@ void CPlugin::MyPreInitialize()
   m_bShowFPS = false;
   m_bShowRating = false;
   m_bShowPresetInfo = false;
+  // m_bShowPresetInfo = true;
   m_bShowDebugInfo = false;
   m_bShowSongTitle = false;
   m_bShowSongTime = false;
@@ -1261,7 +1265,9 @@ void CPlugin::MyPreInitialize()
   m_bOrigScrollLockState = GetKeyState(VK_SCROLL) & 1;
   // m_bMilkdropScrollLockState is derived at end of MyReadConfig()
 
-  m_nNumericInputMode = NUMERIC_INPUT_MODE_CUST_MSG;
+  // m_nNumericInputMode = NUMERIC_INPUT_MODE_CUST_MSG;
+  m_nNumericInputMode = NUMERIC_INPUT_MODE_SPRITE;
+
   m_nNumericInputNum = 0;
   m_nNumericInputDigits = 0;
   //td_custom_msg_font   m_CustomMessageFont[MAX_CUSTOM_MESSAGE_FONTS];
@@ -1318,77 +1324,77 @@ void CPlugin::MyReadConfig()
 
   // ======================================
   // SPOUT - save whether in DirectX11 (true) or DirectX 9 (false) mode, default true
-  bSpoutOut = GetPrivateProfileBoolW(L"settings", L"bSpoutOut", bSpoutOut, pIni);
+  bSpoutOut = GetPrivateProfileBoolW(L"Settings", L"bSpoutOut", bSpoutOut, pIni);
   // ======================================
 
-  m_bFirstRun = !GetPrivateProfileBoolW(L"settings", L"bConfigured", false, pIni);
-  m_bEnableRating = GetPrivateProfileBoolW(L"settings", L"bEnableRating", m_bEnableRating, pIni);
+  m_bFirstRun = !GetPrivateProfileBoolW(L"Settings", L"bConfigured", false, pIni);
+  m_bEnableRating = GetPrivateProfileBoolW(L"Settings", L"bEnableRating", m_bEnableRating, pIni);
   //m_bInstaScan    = GetPrivateProfileBool("settings","bInstaScan",m_bInstaScan,pIni);
-  m_bHardCutsDisabled = GetPrivateProfileBoolW(L"settings", L"bHardCutsDisabled", m_bHardCutsDisabled, pIni);
-  g_bDebugOutput = GetPrivateProfileBoolW(L"settings", L"bDebugOutput", g_bDebugOutput, pIni);
+  m_bHardCutsDisabled = GetPrivateProfileBoolW(L"Settings", L"bHardCutsDisabled", m_bHardCutsDisabled, pIni);
+  g_bDebugOutput = GetPrivateProfileBoolW(L"Settings", L"bDebugOutput", g_bDebugOutput, pIni);
   //m_bShowSongInfo = GetPrivateProfileBool("settings","bShowSongInfo",m_bShowSongInfo,pIni);
   //m_bShowPresetInfo=GetPrivateProfileBool("settings","bShowPresetInfo",m_bShowPresetInfo,pIni);
-  m_bShowPressF1ForHelp = GetPrivateProfileBoolW(L"settings", L"bShowPressF1ForHelp", m_bShowPressF1ForHelp, pIni);
+  m_bShowPressF1ForHelp = GetPrivateProfileBoolW(L"Settings", L"bShowPressF1ForHelp", m_bShowPressF1ForHelp, pIni);
   //m_bShowMenuToolTips = GetPrivateProfileBool("settings","bShowMenuToolTips",m_bShowMenuToolTips,pIni);
-  m_bSongTitleAnims = GetPrivateProfileBoolW(L"settings", L"bSongTitleAnims", m_bSongTitleAnims, pIni);
-  m_bEnablePresetStartup = GetPrivateProfileBoolW(L"settings", L"bEnablePresetStartup", m_bEnablePresetStartup, pIni);
-  m_bAutoLockPresetWhenNoMusic = GetPrivateProfileBoolW(L"settings", L"bAutoLockPresetWhenNoMusic", m_bAutoLockPresetWhenNoMusic, pIni);
+  m_bSongTitleAnims = GetPrivateProfileBoolW(L"Settings", L"bSongTitleAnims", m_bSongTitleAnims, pIni);
+  m_bEnablePresetStartup = GetPrivateProfileBoolW(L"Settings", L"bEnablePresetStartup", m_bEnablePresetStartup, pIni);
+  m_bAutoLockPresetWhenNoMusic = GetPrivateProfileBoolW(L"Settings", L"bAutoLockPresetWhenNoMusic", m_bAutoLockPresetWhenNoMusic, pIni);
 
-  m_bShowFPS = GetPrivateProfileBoolW(L"settings", L"bShowFPS", m_bShowFPS, pIni);
-  m_bShowRating = GetPrivateProfileBoolW(L"settings", L"bShowRating", m_bShowRating, pIni);
-  m_bShowPresetInfo = GetPrivateProfileBoolW(L"settings", L"bShowPresetInfo", m_bShowPresetInfo, pIni);
+  m_bShowFPS = GetPrivateProfileBoolW(L"Settings", L"bShowFPS", m_bShowFPS, pIni);
+  m_bShowRating = GetPrivateProfileBoolW(L"Settings", L"bShowRating", m_bShowRating, pIni);
+  m_bShowPresetInfo = GetPrivateProfileBoolW(L"Settings", L"bShowPresetInfo", m_bShowPresetInfo, pIni);
   //m_bShowDebugInfo	= GetPrivateProfileBool("settings","bShowDebugInfo", m_bShowDebugInfo	,pIni);
-  m_bShowSongTitle = GetPrivateProfileBoolW(L"settings", L"bShowSongTitle", m_bShowSongTitle, pIni);
-  m_bShowSongTime = GetPrivateProfileBoolW(L"settings", L"bShowSongTime", m_bShowSongTime, pIni);
-  m_bShowSongLen = GetPrivateProfileBoolW(L"settings", L"bShowSongLen", m_bShowSongLen, pIni);
+  m_bShowSongTitle = GetPrivateProfileBoolW(L"Settings", L"bShowSongTitle", m_bShowSongTitle, pIni);
+  m_bShowSongTime = GetPrivateProfileBoolW(L"Settings", L"bShowSongTime", m_bShowSongTime, pIni);
+  m_bShowSongLen = GetPrivateProfileBoolW(L"Settings", L"bShowSongLen", m_bShowSongLen, pIni);
 
   //m_bFixPinkBug		= GetPrivateProfileBool("settings","bFixPinkBug",m_bFixPinkBug,pIni);
-  int nTemp = GetPrivateProfileBoolW(L"settings", L"bFixPinkBug", -1, pIni);
+  int nTemp = GetPrivateProfileBoolW(L"Settings", L"bFixPinkBug", -1, pIni);
   if (nTemp == 0)
     m_n16BitGamma = 0;
   else if (nTemp == 1)
     m_n16BitGamma = 2;
-  m_n16BitGamma = GetPrivateProfileIntW(L"settings", L"n16BitGamma", m_n16BitGamma, pIni);
-  m_bAutoGamma = GetPrivateProfileBoolW(L"settings", L"bAutoGamma", m_bAutoGamma, pIni);
+  m_n16BitGamma = GetPrivateProfileIntW(L"Settings", L"n16BitGamma", m_n16BitGamma, pIni);
+  m_bAutoGamma = GetPrivateProfileBoolW(L"Settings", L"bAutoGamma", m_bAutoGamma, pIni);
   //m_bAlways3D				= GetPrivateProfileBool("settings","bAlways3D",m_bAlways3D,pIni);
     //m_fStereoSep            = GetPrivateProfileFloat("settings","fStereoSep",m_fStereoSep,pIni);
   //m_bFixSlowText          = GetPrivateProfileBool("settings","bFixSlowText",m_bFixSlowText,pIni);
   //m_bAlwaysOnTop		= GetPrivateProfileBool("settings","bAlwaysOnTop",m_bAlwaysOnTop,pIni);
   //m_bWarningsDisabled		= GetPrivateProfileBool("settings","bWarningsDisabled",m_bWarningsDisabled,pIni);
-  m_bWarningsDisabled2 = GetPrivateProfileBoolW(L"settings", L"bWarningsDisabled2", m_bWarningsDisabled2, pIni);
+  m_bWarningsDisabled2 = GetPrivateProfileBoolW(L"Settings", L"bWarningsDisabled2", m_bWarningsDisabled2, pIni);
   //m_bAnisotropicFiltering = GetPrivateProfileBool("settings","bAnisotropicFiltering",m_bAnisotropicFiltering,pIni);
-  m_bPresetLockOnAtStartup = GetPrivateProfileBoolW(L"settings", L"bPresetLockOnAtStartup", m_bPresetLockOnAtStartup, pIni);
-  m_bPreventScollLockHandling = GetPrivateProfileBoolW(L"settings", L"m_bPreventScollLockHandling", m_bPreventScollLockHandling, pIni);
+  m_bPresetLockOnAtStartup = GetPrivateProfileBoolW(L"Settings", L"bPresetLockOnAtStartup", m_bPresetLockOnAtStartup, pIni);
+  m_bPreventScollLockHandling = GetPrivateProfileBoolW(L"Settings", L"m_bPreventScollLockHandling", m_bPreventScollLockHandling, pIni);
 
-  m_nCanvasStretch = 100;  //GetPrivateProfileIntW(L"settings",L"nCanvasStretch"    ,m_nCanvasStretch,pIni);
-  m_nTexSizeX = -1; //GetPrivateProfileIntW(L"settings",L"nTexSize"    ,m_nTexSizeX   ,pIni);
+  m_nCanvasStretch = 100;  //GetPrivateProfileIntW(L"Settings",L"nCanvasStretch"    ,m_nCanvasStretch,pIni);
+  m_nTexSizeX = -1; //GetPrivateProfileIntW(L"Settings",L"nTexSize"    ,m_nTexSizeX   ,pIni);
   m_nTexSizeY = -1; //m_nTexSizeX;
   m_bTexSizeWasAutoPow2 = (m_nTexSizeX == -2);
   m_bTexSizeWasAutoExact = (m_nTexSizeX == -1);
-  m_nTexBitsPerCh = GetPrivateProfileIntW(L"settings", L"nTexBitsPerCh", m_nTexBitsPerCh, pIni);
-  m_nGridX = GetPrivateProfileIntW(L"settings", L"nMeshSize", m_nGridX, pIni);
+  m_nTexBitsPerCh = GetPrivateProfileIntW(L"Settings", L"nTexBitsPerCh", m_nTexBitsPerCh, pIni);
+  m_nGridX = GetPrivateProfileIntW(L"Settings", L"nMeshSize", m_nGridX, pIni);
   m_nGridY = m_nGridX * 3 / 4;
 
-  m_nMaxPSVersion_ConfigPanel = GetPrivateProfileIntW(L"settings", L"MaxPSVersion", m_nMaxPSVersion_ConfigPanel, pIni);
-  m_nMaxImages = GetPrivateProfileIntW(L"settings", L"MaxImages", m_nMaxImages, pIni);
-  m_nMaxBytes = GetPrivateProfileIntW(L"settings", L"MaxBytes", m_nMaxBytes, pIni);
+  m_nMaxPSVersion_ConfigPanel = GetPrivateProfileIntW(L"Settings", L"MaxPSVersion", m_nMaxPSVersion_ConfigPanel, pIni);
+  m_nMaxImages = GetPrivateProfileIntW(L"Settings", L"MaxImages", m_nMaxImages, pIni);
+  m_nMaxBytes = GetPrivateProfileIntW(L"Settings", L"MaxBytes", m_nMaxBytes, pIni);
 
-  m_fBlendTimeUser = GetPrivateProfileFloatW(L"settings", L"fBlendTimeUser", m_fBlendTimeUser, pIni);
-  m_fBlendTimeAuto = GetPrivateProfileFloatW(L"settings", L"fBlendTimeAuto", m_fBlendTimeAuto, pIni);
-  m_fTimeBetweenPresets = GetPrivateProfileFloatW(L"settings", L"fTimeBetweenPresets", m_fTimeBetweenPresets, pIni);
-  m_fTimeBetweenPresetsRand = GetPrivateProfileFloatW(L"settings", L"fTimeBetweenPresetsRand", m_fTimeBetweenPresetsRand, pIni);
+  m_fBlendTimeUser = GetPrivateProfileFloatW(L"Settings", L"fBlendTimeUser", m_fBlendTimeUser, pIni);
+  m_fBlendTimeAuto = GetPrivateProfileFloatW(L"Settings", L"fBlendTimeAuto", m_fBlendTimeAuto, pIni);
+  m_fTimeBetweenPresets = GetPrivateProfileFloatW(L"Settings", L"fTimeBetweenPresets", m_fTimeBetweenPresets, pIni);
+  m_fTimeBetweenPresetsRand = GetPrivateProfileFloatW(L"Settings", L"fTimeBetweenPresetsRand", m_fTimeBetweenPresetsRand, pIni);
 
-  m_fHardCutLoudnessThresh = GetPrivateProfileFloatW(L"settings", L"fHardCutLoudnessThresh", m_fHardCutLoudnessThresh, pIni);
-  m_fHardCutHalflife = GetPrivateProfileFloatW(L"settings", L"fHardCutHalflife", m_fHardCutHalflife, pIni);
-  m_fSongTitleAnimDuration = GetPrivateProfileFloatW(L"settings", L"fSongTitleAnimDuration", m_fSongTitleAnimDuration, pIni);
-  m_fTimeBetweenRandomSongTitles = GetPrivateProfileFloatW(L"settings", L"fTimeBetweenRandomSongTitles", m_fTimeBetweenRandomSongTitles, pIni);
-  m_fTimeBetweenRandomCustomMsgs = GetPrivateProfileFloatW(L"settings", L"fTimeBetweenRandomCustomMsgs", m_fTimeBetweenRandomCustomMsgs, pIni);
-  m_adapterId = GetPrivateProfileIntW(L"settings", L"nVideoAdapterIndex", 0, pIni);
+  m_fHardCutLoudnessThresh = GetPrivateProfileFloatW(L"Settings", L"fHardCutLoudnessThresh", m_fHardCutLoudnessThresh, pIni);
+  m_fHardCutHalflife = GetPrivateProfileFloatW(L"Settings", L"fHardCutHalflife", m_fHardCutHalflife, pIni);
+  m_fSongTitleAnimDuration = GetPrivateProfileFloatW(L"Settings", L"fSongTitleAnimDuration", m_fSongTitleAnimDuration, pIni);
+  m_fTimeBetweenRandomSongTitles = GetPrivateProfileFloatW(L"Settings", L"fTimeBetweenRandomSongTitles", m_fTimeBetweenRandomSongTitles, pIni);
+  m_fTimeBetweenRandomCustomMsgs = GetPrivateProfileFloatW(L"Settings", L"fTimeBetweenRandomCustomMsgs", m_fTimeBetweenRandomCustomMsgs, pIni);
+  m_adapterId = GetPrivateProfileIntW(L"Settings", L"nVideoAdapterIndex", 0, pIni);
 
   // --------
 
-  GetPrivateProfileStringW(L"settings", L"szPresetDir", m_szPresetDir, m_szPresetDir, sizeof(m_szPresetDir), pIni);
-  GetPrivateProfileStringW(L"settings", L"szPresetStartup", m_szPresetStartup, m_szPresetStartup, sizeof(m_szPresetStartup), pIni);
+  GetPrivateProfileStringW(L"Settings", L"szPresetDir", m_szPresetDir, m_szPresetDir, sizeof(m_szPresetDir), pIni);
+  GetPrivateProfileStringW(L"Settings", L"szPresetStartup", m_szPresetStartup, m_szPresetStartup, sizeof(m_szPresetStartup), pIni);
 
   ReadCustomMessages();
 
@@ -1429,64 +1435,64 @@ void CPlugin::MyWriteConfig()
   wchar_t* pIni = GetConfigIniFile();
 
   // constants:
-  WritePrivateProfileStringW(L"settings", L"bConfigured", L"1", pIni);
+  WritePrivateProfileStringW(L"Settings", L"bConfigured", L"1", pIni);
 
   //note: m_szPresetDir is not written here; it is written manually, whenever it changes.
 
-  wchar_t szSectionName[] = L"settings";
+  wchar_t szSectionName[] = L"Settings";
 
   // ================================
   // SPOUT
-  WritePrivateProfileIntW(bSpoutOut, L"bSpoutOut", pIni, L"settings");
+  WritePrivateProfileIntW(bSpoutOut, L"bSpoutOut", pIni, L"Settings");
   // ================================
 
-  WritePrivateProfileIntW(m_bSongTitleAnims, L"bSongTitleAnims", pIni, L"settings");
-  WritePrivateProfileIntW(m_bHardCutsDisabled, L"bHardCutsDisabled", pIni, L"settings");
-  WritePrivateProfileIntW(m_bEnableRating, L"bEnableRating", pIni, L"settings");
+  WritePrivateProfileIntW(m_bSongTitleAnims, L"bSongTitleAnims", pIni, L"Settings");
+  WritePrivateProfileIntW(m_bHardCutsDisabled, L"bHardCutsDisabled", pIni, L"Settings");
+  WritePrivateProfileIntW(m_bEnableRating, L"bEnableRating", pIni, L"Settings");
   //WritePrivateProfileIntW(m_bInstaScan,            "bInstaScan",		    pIni, "settings");
-  WritePrivateProfileIntW(g_bDebugOutput, L"bDebugOutput", pIni, L"settings");
+  WritePrivateProfileIntW(g_bDebugOutput, L"bDebugOutput", pIni, L"Settings");
 
   //itePrivateProfileInt(m_bShowPresetInfo, 	    "bShowPresetInfo",		pIni, "settings");
   //itePrivateProfileInt(m_bShowSongInfo, 		"bShowSongInfo",        pIni, "settings");
   //itePrivateProfileInt(m_bFixPinkBug, 		    "bFixPinkBug",			pIni, "settings");
 
-  WritePrivateProfileIntW(m_bShowPressF1ForHelp, L"bShowPressF1ForHelp", pIni, L"settings");
+  WritePrivateProfileIntW(m_bShowPressF1ForHelp, L"bShowPressF1ForHelp", pIni, L"Settings");
   //itePrivateProfileInt(m_bShowMenuToolTips, 	"bShowMenuToolTips",    pIni, "settings");
-  WritePrivateProfileIntW(m_n16BitGamma, L"n16BitGamma", pIni, L"settings");
-  WritePrivateProfileIntW(m_bAutoGamma, L"bAutoGamma", pIni, L"settings");
+  WritePrivateProfileIntW(m_n16BitGamma, L"n16BitGamma", pIni, L"Settings");
+  WritePrivateProfileIntW(m_bAutoGamma, L"bAutoGamma", pIni, L"Settings");
 
   //WritePrivateProfileIntW(m_bAlways3D, 			"bAlways3D",			pIni, "settings");
     //WritePrivateProfileFloat(m_fStereoSep,          "fStereoSep",           pIni, "settings");
   //WritePrivateProfileIntW(m_bFixSlowText,		    "bFixSlowText",			pIni, "settings");
   //itePrivateProfileInt(m_bAlwaysOnTop,		    "bAlwaysOnTop",			pIni, "settings");
   //WritePrivateProfileIntW(m_bWarningsDisabled,	    "bWarningsDisabled",	pIni, "settings");
-  WritePrivateProfileIntW(m_bWarningsDisabled2, L"bWarningsDisabled2", pIni, L"settings");
+  WritePrivateProfileIntW(m_bWarningsDisabled2, L"bWarningsDisabled2", pIni, L"Settings");
   //WritePrivateProfileIntW(m_bAnisotropicFiltering,	"bAnisotropicFiltering",pIni, "settings");
-  WritePrivateProfileIntW(m_bPresetLockOnAtStartup, L"bPresetLockOnAtStartup", pIni, L"settings");
-  WritePrivateProfileIntW(m_bPreventScollLockHandling, L"m_bPreventScollLockHandling", pIni, L"settings");
+  WritePrivateProfileIntW(m_bPresetLockOnAtStartup, L"bPresetLockOnAtStartup", pIni, L"Settings");
+  WritePrivateProfileIntW(m_bPreventScollLockHandling, L"m_bPreventScollLockHandling", pIni, L"Settings");
   // note: this is also written @ exit of the visualizer
-  WritePrivateProfileIntW(m_bEnablePresetStartup, L"bEnablePresetStartup", pIni, L"settings");
-  WritePrivateProfileIntW(m_bAutoLockPresetWhenNoMusic, L"bAutoLockPresetWhenNoMusic", pIni, L"settings");
+  WritePrivateProfileIntW(m_bEnablePresetStartup, L"bEnablePresetStartup", pIni, L"Settings");
+  WritePrivateProfileIntW(m_bAutoLockPresetWhenNoMusic, L"bAutoLockPresetWhenNoMusic", pIni, L"Settings");
 
-  WritePrivateProfileIntW(m_nCanvasStretch, L"nCanvasStretch", pIni, L"settings");
-  //WritePrivateProfileIntW(m_nTexSizeX,			    L"nTexSize",				pIni, L"settings");
-  WritePrivateProfileIntW(m_nTexBitsPerCh, L"nTexBitsPerCh", pIni, L"settings");
-  WritePrivateProfileIntW(m_nGridX, L"nMeshSize", pIni, L"settings");
-  WritePrivateProfileIntW(m_nMaxPSVersion_ConfigPanel, L"MaxPSVersion", pIni, L"settings");
-  WritePrivateProfileIntW(m_nMaxImages, L"MaxImages", pIni, L"settings");
-  WritePrivateProfileIntW(m_nMaxBytes, L"MaxBytes", pIni, L"settings");
+  WritePrivateProfileIntW(m_nCanvasStretch, L"nCanvasStretch", pIni, L"Settings");
+  //WritePrivateProfileIntW(m_nTexSizeX,			    L"nTexSize",				pIni, L"Settings");
+  WritePrivateProfileIntW(m_nTexBitsPerCh, L"nTexBitsPerCh", pIni, L"Settings");
+  WritePrivateProfileIntW(m_nGridX, L"nMeshSize", pIni, L"Settings");
+  WritePrivateProfileIntW(m_nMaxPSVersion_ConfigPanel, L"MaxPSVersion", pIni, L"Settings");
+  WritePrivateProfileIntW(m_nMaxImages, L"MaxImages", pIni, L"Settings");
+  WritePrivateProfileIntW(m_nMaxBytes, L"MaxBytes", pIni, L"Settings");
 
-  WritePrivateProfileFloatW(m_fBlendTimeAuto, L"fBlendTimeAuto", pIni, L"settings");
-  WritePrivateProfileFloatW(m_fBlendTimeUser, L"fBlendTimeUser", pIni, L"settings");
-  WritePrivateProfileFloatW(m_fTimeBetweenPresets, L"fTimeBetweenPresets", pIni, L"settings");
-  WritePrivateProfileFloatW(m_fTimeBetweenPresetsRand, L"fTimeBetweenPresetsRand", pIni, L"settings");
-  WritePrivateProfileFloatW(m_fHardCutLoudnessThresh, L"fHardCutLoudnessThresh", pIni, L"settings");
-  WritePrivateProfileFloatW(m_fHardCutHalflife, L"fHardCutHalflife", pIni, L"settings");
-  WritePrivateProfileFloatW(m_fSongTitleAnimDuration, L"fSongTitleAnimDuration", pIni, L"settings");
-  WritePrivateProfileFloatW(m_fTimeBetweenRandomSongTitles, L"fTimeBetweenRandomSongTitles", pIni, L"settings");
-  WritePrivateProfileFloatW(m_fTimeBetweenRandomCustomMsgs, L"fTimeBetweenRandomCustomMsgs", pIni, L"settings");
+  WritePrivateProfileFloatW(m_fBlendTimeAuto, L"fBlendTimeAuto", pIni, L"Settings");
+  WritePrivateProfileFloatW(m_fBlendTimeUser, L"fBlendTimeUser", pIni, L"Settings");
+  WritePrivateProfileFloatW(m_fTimeBetweenPresets, L"fTimeBetweenPresets", pIni, L"Settings");
+  WritePrivateProfileFloatW(m_fTimeBetweenPresetsRand, L"fTimeBetweenPresetsRand", pIni, L"Settings");
+  WritePrivateProfileFloatW(m_fHardCutLoudnessThresh, L"fHardCutLoudnessThresh", pIni, L"Settings");
+  WritePrivateProfileFloatW(m_fHardCutHalflife, L"fHardCutHalflife", pIni, L"Settings");
+  WritePrivateProfileFloatW(m_fSongTitleAnimDuration, L"fSongTitleAnimDuration", pIni, L"Settings");
+  WritePrivateProfileFloatW(m_fTimeBetweenRandomSongTitles, L"fTimeBetweenRandomSongTitles", pIni, L"Settings");
+  WritePrivateProfileFloatW(m_fTimeBetweenRandomCustomMsgs, L"fTimeBetweenRandomCustomMsgs", pIni, L"Settings");
 
-  WritePrivateProfileIntW(m_adapterId, L"nVideoAdapterIndex", pIni, L"settings");
+  WritePrivateProfileIntW(m_adapterId, L"nVideoAdapterIndex", pIni, L"Settings");
 
 }
 
@@ -4072,7 +4078,7 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
   // The "random" state should be preserved from session to session.
   // It's pretty safe to do, because the Scroll Lock key is hard to
   //   accidentally click... :)
-  WritePrivateProfileIntW(m_bPresetLockedByUser, L"bPresetLockOnAtStartup", GetConfigIniFile(), L"settings");
+  WritePrivateProfileIntW(m_bPresetLockedByUser, L"bPresetLockOnAtStartup", GetConfigIniFile(), L"Settings");
 }
 
 //----------------------------------------------------------------------
@@ -4548,10 +4554,11 @@ void CPlugin::MyRenderUI(
       SelectFont(DECORATIVE_FONT);
       swprintf(
         buf,
-        L"%s Current preset: %s ",
+        L"%s %s ",
         (m_bPresetLockedByUser || m_bPresetLockedByCode) ? L"\xD83D\xDD12" : L"",
         (m_nLoadingPreset != 0) ? m_pNewState->m_szDesc : m_pState->m_szDesc);
       MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
+      /*
       SelectFont(SIMPLE_FONT);
       swprintf(
         buf,
@@ -4561,6 +4568,7 @@ void CPlugin::MyRenderUI(
       MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
       swprintf(buf, L" %s: %0.0f ", L"Total presets loaded", (float)(NumTotalPresetsLoaded));
       MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
+      */
     }
 
     // b) preset rating
@@ -6634,7 +6642,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
               lstrcpyW(g_plugin.m_szPresetDir, szNewDir);
 
               // save new path to registry
-              WritePrivateProfileStringW(L"settings", L"szPresetDir", g_plugin.m_szPresetDir, GetConfigIniFile());
+              WritePrivateProfileStringW(L"Settings", L"szPresetDir", g_plugin.m_szPresetDir, GetConfigIniFile());
 
               // set current preset index to -1 because current preset is no longer in the list
               m_nCurrentPreset = -1;
@@ -7118,7 +7126,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
             lstrcatW(p, L"\\");
           }
 
-          WritePrivateProfileStringW(L"settings", L"szPresetDir", GetPresetDir(), GetConfigIniFile());
+          WritePrivateProfileStringW(L"Settings", L"szPresetDir", GetPresetDir(), GetConfigIniFile());
 
           UpdatePresetList(true, true, false);
 
@@ -7881,12 +7889,12 @@ void CPlugin::BuildMenus()
 
 void CPlugin::WriteRealtimeConfig()
 {
-  WritePrivateProfileIntW(m_bShowFPS, L"bShowFPS", GetConfigIniFile(), L"settings");
-  WritePrivateProfileIntW(m_bShowRating, L"bShowRating", GetConfigIniFile(), L"settings");
-  WritePrivateProfileIntW(m_bShowPresetInfo, L"bShowPresetInfo", GetConfigIniFile(), L"settings");
-  WritePrivateProfileIntW(m_bShowSongTitle, L"bShowSongTitle", GetConfigIniFile(), L"settings");
-  WritePrivateProfileIntW(m_bShowSongTime, L"bShowSongTime", GetConfigIniFile(), L"settings");
-  WritePrivateProfileIntW(m_bShowSongLen, L"bShowSongLen", GetConfigIniFile(), L"settings");
+  WritePrivateProfileIntW(m_bShowFPS, L"bShowFPS", GetConfigIniFile(), L"Settings");
+  WritePrivateProfileIntW(m_bShowRating, L"bShowRating", GetConfigIniFile(), L"Settings");
+  WritePrivateProfileIntW(m_bShowPresetInfo, L"bShowPresetInfo", GetConfigIniFile(), L"Settings");
+  WritePrivateProfileIntW(m_bShowSongTitle, L"bShowSongTitle", GetConfigIniFile(), L"Settings");
+  WritePrivateProfileIntW(m_bShowSongTime, L"bShowSongTime", GetConfigIniFile(), L"Settings");
+  WritePrivateProfileIntW(m_bShowSongLen, L"bShowSongLen", GetConfigIniFile(), L"Settings");
 }
 
 void CPlugin::dumpmsg(wchar_t* s)
@@ -9672,7 +9680,8 @@ void CPlugin::LaunchMessage(wchar_t* sMessage) {
     m_supertext.fFadeTime = std::stof(params[L"fade"]);
   }
   else {
-    m_supertext.fFadeTime = 1.0f; // Default fade time
+    // The percentage of time (0..1) spent fading in the text
+    m_supertext.fFadeTime = 0.2f; // Default fade time
   }
 
   if (params.find(L"bold") != params.end()) {
