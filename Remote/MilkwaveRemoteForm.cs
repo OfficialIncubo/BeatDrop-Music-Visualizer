@@ -1,7 +1,9 @@
 using DarkModeForms;
 using System.Diagnostics;
 using System.Drawing.Text;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Security.Policy;
 using System.Text;
 using static DarkModeForms.DarkModeCS;
 
@@ -134,12 +136,10 @@ namespace MilkwaveRemote {
 
       FixNumericUpDownMouseWheel(this);
 
-      /*
       Assembly executingAssembly = Assembly.GetExecutingAssembly();
       var fieVersionInfo = FileVersionInfo.GetVersionInfo(executingAssembly.Location);
       var version = fieVersionInfo.FileVersion;
-      this.Text = $"Milkwave Remote {version}";
-      */
+      barVersion.Text = $"v{version}";
 
       dm = new DarkModeCS(this) {
         ColorMode = DarkModeCS.DisplayMode.SystemDefault
@@ -283,10 +283,6 @@ namespace MilkwaveRemote {
         cboParameters.SelectedIndex = 0;
       }
       SetFormattedMessage();
-    }
-
-    private void OpenURL(string url) {
-      Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
     }
 
     private void btnSaveParam_Click(object sender, EventArgs e) {
@@ -1055,16 +1051,32 @@ namespace MilkwaveRemote {
     }
 
     private void statusHelp_Click(object sender, EventArgs e) {
-
+      string dialogtext =
+        "" + Environment.NewLine +
+        "" + Environment.NewLine +
+        "More help resources:" + Environment.NewLine +
+        "" + Environment.NewLine +
+        "GitHub homepage: https://github.com/IkeC/Milkwave" + Environment.NewLine +
+        "GitHub issues: https://github.com/IkeC/Milkwave/issues" + Environment.NewLine +
+        "Ikes Discord: https://bit.ly/Ikes-Discord" + Environment.NewLine +
+        "README.txt in the program folder";
+    new MilkwaveInfoForm().ShowDialog("Milkwave Help", dialogtext);
     }
 
     private void statusSupporters_Click(object sender, EventArgs e) {
-
+      string dialogtext =
+        "Such emptiness..." + Environment.NewLine +
+        "Your name could be here!" + Environment.NewLine +
+        "" + Environment.NewLine +
+        "Support my work: https://www.paypal.com/ncp/payment/5XMP3S69PJLCU" + Environment.NewLine +
+        "" + Environment.NewLine +
+        "Any amount appreciated. Thank you very much!";
+      new MilkwaveInfoForm().ShowDialog("Milkwave Supporters", dialogtext);
     }
 
-    private void statusGitHub_Click(object sender, EventArgs e) {
-      OpenURL("https://github.com/IkeC/Milkwave");
+    private void barVersion_Click(object sender, EventArgs e) {
+      string url = "https://github.com/IkeC/Milkwave/releases";
+      Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
     }
-
   }
 }

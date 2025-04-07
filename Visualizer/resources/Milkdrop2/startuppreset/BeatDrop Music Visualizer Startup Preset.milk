@@ -732,11 +732,11 @@ warp_20=`    ret = (ret-0.005)*0.68; //org *0.98
 warp_21=`
 warp_22=`
 warp_23=`}
-comp_1=`#define BeatDrop sampler_fc_BeatDropLogo
+comp_1=`#define BeatDrop/MilkwaveVisualizer sampler_fc_BeatDrop/MilkwaveVisualizerLogo
 comp_2=`
 comp_3=`sampler sampler_rand01;
-comp_4=`sampler BeatDrop;
-comp_5=`float4 texsize_BeatDropLogo;
+comp_4=`sampler BeatDrop/MilkwaveVisualizer;
+comp_5=`float4 texsize_BeatDrop/MilkwaveVisualizerLogo;
 comp_6=`float2 scale, uv5, sz;
 comp_7=`
 comp_8=`shader_body
@@ -774,11 +774,11 @@ comp_39=`
 comp_40=`if (bass>1.4)
 comp_41=`{ ret += .60; }
 comp_42=`
-comp_43=`sz    = (texsize_BeatDropLogo/texsize).xy+.25;
-comp_44=`scale = texsize_BeatDropLogo.zw*texsize.xy * max(sz.x,sz.y);
+comp_43=`sz    = (texsize_BeatDrop/MilkwaveVisualizerLogo/texsize).xy+.25;
+comp_44=`scale = texsize_BeatDrop/MilkwaveVisualizerLogo.zw*texsize.xy * max(sz.x,sz.y);
 comp_45=`uv5   = (1.05-0.04*bass_att*1.5)*scale*(uv-.5)+.5;
 comp_46=`
-comp_47=`ret = lerp(ret, 1, tex2D(BeatDrop, uv5).xyz);
+comp_47=`ret = lerp(ret, 1, tex2D(BeatDrop/MilkwaveVisualizer, uv5).xyz);
 comp_48=`
 comp_49=`//TODO: Add an image without blending the entire screen output.
 comp_50=`}

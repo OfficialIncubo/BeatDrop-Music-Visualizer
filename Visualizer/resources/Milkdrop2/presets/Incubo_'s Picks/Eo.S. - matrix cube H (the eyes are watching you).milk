@@ -494,9 +494,9 @@ per_frame_39=beatcounter = beatcounter + beat;
 per_frame_40=mode = if(beat*equal(beatcounter%2,0),1-mode,mode);
 per_frame_41=flip = 2*mode-1;
 per_frame_42=
-per_frame_43=beatdrop = if( equal(beatdrop,0) , beat , max(beatdrop - 0.02*(75/fps) , 0) );
+per_frame_43=BeatDrop/MilkwaveVisualizer = if( equal(BeatDrop/MilkwaveVisualizer,0) , beat , max(BeatDrop/MilkwaveVisualizer - 0.02*(75/fps) , 0) );
 per_frame_44=
-per_frame_45=q7 = beatdrop;
+per_frame_45=q7 = BeatDrop/MilkwaveVisualizer;
 per_frame_46=
 per_frame_47=q8 = 12;
 per_frame_48=

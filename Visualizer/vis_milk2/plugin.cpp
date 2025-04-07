@@ -529,8 +529,8 @@ SPOUT :
          (VS2017 140 toolset does not work)
 
 
-  03.12.18 - Started modifications to the BeatDrop project (not back-compatible)
-         BeatDrop name, versioning and authoring by Maxim Volskiy retained
+  03.12.18 - Started modifications to the BeatDrop/MilkwaveVisualizer project (not back-compatible)
+         BeatDrop/MilkwaveVisualizer name, versioning and authoring by Maxim Volskiy retained
          Use the VJ console for help and text output.
          Output resolution is 1920x1080 at start
          Resolution can subsequently be changed by resizing the render window
@@ -1065,12 +1065,12 @@ void CPlugin::MyPreInitialize()
   spoutDX9 spoutsender;
 
   // Error logging to AppData
-  // EnableSpoutLogFile("SpoutBeatdrop.log");
+  // EnableSpoutLogFile("SpoutBeatDrop/MilkwaveVisualizer.log");
   // For debugging 
   // EnableSpoutLog(); // Shows Spout logs on the console
     // OpenSpoutConsole(); // Empty console
 
-  sprintf(WinampSenderName, "BeatDrop");
+  sprintf(WinampSenderName, "BeatDrop/MilkwaveVisualizer");
   bInitialized = false;
   bSpoutOut = true; // User on/off toggle
   bSpoutChanged = false; // set to write config on exit
@@ -7254,7 +7254,7 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
 
     // return 0 if you process/absorb the key; otherwise return 1.
 
-  // SPOUT DEBUG for BeatDrop vj mode
+  // SPOUT DEBUG for BeatDrop/MilkwaveVisualizer vj mode
   // For "L, "M', "S" and "VK_F8"
   // if pluginshell VK_F1 help has been pressed
   // reset help and clear the window

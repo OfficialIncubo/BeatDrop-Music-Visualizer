@@ -31,9 +31,9 @@
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MilkwaveRemoteForm));
       statusStrip1 = new StatusStrip();
       statusBar = new ToolStripStatusLabel();
-      statusHelp = new ToolStripStatusLabel();
       statusSupporters = new ToolStripStatusLabel();
-      statusGitHub = new ToolStripStatusLabel();
+      statusHelp = new ToolStripStatusLabel();
+      barVersion = new ToolStripStatusLabel();
       toolTip1 = new ToolTip(components);
       pnlColor = new Panel();
       bnAppendColor = new Button();
@@ -100,7 +100,7 @@
       // statusStrip1
       // 
       statusStrip1.ImageScalingSize = new Size(20, 20);
-      statusStrip1.Items.AddRange(new ToolStripItem[] { statusBar, statusHelp, statusSupporters, statusGitHub });
+      statusStrip1.Items.AddRange(new ToolStripItem[] { statusBar, statusSupporters, statusHelp, barVersion });
       statusStrip1.Location = new Point(0, 579);
       statusStrip1.Name = "statusStrip1";
       statusStrip1.Size = new Size(869, 26);
@@ -111,20 +111,9 @@
       // 
       statusBar.Margin = new Padding(7, 4, 0, 2);
       statusBar.Name = "statusBar";
-      statusBar.Size = new Size(618, 20);
+      statusBar.Size = new Size(643, 20);
       statusBar.Spring = true;
       statusBar.TextAlign = ContentAlignment.TopLeft;
-      // 
-      // statusHelp
-      // 
-      statusHelp.IsLink = true;
-      statusHelp.Name = "statusHelp";
-      statusHelp.Padding = new Padding(2, 0, 2, 0);
-      statusHelp.Size = new Size(45, 20);
-      statusHelp.Text = "Help";
-      statusHelp.TextAlign = ContentAlignment.TopCenter;
-      statusHelp.VisitedLinkColor = Color.Blue;
-      statusHelp.Click += statusHelp_Click;
       // 
       // statusSupporters
       // 
@@ -137,16 +126,25 @@
       statusSupporters.VisitedLinkColor = Color.Blue;
       statusSupporters.Click += statusSupporters_Click;
       // 
-      // statusGitHub
+      // statusHelp
       // 
-      statusGitHub.IsLink = true;
-      statusGitHub.Name = "statusGitHub";
-      statusGitHub.Padding = new Padding(2, 0, 2, 0);
-      statusGitHub.Size = new Size(60, 20);
-      statusGitHub.Text = "GitHub";
-      statusGitHub.TextAlign = ContentAlignment.TopCenter;
-      statusGitHub.VisitedLinkColor = Color.Blue;
-      statusGitHub.Click += statusGitHub_Click;
+      statusHelp.IsLink = true;
+      statusHelp.Name = "statusHelp";
+      statusHelp.Padding = new Padding(2, 0, 2, 0);
+      statusHelp.Size = new Size(45, 20);
+      statusHelp.Text = "Help";
+      statusHelp.TextAlign = ContentAlignment.TopCenter;
+      statusHelp.VisitedLinkColor = Color.Blue;
+      statusHelp.Click += statusHelp_Click;
+      // 
+      // barVersion
+      // 
+      barVersion.IsLink = true;
+      barVersion.Name = "barVersion";
+      barVersion.Size = new Size(35, 20);
+      barVersion.Text = "v1.0";
+      barVersion.VisitedLinkColor = Color.Blue;
+      barVersion.Click += barVersion_Click;
       // 
       // pnlColor
       // 
@@ -930,6 +928,6 @@
     private CheckBox chkPreview;
     private ToolStripStatusLabel statusHelp;
     private ToolStripStatusLabel statusSupporters;
-    private ToolStripStatusLabel statusGitHub;
+    private ToolStripStatusLabel barVersion;
   }
 }

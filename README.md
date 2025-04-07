@@ -1,6 +1,6 @@
 # Milkwave
 
-Milkwave is a music visualizer based on the [Milkdrop2](https://www.geisswerks.com/milkdrop/) visualizer. Milkwave's main new feature is a standalone window called **Milkwave Remote** which allows you to send common key combinations using buttons. You can also send customized messages to display in the visualizer, either directly by tying or from a file.
+Milkwave is a music visualizer based on the [MilkDrop2](https://www.geisswerks.com/milkdrop/) visualizer. Milkwave's main new feature is a standalone window called **Milkwave Remote** which allows you to send common key combinations using buttons. You can also send customized messages to display in the visualizer, either directly by tying or from a file.
 
 ![image](https://github.com/user-attachments/assets/91a4b01d-e38d-4b9a-867a-61aa067cc749)
 
@@ -16,7 +16,7 @@ There are many tooltips explaining all features when you hover over the form ele
 
 ## History
 
-The original Milkdrop 2 WinAMP plugin created by Ryan Geiss was turned into a Windows standalone application by Maxim Volskiy as [BeatDrop](https://github.com/mvsoft74/BeatDrop) and been improved upon eg. in the [BeatDrop-Music-Visualizer](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer) and [MilkDrop3](https://github.com/milkdrop2077/MilkDrop3) projects.
+The original Milkdrop 2 WinAMP plugin created by Ryan Geiss was turned into a Windows standalone application by Maxim Volskiy as [BeatDrop/MilkwaveVisualizer](https://github.com/mvsoft74/BeatDrop/MilkwaveVisualizer) and been improved upon eg. in the [BeatDrop/MilkwaveVisualizer-Music-Visualizer](https://github.com/OfficialIncubo/BeatDrop/MilkwaveVisualizer-Music-Visualizer) and [MilkDrop3](https://github.com/milkdrop2077/MilkDrop3) projects.
 
 ## System Requirements
 * Windows 7 or later
@@ -37,11 +37,11 @@ However, if you're satisfied with the additions I made and you want to support m
 Many thanks to:
 
 * Ryan Geiss - [Milkdrop2](https://www.geisswerks.com/milkdrop/)
-* Maxim Volskiy - [BeatDrop](https://github.com/mvsoft74/BeatDrop)
+* Maxim Volskiy - [BeatDrop/MilkwaveVisualizer](https://github.com/mvsoft74/BeatDrop/MilkwaveVisualizer)
 * oO-MrC-Oo - [XBMC plugin](https://github.com/oO-MrC-Oo/Milkdrop2-XBMC)
 * Casey Langen - [milkdrop2-musikcube](https://github.com/clangen/milkdrop2-musikcube)
 * Matthew van Eerde - [loopback-capture](https://github.com/mvaneerde/blog)
-* Incubo - [BeatDrop-Music-Visualizer](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer)
+* Incubo - [BeatDrop/MilkwaveVisualizer-Music-Visualizer](https://github.com/OfficialIncubo/BeatDrop/MilkwaveVisualizer-Music-Visualizer)
 * milkdrop2077 - [MilkDrop3](https://github.com/milkdrop2077/MilkDrop3)
 * and all the preset authors!
 
@@ -51,7 +51,9 @@ If you believe you should be mentioned here, please let me know.
 
 [license]: #license
 
-This repository is licensed under the 3-Clause BSD License ([LICENSE](LICENSE) or [https://opensource.org/licenses/BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)) with the exception of where otherwise noted.
+Milkdrop Remote is licensed under the [Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/), meaning you may not use the material for commercial purposes. See LICENSE.txt for details.
+
+Milkdrop Visualizer (as a BeatDrop fork) is licensed under the [3-Clause BSD License](https://opensource.org/licenses/BSD-3-Clause) with the exception of where otherwise noted. See LICENSE.txt for details.
 
 Although the original Matthew van Eerde's [loopback-capture](https://github.com/mvaneerde/blog) project didn't explicitly state the license, the author has been kind enough to provide a license clarification [here](
 https://blogs.msdn.microsoft.com/matthew_van_eerde/2014/11/05/draining-the-wasapi-capture-buffer-fully/). All changes in this repository to the original Matthew's code are published either under the terms of BSD license or the license provided by original author.

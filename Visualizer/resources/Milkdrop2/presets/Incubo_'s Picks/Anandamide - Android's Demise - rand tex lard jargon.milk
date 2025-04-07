@@ -279,7 +279,7 @@ per_frame_38=beatcounter = beatcounter + beat;
 per_frame_39=mode = if(beat*equal(beatcounter%2,0),1-mode,mode);
 per_frame_40=flip = 2*mode-1;
 per_frame_41=
-per_frame_42=beatdrop = if( equal(beatdrop,0) , beat , max(beatdrop - 0.01*(75/fps) , 0) );
+per_frame_42=BeatDrop/MilkwaveVisualizer = if( equal(BeatDrop/MilkwaveVisualizer,0) , beat , max(BeatDrop/MilkwaveVisualizer - 0.01*(75/fps) , 0) );
 per_frame_43=
 per_frame_44=//clone shape position calc
 per_frame_45=xp = int(rand(6))-3;
@@ -295,16 +295,16 @@ per_frame_54=
 per_frame_55=
 per_frame_56=q8 = flip;
 per_frame_57=
-per_frame_58=q5 = equal(beatdrop,0);
-per_frame_59=q2 = equal(beatdrop,1);
+per_frame_58=q5 = equal(BeatDrop/MilkwaveVisualizer,0);
+per_frame_59=q2 = equal(BeatDrop/MilkwaveVisualizer,1);
 per_frame_60=xpos = if( q2 , q3 , xpos );
 per_frame_61=ypos = if( q2 , q4 , ypos );
-per_frame_62=xpos2 = xpos*beatdrop + 0.5*(1-beatdrop);
-per_frame_63=ypos2 = ypos*beatdrop + 0.5*(1-beatdrop);
+per_frame_62=xpos2 = xpos*BeatDrop/MilkwaveVisualizer + 0.5*(1-BeatDrop/MilkwaveVisualizer);
+per_frame_63=ypos2 = ypos*BeatDrop/MilkwaveVisualizer + 0.5*(1-BeatDrop/MilkwaveVisualizer);
 per_frame_64=dx = -(xpos2 - 0.5)*0.04; 
 per_frame_65=dy = (ypos2 - 0.5)*0.04; 
 per_frame_66=
-per_frame_67=q6 = 1 + beatdrop*0.03;
+per_frame_67=q6 = 1 + BeatDrop/MilkwaveVisualizer*0.03;
 per_frame_68=
 per_frame_69=decay = 1 - (1-q5)*0.01;
 per_frame_70=
@@ -319,9 +319,9 @@ per_frame_78=
 per_frame_79=//dx = sin(time/4)*0.15;
 per_frame_80=cx = 0.5 + dx ;
 per_frame_81=
-per_frame_82=gamma = 1 + beatdrop*beatdrop;
+per_frame_82=gamma = 1 + BeatDrop/MilkwaveVisualizer*BeatDrop/MilkwaveVisualizer;
 per_frame_83=
-per_frame_84=ob_a = 0;//ob_a * (1- beatdrop*0.98);
+per_frame_84=ob_a = 0;//ob_a * (1- BeatDrop/MilkwaveVisualizer*0.98);
 warp_1=`sampler sampler_worms;
 warp_2=`float3 color, mus;
 warp_3=`float2 uv1, uv6;

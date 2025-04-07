@@ -443,7 +443,7 @@ per_frame_9=//volume, and volume based time. framerate adjusted
 per_frame_10=vol = (bass+mid+treb)*0.25;
 per_frame_11=vol = vol*vol;
 per_frame_12=
-per_frame_13=mtime = mtime + 0.001 + beatdrop * 0.01 * (75/fps);
+per_frame_13=mtime = mtime + 0.001 + BeatDrop/MilkwaveVisualizer * 0.01 * (75/fps);
 per_frame_14=
 per_frame_15=q1 = vol;
 per_frame_16=q2 = mtime/5;
@@ -473,15 +473,15 @@ per_frame_39=beatcounter = beatcounter + beat;
 per_frame_40=mode = if(beat*equal(beatcounter%2,0),1-mode,mode);
 per_frame_41=flip = 2*mode-1;
 per_frame_42=
-per_frame_43=beatdrop = if( equal(beatdrop,0) , beat , max(beatdrop - 0.02*(75/fps) , 0) );
+per_frame_43=BeatDrop/MilkwaveVisualizer = if( equal(BeatDrop/MilkwaveVisualizer,0) , beat , max(BeatDrop/MilkwaveVisualizer - 0.02*(75/fps) , 0) );
 per_frame_44=
-per_frame_45=q7 = beatdrop;
+per_frame_45=q7 = BeatDrop/MilkwaveVisualizer;
 per_frame_46=
 per_frame_47=q8 = 2;
-per_frame_48=gamma = 1 + beatdrop*0.68;
-per_frame_49=decay = 0.95;// + beatdrop*0.05;
+per_frame_48=gamma = 1 + BeatDrop/MilkwaveVisualizer*0.68;
+per_frame_49=decay = 0.95;// + BeatDrop/MilkwaveVisualizer*0.05;
 per_frame_50=
 per_frame_51=
 per_frame_52=
 per_frame_53=
-per_frame_54=//zoom = 1 + beatdrop;
+per_frame_54=//zoom = 1 + BeatDrop/MilkwaveVisualizer;

@@ -361,15 +361,15 @@ per_frame_63=beatcounter = beatcounter + beat;
 per_frame_64=mode = if(beat*equal(beatcounter%2,0),1-mode,mode);
 per_frame_65=flip = 2*mode-1;
 per_frame_66=
-per_frame_67=beatdrop = if( equal(beatdrop,0) , beat , max(beatdrop - 0.02*(75/fps) , 0) );
+per_frame_67=BeatDrop/MilkwaveVisualizer = if( equal(BeatDrop/MilkwaveVisualizer,0) , beat , max(BeatDrop/MilkwaveVisualizer - 0.02*(75/fps) , 0) );
 per_frame_68=
-per_frame_69=q7 = beatdrop;
+per_frame_69=q7 = BeatDrop/MilkwaveVisualizer;
 per_frame_70=q8 = flip;
 per_frame_71=
 per_frame_72=
 per_frame_73=
 per_frame_74=
-per_frame_75=q6 = 1.0 + 0.005;//beatdrop*0.03;
+per_frame_75=q6 = 1.0 + 0.005;//BeatDrop/MilkwaveVisualizer*0.03;
 per_frame_76=
 per_frame_77=zoom = 1;
 per_frame_78=sx = -q6;
@@ -380,7 +380,7 @@ per_frame_82=
 per_frame_83=//dx = sin(time/4)*0.15;
 per_frame_84=cx = 0.5 + dx ;
 per_frame_85=
-per_frame_86=gamma = 1 + beatdrop*beatdrop;
+per_frame_86=gamma = 1 + BeatDrop/MilkwaveVisualizer*BeatDrop/MilkwaveVisualizer;
 per_frame_87=q29=vol*8;
 per_frame_88=vol2=bass+treb+mid;
 per_frame_89=q30=vol2*2;

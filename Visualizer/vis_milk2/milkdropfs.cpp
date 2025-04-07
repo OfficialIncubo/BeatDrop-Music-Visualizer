@@ -1174,7 +1174,7 @@ void CPlugin::RenderFrame(int bRedraw)
 	// All resolutions > 30fps
 	//
 	// NOTE - fps is capped at 30 default and can be confirmed with F4 in the VJ control window
-	// It is normally adjusted by the Winamp config panel which is not available for BeatDrop
+	// It is normally adjusted by the Winamp config panel which is not available for BeatDrop/MilkwaveVisualizer
 	// However, default fps variables can be changed in : plugin.cpp - CPlugin::OverrideDefaults()
 	// and, if Winamp is installed, the Milkdrop generated configuration file can be copied using "F8"
 	//

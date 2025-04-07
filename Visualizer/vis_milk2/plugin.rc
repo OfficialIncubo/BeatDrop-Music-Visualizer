@@ -94,7 +94,7 @@ BEGIN
             VALUE "FileDescription", "Milkwave - A Milkdrop2 Music Visualizer"
             VALUE "FileVersion", "1.0.0.0"
             VALUE "InternalName", "Milkwave"
-            VALUE "LegalCopyright", "Copyright © BeatDrop development team"
+            VALUE "LegalCopyright", "Copyright © BeatDrop/MilkwaveVisualizer development team"
             VALUE "OriginalFilename", "Milkwave-Visualizer.exe"
             VALUE "ProductName", "Milkwave Visualizer"
             VALUE "ProductVersion", "1.0.0.0"
@@ -1034,10 +1034,10 @@ BEGIN
     IDS_TO_FREE_UP_SOME_MEMORY_RESTART_WINAMP_THEN_GO_TO_CONFIG_3 
                             "To free up some memory, please RESTART WINAMP, then return\n   to the plug-in's config panel and try setting your\n   FULLSCREEN MODE MULTISAMPLING back to 'NONE.'\n\nThen try running the plug-in again."
     IDS_TO_FREE_UP_VIDEO_MEMORY 
-                            "To free up some video memory, try the following:\n\n1. Try closing all other applications that might be using video memory, especially:\n\n        * WINDOWS MEDIA PLAYER\n        * any video conferencing software, such as NETMEETING\n        * any DVD playback, TV tuner, or TV capture software\n        * any video editing software\n        * any software that uses Overlays, such as Drempels Desktop\n        * any audio dictation software, such as Dragon NaturallySpeaking\n        * any other 3D programs currently running\n\n2. Also try returning to the config panel (ALT+K) and selecting a display mode\n    that uses less video memory.  16-bit display modes use half as much memory\n    as 32-bit display modes, and lower-resolution display modes (such as 640 x 480)\n    use proportionally less video memory.\n\nAfter making these changes, please RESTART BEATDROP."
+                            "To free up some video memory, try the following:\n\n1. Try closing all other applications that might be using video memory, especially:\n\n        * WINDOWS MEDIA PLAYER\n        * any video conferencing software, such as NETMEETING\n        * any DVD playback, TV tuner, or TV capture software\n        * any video editing software\n        * any software that uses Overlays, such as Drempels Desktop\n        * any audio dictation software, such as Dragon NaturallySpeaking\n        * any other 3D programs currently running\n\n2. Also try returning to the config panel (ALT+K) and selecting a display mode\n    that uses less video memory.  16-bit display modes use half as much memory\n    as 32-bit display modes, and lower-resolution display modes (such as 640 x 480)\n    use proportionally less video memory.\n\nAfter making these changes, please RESTART BeatDrop/MilkwaveVisualizer."
     IDS_TO_FREE_UP_VIDEO_MEMORY_2 
-                            "To free up some video memory, try the following:\n\n1. Try closing all other applications that might be using video memory, especially:\n\n        * WINDOWS MEDIA PLAYER\n        * any video conferencing software, such as NETMEETING\n        * any DVD playback, TV tuner, or TV capture software\n        * any video editing software\n        * any software that uses Overlays, such as Drempels Desktop\n        * any audio dictation software, such as Dragon NaturallySpeaking\n        * any other 3D programs currently running\n\n2. Also try changing your Windows display mode to a lesser bit depth\n    (i.e. 16-bit color), or a smaller resolution.\n\nAfter making these changes, please RESTART BEATDROP."
-    IDS_MILKDROP_SUGGESTION "BEATDROP SUGGESTION"
+                            "To free up some video memory, try the following:\n\n1. Try closing all other applications that might be using video memory, especially:\n\n        * WINDOWS MEDIA PLAYER\n        * any video conferencing software, such as NETMEETING\n        * any DVD playback, TV tuner, or TV capture software\n        * any video editing software\n        * any software that uses Overlays, such as Drempels Desktop\n        * any audio dictation software, such as Dragon NaturallySpeaking\n        * any other 3D programs currently running\n\n2. Also try changing your Windows display mode to a lesser bit depth\n    (i.e. 16-bit color), or a smaller resolution.\n\nAfter making these changes, please RESTART BeatDrop/MilkwaveVisualizer."
+    IDS_MILKDROP_SUGGESTION "BeatDrop/MilkwaveVisualizer SUGGESTION"
     IDS_DIRECTX_MISSING_OR_CORRUPT "DirectX Missing or Corrupt"
     IDS_ERROR_THE_PLUGIN_IS_ALREADY_RUNNING 
                             "Error: the plug-in is already running."
