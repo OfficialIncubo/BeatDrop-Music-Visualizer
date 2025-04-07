@@ -1052,7 +1052,7 @@ namespace MilkwaveRemote {
 
     private void statusHelp_Click(object sender, EventArgs e) {
       string dialogtext =
-        "" + Environment.NewLine +
+        "There are many tooltips explaining all features when you hover over the form elements." + Environment.NewLine +
         "" + Environment.NewLine +
         "More help resources:" + Environment.NewLine +
         "" + Environment.NewLine +
