@@ -3,8 +3,8 @@ using System.Diagnostics;
 using System.Drawing.Text;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Security.Policy;
 using System.Text;
+using System.Text.Json;
 using static DarkModeForms.DarkModeCS;
 
 namespace MilkwaveRemote {
@@ -57,7 +57,6 @@ namespace MilkwaveRemote {
     private int lastLineIndex = 0;
 
     private List<string> lines = new List<string>();
-    private List<Preset> PresetList = new List<Preset>();
 
     private string lastFileName = "script-default.txt";
     private string windowNotFound = "Milkwave Visualizer window not found";
@@ -65,6 +64,8 @@ namespace MilkwaveRemote {
     private string defaultFontName = "Segoe UI";
 
     Random rnd = new Random();
+    private Settings Settings = new Settings();
+    string milkwaveSettingsFile = "settings-milkwave.json";
 
     [StructLayout(LayoutKind.Sequential)]
     private struct COPYDATASTRUCT {
@@ -115,14 +116,6 @@ namespace MilkwaveRemote {
       public ushort wParamH;
     }
 
-    private class Preset {
-      public required string Name { get; set; }
-      public required string Value { get; set; }
-      public override string ToString() {
-        return Name + ": " + Value;
-      }
-    }
-
     public MilkwaveRemoteForm() {
       InitializeComponent();
 
@@ -147,20 +140,20 @@ namespace MilkwaveRemote {
 
       cboParameters.DropDownStyle = ComboBoxStyle.DropDown;
       cboParameters.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
-      System.Collections.Specialized.StringCollection parameters = global::MilkwaveRemote.Properties.Settings.Default.Parameters;
-      if (parameters != null && parameters.Count > 0) {
-        foreach (string? paramString in global::MilkwaveRemote.Properties.Settings.Default.Parameters) {
-          if (paramString != null && paramString.Length > 0 && paramString.Contains("##")) {
-            var paramStringSplit = paramString.Split("##");
-            var preset = new Preset {
-              Name = paramStringSplit[0],
-              Value = paramStringSplit[1]
-            };
-            if (!PresetList.Contains(preset)) {
-              PresetList.Add(preset);
-            }
-          }
+
+      try {
+        string jsonString = File.ReadAllText(milkwaveSettingsFile);
+        Settings? loadedSettings = JsonSerializer.Deserialize<Settings>(jsonString, new JsonSerializerOptions {
+          PropertyNameCaseInsensitive = true
+        });
+        if (loadedSettings != null) {
+          Settings = loadedSettings;
         }
+      } catch (Exception ex) {
+        Settings = new Settings();
+      }
+
+      if (Settings.Presets?.Count > 0) {
         ReloadPresetList();
       } else {
         cboParameters.Text = "size=25|time=5.0|x=0.5|y=0.5|growth=1.5";
@@ -182,8 +175,8 @@ namespace MilkwaveRemote {
       autoplayTimer = new System.Windows.Forms.Timer();
       autoplayTimer.Tick += AutoplayTimer_Tick;
 
-      Location = global::MilkwaveRemote.Properties.Settings.Default.Location;
-      Size = global::MilkwaveRemote.Properties.Settings.Default.Size;
+      Location = Settings.RemoteWindowLocation;
+      Size = Settings.RemoteWindowSize;
 
       int maxWait = 30; // 3 seconds
       while (FindVisualizerWindow() == IntPtr.Zero && maxWait > 0) {
@@ -196,8 +189,8 @@ namespace MilkwaveRemote {
 
     private void SetVisualizerWindowSizeAndPosition() {
 
-      Point VisualizerLocation = global::MilkwaveRemote.Properties.Settings.Default.VisualizerLocation;
-      Size VisualizerSize = global::MilkwaveRemote.Properties.Settings.Default.VisualizerSize;
+      Point VisualizerLocation = Settings.VisualizerWindowLocation;
+      Size VisualizerSize = Settings.VisualizerWindowSize;
 
       if (VisualizerSize.Height > 0 && VisualizerSize.Width > 0) {
         IntPtr foundWindow = FindVisualizerWindow();
@@ -287,7 +280,7 @@ namespace MilkwaveRemote {
 
     private void btnSaveParam_Click(object sender, EventArgs e) {
       if (txtPreset.Text.Length == 0) {
-        txtPreset.Text = "Preset 1";
+        txtPreset.Text = "Preset A";
       }
 
       var newPreset = new Preset {
@@ -295,11 +288,11 @@ namespace MilkwaveRemote {
         Value = cboParameters.Text
       };
 
-      int index = PresetList.FindIndex(item => item.Name == newPreset.Name);
+      int index = Settings.Presets.FindIndex(item => item.Name == newPreset.Name);
       if (index >= 0) {
-        PresetList[index] = newPreset;
+        Settings.Presets[index] = newPreset;
       } else {
-        PresetList.Add(newPreset);
+        Settings.Presets.Add(newPreset);
       }
 
       ReloadPresetList();
@@ -777,24 +770,24 @@ namespace MilkwaveRemote {
     }
 
     private void lblParameters_DoubleClick(object sender, EventArgs e) {
-      PresetList.Clear();
+      Settings.Presets.Clear();
       ReloadPresetList();
       statusBar.Text = $"Saved presets cleared";
     }
 
     private void lblPreset_DoubleClick(object sender, EventArgs e) {
-      var foundItem = from item in PresetList
+      var foundItem = from item in Settings.Presets
                       where item.Name == txtPreset.Text
                       select item;
       if (foundItem != null && foundItem.Any()) {
-        PresetList.Remove(foundItem.First());
+        Settings.Presets.Remove(foundItem.First());
         ReloadPresetList();
       }
     }
 
     private void ReloadPresetList() {
       cboParameters.Items.Clear();
-      cboParameters.Items.AddRange(PresetList.OrderBy(x => x.Name).ToArray());
+      cboParameters.Items.AddRange(Settings.Presets.OrderBy(x => x.Name).ToArray());
       cboParameters.Refresh();
     }
 
@@ -806,24 +799,13 @@ namespace MilkwaveRemote {
     }
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
-      global::MilkwaveRemote.Properties.Settings.Default.Parameters.Clear();
 
-      // Hold the Ctrl key while closing the form to reset local settings to default
-      if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
-        global::MilkwaveRemote.Properties.Settings.Default.Reset();
-        global::MilkwaveRemote.Properties.Settings.Default.Save();
-        return;
-      }
-
-      if (WindowState == FormWindowState.Maximized) {
-        global::MilkwaveRemote.Properties.Settings.Default.Location = RestoreBounds.Location;
-        global::MilkwaveRemote.Properties.Settings.Default.Size = RestoreBounds.Size;
-      } else if (WindowState == FormWindowState.Normal) {
-        global::MilkwaveRemote.Properties.Settings.Default.Location = Location;
-        global::MilkwaveRemote.Properties.Settings.Default.Size = Size;
+      if (WindowState == FormWindowState.Normal) {
+        Settings.RemoteWindowLocation = Location;
+        Settings.RemoteWindowSize = Size;
       } else {
-        global::MilkwaveRemote.Properties.Settings.Default.Location = RestoreBounds.Location;
-        global::MilkwaveRemote.Properties.Settings.Default.Size = RestoreBounds.Size;
+        Settings.RemoteWindowLocation = RestoreBounds.Location;
+        Settings.RemoteWindowSize = RestoreBounds.Size;
       }
 
       IntPtr foundWindow = FindVisualizerWindow();
@@ -831,15 +813,20 @@ namespace MilkwaveRemote {
         RECT savedWindowRect;
         GetWindowRect(foundWindow, out savedWindowRect);
 
-        global::MilkwaveRemote.Properties.Settings.Default.VisualizerLocation = new Point(savedWindowRect.Left, savedWindowRect.Top);
-        global::MilkwaveRemote.Properties.Settings.Default.VisualizerSize = new Size(savedWindowRect.Right - savedWindowRect.Left, savedWindowRect.Bottom - savedWindowRect.Top);
+        Settings.VisualizerWindowLocation = new Point(savedWindowRect.Left, savedWindowRect.Top);
+        Settings.VisualizerWindowSize = new Size(savedWindowRect.Right - savedWindowRect.Left, savedWindowRect.Bottom - savedWindowRect.Top);
 
         // Close the Visualizer window
         PostMessage(foundWindow, 0x0010, IntPtr.Zero, IntPtr.Zero); // WM_CLOSE message
       }
 
-      global::MilkwaveRemote.Properties.Settings.Default.Parameters.AddRange(PresetList.Select(x => x.Name + "##" + x.Value).ToArray());
-      global::MilkwaveRemote.Properties.Settings.Default.Save();
+      // Hold the Ctrl key while closing the form to reset local settings to default
+      if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
+        Settings = new Settings();
+      }
+
+      string jsonString = JsonSerializer.Serialize(Settings, new JsonSerializerOptions { WriteIndented = true });
+      File.WriteAllText(milkwaveSettingsFile, jsonString);
     }
 
     private void cboParameters_KeyDown(object sender, KeyEventArgs e) {
@@ -1060,7 +1047,7 @@ namespace MilkwaveRemote {
         "GitHub issues: https://github.com/IkeC/Milkwave/issues" + Environment.NewLine +
         "Ikes Discord: https://bit.ly/Ikes-Discord" + Environment.NewLine +
         "README.txt in the program folder";
-    new MilkwaveInfoForm().ShowDialog("Milkwave Help", dialogtext);
+      new MilkwaveInfoForm().ShowDialog("Milkwave Help", dialogtext);
     }
 
     private void statusSupporters_Click(object sender, EventArgs e) {

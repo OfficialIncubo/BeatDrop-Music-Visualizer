@@ -509,7 +509,7 @@
       txtPreset.Name = "txtPreset";
       txtPreset.Size = new Size(105, 27);
       txtPreset.TabIndex = 5;
-      txtPreset.Text = "Preset 1";
+      txtPreset.Text = "Preset A";
       txtPreset.KeyDown += txtPreset_KeyDown;
       // 
       // colorDialog1
