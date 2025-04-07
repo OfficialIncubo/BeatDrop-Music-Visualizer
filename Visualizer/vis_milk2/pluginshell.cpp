@@ -188,7 +188,7 @@ static BOOL CALLBACK GetWindowNames(HWND h, LPARAM l)
 			// printf("GetWindowNames - %s (%x)\n", search_window_name, h);
 			// Does the search window name contain "Milkwave" ?
 			if (strstr(search_window_name, "Milkwave Visualizer") != NULL) {
-				// printf("Found BeatDrop/MilkwaveVisualizer (%d)\n", bdn);
+				// printf("Found BeatDrop (%d)\n", bdn);
 				bdn++;
 			}
 		}
@@ -450,7 +450,7 @@ int CPluginShell::InitVJStuff(RECT* pClientRect)
 		// =====================================
 		// SPOUT
 		// The render window title will have been modified
-		// to show the number of BeatDrop/MilkwaveVisualizer instances.
+		// to show the number of BeatDrop instances.
 		// Copy this number to the VJ text window title
 		// The render window handle is already saved
 		char consoletitle[64];
@@ -504,7 +504,7 @@ int CPluginShell::InitVJStuff(RECT* pClientRect)
 		// LJ
 		// Hide VJ window if NestImmersion UI is open
 		// For compile option set m_vj_mode = 0 in pluginshell.cpp
-		if (FindWindowA(NULL, "BeatDrop/MilkwaveVisualizerUI") != NULL)
+		if (FindWindowA(NULL, "BeatDropUI") != NULL)
 			ShowWindow(m_hTextWnd, SW_HIDE);
 		else if (IsIconic(m_hTextWnd))
 			ShowWindow(m_hTextWnd, SW_RESTORE);
@@ -2321,7 +2321,7 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 
 	case WM_KEYDOWN:
 
-		// SPOUT DEBUG : BeatDrop/MilkwaveVisualizer help changed from F12
+		// SPOUT DEBUG : BeatDrop help changed from F12
 		// Special case to pass the key code on to plugin
 		// so that the ui mode is set back to regular
 		// and any existing mode is cancelled and text is cleared

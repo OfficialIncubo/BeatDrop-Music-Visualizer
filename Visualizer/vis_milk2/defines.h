@@ -37,9 +37,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //   compiled to, go to Project Settings -> Link tab -> and change the
 //   'output file name'.  Don't forget to do it for both Debug AND
 //   Release builds!
-#define SHORTNAME        "BeatDrop/MilkwaveVisualizer" // used as window caption for both MilkDrop and the config panel.  avoid numbers or punctuation; when 'integrate with winamp' option is enabled, these characters don't always work with all skins.
-#define LONGNAME         "BeatDrop/MilkwaveVisualizer v1.3.2" // appears at bottom of config panel
-#define LONGNAMEW        L"BeatDrop/MilkwaveVisualizer v1.3.2" // appears at bottom of config panel
+#define SHORTNAME        "BeatDrop" // used as window caption for both MilkDrop and the config panel.  avoid numbers or punctuation; when 'integrate with winamp' option is enabled, these characters don't always work with all skins.
+#define LONGNAME         "BeatDrop v1.3.2" // appears at bottom of config panel
+#define LONGNAMEW        L"BeatDrop v1.3.2" // appears at bottom of config panel
 
 // INT_VERSION is the major version #, multipled by 100 (ie. version 1.02
 // would be 102).  If the app goes to read in the INI file and sees that
@@ -68,7 +68,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                                          //     it won't be able to save the INI file.
 #define MSG_INIFILE     L"messages.ini"  //*** could be in c:\program files\winamp\plugins, or in
 #define IMG_INIFILE     L"sprites.ini"  //                c:\application data\...user...\winamp\plugins !!
-#define ADAPTERSFILE	L"BeatDrop/MilkwaveVisualizer_adapters.txt"
+#define ADAPTERSFILE	L"BeatDrop_adapters.txt"
 
 // DOCFILE is the name of the documentation file that you'll write
 // for your users.  Do not include a path; just give the filename.
@@ -100,7 +100,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // or applications that are running, so change this to something
 // that will probably be unique.  For example, if your plugin was
 // called Libido, then "LibidoClass" would probably be a safe bet.
-#define CLASSNAME       L"BeatDrop/MilkwaveVisualizer"
+#define CLASSNAME       L"BeatDrop"
 
 // Here you can give names to the buttons (~tabs) along the top
 // of the config panel.  Each button, when clicked, will bring

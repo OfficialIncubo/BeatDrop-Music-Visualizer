@@ -3,13 +3,13 @@
 //
 // Milkwave - A Milkdrop2 Music Visualizer
 //
-// Author : Maxim Volskiy (https://github.com/mvsoft74/BeatDrop/MilkwaveVisualizer)
+// Author : Maxim Volskiy (https://github.com/mvsoft74/BeatDrop)
 //
 // From the readme :
-// BeatDrop/MilkwaveVisualizer is a stand - alone implementation of the amazing Milkdrop2 Winamp plug-in.
+// BeatDrop is a stand - alone implementation of the amazing Milkdrop2 Winamp plug-in.
 // It lets you experience the stunning visual 2D effects with your music player of choice.
-// No additional configuration steps needed!Just start BeatDrop/MilkwaveVisualizer and play your music.
-// Use BeatDrop/MilkwaveVisualizer with your favourite Music player.
+// No additional configuration steps needed!Just start BeatDrop and play your music.
+// Use BeatDrop with your favourite Music player.
 //
 // The concept is realized by using audio loopback capture by Matthew van Eerde
 // https://github.com/mvaneerde/blog
@@ -18,7 +18,7 @@
 //
 //	                  Modified for Spout output
 //
-//                https://github.com/leadedge/BeatDrop/MilkwaveVisualizer
+//                https://github.com/leadedge/BeatDrop
 //
 //					      Lynn Jarvis 2018-2023
 //
@@ -66,7 +66,7 @@
 //
 // Licencing :
 //
-// BeatDrop/MilkwaveVisualizer Copyright (c) 2018 Maxim Volskiy and individual contributors
+// BeatDrop Copyright (c) 2018 Maxim Volskiy and individual contributors
 // licenced with the 3-Clause BSD License (https://opensource.org/licenses/BSD-3-Clause) 
 // with the exception of where otherwise noted.
 //
@@ -149,7 +149,7 @@ char keyMappings[8];
 
 // SPOUT
 // ===============================================
-static int nBeatDrop/MilkwaveVisualizers = 0; // Number of BeatDrop/MilkwaveVisualizer instances already running
+static int nBeatDrops = 0; // Number of BeatDrop instances already running
 BOOL CALLBACK GetWindowNames(HWND h, LPARAM l); // Window enumerator callback
 // ===============================================
 
@@ -195,7 +195,7 @@ BOOL CALLBACK GetWindowNames(HWND h, LPARAM l)
 		if(search_window_name[0]) {
 			// Does the search window name contain "Milkwave Visualizer" ?
 			if (strstr(search_window_name, "Milkwave Visualizer") != NULL) {
-				nBeatDrop/MilkwaveVisualizers++;
+				nBeatDrops++;
 			}
 		}
 	}
@@ -440,7 +440,7 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			}
 			*/
 
-			// SPOUT - there is no playback for BeatDrop/MilkwaveVisualizer
+			// SPOUT - there is no playback for BeatDrop
             /*if (playback && wParam >= VK_F1 && wParam <= VK_F8) {
                 switch (wParam) {
                 case VK_F1:
@@ -573,7 +573,7 @@ void RenderFrame() {
 }
 
 // SPOUT
-void ResizeBeatDrop/MilkwaveVisualizer(int newWidth, int newHeight)
+void ResizeBeatDrop(int newWidth, int newHeight)
 {
 	// Client window size
 	int width  = 640;
@@ -652,14 +652,14 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 	//DWORD dwStyle = (WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME);
 
 	// ===============================================
-	// Enumerate other instances of BeatDrop/MilkwaveVisualizer to increment the title
-	WCHAR BeatDrop/MilkwaveVisualizertitle[256]; 
-	lstrcpyW(BeatDrop/MilkwaveVisualizertitle, L"Milkwave Visualizer"); // default render window title
+	// Enumerate other instances of BeatDrop to increment the title
+	WCHAR BeatDroptitle[256]; 
+	lstrcpyW(BeatDroptitle, L"Milkwave Visualizer"); // default render window title
 	EnumWindows((WNDENUMPROC)&GetWindowNames, NULL);
-	// printf("Number of existing BeatDrop/MilkwaveVisualizers (%d)\n", nBeatDrop/MilkwaveVisualizers);
-	if (nBeatDrop/MilkwaveVisualizers > 0) {
-		// swprintf_s(BeatDrop/MilkwaveVisualizertitle, L"Milkwave %2.2d", nBeatDrop/MilkwaveVisualizers);
-		// printf("New title [%S]\n", BeatDrop/MilkwaveVisualizertitle);
+	// printf("Number of existing BeatDrops (%d)\n", nBeatDrops);
+	if (nBeatDrops > 0) {
+		// swprintf_s(BeatDroptitle, L"Milkwave %2.2d", nBeatDrops);
+		// printf("New title [%S]\n", BeatDroptitle);
 	}
 	// ===============================================
 
@@ -668,7 +668,7 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
         L"Direct3DWindowClass",
 		// ===========================
         // L"Milkwave",
-		BeatDrop/MilkwaveVisualizertitle,
+		BeatDroptitle,
 		// ===========================
         WS_OVERLAPPEDWINDOW, // SPOUT
 		//dwStyle,

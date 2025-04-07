@@ -257,7 +257,7 @@ bool texmgr::RecompileExpressions(int iSlot)
 
 	// LJ DEBUG
 	// ====================================
-	// This was missing in BeatDrop/MilkwaveVisualizer
+	// This was missing in BeatDrop
 	if (buf[0])
 	{
 #ifndef _NO_EXPR_

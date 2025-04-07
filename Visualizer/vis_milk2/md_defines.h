@@ -40,9 +40,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TITLE					"MilkDrop"
 #define CLASSNAME               "MilkDrop"  // window class name
 */
-// SPOUT for BeatDrop/MilkwaveVisualizer VJ console
-#define TEXT_WINDOW_CLASSNAME   "BeatDrop/MilkwaveVisualizer Console"
-// #define TEXT_WINDOW_CLASSNAME   "BeatDrop/MilkwaveVisualizer Console - press F1 for help"
+// SPOUT for BeatDrop VJ console
+#define TEXT_WINDOW_CLASSNAME   "BeatDrop Console"
+// #define TEXT_WINDOW_CLASSNAME   "BeatDrop Console - press F1 for help"
 // #define TEXT_WINDOW_CLASSNAME   "MilkDrop Console [VJ Mode]"
 #define DEBUGFILE				"c:\\m_debug.txt"
 //#define CONFIG_INIFILE			"milkdrop_config.ini"

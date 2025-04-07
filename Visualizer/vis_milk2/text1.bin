@@ -1,6 +1,6 @@
  GENERAL:
 
-   ESC                  exit BeatDrop/MilkwaveVisualizer / menus
+   ESC                  exit BeatDrop / menus
    ALT + ENTER          toggle fullscreen (or double-click)
    ALT + S              toggle multiple monitor stretch
    CTRL + Z             enable/disable spout output

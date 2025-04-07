@@ -9,7 +9,7 @@ APPLICABLE LICENSES
 
 * BeatDrop/MilkwaveVisualizer is a free program that can be used for DJs, Parties and everywhere you want, but not for commercial use.
 
-BeatDrop/MilkwaveVisualizer LICENSE
+BEATDROP/MILKWAVE VISUALIZER LICENSE
 -------------------
 
 Copyright (c) 2018 Maxim Volskiy and individual contributors
