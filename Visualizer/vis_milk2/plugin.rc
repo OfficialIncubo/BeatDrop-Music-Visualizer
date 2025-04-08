@@ -91,13 +91,13 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "Maxim Volskiy, Incubo_, IkeC"
-            VALUE "FileDescription", "Milkwave - A Milkdrop2 Music Visualizer"
-            VALUE "FileVersion", "1.0.0.0"
+            VALUE "FileDescription", "Milkwave Visualizer"
+            VALUE "FileVersion", "1.1.0.0"
             VALUE "InternalName", "Milkwave"
             VALUE "LegalCopyright", "Copyright © BeatDrop development team"
             VALUE "OriginalFilename", "Milkwave-Visualizer.exe"
             VALUE "ProductName", "Milkwave Visualizer"
-            VALUE "ProductVersion", "1.0.0.0"
+            VALUE "ProductVersion", "1.1.0.0"
         END
     END
     BLOCK "VarFileInfo"

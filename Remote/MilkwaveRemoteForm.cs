@@ -2,6 +2,7 @@ using DarkModeForms;
 using System.Diagnostics;
 using System.Drawing.Text;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -135,12 +136,13 @@ namespace MilkwaveRemote {
       barVersion.Text = $"v{version}";
 
       dm = new DarkModeCS(this) {
-        ColorMode = DarkModeCS.DisplayMode.SystemDefault
+        ColorMode = DarkModeCS.DisplayMode.SystemDefault,
       };
 
       cboParameters.DropDownStyle = ComboBoxStyle.DropDown;
       cboParameters.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
+#if !DEBUG
       try {
         string jsonString = File.ReadAllText(milkwaveSettingsFile);
         Settings? loadedSettings = JsonSerializer.Deserialize<Settings>(jsonString, new JsonSerializerOptions {
@@ -152,6 +154,7 @@ namespace MilkwaveRemote {
       } catch (Exception ex) {
         Settings = new Settings();
       }
+#endif
 
       if (Settings.Presets?.Count > 0) {
         ReloadPresetList();
@@ -175,9 +178,6 @@ namespace MilkwaveRemote {
       autoplayTimer = new System.Windows.Forms.Timer();
       autoplayTimer.Tick += AutoplayTimer_Tick;
 
-      Location = Settings.RemoteWindowLocation;
-      Size = Settings.RemoteWindowSize;
-
       int maxWait = 30; // 3 seconds
       while (FindVisualizerWindow() == IntPtr.Zero && maxWait > 0) {
         // Wait for the visualizer window to be found
@@ -185,6 +185,14 @@ namespace MilkwaveRemote {
         maxWait--;
       }
       SetVisualizerWindowSizeAndPosition();
+    }
+
+    private void MilkwaveRemoteForm_Load(object sender, EventArgs e) {
+      Location = Settings.RemoteWindowLocation;
+      Size = Settings.RemoteWindowSize;
+
+      splitContainer1.SplitterDistance = Settings.SplitterDistance1;
+      splitContainer2.SplitterDistance = Settings.SplitterDistance2;
     }
 
     private void SetVisualizerWindowSizeAndPosition() {
@@ -711,7 +719,7 @@ namespace MilkwaveRemote {
       SendUnicodeChars("11");
     }
 
-    private void btnm22_Click(object sender, EventArgs e) {
+    private void btn22_Click(object sender, EventArgs e) {
       SendUnicodeChars("22");
     }
 
@@ -758,7 +766,7 @@ namespace MilkwaveRemote {
       setTimerInterval();
     }
 
-    private void lblBPM(object sender, EventArgs e) {
+    private void lblBPM_Click(object sender, EventArgs e) {
       ResetAndStartTimer(true);
     }
 
@@ -819,6 +827,9 @@ namespace MilkwaveRemote {
         // Close the Visualizer window
         PostMessage(foundWindow, 0x0010, IntPtr.Zero, IntPtr.Zero); // WM_CLOSE message
       }
+
+      Settings.SplitterDistance1 = splitContainer1.SplitterDistance;
+      Settings.SplitterDistance2 = splitContainer2.SplitterDistance;
 
       // Hold the Ctrl key while closing the form to reset local settings to default
       if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
@@ -962,7 +973,6 @@ namespace MilkwaveRemote {
       }
     }
 
-
     private void txtSize_TextChanged(object sender, EventArgs e) {
       SetFormattedMessage();
     }
@@ -1065,5 +1075,41 @@ namespace MilkwaveRemote {
       string url = "https://github.com/IkeC/Milkwave/releases";
       Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
     }
+
+    private void PaintContainerBorder(PaintEventArgs e) {
+      var col = dm.IsDarkMode ? Color.Silver : Color.Gray;
+      e.Graphics.DrawRectangle(new Pen(col, 1), 0, 0, e.ClipRectangle.Width - 1, e.ClipRectangle.Height - 1);
+    }
+
+    private void splitContainer2_Panel1_Paint(object sender, PaintEventArgs e) {
+      PaintContainerBorder(e);
+    }
+
+    private void splitContainer1_Panel1_Paint(object sender, PaintEventArgs e) {
+      PaintContainerBorder(e);
+    }
+
+    private void splitContainer2_Panel2_Paint(object sender, PaintEventArgs e) {
+      // doesn't work for some reason, so we draw the border on the containing element
+      // PaintPanelBorder(e);
+    }
+
+    private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e) {
+      PaintContainerBorder(e);
+    }
+
+    private const int Panel1MaxHeight = 230;
+    private void splitContainer1_SizeChanged(object sender, EventArgs e) {
+      if (splitContainer1.Panel1.Height > Panel1MaxHeight) {
+        splitContainer1.SplitterDistance = Panel1MaxHeight;
+      }
+    }
+
+    private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e) {
+      if (splitContainer1.Panel1.Height > Panel1MaxHeight) {
+        splitContainer1.SplitterDistance = Panel1MaxHeight;
+      }
+    }
+
   }
 }
