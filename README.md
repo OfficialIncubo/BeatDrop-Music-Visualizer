@@ -7,7 +7,7 @@ Milkwave is a music visualizer based on the [MilkDrop2](https://www.geisswerks.c
 ## Features
 
 * Customize message text, color, font size, position and other parameters
-* Save named style presets for quick access
+* Save parameter definitions as named styles for quick access
 * Automatically send messages and set parameters from a file at configurable intervals
 * Send common key combinations using buttons
 * Save and restore Remote and Visualizer window positions
@@ -41,7 +41,7 @@ Many thanks to:
 * oO-MrC-Oo - [XBMC plugin](https://github.com/oO-MrC-Oo/Milkdrop2-XBMC)
 * Casey Langen - [milkdrop2-musikcube](https://github.com/clangen/milkdrop2-musikcube)
 * Matthew van Eerde - [loopback-capture](https://github.com/mvaneerde/blog)
-* Incubo - [BeatDrop-Music-Visualizer](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer)
+* Incubo_ - [BeatDrop-Music-Visualizer](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer)
 * milkdrop2077 - [MilkDrop3](https://github.com/milkdrop2077/MilkDrop3)
 * and all the preset authors!
 

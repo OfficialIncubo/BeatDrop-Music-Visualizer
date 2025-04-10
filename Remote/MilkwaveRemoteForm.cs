@@ -1,8 +1,8 @@
 using DarkModeForms;
+using MilkwaveRemote.Data;
 using System.Diagnostics;
 using System.Drawing.Text;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
@@ -67,6 +67,8 @@ namespace MilkwaveRemote {
     Random rnd = new Random();
     private Settings Settings = new Settings();
     string milkwaveSettingsFile = "settings-milkwave.json";
+    private OpenFileDialog ofd;
+    private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
 
     [StructLayout(LayoutKind.Sequential)]
     private struct COPYDATASTRUCT {
@@ -117,32 +119,24 @@ namespace MilkwaveRemote {
       public ushort wParamH;
     }
 
+    private enum MessageType {
+      Message,
+      PresetFilePath
+    }
+
     public MilkwaveRemoteForm() {
       InitializeComponent();
-
-      if (FindVisualizerWindow() == IntPtr.Zero) {
-        // Try to run MilkwaveVisualizer.exe from the same directory as the assembly
-        string visualizerPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MilkwaveVisualizer.exe");
-        if (File.Exists(visualizerPath)) {
-          Process.Start(new ProcessStartInfo(visualizerPath) { UseShellExecute = true });
-        }
-      }
-
       FixNumericUpDownMouseWheel(this);
 
       Assembly executingAssembly = Assembly.GetExecutingAssembly();
       var fieVersionInfo = FileVersionInfo.GetVersionInfo(executingAssembly.Location);
       var version = fieVersionInfo.FileVersion;
-      barVersion.Text = $"v{version}";
-
-      dm = new DarkModeCS(this) {
-        ColorMode = DarkModeCS.DisplayMode.SystemDefault,
-      };
+      toolStripDropDownButton.Text = $"Milkwave v{version}";
 
       cboParameters.DropDownStyle = ComboBoxStyle.DropDown;
       cboParameters.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
-#if !DEBUG
+// #if !DEBUG
       try {
         string jsonString = File.ReadAllText(milkwaveSettingsFile);
         Settings? loadedSettings = JsonSerializer.Deserialize<Settings>(jsonString, new JsonSerializerOptions {
@@ -154,12 +148,18 @@ namespace MilkwaveRemote {
       } catch (Exception ex) {
         Settings = new Settings();
       }
-#endif
+//  #endif
 
-      if (Settings.Presets?.Count > 0) {
-        ReloadPresetList();
+      dm = new DarkModeCS(this) {
+        ColorMode = Settings.DarkMode ? DarkModeCS.DisplayMode.DarkMode : DarkModeCS.DisplayMode.ClearMode,
+      };
+      toolStripMenuItemDarkMode.Checked = Settings.DarkMode;
+      SetBarIcon(Settings.DarkMode);
+
+      if (Settings.Styles?.Count > 0) {
+        ReloadStylesList();
       } else {
-        cboParameters.Text = "size=25|time=5.0|x=0.5|y=0.5|growth=1.5";
+        cboParameters.Text = "size=25|time=5.0|x=0.5|y=0.5|growth=2";
       }
 
       // Fill cboFonts with available system fonts and add a blank first entry
@@ -177,6 +177,31 @@ namespace MilkwaveRemote {
 
       autoplayTimer = new System.Windows.Forms.Timer();
       autoplayTimer.Tick += AutoplayTimer_Tick;
+    }
+
+    private void MilkwaveRemoteForm_Load(object sender, EventArgs e) {
+      Location = Settings.RemoteWindowLocation;
+      Size = Settings.RemoteWindowSize;
+
+      try {
+        splitContainer1.SplitterDistance = Settings.SplitterDistance1;
+        splitContainer2.SplitterDistance = Settings.SplitterDistance2;
+      } catch (Exception) {
+        // igonre
+      }
+
+      toolStripMenuItemMessagePanel.Checked = Settings.ShowMessagePanel;
+      toolStripMenuItemPresetPanel.Checked = Settings.ShowPresetPanel;
+      toolStripMenuItemButtonPanel.Checked = Settings.ShowButtonPanel;
+      SetPanelsVisibility();
+
+      if (FindVisualizerWindow() == IntPtr.Zero) {
+        // Try to run MilkwaveVisualizer.exe from the same directory as the assembly
+        string visualizerPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MilkwaveVisualizer.exe");
+        if (File.Exists(visualizerPath)) {
+          Process.Start(new ProcessStartInfo(visualizerPath) { UseShellExecute = true });
+        }
+      }
 
       int maxWait = 30; // 3 seconds
       while (FindVisualizerWindow() == IntPtr.Zero && maxWait > 0) {
@@ -184,26 +209,69 @@ namespace MilkwaveRemote {
         Thread.Sleep(100);
         maxWait--;
       }
-      SetVisualizerWindowSizeAndPosition();
+      SetVisualizerWindowSizeAndPosition(false);
+
+      ofd = new OpenFileDialog();
+      ofd.Filter = "MilkDrop Presets|*.milk;*.milk2|All files (*.*)|*.*";
+      ofd.RestoreDirectory = true;
+
+      string VisualizerPresetsFolder = AppDomain.CurrentDomain.BaseDirectory + "\\resources\\presets\\";
+      if (Directory.Exists(VisualizerPresetsFolder)) {
+        ofd.InitialDirectory = VisualizerPresetsFolder;
+      } else {
+        ofd.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
+      }
     }
 
-    private void MilkwaveRemoteForm_Load(object sender, EventArgs e) {
-      Location = Settings.RemoteWindowLocation;
-      Size = Settings.RemoteWindowSize;
+    private void MainForm_Shown(object sender, EventArgs e) {
+      txtMessage.Focus();
+      txtMessage.SelectAll();
+      pnlColor.BackColor = Color.FromArgb(230, 0, 120);
+      colorDialog1.Color = pnlColor.BackColor;
+      if (cboParameters.Items.Count > 0) {
+        cboParameters.SelectedIndex = 0;
+      }
+      SetFormattedMessage();
 
-      splitContainer1.SplitterDistance = Settings.SplitterDistance1;
-      splitContainer2.SplitterDistance = Settings.SplitterDistance2;
     }
 
-    private void SetVisualizerWindowSizeAndPosition() {
+    protected override void WndProc(ref Message m) {
+      const int WM_COPYDATA = 0x004A;
+
+      if (m.Msg == WM_COPYDATA) {
+        // Extract the COPYDATASTRUCT from the message
+        COPYDATASTRUCT cds = (COPYDATASTRUCT)Marshal.PtrToStructure(m.LParam, typeof(COPYDATASTRUCT))!;
+        if (cds.lpData != IntPtr.Zero) {
+          // Convert the received data to a string
+          string receivedString = Marshal.PtrToStringUni(cds.lpData, cds.cbData / 2) ?? "";
+          if (receivedString.Length > 0) {
+            string findString = "RESOURCES\\";
+            int index = receivedString.IndexOf(findString, StringComparison.CurrentCultureIgnoreCase);
+            if (index > -1) {
+              receivedString = receivedString.Substring(index + findString.Length);
+            }
+            // Process the received string
+            txtVis.Text = receivedString;
+          }
+        }
+      }
+
+      base.WndProc(ref m);
+    }
+
+    private void SetVisualizerWindowSizeAndPosition(bool setDefault) {
 
       Point VisualizerLocation = Settings.VisualizerWindowLocation;
       Size VisualizerSize = Settings.VisualizerWindowSize;
+      if (setDefault || VisualizerLocation.X < -10000 || VisualizerLocation.Y < -10000) {
+        VisualizerLocation = Settings.VisualizerDefaultWindowLocation;
+        VisualizerSize = Settings.VisualizerDefaultWindowSize;
+      }
 
       if (VisualizerSize.Height > 0 && VisualizerSize.Width > 0) {
         IntPtr foundWindow = FindVisualizerWindow();
         if (foundWindow != IntPtr.Zero) {
-          SetWindowPos(foundWindow, IntPtr.Zero, VisualizerLocation.X, VisualizerLocation.Y, VisualizerSize.Width, VisualizerSize.Height, SWP_NOZORDER | SWP_NOACTIVATE);
+          SetWindowPos(foundWindow, HWND_TOPMOST, VisualizerLocation.X, VisualizerLocation.Y, VisualizerSize.Width, VisualizerSize.Height, SWP_NOACTIVATE);
         }
       }
     }
@@ -229,31 +297,38 @@ namespace MilkwaveRemote {
     }
 
     private void btnSend_Click(object sender, EventArgs e) {
-      SendToMilkwaveVisualizer(txtMessage.Text);
+      SendToMilkwaveVisualizer(txtMessage.Text, MessageType.Message);
       txtMessage.Focus();
       txtMessage.SelectAll();
     }
 
-    private void SendToMilkwaveVisualizer(string messageToSend) {
+    private void SendToMilkwaveVisualizer(string messageToSend, MessageType type) {
       statusBar.Text = "";
       string partialTitle = txtWindowTitle.Text;
 
       IntPtr foundWindow = FindVisualizerWindow();
       if (foundWindow != IntPtr.Zero) {
-        string message = "MSG|text=" + messageToSend;
-        if (cboParameters.Text.Length > 0) {
-          message += "|" + cboParameters.Text;
-        }
-        if (!message.Contains("font=")) {
-          message += "|font=" + cboFonts.Text;
-        }
-        if (!message.Contains("r=") && !message.Contains("g=") && !message.Contains("b=")) {
-          message += "|r=" + pnlColor.BackColor.R;
-          message += "|g=" + pnlColor.BackColor.G;
-          message += "|b=" + pnlColor.BackColor.B;
-        }
-        if (!message.Contains("size=")) {
-          message += "|size=" + txtSize.Value;
+        string message = "";
+        if (type == MessageType.PresetFilePath) {
+          message = "PRESET=" + messageToSend;
+        } else {
+          message = "MSG|text=" + messageToSend;
+
+
+          if (cboParameters.Text.Length > 0) {
+            message += "|" + cboParameters.Text;
+          }
+          if (!message.Contains("font=")) {
+            message += "|font=" + cboFonts.Text;
+          }
+          if (!message.Contains("r=") && !message.Contains("g=") && !message.Contains("b=")) {
+            message += "|r=" + pnlColor.BackColor.R;
+            message += "|g=" + pnlColor.BackColor.G;
+            message += "|b=" + pnlColor.BackColor.B;
+          }
+          if (!message.Contains("size=")) {
+            message += "|size=" + txtSize.Value;
+          }
         }
         byte[] messageBytes = Encoding.Unicode.GetBytes(message);
         IntPtr messagePtr = Marshal.AllocHGlobal(messageBytes.Length);
@@ -266,7 +341,7 @@ namespace MilkwaveRemote {
         };
 
         SendMessageW(foundWindow, WM_COPYDATA, IntPtr.Zero, ref cds);
-        statusBar.Text = ($"Sent '{messageToSend}' to '{foundWindowTitle}'");
+        statusBar.Text = ($"Sent '{messageToSend}' to {foundWindowTitle}");
 
         Marshal.FreeHGlobal(messagePtr);
 
@@ -275,37 +350,26 @@ namespace MilkwaveRemote {
       }
     }
 
-    private void MainForm_Shown(object sender, EventArgs e) {
-      txtMessage.Focus();
-      txtMessage.SelectAll();
-      pnlColor.BackColor = Color.FromArgb(230, 0, 120);
-      colorDialog1.Color = pnlColor.BackColor;
-      if (cboParameters.Items.Count > 0) {
-        cboParameters.SelectedIndex = 0;
-      }
-      SetFormattedMessage();
-    }
-
     private void btnSaveParam_Click(object sender, EventArgs e) {
-      if (txtPreset.Text.Length == 0) {
-        txtPreset.Text = "Preset A";
+      if (txtStyle.Text.Length == 0) {
+        txtStyle.Text = "Style A";
       }
 
-      var newPreset = new Preset {
-        Name = txtPreset.Text,
+      var newPreset = new Style {
+        Name = txtStyle.Text,
         Value = cboParameters.Text
       };
 
-      int index = Settings.Presets.FindIndex(item => item.Name == newPreset.Name);
+      int index = Settings.Styles.FindIndex(item => item.Name == newPreset.Name);
       if (index >= 0) {
-        Settings.Presets[index] = newPreset;
+        Settings.Styles[index] = newPreset;
       } else {
-        Settings.Presets.Add(newPreset);
+        Settings.Styles.Add(newPreset);
       }
 
-      ReloadPresetList();
+      ReloadStylesList();
 
-      statusBar.Text = $"Saved preset '{txtPreset.Text}'";
+      statusBar.Text = $"Saved preset '{txtStyle.Text}'";
     }
 
     private void chkAutoplay_CheckedChanged(object sender, EventArgs e) {
@@ -377,15 +441,31 @@ namespace MilkwaveRemote {
             } else if (tokenUpper.StartsWith("FONT=")) {
               string font = token.Substring(5);
               cboFonts.Text = font;
-            } else if (tokenUpper.StartsWith("PRESET=")) {
-              string preset = tokenUpper.Substring(7);
-              var foundItem = from item in cboParameters.Items.Cast<Preset>()
+            } else if (tokenUpper.StartsWith("STYLE=")) {
+              string preset = tokenUpper.Substring(6);
+              var foundItem = from item in cboParameters.Items.Cast<Style>()
                               where item.Name.ToUpper() == preset
                               select item;
               if (foundItem != null && foundItem.Any()) {
                 cboParameters.SelectedItem = foundItem.First();
               } else {
-                statusBar.Text = $"Preset '{preset}' not found";
+                statusBar.Text = $"Style '{preset}' not found";
+              }
+            } else if (tokenUpper.StartsWith("PRESET=")) {
+              string presetFilePath = token.Substring(7);
+              if (!File.Exists(presetFilePath)) {
+                presetFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, presetFilePath);
+              }
+              if (File.Exists(presetFilePath)) {
+                SendToMilkwaveVisualizer(presetFilePath, MessageType.PresetFilePath);
+              }
+            } else if (tokenUpper.StartsWith("FILE=")) {
+              string fileName = token.Substring(5);
+              if (fileName.Length > 0) {
+                LoadMessages(fileName);
+                lastFileName = fileName;
+                txtAutoplay.Text = lines[currentLineIndex];
+                statusBar.Text = $"Next line in {autoplayRemainingBeats} beats";
               }
             } else if (tokenUpper.StartsWith("SEND=")) {
               string sendString = token.Substring(5);
@@ -393,7 +473,7 @@ namespace MilkwaveRemote {
                 SendUnicodeChars(sendString);
               }
             } else { // no known command, send as message
-              SendToMilkwaveVisualizer(token);
+              SendToMilkwaveVisualizer(token, MessageType.Message);
             }
           }
 
@@ -752,11 +832,13 @@ namespace MilkwaveRemote {
         txtMessage.Focus();
         txtMessage.SelectAll();
       } else if (e.KeyCode == Keys.F2) {
-        SendToMilkwaveVisualizer(txtMessage.Text);
+        SendToMilkwaveVisualizer(txtMessage.Text, MessageType.Message);
       } else if (e.KeyCode == Keys.F3) {
         btnSpace.PerformClick();
       } else if (e.KeyCode == Keys.F4) {
         btnBackspace.PerformClick();
+      } else if (e.KeyCode == Keys.F6) {
+        btnPresetSend.PerformClick();
       } else if (e.KeyCode == Keys.F12) {
         chkAutoplay.Checked = !chkAutoplay.Checked;
       }
@@ -771,35 +853,35 @@ namespace MilkwaveRemote {
     }
 
     private void cboParameters_SelectedIndexChanged(object sender, EventArgs e) {
-      if (cboParameters.SelectedItem is Preset selectedPreset) {
-        txtPreset.Text = selectedPreset.Name;
+      if (cboParameters.SelectedItem is Style selectedPreset) {
+        txtStyle.Text = selectedPreset.Name;
         BeginInvoke(new Action(() => cboParameters.Text = selectedPreset.Value));
       }
     }
 
     private void lblParameters_DoubleClick(object sender, EventArgs e) {
-      Settings.Presets.Clear();
-      ReloadPresetList();
+      Settings.Styles.Clear();
+      ReloadStylesList();
       statusBar.Text = $"Saved presets cleared";
     }
 
-    private void lblPreset_DoubleClick(object sender, EventArgs e) {
-      var foundItem = from item in Settings.Presets
-                      where item.Name == txtPreset.Text
+    private void lblStyle_DoubleClick(object sender, EventArgs e) {
+      var foundItem = from item in Settings.Styles
+                      where item.Name == txtStyle.Text
                       select item;
       if (foundItem != null && foundItem.Any()) {
-        Settings.Presets.Remove(foundItem.First());
-        ReloadPresetList();
+        Settings.Styles.Remove(foundItem.First());
+        ReloadStylesList();
       }
     }
 
-    private void ReloadPresetList() {
+    private void ReloadStylesList() {
       cboParameters.Items.Clear();
-      cboParameters.Items.AddRange(Settings.Presets.OrderBy(x => x.Name).ToArray());
+      cboParameters.Items.AddRange(Settings.Styles.OrderBy(x => x.Name).ToArray());
       cboParameters.Refresh();
     }
 
-    private void txtPreset_KeyDown(object sender, KeyEventArgs e) {
+    private void txtStyle_KeyDown(object sender, KeyEventArgs e) {
       if (e.KeyCode == Keys.Enter) {
         e.SuppressKeyPress = true; // Prevent the beep sound on Enter key press
         btnSaveParam.PerformClick();
@@ -1011,9 +1093,6 @@ namespace MilkwaveRemote {
 
     private void lblFromFile_MouseClick(object sender, MouseEventArgs e) {
       if (e.Button == MouseButtons.Right) {
-        OpenFileDialog ofd = new OpenFileDialog();
-        ofd.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
-        ofd.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
         if (ofd.ShowDialog() == DialogResult.OK) {
           lastFileName = ofd.FileName;
           LoadMessages(lastFileName);
@@ -1021,7 +1100,7 @@ namespace MilkwaveRemote {
       }
     }
 
-    private void lblPreset_MouseClick(object sender, MouseEventArgs e) {
+    private void lblStyle_MouseClick(object sender, MouseEventArgs e) {
       if (e.Button == MouseButtons.Right) {
         string fontName = GetParam("font");
         if (fontName.Length > 0) {
@@ -1044,40 +1123,11 @@ namespace MilkwaveRemote {
     }
 
     private void lblWindow_DoubleClick(object sender, EventArgs e) {
-      SetVisualizerWindowSizeAndPosition();
-    }
-
-    private void statusHelp_Click(object sender, EventArgs e) {
-      string dialogtext =
-        "There are many tooltips explaining all features when you hover over the form elements." + Environment.NewLine +
-        "" + Environment.NewLine +
-        "More help resources:" + Environment.NewLine +
-        "" + Environment.NewLine +
-        "GitHub homepage: https://github.com/IkeC/Milkwave" + Environment.NewLine +
-        "GitHub issues: https://github.com/IkeC/Milkwave/issues" + Environment.NewLine +
-        "Ikes Discord: https://bit.ly/Ikes-Discord" + Environment.NewLine +
-        "README.txt in the program folder";
-      new MilkwaveInfoForm().ShowDialog("Milkwave Help", dialogtext);
-    }
-
-    private void statusSupporters_Click(object sender, EventArgs e) {
-      string dialogtext =
-        "Such emptiness..." + Environment.NewLine +
-        "Your name could be here!" + Environment.NewLine +
-        "" + Environment.NewLine +
-        "Support my work: https://www.paypal.com/ncp/payment/5XMP3S69PJLCU" + Environment.NewLine +
-        "" + Environment.NewLine +
-        "Any amount appreciated. Thank you very much!";
-      new MilkwaveInfoForm().ShowDialog("Milkwave Supporters", dialogtext);
-    }
-
-    private void barVersion_Click(object sender, EventArgs e) {
-      string url = "https://github.com/IkeC/Milkwave/releases";
-      Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+      SetVisualizerWindowSizeAndPosition(true);
     }
 
     private void PaintContainerBorder(PaintEventArgs e) {
-      var col = dm.IsDarkMode ? Color.Silver : Color.Gray;
+      var col = dm.IsDarkMode ? Color.Silver : dm.OScolors.AccentDark;
       e.Graphics.DrawRectangle(new Pen(col, 1), 0, 0, e.ClipRectangle.Width - 1, e.ClipRectangle.Height - 1);
     }
 
@@ -1098,18 +1148,219 @@ namespace MilkwaveRemote {
       PaintContainerBorder(e);
     }
 
-    private const int Panel1MaxHeight = 230;
+
     private void splitContainer1_SizeChanged(object sender, EventArgs e) {
-      if (splitContainer1.Panel1.Height > Panel1MaxHeight) {
-        splitContainer1.SplitterDistance = Panel1MaxHeight;
-      }
+      SplitContainer1Changed();
     }
 
     private void splitContainer1_SplitterMoved(object sender, SplitterEventArgs e) {
-      if (splitContainer1.Panel1.Height > Panel1MaxHeight) {
-        splitContainer1.SplitterDistance = Panel1MaxHeight;
+      SplitContainer1Changed();
+      splitContainer1.Refresh();
+    }
+
+    private void SplitContainer1Changed() {
+      if (splitContainer1.Panel1.Height > Settings.Panel1DefaultHeight) {
+        splitContainer1.SplitterDistance = Settings.Panel1DefaultHeight;
       }
     }
 
+    /*
+    private void splitContainer2_SizeChanged(object sender, EventArgs e) {
+      SplitContainer2Changed();
+    }
+
+    private void splitContainer2_SplitterMoved(object sender, SplitterEventArgs e) {
+      SplitContainer2Changed();
+    }
+
+    private void SplitContainer2Changed() {
+      if (splitContainer2.Panel1.Height > Settings.Panel2MaxHeight) {
+        splitContainer2.SplitterDistance = Settings.Panel2MaxHeight;
+      }
+    }
+    */
+
+    private void toolStripMenuItemReleases_Click(object sender, EventArgs e) {
+      string url = "https://github.com/IkeC/Milkwave/releases";
+      Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+    }
+
+    private void toolStripMenuItemHelp_Click(object sender, EventArgs e) {
+      string dialogtext =
+  "There are many tooltips explaining all features when you hover over the form elements." + Environment.NewLine +
+  "" + Environment.NewLine +
+  "More help resources:" + Environment.NewLine +
+  "" + Environment.NewLine +
+  "GitHub homepage: https://github.com/IkeC/Milkwave" + Environment.NewLine +
+  "GitHub issues: https://github.com/IkeC/Milkwave/issues" + Environment.NewLine +
+  "Ikes Discord: https://bit.ly/Ikes-Discord" + Environment.NewLine +
+  "" + Environment.NewLine +
+  "and the README.txt in the program folder";
+      new MilkwaveInfoForm(toolStripMenuItemDarkMode.Checked).ShowDialog("Milkwave Help", dialogtext);
+    }
+
+    private void toolStripMenuItemSupporters_Click(object sender, EventArgs e) {
+      string dialogtext =
+  "Such emptiness..." + Environment.NewLine +
+  "Your name could be here!" + Environment.NewLine +
+  "" + Environment.NewLine +
+  "Support my work: https://www.paypal.com/ncp/payment/5XMP3S69PJLCU" + Environment.NewLine +
+  "" + Environment.NewLine +
+  "Any amount appreciated. Thank you very much!";
+      new MilkwaveInfoForm(toolStripMenuItemDarkMode.Checked).ShowDialog("Milkwave Supporters", dialogtext);
+    }
+
+    private void SetBarIcon(bool isDarkMode) {
+      if (isDarkMode) {
+        using (var ms = new MemoryStream(Properties.Resources.MilkwaveOutlineInverted)) {
+          toolStripDropDownButton.Image = Image.FromStream(ms);
+        }
+      } else {
+        using (var ms = new MemoryStream(Properties.Resources.MilkwaveOutline)) {
+          toolStripDropDownButton.Image = Image.FromStream(ms);
+        }
+      }
+    }
+
+    private void toolStripMenuItemDarkMode_Click(object sender, EventArgs e) {
+      toolStripMenuItemDarkMode.Checked = !toolStripMenuItemDarkMode.Checked;
+      Settings.DarkMode = toolStripMenuItemDarkMode.Checked;
+      dm.ColorMode = Settings.DarkMode ? DisplayMode.DarkMode : DisplayMode.ClearMode;
+      dm.ApplyTheme(Settings.DarkMode);
+      SetBarIcon(Settings.DarkMode);
+    }
+
+    private void toolStripMenuItemMessagePanel_Click(object sender, EventArgs e) {
+      toolStripMenuItemMessagePanel.Checked = !toolStripMenuItemMessagePanel.Checked;
+      Settings.ShowMessagePanel = toolStripMenuItemMessagePanel.Checked;
+      SetPanelsVisibility();
+    }
+
+    private void toolStripMenuItemPresetPanel_Click(object sender, EventArgs e) {
+      toolStripMenuItemPresetPanel.Checked = !toolStripMenuItemPresetPanel.Checked;
+      Settings.ShowPresetPanel = toolStripMenuItemPresetPanel.Checked;
+      SetPanelsVisibility();
+    }
+
+    private void toolStripMenuItemButtonPanel_Click(object sender, EventArgs e) {
+      toolStripMenuItemButtonPanel.Checked = !toolStripMenuItemButtonPanel.Checked;
+      Settings.ShowButtonPanel = toolStripMenuItemButtonPanel.Checked;
+      SetPanelsVisibility();
+    }
+
+    private void SetPanelsVisibility() {
+      splitContainer1.Panel1Collapsed = !Settings.ShowMessagePanel;
+
+      if (!Settings.ShowPresetPanel && !Settings.ShowButtonPanel) {
+        splitContainer1.Panel2Collapsed = true;
+        if (!Settings.ShowMessagePanel) {
+          toolStripMenuItemMessagePanel.Checked = true;
+        }
+      } else {
+        splitContainer2.Panel1Collapsed = !Settings.ShowPresetPanel;
+        splitContainer2.Panel2Collapsed = !Settings.ShowButtonPanel;
+        splitContainer1.Panel2Collapsed = false;
+      }
+    }
+
+    private void btnPresetOpen_Click(object sender, EventArgs e) {
+      if (ofd.ShowDialog() == DialogResult.OK) {
+        string fileName = ofd.FileName;
+        if (fileName.EndsWith(".milk", StringComparison.CurrentCultureIgnoreCase) || ofd.FileName.EndsWith(".milk2", StringComparison.CurrentCultureIgnoreCase)) {
+          Preset newPreset = new Preset {
+            DisplayName = Path.GetFileNameWithoutExtension(fileName),
+            FullPath = fileName
+          };
+          if (!cboPresets.Items.Contains(newPreset)) {
+            cboPresets.Items.Insert(0, newPreset);
+          }
+          cboPresets.SelectedItem = newPreset;
+          cboPresets.Text = newPreset.DisplayName;
+        }
+      }
+    }
+
+    private void btnPresetSend_Click(object sender, EventArgs e) {
+      if (cboPresets.Text.Length > 0) {
+        Preset? preset = null; // Use nullable type to handle potential null values
+        try {
+          preset = cboPresets.SelectedItem as Preset; // Use 'as' operator to safely cast
+        } catch {
+          // ignore
+        }
+
+        if (preset != null) { // Check for null before accessing properties
+          if (preset.FullPath.Length > 0 && File.Exists(preset.FullPath)) {
+            SendToMilkwaveVisualizer(preset.FullPath, MessageType.PresetFilePath);
+            statusBar.Text = $"Sent '{preset.DisplayName}' to {foundWindowTitle}";
+          } else {
+            statusBar.Text = $"Preset file '{preset.FullPath}' not found";
+          }
+        } else {
+          statusBar.Text = "No valid preset selected";
+        }
+      } else {
+        statusBar.Text = "No valid preset selected";
+      }
+    }
+
+    private void lblPreset_DoubleClick(object sender, EventArgs e) {
+      cboPresets.Items.Clear();
+      cboPresets.Text = "";
+    }
+
+    private void btnPresetLoadDirectory_Click(object sender, EventArgs e) {
+      using (var fbd = new FolderBrowserDialog()) {
+        DialogResult result = fbd.ShowDialog();
+
+        string VisualizerPresetsFolder = AppDomain.CurrentDomain.BaseDirectory + "\\resources\\presets\\";
+        if (Directory.Exists(VisualizerPresetsFolder)) {
+          fbd.InitialDirectory = VisualizerPresetsFolder;
+        } else {
+          fbd.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
+        }
+
+        if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath)) {
+          cboPresets.Items.Clear();
+          cboPresets.Text = "";
+          foreach (string fileName in Directory.GetFiles(fbd.SelectedPath)) {
+            if (fileName.EndsWith(".milk") || fileName.EndsWith(".milk2")) {
+              Preset newPreset = new Preset {
+                DisplayName = Path.GetFileNameWithoutExtension(fileName),
+                FullPath = fileName
+              };
+              cboPresets.Items.Add(newPreset);
+            }
+          }
+          if (cboPresets.Items.Count > 0) {
+            cboPresets.SelectedIndex = 0;
+          } else {
+            cboPresets.Text = "";
+          }
+        }
+      }
+    }
+
+    private void cboPresets_KeyDown(object sender, KeyEventArgs e) {
+      if (e.KeyCode == Keys.Enter) {
+        e.SuppressKeyPress = true; // Prevent the beep sound on Enter key press
+        btnPresetSend.PerformClick();
+      }
+    }
+
+    private void lblPreset_Click(object sender, EventArgs e) {
+      if (cboPresets.SelectedItem != null) {
+        try {
+          Preset preset = (Preset)cboPresets.SelectedItem;
+          if (!string.IsNullOrEmpty(preset.FullPath)) {
+            Clipboard.SetText(preset.FullPath);
+            statusBar.Text = $"Copied '{preset.FullPath}' to clipboard";
+          }
+        } catch {
+          // Handle the case where the selected item is not a Preset  
+          statusBar.Text = "No valid preset selected";
+        }
+      }
+    }
   }
 }

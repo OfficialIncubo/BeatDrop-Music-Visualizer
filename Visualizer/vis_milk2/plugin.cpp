@@ -8329,6 +8329,36 @@ void CPlugin::OnFinishedLoadingPreset()
 
   for (int mash = 0; mash < MASH_SLOTS; mash++)
     m_nMashPreset[mash] = m_nCurrentPreset;
+
+  SendMessageToMilkwaveRemote(m_szCurrentPresetFile);
+}
+
+
+void CPlugin::SendMessageToMilkwaveRemote(const wchar_t* presetFile) {
+    if (!presetFile || !*presetFile) {
+        wprintf(L"Preset file is null or empty.\n");
+        return;
+    }
+
+    // Find the Milkwave Remote window
+    HWND hRemoteWnd = FindWindowW(NULL, L"Milkwave Remote");
+    if (!hRemoteWnd) {
+        wprintf(L"Milkwave Remote window not found.\n");
+        return;
+    }
+
+    // Prepare the COPYDATASTRUCT
+    COPYDATASTRUCT cds;
+    cds.dwData = 1; // Custom identifier for the message
+    cds.cbData = (wcslen(presetFile) + 1) * sizeof(wchar_t); // Size of the data in bytes
+    cds.lpData = (void*)presetFile; // Pointer to the data
+
+    // Send the WM_COPYDATA message
+    if (SendMessage(hRemoteWnd, WM_COPYDATA, (WPARAM)GetPluginWindow(), (LPARAM)&cds) == 0) {
+        wprintf(L"Failed to send WM_COPYDATA message to Milkwave Remote.\n");
+    } else {
+        wprintf(L"WM_COPYDATA message sent successfully to Milkwave Remote.\n");
+    }
 }
 
 void CPlugin::LoadPresetTick()
@@ -9595,157 +9625,161 @@ LPCWSTR ConvertToLPCWSTR(const std::wstring& wstr) {
 }
 
 void CPlugin::LaunchMessage(wchar_t* sMessage) {
-  if (wcsncmp(sMessage, L"MSG|", 4) != 0) {
-    return; // Invalid message format
-  }
+  if (wcsncmp(sMessage, L"MSG|", 4) == 0) {
 
-  std::wstring message(sMessage + 4); // Remove "MSG|"
-  std::wstringstream ss(message);
-  std::wstring token;
-  std::map<std::wstring, std::wstring> params;
+    std::wstring message(sMessage + 4); // Remove "MSG|"
+    std::wstringstream ss(message);
+    std::wstring token;
+    std::map<std::wstring, std::wstring> params;
 
-  // Parse key-value pairs
-  while (std::getline(ss, token, L'|')) {
-    size_t pos = token.find(L'=');
-    if (pos != std::wstring::npos) {
-      std::wstring key = token.substr(0, pos);
-      std::wstring value = token.substr(pos + 1);
-      params[key] = value;
+    // Parse key-value pairs
+    while (std::getline(ss, token, L'|')) {
+      size_t pos = token.find(L'=');
+      if (pos != std::wstring::npos) {
+        std::wstring key = token.substr(0, pos);
+        std::wstring value = token.substr(pos + 1);
+        params[key] = value;
+      }
     }
-  }
 
-  // Set m_supertext properties
-  if (params.find(L"text") != params.end()) {
-    lstrcpyW(m_supertext.szTextW, ConvertToLPCWSTR(params[L"text"]));
-  }
-  else {
-    return; // 'text' parameter is required
-  }
+    // Set m_supertext properties
+    if (params.find(L"text") != params.end()) {
+      lstrcpyW(m_supertext.szTextW, ConvertToLPCWSTR(params[L"text"]));
+    }
+    else {
+      return; // 'text' parameter is required
+    }
 
-  m_supertext.bRedrawSuperText = true;
-  m_supertext.bIsSongTitle = false;
+    m_supertext.bRedrawSuperText = true;
+    m_supertext.bIsSongTitle = false;
 
-  if (params.find(L"font") != params.end()) {
-    lstrcpyW(m_supertext.nFontFace, ConvertToLPCWSTR(params[L"font"]));
-  }
-  else {
-    // Default font
-    lstrcpyW(m_supertext.nFontFace, L"Segoe UI");
-  }
+    if (params.find(L"font") != params.end()) {
+      lstrcpyW(m_supertext.nFontFace, ConvertToLPCWSTR(params[L"font"]));
+    }
+    else {
+      // Default font
+      lstrcpyW(m_supertext.nFontFace, L"Segoe UI");
+    }
 
-  if (params.find(L"size") != params.end()) {
-    m_supertext.fFontSize = std::stof(params[L"size"]);
-  }
-  else {
-    m_supertext.fFontSize = 30.0f; // Default size
-  }
+    if (params.find(L"size") != params.end()) {
+      m_supertext.fFontSize = std::stof(params[L"size"]);
+    }
+    else {
+      m_supertext.fFontSize = 30.0f; // Default size
+    }
 
-  if (params.find(L"x") != params.end()) {
-    m_supertext.fX = std::stof(params[L"x"]);
-  }
-  else {
-    m_supertext.fX = 0.49f; // Default x position
-  }
+    if (params.find(L"x") != params.end()) {
+      m_supertext.fX = std::stof(params[L"x"]);
+    }
+    else {
+      m_supertext.fX = 0.49f; // Default x position
+    }
 
-  if (params.find(L"y") != params.end()) {
-    m_supertext.fY = std::stof(params[L"y"]);
-  }
-  else {
-    m_supertext.fY = 0.5f; // Default y position
-  }
+    if (params.find(L"y") != params.end()) {
+      m_supertext.fY = std::stof(params[L"y"]);
+    }
+    else {
+      m_supertext.fY = 0.5f; // Default y position
+    }
 
-  if (params.find(L"randx") != params.end()) {
-    m_supertext.fX += std::stof(params[L"randx"]) * ((rand() % 1037) / 1037.0f * 2.0f - 1.0f);
-  }
+    if (params.find(L"randx") != params.end()) {
+      m_supertext.fX += std::stof(params[L"randx"]) * ((rand() % 1037) / 1037.0f * 2.0f - 1.0f);
+    }
 
-  if (params.find(L"randy") != params.end()) {
-    m_supertext.fY += std::stof(params[L"randy"]) * ((rand() % 1037) / 1037.0f * 2.0f - 1.0f);
-  }
+    if (params.find(L"randy") != params.end()) {
+      m_supertext.fY += std::stof(params[L"randy"]) * ((rand() % 1037) / 1037.0f * 2.0f - 1.0f);
+    }
 
-  if (params.find(L"growth") != params.end()) {
-    m_supertext.fGrowth = std::stof(params[L"growth"]);
-  }
-  else {
-    m_supertext.fGrowth = 1.0f; // Default growth
-  }
+    if (params.find(L"growth") != params.end()) {
+      m_supertext.fGrowth = std::stof(params[L"growth"]);
+    }
+    else {
+      m_supertext.fGrowth = 1.0f; // Default growth
+    }
 
-  if (params.find(L"time") != params.end()) {
-    m_supertext.fDuration = std::stof(params[L"time"]);
-  }
-  else {
-    m_supertext.fDuration = 5.0f; // Default duration
-  }
+    if (params.find(L"time") != params.end()) {
+      m_supertext.fDuration = std::stof(params[L"time"]);
+    }
+    else {
+      m_supertext.fDuration = 5.0f; // Default duration
+    }
 
-  if (params.find(L"fade") != params.end()) {
-    m_supertext.fFadeTime = std::stof(params[L"fade"]);
-  }
-  else {
-    // The percentage of time (0..1) spent fading in the text
-    m_supertext.fFadeTime = 0.2f; // Default fade time
-  }
+    if (params.find(L"fade") != params.end()) {
+      m_supertext.fFadeTime = std::stof(params[L"fade"]);
+    }
+    else {
+      // The percentage of time (0..1) spent fading in the text
+      m_supertext.fFadeTime = 0.2f; // Default fade time
+    }
 
-  if (params.find(L"bold") != params.end()) {
-    m_supertext.bBold = std::stoi(params[L"bold"]);
-  }
-  else {
-    m_supertext.bBold = 0; // Default bold
-  }
+    if (params.find(L"bold") != params.end()) {
+      m_supertext.bBold = std::stoi(params[L"bold"]);
+    }
+    else {
+      m_supertext.bBold = 0; // Default bold
+    }
 
-  if (params.find(L"ital") != params.end()) {
-    m_supertext.bItal = std::stoi(params[L"ital"]);
-  }
-  else {
-    m_supertext.bItal = 0; // Default italic
-  }
+    if (params.find(L"ital") != params.end()) {
+      m_supertext.bItal = std::stoi(params[L"ital"]);
+    }
+    else {
+      m_supertext.bItal = 0; // Default italic
+    }
 
-  if (params.find(L"r") != params.end()) {
-    m_supertext.nColorR = std::stoi(params[L"r"]);
-  }
-  else {
-    m_supertext.nColorR = 255; // Default red color
-  }
+    if (params.find(L"r") != params.end()) {
+      m_supertext.nColorR = std::stoi(params[L"r"]);
+    }
+    else {
+      m_supertext.nColorR = 255; // Default red color
+    }
 
-  if (params.find(L"g") != params.end()) {
-    m_supertext.nColorG = std::stoi(params[L"g"]);
-  }
-  else {
-    m_supertext.nColorG = 255; // Default green color
-  }
+    if (params.find(L"g") != params.end()) {
+      m_supertext.nColorG = std::stoi(params[L"g"]);
+    }
+    else {
+      m_supertext.nColorG = 255; // Default green color
+    }
 
-  if (params.find(L"b") != params.end()) {
-    m_supertext.nColorB = std::stoi(params[L"b"]);
-  }
-  else {
-    m_supertext.nColorB = 255; // Default blue color
-  }
+    if (params.find(L"b") != params.end()) {
+      m_supertext.nColorB = std::stoi(params[L"b"]);
+    }
+    else {
+      m_supertext.nColorB = 255; // Default blue color
+    }
 
-  if (params.find(L"b") != params.end()) {
-    m_supertext.nColorB = std::stoi(params[L"b"]);
-  }
-  else {
-    m_supertext.nColorB = 255; // Default blue color
-  }
+    if (params.find(L"b") != params.end()) {
+      m_supertext.nColorB = std::stoi(params[L"b"]);
+    }
+    else {
+      m_supertext.nColorB = 255; // Default blue color
+    }
 
-  if (params.find(L"randr") != params.end()) {
-    m_supertext.nColorR += (int)(std::stof(params[L"randr"]) * ((rand() % 1037) / 1037.0f * 2.0f - 1.0f));
+    if (params.find(L"randr") != params.end()) {
+      m_supertext.nColorR += (int)(std::stof(params[L"randr"]) * ((rand() % 1037) / 1037.0f * 2.0f - 1.0f));
+    }
+
+    if (params.find(L"randg") != params.end()) {
+      m_supertext.nColorG += (int)(std::stof(params[L"randg"]) * ((rand() % 1037) / 1037.0f * 2.0f - 1.0f));
+    }
+
+    if (params.find(L"randb") != params.end()) {
+      m_supertext.nColorB += (int)(std::stof(params[L"randb"]) * ((rand() % 1037) / 1037.0f * 2.0f - 1.0f));
+    }
+
+    if (m_supertext.nColorR < 0) m_supertext.nColorR = 0;
+    if (m_supertext.nColorG < 0) m_supertext.nColorG = 0;
+    if (m_supertext.nColorB < 0) m_supertext.nColorB = 0;
+    if (m_supertext.nColorR > 255) m_supertext.nColorR = 255;
+    if (m_supertext.nColorG > 255) m_supertext.nColorG = 255;
+    if (m_supertext.nColorB > 255) m_supertext.nColorB = 255;
+
+    m_supertext.fStartTime = GetTime();
   }
-
-  if (params.find(L"randg") != params.end()) {
-    m_supertext.nColorG += (int)(std::stof(params[L"randg"]) * ((rand() % 1037) / 1037.0f * 2.0f - 1.0f));
+  else if (wcsncmp(sMessage, L"PRESET=", 7) == 0) {
+    std::wstring message(sMessage + 7); // Remove "PRESET="
+    LoadPreset(message.c_str(), 1);
+    // Handle other message types here if needed
   }
-
-  if (params.find(L"randb") != params.end()) {
-    m_supertext.nColorB += (int)(std::stof(params[L"randb"]) * ((rand() % 1037) / 1037.0f * 2.0f - 1.0f));
-  }
-
-  if (m_supertext.nColorR < 0) m_supertext.nColorR = 0;
-  if (m_supertext.nColorG < 0) m_supertext.nColorG = 0;
-  if (m_supertext.nColorB < 0) m_supertext.nColorB = 0;
-  if (m_supertext.nColorR > 255) m_supertext.nColorR = 255;
-  if (m_supertext.nColorG > 255) m_supertext.nColorG = 255;
-  if (m_supertext.nColorB > 255) m_supertext.nColorB = 255;
-
-  m_supertext.fStartTime = GetTime();
 }
 
 bool CPlugin::LaunchSprite(int nSpriteNum, int nSlot)

@@ -1,4 +1,6 @@
-﻿namespace MilkwaveRemote
+﻿using System.Windows.Forms;
+
+namespace MilkwaveRemote
 {
     partial class MilkwaveRemoteForm
     {
@@ -31,15 +33,22 @@
       System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MilkwaveRemoteForm));
       statusStrip1 = new StatusStrip();
       statusBar = new ToolStripStatusLabel();
-      statusSupporters = new ToolStripStatusLabel();
-      statusHelp = new ToolStripStatusLabel();
-      barVersion = new ToolStripStatusLabel();
+      toolStripDropDownButton = new ToolStripDropDownButton();
+      toolStripMenuItemHomepage = new ToolStripMenuItem();
+      toolStripMenuItemSupporters = new ToolStripMenuItem();
+      toolStripMenuItemHelp = new ToolStripMenuItem();
+      toolStripSeparator1 = new ToolStripSeparator();
+      toolStripMenuItemDarkMode = new ToolStripMenuItem();
+      toolStripSeparator2 = new ToolStripSeparator();
+      toolStripMenuItemMessagePanel = new ToolStripMenuItem();
+      toolStripMenuItemPresetPanel = new ToolStripMenuItem();
+      toolStripMenuItemButtonPanel = new ToolStripMenuItem();
       toolTip1 = new ToolTip(components);
       chkPreview = new CheckBox();
       btnAppendSize = new Button();
       txtSize = new NumericUpDown();
       lblSize = new Label();
-      lblPreset = new Label();
+      lblStyle = new Label();
       txtBPM = new NumericUpDown();
       lblBPM = new Label();
       chkFileRandom = new CheckBox();
@@ -63,9 +72,16 @@
       txtMessage = new TextBox();
       btnSpace = new Button();
       btnBackspace = new Button();
+      lblPreset = new Label();
+      btnPresetLoadFile = new Button();
+      btnPresetSend = new Button();
+      btnPresetLoadDirectory = new Button();
+      txtVis = new TextBox();
+      cboPresets = new ComboBox();
+      lblCurrentPreset = new Label();
       colorDialog1 = new ColorDialog();
       splitContainer1 = new SplitContainer();
-      txtPreset = new TextBox();
+      txtStyle = new TextBox();
       label5 = new Label();
       label2 = new Label();
       splitContainer2 = new SplitContainer();
@@ -97,6 +113,7 @@
       splitContainer1.Panel2.SuspendLayout();
       splitContainer1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
+      splitContainer2.Panel1.SuspendLayout();
       splitContainer2.Panel2.SuspendLayout();
       splitContainer2.SuspendLayout();
       tableLayoutPanel1.SuspendLayout();
@@ -105,7 +122,7 @@
       // statusStrip1
       // 
       statusStrip1.ImageScalingSize = new Size(20, 20);
-      statusStrip1.Items.AddRange(new ToolStripItem[] { statusBar, statusSupporters, statusHelp, barVersion });
+      statusStrip1.Items.AddRange(new ToolStripItem[] { statusBar, toolStripDropDownButton });
       statusStrip1.Location = new Point(0, 579);
       statusStrip1.Name = "statusStrip1";
       statusStrip1.Size = new Size(869, 26);
@@ -116,40 +133,86 @@
       // 
       statusBar.Margin = new Padding(7, 4, 0, 2);
       statusBar.Name = "statusBar";
-      statusBar.Size = new Size(682, 20);
+      statusBar.Size = new Size(752, 20);
       statusBar.Spring = true;
       statusBar.TextAlign = ContentAlignment.TopLeft;
       // 
-      // statusSupporters
+      // toolStripDropDownButton
       // 
-      statusSupporters.IsLink = true;
-      statusSupporters.Name = "statusSupporters";
-      statusSupporters.Padding = new Padding(2, 0, 2, 0);
-      statusSupporters.Size = new Size(85, 20);
-      statusSupporters.Text = "Supporters";
-      statusSupporters.TextAlign = ContentAlignment.TopCenter;
-      statusSupporters.VisitedLinkColor = Color.Blue;
-      statusSupporters.Click += statusSupporters_Click;
+      toolStripDropDownButton.DropDownItems.AddRange(new ToolStripItem[] { toolStripMenuItemHomepage, toolStripMenuItemSupporters, toolStripMenuItemHelp, toolStripSeparator1, toolStripMenuItemDarkMode, toolStripSeparator2, toolStripMenuItemMessagePanel, toolStripMenuItemPresetPanel, toolStripMenuItemButtonPanel });
+      toolStripDropDownButton.Image = (Image)resources.GetObject("toolStripDropDownButton.Image");
+      toolStripDropDownButton.ImageTransparentColor = Color.Magenta;
+      toolStripDropDownButton.Name = "toolStripDropDownButton";
+      toolStripDropDownButton.ShowDropDownArrow = false;
+      toolStripDropDownButton.Size = new Size(95, 24);
+      toolStripDropDownButton.Text = "Milkwave";
       // 
-      // statusHelp
+      // toolStripMenuItemHomepage
       // 
-      statusHelp.IsLink = true;
-      statusHelp.Name = "statusHelp";
-      statusHelp.Padding = new Padding(2, 0, 2, 0);
-      statusHelp.Size = new Size(45, 20);
-      statusHelp.Text = "Help";
-      statusHelp.TextAlign = ContentAlignment.TopCenter;
-      statusHelp.VisitedLinkColor = Color.Blue;
-      statusHelp.Click += statusHelp_Click;
+      toolStripMenuItemHomepage.Name = "toolStripMenuItemHomepage";
+      toolStripMenuItemHomepage.Size = new Size(189, 26);
+      toolStripMenuItemHomepage.Text = "Releases";
+      toolStripMenuItemHomepage.Click += toolStripMenuItemReleases_Click;
       // 
-      // barVersion
+      // toolStripMenuItemSupporters
       // 
-      barVersion.IsLink = true;
-      barVersion.Name = "barVersion";
-      barVersion.Size = new Size(35, 20);
-      barVersion.Text = "v1.0";
-      barVersion.VisitedLinkColor = Color.Blue;
-      barVersion.Click += barVersion_Click;
+      toolStripMenuItemSupporters.Name = "toolStripMenuItemSupporters";
+      toolStripMenuItemSupporters.Size = new Size(189, 26);
+      toolStripMenuItemSupporters.Text = "Supporters";
+      toolStripMenuItemSupporters.Click += toolStripMenuItemSupporters_Click;
+      // 
+      // toolStripMenuItemHelp
+      // 
+      toolStripMenuItemHelp.Name = "toolStripMenuItemHelp";
+      toolStripMenuItemHelp.Size = new Size(189, 26);
+      toolStripMenuItemHelp.Text = "Help";
+      toolStripMenuItemHelp.Click += toolStripMenuItemHelp_Click;
+      // 
+      // toolStripSeparator1
+      // 
+      toolStripSeparator1.Name = "toolStripSeparator1";
+      toolStripSeparator1.Size = new Size(186, 6);
+      // 
+      // toolStripMenuItemDarkMode
+      // 
+      toolStripMenuItemDarkMode.Checked = true;
+      toolStripMenuItemDarkMode.CheckState = CheckState.Checked;
+      toolStripMenuItemDarkMode.Name = "toolStripMenuItemDarkMode";
+      toolStripMenuItemDarkMode.Size = new Size(189, 26);
+      toolStripMenuItemDarkMode.Text = "Dark Mode";
+      toolStripMenuItemDarkMode.Click += toolStripMenuItemDarkMode_Click;
+      // 
+      // toolStripSeparator2
+      // 
+      toolStripSeparator2.Name = "toolStripSeparator2";
+      toolStripSeparator2.Size = new Size(186, 6);
+      // 
+      // toolStripMenuItemMessagePanel
+      // 
+      toolStripMenuItemMessagePanel.Checked = true;
+      toolStripMenuItemMessagePanel.CheckState = CheckState.Checked;
+      toolStripMenuItemMessagePanel.Name = "toolStripMenuItemMessagePanel";
+      toolStripMenuItemMessagePanel.Size = new Size(189, 26);
+      toolStripMenuItemMessagePanel.Text = "Message Panel";
+      toolStripMenuItemMessagePanel.Click += toolStripMenuItemMessagePanel_Click;
+      // 
+      // toolStripMenuItemPresetPanel
+      // 
+      toolStripMenuItemPresetPanel.Checked = true;
+      toolStripMenuItemPresetPanel.CheckState = CheckState.Checked;
+      toolStripMenuItemPresetPanel.Name = "toolStripMenuItemPresetPanel";
+      toolStripMenuItemPresetPanel.Size = new Size(189, 26);
+      toolStripMenuItemPresetPanel.Text = "Preset Panel";
+      toolStripMenuItemPresetPanel.Click += toolStripMenuItemPresetPanel_Click;
+      // 
+      // toolStripMenuItemButtonPanel
+      // 
+      toolStripMenuItemButtonPanel.Checked = true;
+      toolStripMenuItemButtonPanel.CheckState = CheckState.Checked;
+      toolStripMenuItemButtonPanel.Name = "toolStripMenuItemButtonPanel";
+      toolStripMenuItemButtonPanel.Size = new Size(189, 26);
+      toolStripMenuItemButtonPanel.Text = "Button Panel";
+      toolStripMenuItemButtonPanel.Click += toolStripMenuItemButtonPanel_Click;
       // 
       // chkPreview
       // 
@@ -175,7 +238,7 @@
       btnAppendSize.Location = new Point(550, 159);
       btnAppendSize.Margin = new Padding(0);
       btnAppendSize.Name = "btnAppendSize";
-      btnAppendSize.Size = new Size(53, 28);
+      btnAppendSize.Size = new Size(53, 29);
       btnAppendSize.TabIndex = 81;
       btnAppendSize.Text = "Set";
       toolTip1.SetToolTip(btnAppendSize, "Append to (or update in) parameters line");
@@ -208,18 +271,18 @@
       toolTip1.SetToolTip(lblSize, "Only used if no size parameter supplied\r\nDouble-click to clear the size value from the parameters line\r\n");
       lblSize.DoubleClick += lblSize_DoubleClick;
       // 
-      // lblPreset
+      // lblStyle
       // 
-      lblPreset.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      lblPreset.AutoSize = true;
-      lblPreset.Location = new Point(611, 128);
-      lblPreset.Name = "lblPreset";
-      lblPreset.Size = new Size(49, 20);
-      lblPreset.TabIndex = 75;
-      lblPreset.Text = "Preset";
-      toolTip1.SetToolTip(lblPreset, "Double-click to remove this preset\r\nRight-click to fill form elements from current parameters");
-      lblPreset.DoubleClick += lblPreset_DoubleClick;
-      lblPreset.MouseClick += lblPreset_MouseClick;
+      lblStyle.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      lblStyle.AutoSize = true;
+      lblStyle.Location = new Point(618, 128);
+      lblStyle.Name = "lblStyle";
+      lblStyle.Size = new Size(41, 20);
+      lblStyle.TabIndex = 75;
+      lblStyle.Text = "Style";
+      toolTip1.SetToolTip(lblStyle, "Double-click to remove this style\r\nRight-click to fill form elements from current parameters");
+      lblStyle.DoubleClick += lblStyle_DoubleClick;
+      lblStyle.MouseClick += lblStyle_MouseClick;
       // 
       // txtBPM
       // 
@@ -278,7 +341,7 @@
       btnAppendColor.Location = new Point(712, 159);
       btnAppendColor.Margin = new Padding(0);
       btnAppendColor.Name = "btnAppendColor";
-      btnAppendColor.Size = new Size(56, 28);
+      btnAppendColor.Size = new Size(56, 29);
       btnAppendColor.TabIndex = 83;
       btnAppendColor.Text = "Set";
       toolTip1.SetToolTip(btnAppendColor, "Append to (or update in) parameters line");
@@ -300,10 +363,10 @@
       // btnFontAppend
       // 
       btnFontAppend.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      btnFontAppend.Location = new Point(375, 159);
+      btnFontAppend.Location = new Point(377, 159);
       btnFontAppend.Margin = new Padding(0);
       btnFontAppend.Name = "btnFontAppend";
-      btnFontAppend.Size = new Size(56, 28);
+      btnFontAppend.Size = new Size(56, 29);
       btnFontAppend.TabIndex = 79;
       btnFontAppend.Text = "Set";
       toolTip1.SetToolTip(btnFontAppend, "Append to (or update in) parameters line");
@@ -406,7 +469,7 @@
       btnSaveParam.Size = new Size(88, 27);
       btnSaveParam.TabIndex = 77;
       btnSaveParam.Text = "Save";
-      toolTip1.SetToolTip(btnSaveParam, "Save current parameters as preset");
+      toolTip1.SetToolTip(btnSaveParam, "Save current parameters as style");
       btnSaveParam.UseVisualStyleBackColor = true;
       btnSaveParam.Click += btnSaveParam_Click;
       // 
@@ -418,7 +481,7 @@
       lblParameters.Size = new Size(82, 20);
       lblParameters.TabIndex = 91;
       lblParameters.Text = "Parameters";
-      toolTip1.SetToolTip(lblParameters, "Double-click to clear all saved presets");
+      toolTip1.SetToolTip(lblParameters, "Double-click to clear all saved styles");
       lblParameters.DoubleClick += lblParameters_DoubleClick;
       // 
       // cboParameters
@@ -442,7 +505,7 @@
       lblWindow.Size = new Size(64, 20);
       lblWindow.TabIndex = 89;
       lblWindow.Text = "Window";
-      toolTip1.SetToolTip(lblWindow, "Double-click to restore saved Visualizer window position and size\r\nHold Ctrl while closing this window to clear all locally saved settings");
+      toolTip1.SetToolTip(lblWindow, "Double-click to restore default Visualizer window position and size\r\nHold Ctrl while closing this window to clear all locally saved settings");
       lblWindow.DoubleClick += lblWindow_DoubleClick;
       // 
       // txtWindowTitle
@@ -465,7 +528,7 @@
       btnSend.Size = new Size(88, 77);
       btnSend.TabIndex = 71;
       btnSend.Text = "Send";
-      toolTip1.SetToolTip(btnSend, "F2");
+      toolTip1.SetToolTip(btnSend, "Send to Visualizer (F2)");
       btnSend.UseVisualStyleBackColor = true;
       btnSend.Click += btnSend_Click;
       // 
@@ -487,7 +550,7 @@
       btnSpace.Dock = DockStyle.Fill;
       btnSpace.Location = new Point(8, 8);
       btnSpace.Name = "btnSpace";
-      btnSpace.Size = new Size(208, 53);
+      btnSpace.Size = new Size(208, 48);
       btnSpace.TabIndex = 0;
       btnSpace.Text = "Next Preset\r\n(Space)";
       toolTip1.SetToolTip(btnSpace, "F3");
@@ -500,12 +563,97 @@
       btnBackspace.Dock = DockStyle.Fill;
       btnBackspace.Location = new Point(222, 8);
       btnBackspace.Name = "btnBackspace";
-      btnBackspace.Size = new Size(208, 53);
+      btnBackspace.Size = new Size(208, 48);
       btnBackspace.TabIndex = 1;
       btnBackspace.Text = "Previous Preset\r\n(Backspace)";
       toolTip1.SetToolTip(btnBackspace, "F4");
       btnBackspace.UseVisualStyleBackColor = true;
       btnBackspace.Click += btnBackspace_Click;
+      // 
+      // lblPreset
+      // 
+      lblPreset.AutoSize = true;
+      lblPreset.Location = new Point(39, 12);
+      lblPreset.Name = "label1";
+      lblPreset.Size = new Size(49, 20);
+      lblPreset.TabIndex = 98;
+      lblPreset.Text = "Preset";
+      toolTip1.SetToolTip(lblPreset, "Click to copy full path to clipboard\r\nDouble-click to clear all items");
+      lblPreset.Click += lblPreset_Click;
+      lblPreset.DoubleClick += lblPreset_DoubleClick;
+      // 
+      // btnPresetLoadFile
+      // 
+      btnPresetLoadFile.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      btnPresetLoadFile.FlatStyle = FlatStyle.System;
+      btnPresetLoadFile.Location = new Point(588, 8);
+      btnPresetLoadFile.Margin = new Padding(0);
+      btnPresetLoadFile.Name = "btnPresetLoadFile";
+      btnPresetLoadFile.Size = new Size(88, 30);
+      btnPresetLoadFile.TabIndex = 99;
+      btnPresetLoadFile.Text = "File";
+      toolTip1.SetToolTip(btnPresetLoadFile, "Load a single preset");
+      btnPresetLoadFile.UseVisualStyleBackColor = true;
+      btnPresetLoadFile.Click += btnPresetOpen_Click;
+      // 
+      // btnPresetSend
+      // 
+      btnPresetSend.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      btnPresetSend.FlatStyle = FlatStyle.System;
+      btnPresetSend.Location = new Point(773, 8);
+      btnPresetSend.Margin = new Padding(0);
+      btnPresetSend.Name = "btnPresetSend";
+      btnPresetSend.Size = new Size(88, 30);
+      btnPresetSend.TabIndex = 100;
+      btnPresetSend.Text = "Send";
+      toolTip1.SetToolTip(btnPresetSend, "Send to Visualizer (F6)");
+      btnPresetSend.UseVisualStyleBackColor = true;
+      btnPresetSend.Click += btnPresetSend_Click;
+      // 
+      // btnPresetLoadDirectory
+      // 
+      btnPresetLoadDirectory.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      btnPresetLoadDirectory.FlatStyle = FlatStyle.System;
+      btnPresetLoadDirectory.Location = new Point(680, 8);
+      btnPresetLoadDirectory.Margin = new Padding(0);
+      btnPresetLoadDirectory.Name = "btnPresetLoadDirectory";
+      btnPresetLoadDirectory.Size = new Size(88, 30);
+      btnPresetLoadDirectory.TabIndex = 101;
+      btnPresetLoadDirectory.Text = "Directory";
+      toolTip1.SetToolTip(btnPresetLoadDirectory, "Load all presets from a directory");
+      btnPresetLoadDirectory.UseVisualStyleBackColor = true;
+      btnPresetLoadDirectory.Click += btnPresetLoadDirectory_Click;
+      // 
+      // txtVis
+      // 
+      txtVis.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      txtVis.Location = new Point(94, 43);
+      txtVis.Name = "txtVis";
+      txtVis.ReadOnly = true;
+      txtVis.Size = new Size(767, 27);
+      txtVis.TabIndex = 96;
+      toolTip1.SetToolTip(txtVis, "Currently running preset in Visualizer");
+      // 
+      // cboPresets
+      // 
+      cboPresets.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+      cboPresets.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+      cboPresets.AutoCompleteSource = AutoCompleteSource.ListItems;
+      cboPresets.FormattingEnabled = true;
+      cboPresets.Location = new Point(94, 9);
+      cboPresets.Name = "cboPresets";
+      cboPresets.Size = new Size(490, 28);
+      cboPresets.TabIndex = 97;
+      cboPresets.KeyDown += cboPresets_KeyDown;
+      // 
+      // lblCurrentPreset
+      // 
+      lblCurrentPreset.AutoSize = true;
+      lblCurrentPreset.Location = new Point(25, 46);
+      lblCurrentPreset.Name = "lblCurrentPreset";
+      lblCurrentPreset.Size = new Size(63, 20);
+      lblCurrentPreset.TabIndex = 95;
+      lblCurrentPreset.Text = "Running";
       // 
       // colorDialog1
       // 
@@ -528,8 +676,8 @@
       splitContainer1.Panel1.Controls.Add(btnAppendSize);
       splitContainer1.Panel1.Controls.Add(txtSize);
       splitContainer1.Panel1.Controls.Add(lblSize);
-      splitContainer1.Panel1.Controls.Add(lblPreset);
-      splitContainer1.Panel1.Controls.Add(txtPreset);
+      splitContainer1.Panel1.Controls.Add(lblStyle);
+      splitContainer1.Panel1.Controls.Add(txtStyle);
       splitContainer1.Panel1.Controls.Add(txtBPM);
       splitContainer1.Panel1.Controls.Add(lblBPM);
       splitContainer1.Panel1.Controls.Add(chkFileRandom);
@@ -554,8 +702,6 @@
       splitContainer1.Panel1.Controls.Add(btnSend);
       splitContainer1.Panel1.Controls.Add(txtMessage);
       splitContainer1.Panel1.Paint += splitContainer1_Panel1_Paint;
-      splitContainer1.SizeChanged += splitContainer1_SizeChanged;
-      splitContainer1.SplitterMoved += splitContainer1_SplitterMoved;
       splitContainer1.Panel1MinSize = 0;
       // 
       // splitContainer1.Panel2
@@ -566,16 +712,18 @@
       splitContainer1.SplitterDistance = 244;
       splitContainer1.SplitterWidth = 10;
       splitContainer1.TabIndex = 28;
+      splitContainer1.SplitterMoved += splitContainer1_SplitterMoved;
+      splitContainer1.SizeChanged += splitContainer1_SizeChanged;
       // 
-      // txtPreset
+      // txtStyle
       // 
-      txtPreset.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      txtPreset.Location = new Point(663, 125);
-      txtPreset.Name = "txtPreset";
-      txtPreset.Size = new Size(105, 27);
-      txtPreset.TabIndex = 76;
-      txtPreset.Text = "Preset A";
-      txtPreset.KeyDown += txtPreset_KeyDown;
+      txtStyle.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      txtStyle.Location = new Point(663, 125);
+      txtStyle.Name = "txtStyle";
+      txtStyle.Size = new Size(105, 27);
+      txtStyle.TabIndex = 76;
+      txtStyle.Text = "Style A";
+      txtStyle.KeyDown += txtStyle_KeyDown;
       // 
       // label5
       // 
@@ -606,8 +754,15 @@
       // 
       // splitContainer2.Panel1
       // 
+      splitContainer2.Panel1.Controls.Add(btnPresetLoadDirectory);
+      splitContainer2.Panel1.Controls.Add(btnPresetSend);
+      splitContainer2.Panel1.Controls.Add(btnPresetLoadFile);
+      splitContainer2.Panel1.Controls.Add(lblPreset);
+      splitContainer2.Panel1.Controls.Add(cboPresets);
+      splitContainer2.Panel1.Controls.Add(txtVis);
+      splitContainer2.Panel1.Controls.Add(lblCurrentPreset);
       splitContainer2.Panel1.Paint += splitContainer2_Panel1_Paint;
-      splitContainer2.Panel1MinSize = 0;
+      splitContainer2.Panel1MinSize = 44;
       // 
       // splitContainer2.Panel2
       // 
@@ -615,7 +770,7 @@
       splitContainer2.Panel2.Paint += splitContainer2_Panel2_Paint;
       splitContainer2.Panel2MinSize = 0;
       splitContainer2.Size = new Size(869, 325);
-      splitContainer2.SplitterDistance = 66;
+      splitContainer2.SplitterDistance = 89;
       splitContainer2.SplitterWidth = 10;
       splitContainer2.TabIndex = 0;
       // 
@@ -660,16 +815,16 @@
       tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
       tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
       tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-      tableLayoutPanel1.Size = new Size(869, 249);
+      tableLayoutPanel1.Size = new Size(869, 226);
       tableLayoutPanel1.TabIndex = 34;
       tableLayoutPanel1.Paint += tableLayoutPanel1_Paint;
       // 
       // btn77
       // 
       btn77.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn77.Location = new Point(757, 185);
+      btn77.Location = new Point(757, 170);
       btn77.Name = "btn77";
-      btn77.Size = new Size(104, 56);
+      btn77.Size = new Size(104, 48);
       btn77.TabIndex = 19;
       btn77.Text = "77";
       btn77.UseVisualStyleBackColor = true;
@@ -678,9 +833,9 @@
       // btn66
       // 
       btn66.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn66.Location = new Point(650, 185);
+      btn66.Location = new Point(650, 170);
       btn66.Name = "btn66";
-      btn66.Size = new Size(101, 56);
+      btn66.Size = new Size(101, 48);
       btn66.TabIndex = 18;
       btn66.Text = "66";
       btn66.UseVisualStyleBackColor = true;
@@ -689,9 +844,9 @@
       // btn55
       // 
       btn55.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn55.Location = new Point(543, 185);
+      btn55.Location = new Point(543, 170);
       btn55.Name = "btn55";
-      btn55.Size = new Size(101, 56);
+      btn55.Size = new Size(101, 48);
       btn55.TabIndex = 17;
       btn55.Text = "55";
       btn55.UseVisualStyleBackColor = true;
@@ -700,9 +855,9 @@
       // btn44
       // 
       btn44.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn44.Location = new Point(436, 185);
+      btn44.Location = new Point(436, 170);
       btn44.Name = "btn44";
-      btn44.Size = new Size(101, 56);
+      btn44.Size = new Size(101, 48);
       btn44.TabIndex = 16;
       btn44.Text = "44";
       btn44.UseVisualStyleBackColor = true;
@@ -711,9 +866,9 @@
       // btn33
       // 
       btn33.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn33.Location = new Point(329, 185);
+      btn33.Location = new Point(329, 170);
       btn33.Name = "btn33";
-      btn33.Size = new Size(101, 56);
+      btn33.Size = new Size(101, 48);
       btn33.TabIndex = 15;
       btn33.Text = "33";
       btn33.UseVisualStyleBackColor = true;
@@ -722,9 +877,9 @@
       // btn22
       // 
       btn22.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn22.Location = new Point(222, 185);
+      btn22.Location = new Point(222, 170);
       btn22.Name = "btn22";
-      btn22.Size = new Size(101, 56);
+      btn22.Size = new Size(101, 48);
       btn22.TabIndex = 14;
       btn22.Text = "22";
       btn22.UseVisualStyleBackColor = true;
@@ -734,9 +889,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnK, 2);
       btnK.Dock = DockStyle.Fill;
-      btnK.Location = new Point(222, 126);
+      btnK.Location = new Point(222, 116);
       btnK.Name = "btnK";
-      btnK.Size = new Size(208, 53);
+      btnK.Size = new Size(208, 48);
       btnK.TabIndex = 9;
       btnK.Text = "Sprite Mode\r\n(K)";
       btnK.UseVisualStyleBackColor = true;
@@ -746,9 +901,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnF2, 2);
       btnF2.Dock = DockStyle.Fill;
-      btnF2.Location = new Point(8, 67);
+      btnF2.Location = new Point(8, 62);
       btnF2.Name = "btnF2";
-      btnF2.Size = new Size(208, 53);
+      btnF2.Size = new Size(208, 48);
       btnF2.TabIndex = 4;
       btnF2.Text = "Borderless \r\n(F2)";
       btnF2.UseVisualStyleBackColor = true;
@@ -760,7 +915,7 @@
       btnN.Dock = DockStyle.Fill;
       btnN.Location = new Point(436, 8);
       btnN.Name = "btnN";
-      btnN.Size = new Size(208, 53);
+      btnN.Size = new Size(208, 48);
       btnN.TabIndex = 2;
       btnN.Text = "Music Info\r\n(N)";
       btnN.UseVisualStyleBackColor = true;
@@ -770,9 +925,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnAltEnter, 2);
       btnAltEnter.Dock = DockStyle.Fill;
-      btnAltEnter.Location = new Point(8, 126);
+      btnAltEnter.Location = new Point(8, 116);
       btnAltEnter.Name = "btnAltEnter";
-      btnAltEnter.Size = new Size(208, 53);
+      btnAltEnter.Size = new Size(208, 48);
       btnAltEnter.TabIndex = 8;
       btnAltEnter.Text = "Fullscreen\r\n(Alt+Enter)";
       btnAltEnter.UseVisualStyleBackColor = true;
@@ -782,9 +937,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnY, 2);
       btnY.Dock = DockStyle.Fill;
-      btnY.Location = new Point(436, 126);
+      btnY.Location = new Point(436, 116);
       btnY.Name = "btnY";
-      btnY.Size = new Size(208, 53);
+      btnY.Size = new Size(208, 48);
       btnY.TabIndex = 10;
       btnY.Text = "Message Mode\r\n(Y)";
       btnY.UseVisualStyleBackColor = true;
@@ -793,9 +948,9 @@
       // btn11
       // 
       btn11.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn11.Location = new Point(115, 185);
+      btn11.Location = new Point(115, 170);
       btn11.Name = "btn11";
-      btn11.Size = new Size(101, 56);
+      btn11.Size = new Size(101, 48);
       btn11.TabIndex = 13;
       btn11.Text = "11";
       btn11.UseVisualStyleBackColor = true;
@@ -807,7 +962,7 @@
       btnTilde.Dock = DockStyle.Fill;
       btnTilde.Location = new Point(650, 8);
       btnTilde.Name = "btnTilde";
-      btnTilde.Size = new Size(211, 53);
+      btnTilde.Size = new Size(211, 48);
       btnTilde.TabIndex = 3;
       btnTilde.Text = "Preset Lock \r\n(~)";
       btnTilde.UseVisualStyleBackColor = true;
@@ -816,9 +971,9 @@
       // btn00
       // 
       btn00.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn00.Location = new Point(8, 185);
+      btn00.Location = new Point(8, 170);
       btn00.Name = "btn00";
-      btn00.Size = new Size(101, 56);
+      btn00.Size = new Size(101, 48);
       btn00.TabIndex = 12;
       btn00.Text = "00";
       btn00.UseVisualStyleBackColor = true;
@@ -828,9 +983,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnF7, 2);
       btnF7.Dock = DockStyle.Fill;
-      btnF7.Location = new Point(650, 67);
+      btnF7.Location = new Point(650, 62);
       btnF7.Name = "btnF7";
-      btnF7.Size = new Size(211, 53);
+      btnF7.Size = new Size(211, 48);
       btnF7.TabIndex = 7;
       btnF7.Text = "Always On Top\r\n(F7)";
       btnF7.UseVisualStyleBackColor = true;
@@ -840,9 +995,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnF4, 2);
       btnF4.Dock = DockStyle.Fill;
-      btnF4.Location = new Point(436, 67);
+      btnF4.Location = new Point(436, 62);
       btnF4.Name = "btnF4";
-      btnF4.Size = new Size(208, 53);
+      btnF4.Size = new Size(208, 48);
       btnF4.TabIndex = 6;
       btnF4.Text = "Preset Info\r\n(F4)";
       btnF4.UseVisualStyleBackColor = true;
@@ -852,9 +1007,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnF3, 2);
       btnF3.Dock = DockStyle.Fill;
-      btnF3.Location = new Point(222, 67);
+      btnF3.Location = new Point(222, 62);
       btnF3.Name = "btnF3";
-      btnF3.Size = new Size(208, 53);
+      btnF3.Size = new Size(208, 48);
       btnF3.TabIndex = 5;
       btnF3.Text = "Change FPS\r\n(F3)";
       btnF3.UseVisualStyleBackColor = true;
@@ -864,9 +1019,9 @@
       // 
       tableLayoutPanel1.SetColumnSpan(btnDelete, 2);
       btnDelete.Dock = DockStyle.Fill;
-      btnDelete.Location = new Point(650, 126);
+      btnDelete.Location = new Point(650, 116);
       btnDelete.Name = "btnDelete";
-      btnDelete.Size = new Size(211, 53);
+      btnDelete.Size = new Size(211, 48);
       btnDelete.TabIndex = 11;
       btnDelete.Text = "Clear Latest Sprite\r\n(Delete)";
       btnDelete.UseVisualStyleBackColor = true;
@@ -881,7 +1036,7 @@
       Controls.Add(statusStrip1);
       Icon = (Icon)resources.GetObject("$this.Icon");
       KeyPreview = true;
-      MinimumSize = new Size(640, 370);
+      MinimumSize = new Size(300, 100);
       Name = "MilkwaveRemoteForm";
       Text = "Milkwave Remote";
       FormClosing += MainForm_FormClosing;
@@ -898,6 +1053,8 @@
       splitContainer1.Panel2.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
       splitContainer1.ResumeLayout(false);
+      splitContainer2.Panel1.ResumeLayout(false);
+      splitContainer2.Panel1.PerformLayout();
       splitContainer2.Panel2.ResumeLayout(false);
       ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
       splitContainer2.ResumeLayout(false);
@@ -917,15 +1074,14 @@
     private ColorDialog colorDialog1;
     private ToolStripStatusLabel statusHelp;
     private ToolStripStatusLabel statusSupporters;
-    private ToolStripStatusLabel barVersion;
     private SplitContainer splitContainer1;
     private SplitContainer splitContainer2;
     private CheckBox chkPreview;
     private Button btnAppendSize;
     private NumericUpDown txtSize;
     private Label lblSize;
-    private Label lblPreset;
-    private TextBox txtPreset;
+    private Label lblStyle;
+    private TextBox txtStyle;
     private NumericUpDown txtBPM;
     private Label lblBPM;
     private CheckBox chkFileRandom;
@@ -970,5 +1126,22 @@
     private Button btnF3;
     private Button btnBackspace;
     private Button btnDelete;
+    private Label lblCurrentPreset;
+    private TextBox txtVis;
+    private ToolStripDropDownButton toolStripDropDownButton;
+    private ToolStripMenuItem toolStripMenuItemHelp;
+    private ToolStripMenuItem toolStripMenuItemSupporters;
+    private ToolStripMenuItem toolStripMenuItemHomepage;
+    private ToolStripSeparator toolStripSeparator1;
+    private ToolStripMenuItem toolStripMenuItemDarkMode;
+    private ToolStripMenuItem toolStripMenuItemButtonPanel;
+    private ToolStripMenuItem toolStripMenuItemPresetPanel;
+    private ToolStripSeparator toolStripSeparator2;
+    private ToolStripMenuItem toolStripMenuItemMessagePanel;
+    private Label lblPreset;
+    private ComboBox cboPresets;
+    private Button btnPresetLoadFile;
+    private Button btnPresetSend;
+    private Button btnPresetLoadDirectory;
   }
 }

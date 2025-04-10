@@ -59,5 +59,65 @@ namespace MilkwaveRemote.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Milkwave {
+            get {
+                object obj = ResourceManager.GetObject("Milkwave", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MilkwaveFlipped {
+            get {
+                object obj = ResourceManager.GetObject("MilkwaveFlipped", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MilkwaveFlippedInverted {
+            get {
+                object obj = ResourceManager.GetObject("MilkwaveFlippedInverted", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MilkwaveOutline {
+            get {
+                object obj = ResourceManager.GetObject("MilkwaveOutline", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MilkwaveOutlineInverted {
+            get {
+                object obj = ResourceManager.GetObject("MilkwaveOutlineInverted", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MilkwaveRemote {
+            get {
+                object obj = ResourceManager.GetObject("MilkwaveRemote", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

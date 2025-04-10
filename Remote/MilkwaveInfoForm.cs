@@ -8,10 +8,10 @@ namespace MilkwaveRemote {
     [DllImport("user32.dll")]
     static extern bool HideCaret(IntPtr hWnd);
 
-    public MilkwaveInfoForm() {
+    public MilkwaveInfoForm(bool darkMode) {
       InitializeComponent();
       dm = new DarkModeCS(this) {
-        ColorMode = DarkModeCS.DisplayMode.SystemDefault
+        ColorMode = darkMode ? DarkModeCS.DisplayMode.DarkMode : DarkModeCS.DisplayMode.ClearMode,
       };
     }
 
@@ -37,4 +37,5 @@ namespace MilkwaveRemote {
       }
     }
   }
+
 }

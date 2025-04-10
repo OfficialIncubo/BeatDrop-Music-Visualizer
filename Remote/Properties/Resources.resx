@@ -117,4 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="Milkwave" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Milkwave.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MilkwaveFlipped" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MilkwaveFlipped.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MilkwaveFlippedInverted" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MilkwaveFlippedInverted.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MilkwaveOutline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MilkwaveOutline.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MilkwaveOutlineInverted" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MilkwaveOutlineInverted.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MilkwaveRemote" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MilkwaveRemote.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>

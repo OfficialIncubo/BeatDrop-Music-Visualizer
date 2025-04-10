@@ -1,9 +1,9 @@
 //
 // =================================================================
 //
-// Milkwave - A Milkdrop2 Music Visualizer
+// BeatDrop/Milkwave - A Milkdrop2 Music Visualizer
 //
-// Author : Maxim Volskiy (https://github.com/mvsoft74/BeatDrop)
+// Authors : Maxim Volskiy (https://github.com/mvsoft74/BeatDrop) et al.
 //
 // From the readme :
 // BeatDrop is a stand - alone implementation of the amazing Milkdrop2 Winamp plug-in.
