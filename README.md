@@ -8,9 +8,10 @@ Milkwave is a music visualizer based on the [MilkDrop2](https://www.geisswerks.c
 
 * Customize message text, color, font size, position and other parameters
 * Save parameter definitions as named styles for quick access
-* Automatically send messages and set parameters from a file at configurable intervals
+* Send messages, set parameters, presets etc. automatically from a script file at configurable intervals
+* Select preset files and send them to the visualizer
+* Show the currently playing Visualizer preset in thwe Remote window
 * Send common key combinations using buttons
-* Save and restore Remote and Visualizer window positions
 
 There are many tooltips explaining all features when you hover over the form elements.
 
