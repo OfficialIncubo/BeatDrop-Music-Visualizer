@@ -46,6 +46,7 @@ Many thanks to:
 * Matthew van Eerde - [loopback-capture](https://github.com/mvaneerde/blog)
 * Incubo_ - [BeatDrop-Music-Visualizer](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer)
 * milkdrop2077 - [MilkDrop3](https://github.com/milkdrop2077/MilkDrop3)
+* podenthusiast - [Milkwave Logo](https://www.freepik.com/author/podenthusiast/icons)
 * and all the preset authors!
 
 If you believe you should be mentioned here, please let me know.
