@@ -59,7 +59,7 @@ namespace MilkwaveRemote {
 
     private List<string> lines = new List<string>();
 
-    private string lastFileName = "script-default.txt";
+    private string lastScritFileName = "script-default.txt";
     private string windowNotFound = "Milkwave Visualizer window not found";
     private string foundWindowTitle = "";
     private string defaultFontName = "Segoe UI";
@@ -136,7 +136,7 @@ namespace MilkwaveRemote {
       cboParameters.DropDownStyle = ComboBoxStyle.DropDown;
       cboParameters.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
-// #if !DEBUG
+      // #if !DEBUG
       try {
         string jsonString = File.ReadAllText(milkwaveSettingsFile);
         Settings? loadedSettings = JsonSerializer.Deserialize<Settings>(jsonString, new JsonSerializerOptions {
@@ -148,7 +148,7 @@ namespace MilkwaveRemote {
       } catch (Exception ex) {
         Settings = new Settings();
       }
-//  #endif
+      //  #endif
 
       dm = new DarkModeCS(this) {
         ColorMode = Settings.DarkMode ? DarkModeCS.DisplayMode.DarkMode : DarkModeCS.DisplayMode.ClearMode,
@@ -173,7 +173,7 @@ namespace MilkwaveRemote {
         }
       }
 
-      LoadMessages(lastFileName);
+      LoadMessages(lastScritFileName);
 
       autoplayTimer = new System.Windows.Forms.Timer();
       autoplayTimer.Tick += AutoplayTimer_Tick;
@@ -463,7 +463,7 @@ namespace MilkwaveRemote {
               string fileName = token.Substring(5);
               if (fileName.Length > 0) {
                 LoadMessages(fileName);
-                lastFileName = fileName;
+                lastScritFileName = fileName;
                 txtAutoplay.Text = lines[currentLineIndex];
                 statusBar.Text = $"Next line in {autoplayRemainingBeats} beats";
               }
@@ -824,7 +824,7 @@ namespace MilkwaveRemote {
     }
 
     private void lblFromFile_DoubleClick(object sender, EventArgs e) {
-      LoadMessages(lastFileName);
+      LoadMessages(lastScritFileName);
     }
 
     private void MainForm_KeyDown(object sender, KeyEventArgs e) {
@@ -838,6 +838,9 @@ namespace MilkwaveRemote {
       } else if (e.KeyCode == Keys.F4) {
         btnBackspace.PerformClick();
       } else if (e.KeyCode == Keys.F6) {
+        btnPresetSend.PerformClick();
+      } else if (e.KeyCode == Keys.F7) {
+        SelectNextPreset();
         btnPresetSend.PerformClick();
       } else if (e.KeyCode == Keys.F12) {
         chkAutoplay.Checked = !chkAutoplay.Checked;
@@ -1093,9 +1096,14 @@ namespace MilkwaveRemote {
 
     private void lblFromFile_MouseClick(object sender, MouseEventArgs e) {
       if (e.Button == MouseButtons.Right) {
-        if (ofd.ShowDialog() == DialogResult.OK) {
-          lastFileName = ofd.FileName;
-          LoadMessages(lastFileName);
+        OpenFileDialog ofdScriptFile = new OpenFileDialog();
+        ofdScriptFile.Filter = "Milkwave script files|*.txt|All files (*.*)|*.*";
+        ofdScriptFile.RestoreDirectory = true;
+        ofdScriptFile.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+        if (ofdScriptFile.ShowDialog() == DialogResult.OK) {
+          lastScritFileName = ofdScriptFile.FileName;
+          LoadMessages(lastScritFileName);
         }
       }
     }
@@ -1281,6 +1289,12 @@ namespace MilkwaveRemote {
     }
 
     private void btnPresetSend_Click(object sender, EventArgs e) {
+
+      // Check if the Ctrl key is pressed
+      if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
+        SelectNextPreset();
+      }
+
       if (cboPresets.Text.Length > 0) {
         Preset? preset = null; // Use nullable type to handle potential null values
         try {
@@ -1301,6 +1315,16 @@ namespace MilkwaveRemote {
         }
       } else {
         statusBar.Text = "No valid preset selected";
+      }
+    }
+
+    private void SelectNextPreset() {
+      // Move to the next item in cboPresets if possible
+      if (cboPresets.SelectedIndex < cboPresets.Items.Count - 1) {
+        cboPresets.SelectedIndex++;
+      } else {
+        // Optionally, loop back to the first item
+        cboPresets.SelectedIndex = 0;
       }
     }
 
@@ -1360,6 +1384,14 @@ namespace MilkwaveRemote {
           // Handle the case where the selected item is not a Preset  
           statusBar.Text = "No valid preset selected";
         }
+      }
+    }
+
+    private void cboPresets_SelectedIndexChanged(object sender, EventArgs e) {
+      // Check if the Alt key is pressed
+      if ((Control.ModifierKeys & Keys.Alt) == Keys.Alt) {
+        // Trigger the Click event of btnPresetSend
+        btnPresetSend.PerformClick();
       }
     }
   }

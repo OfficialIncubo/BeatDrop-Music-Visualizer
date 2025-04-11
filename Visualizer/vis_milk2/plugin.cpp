@@ -5731,8 +5731,19 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 
   case WM_COPYDATA: {
     PCOPYDATASTRUCT pCopyData = (PCOPYDATASTRUCT)lParam;
-    if (pCopyData->dwData == 1) { // Custom identifier for the message
+    if (pCopyData->dwData == 1) { // Custom identifier for the message          
       wchar_t* receivedMessage = (wchar_t*)pCopyData->lpData;
+
+      // Calculate the length in wchar_t units
+      size_t messageLength = pCopyData->cbData / sizeof(wchar_t);
+
+      // Ensure the received message is null-terminated
+      if (messageLength > 0) {
+        if (receivedMessage[messageLength - 1] != L'\0') {
+          // Add null-terminator only if it's not already present
+          receivedMessage[messageLength] = L'\0';
+        }
+      }
       LaunchMessage(receivedMessage);
       //MessageBoxW(hWnd, receivedMessage, L"Received Message", MB_OK | MB_SETFOREGROUND | MB_TOPMOST);
     }
@@ -9776,6 +9787,12 @@ void CPlugin::LaunchMessage(wchar_t* sMessage) {
     m_supertext.fStartTime = GetTime();
   }
   else if (wcsncmp(sMessage, L"PRESET=", 7) == 0) {
+    // Find the position of ".milk" in the string
+    // wchar_t* pos = wcsstr(sMessage, L".milk");
+    // if (pos) {
+    //   // Keep everything up to and including ".milk"
+    //   pos[5] = L'\0'; // Truncate the string after ".milk"
+    // }
     std::wstring message(sMessage + 7); // Remove "PRESET="
     LoadPreset(message.c_str(), 1);
     // Handle other message types here if needed

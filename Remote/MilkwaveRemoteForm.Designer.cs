@@ -574,7 +574,7 @@ namespace MilkwaveRemote
       // 
       lblPreset.AutoSize = true;
       lblPreset.Location = new Point(39, 12);
-      lblPreset.Name = "label1";
+      lblPreset.Name = "lblPreset";
       lblPreset.Size = new Size(49, 20);
       lblPreset.TabIndex = 98;
       lblPreset.Text = "Preset";
@@ -606,7 +606,7 @@ namespace MilkwaveRemote
       btnPresetSend.Size = new Size(88, 30);
       btnPresetSend.TabIndex = 100;
       btnPresetSend.Text = "Send";
-      toolTip1.SetToolTip(btnPresetSend, "Send to Visualizer (F6)");
+      toolTip1.SetToolTip(btnPresetSend, "Send to Visualizer (F6)\r\nCtrl+Click: Send next to Visualizer (F7)");
       btnPresetSend.UseVisualStyleBackColor = true;
       btnPresetSend.Click += btnPresetSend_Click;
       // 
@@ -632,7 +632,7 @@ namespace MilkwaveRemote
       txtVis.ReadOnly = true;
       txtVis.Size = new Size(767, 27);
       txtVis.TabIndex = 96;
-      toolTip1.SetToolTip(txtVis, "Currently running preset in Visualizer");
+      toolTip1.SetToolTip(txtVis, "Currently running Visualizer preset");
       // 
       // cboPresets
       // 
@@ -644,6 +644,8 @@ namespace MilkwaveRemote
       cboPresets.Name = "cboPresets";
       cboPresets.Size = new Size(490, 28);
       cboPresets.TabIndex = 97;
+      toolTip1.SetToolTip(cboPresets, "Alt+Mousewheel: Send to Visualizer");
+      cboPresets.SelectedIndexChanged += cboPresets_SelectedIndexChanged;
       cboPresets.KeyDown += cboPresets_KeyDown;
       // 
       // lblCurrentPreset
