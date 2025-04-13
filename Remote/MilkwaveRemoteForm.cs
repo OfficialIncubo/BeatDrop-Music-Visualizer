@@ -2,6 +2,7 @@ using DarkModeForms;
 using MilkwaveRemote.Data;
 using System.Diagnostics;
 using System.Drawing.Text;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -121,7 +122,8 @@ namespace MilkwaveRemote {
 
     private enum MessageType {
       Message,
-      PresetFilePath
+      PresetFilePath,
+      Amplify
     }
 
     public MilkwaveRemoteForm() {
@@ -135,6 +137,9 @@ namespace MilkwaveRemote {
 
       cboParameters.DropDownStyle = ComboBoxStyle.DropDown;
       cboParameters.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+
+      // Initialize 'ofd' to avoid CS8618 error
+      ofd = new OpenFileDialog();
 
       // #if !DEBUG
       try {
@@ -220,6 +225,11 @@ namespace MilkwaveRemote {
         ofd.InitialDirectory = VisualizerPresetsFolder;
       } else {
         ofd.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
+      }
+
+      string MilkwavePresetsFolder = Path.Combine(VisualizerPresetsFolder, "Milkwave");
+      if (Directory.Exists(MilkwavePresetsFolder)) {
+        LoadPresetsFromDirectory(MilkwavePresetsFolder);
       }
     }
 
@@ -311,10 +321,12 @@ namespace MilkwaveRemote {
         string message = "";
         if (type == MessageType.PresetFilePath) {
           message = "PRESET=" + messageToSend;
-        } else {
+        } else if (type == MessageType.Amplify) {
+          message = "AMP|" +
+            "l=" + numAmpLeft.Value.ToString(CultureInfo.InvariantCulture) +
+            "|r=" + numAmpRight.Value.ToString(CultureInfo.InvariantCulture);
+        } else if (type == MessageType.Message) {
           message = "MSG|text=" + messageToSend;
-
-
           if (cboParameters.Text.Length > 0) {
             message += "|" + cboParameters.Text;
           }
@@ -327,9 +339,10 @@ namespace MilkwaveRemote {
             message += "|b=" + pnlColor.BackColor.B;
           }
           if (!message.Contains("size=")) {
-            message += "|size=" + txtSize.Value;
+            message += "|size=" + numSize.Value;
           }
         }
+
         byte[] messageBytes = Encoding.Unicode.GetBytes(message);
         IntPtr messagePtr = Marshal.AllocHGlobal(messageBytes.Length);
         Marshal.Copy(messageBytes, 0, messagePtr, messageBytes.Length);
@@ -341,7 +354,9 @@ namespace MilkwaveRemote {
         };
 
         SendMessageW(foundWindow, WM_COPYDATA, IntPtr.Zero, ref cds);
-        statusBar.Text = ($"Sent '{messageToSend}' to {foundWindowTitle}");
+        if (messageToSend.Length > 0) {
+          statusBar.Text = ($"Sent '{messageToSend}' to {foundWindowTitle}");
+        }
 
         Marshal.FreeHGlobal(messagePtr);
 
@@ -383,7 +398,7 @@ namespace MilkwaveRemote {
     }
 
     private void ResetAndStartTimer(bool startInstant) {
-      if (float.TryParse(txtBeats.Text, out float interval)) {
+      if (float.TryParse(numBeats.Text, out float interval)) {
         autoplayRemainingBeats = 0;
         setTimerInterval();
         if (startInstant) {
@@ -402,7 +417,7 @@ namespace MilkwaveRemote {
       if (autoplayTimer != null) {
         float bpm = 120;
         try {
-          bpm = float.Parse(txtBPM.Text);
+          bpm = float.Parse(numBPM.Text);
         } catch (Exception) {
           bpm = 120;
         }
@@ -431,12 +446,12 @@ namespace MilkwaveRemote {
             } else if (tokenUpper.StartsWith("BPM=")) {
               string BPM = tokenUpper.Substring(4);
               if (int.TryParse(BPM, out int bpm)) {
-                txtBPM.Text = BPM;
+                numBPM.Text = BPM;
               }
             } else if (tokenUpper.StartsWith("BEATS=")) {
               string beats = tokenUpper.Substring(6);
               if (int.TryParse(beats, out int b)) {
-                txtBeats.Text = beats;
+                numBeats.Text = beats;
               }
             } else if (tokenUpper.StartsWith("FONT=")) {
               string font = token.Substring(5);
@@ -479,7 +494,7 @@ namespace MilkwaveRemote {
 
 
           try {
-            autoplayRemainingBeats = int.Parse(txtBeats.Text) - 1;
+            autoplayRemainingBeats = int.Parse(numBeats.Text) - 1;
           } catch (Exception) {
             autoplayRemainingBeats = 1;
           }
@@ -998,7 +1013,7 @@ namespace MilkwaveRemote {
 
     private void btnAppendSize_Click(object sender, EventArgs e) {
       RemoveParam("size");
-      AppendParam("size=" + txtSize.Text);
+      AppendParam("size=" + numSize.Text);
     }
 
     private void AppendParam(string param) {
@@ -1045,7 +1060,7 @@ namespace MilkwaveRemote {
         int fontSize;
         string size = GetParam("size");
         if (size.Length == 0 || !int.TryParse(size, out fontSize)) {
-          fontSize = int.Parse(txtSize.Text);
+          fontSize = int.Parse(numSize.Text);
         }
 
         FontStyle style = cboParameters.Text.ToUpper().Contains("bold=1") ? FontStyle.Bold : FontStyle.Regular;
@@ -1125,7 +1140,7 @@ namespace MilkwaveRemote {
         int fontSize;
         string size = GetParam("size");
         if (size.Length > 0 && int.TryParse(size, out fontSize)) {
-          txtSize.Value = fontSize;
+          numSize.Value = fontSize;
         }
       }
     }
@@ -1156,7 +1171,6 @@ namespace MilkwaveRemote {
       PaintContainerBorder(e);
     }
 
-
     private void splitContainer1_SizeChanged(object sender, EventArgs e) {
       SplitContainer1Changed();
     }
@@ -1171,22 +1185,6 @@ namespace MilkwaveRemote {
         splitContainer1.SplitterDistance = Settings.Panel1DefaultHeight;
       }
     }
-
-    /*
-    private void splitContainer2_SizeChanged(object sender, EventArgs e) {
-      SplitContainer2Changed();
-    }
-
-    private void splitContainer2_SplitterMoved(object sender, SplitterEventArgs e) {
-      SplitContainer2Changed();
-    }
-
-    private void SplitContainer2Changed() {
-      if (splitContainer2.Panel1.Height > Settings.Panel2MaxHeight) {
-        splitContainer2.SplitterDistance = Settings.Panel2MaxHeight;
-      }
-    }
-    */
 
     private void toolStripMenuItemReleases_Click(object sender, EventArgs e) {
       string url = "https://github.com/IkeC/Milkwave/releases";
@@ -1345,23 +1343,29 @@ namespace MilkwaveRemote {
         }
 
         if (result == DialogResult.OK && !string.IsNullOrWhiteSpace(fbd.SelectedPath)) {
-          cboPresets.Items.Clear();
-          cboPresets.Text = "";
-          foreach (string fileName in Directory.GetFiles(fbd.SelectedPath)) {
-            if (fileName.EndsWith(".milk") || fileName.EndsWith(".milk2")) {
-              Preset newPreset = new Preset {
-                DisplayName = Path.GetFileNameWithoutExtension(fileName),
-                FullPath = fileName
-              };
-              cboPresets.Items.Add(newPreset);
-            }
-          }
-          if (cboPresets.Items.Count > 0) {
-            cboPresets.SelectedIndex = 0;
-          } else {
-            cboPresets.Text = "";
+          LoadPresetsFromDirectory(fbd.SelectedPath);
+        }
+      }
+    }
+
+    private void LoadPresetsFromDirectory(string dirToLoad) {
+      cboPresets.Items.Clear();
+      cboPresets.Text = "";
+      foreach (string fileName in Directory.GetFiles(dirToLoad)) {
+        if (fileName.EndsWith(".milk") || fileName.EndsWith(".milk2")) {
+          string fileNameOnlyNoExtension = Path.GetFileNameWithoutExtension(fileName);
+          if (txtDirFilter.Text.Length == 0 || fileNameOnlyNoExtension.Contains(txtDirFilter.Text, StringComparison.InvariantCultureIgnoreCase)) {
+            Preset newPreset = new Preset {
+              DisplayName = fileNameOnlyNoExtension,
+              FullPath = fileName
+            };
+            cboPresets.Items.Add(newPreset);
           }
         }
+      }
+      statusBar.Text = $"Loaded {cboPresets.Items.Count} presets from '{dirToLoad}'";
+      if (cboPresets.Items.Count > 0) {
+        cboPresets.SelectedIndex = 0;
       }
     }
 
@@ -1393,6 +1397,34 @@ namespace MilkwaveRemote {
         // Trigger the Click event of btnPresetSend
         btnPresetSend.PerformClick();
       }
+    }
+
+    private void lblAmpLeft_Click(object sender, EventArgs e) {
+      numAmpLeft.Value = 1.0M;
+      if (chkAmpLinked.Checked) {
+        numAmpRight.Value = numAmpLeft.Value;
+      }
+    }
+
+    private void lblAmpRight_Click(object sender, EventArgs e) {
+      numAmpRight.Value = 1.0M;
+      if (chkAmpLinked.Checked) {
+        numAmpLeft.Value = numAmpRight.Value;
+      }
+    }
+
+    private void numAmpLeft_ValueChanged(object sender, EventArgs e) {
+      if (chkAmpLinked.Checked) {
+        numAmpRight.Value = numAmpLeft.Value;
+      }
+      SendToMilkwaveVisualizer("", MessageType.Amplify);
+    }
+
+    private void numAmpRight_ValueChanged(object sender, EventArgs e) {
+      if (chkAmpLinked.Checked) {
+        numAmpLeft.Value = numAmpRight.Value;
+      }
+      SendToMilkwaveVisualizer("", MessageType.Amplify);
     }
   }
 }

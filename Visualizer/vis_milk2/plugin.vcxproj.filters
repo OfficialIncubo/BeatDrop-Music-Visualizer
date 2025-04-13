@@ -203,6 +203,7 @@
     <ClInclude Include="..\spoutDX9\SpoutUtils.h">
       <Filter>spoutDX9</Filter>
     </ClInclude>
+    <ClInclude Include="milkwave.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="text1.bin">

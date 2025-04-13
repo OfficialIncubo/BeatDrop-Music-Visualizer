@@ -1,6 +1,7 @@
 // audiobuf.cpp
 
 #include "audiobuf.h"
+#include "..\vis_milk2\milkwave.h"
 
 #define SAMPLE_SIZE_LPB 576 // Max number of audio samples stored in circular buffer. Should be no less than SAMPLE_SIZE. Expected sampling rate is 44100 Hz or 48000 Hz (samples per second).
 
@@ -10,6 +11,9 @@ unsigned char pcmRightLpb[SAMPLE_SIZE_LPB]; // Circular buffer (right channel)
 bool pcmBufDrained = false; // Buffer drained by visualization thread and holds no new samples
 signed int pcmLen = 0; // Actual number of samples the buffer holds. Can be less than SAMPLE_SIZE_LPB
 signed int pcmPos = 0; // Position to write new data
+
+float milkwave_amp_left = 1.0f;
+float milkwave_amp_right = 1.0f;
 
 void ResetAudioBuf() {
     std::unique_lock<std::mutex> lock(pcmLpbMutex);
@@ -30,7 +34,7 @@ void GetAudioBuf(unsigned char *pWaveL, unsigned char *pWaveR, int SamplesCount)
         // Circular buffer (pcmLeftLpb, pcmRightLpb) hold enough samples in it
         for (int i = 0; i < SAMPLE_SIZE_LPB; i++) {
             // int8_t [-128 .. +127] stored into uint8_t [0..255]
-            pWaveL[i % SamplesCount] = pcmLeftLpb[(pcmPos + i) % SAMPLE_SIZE_LPB];
+          pWaveL[i % SamplesCount] = pcmLeftLpb[(pcmPos + i) % SAMPLE_SIZE_LPB];
             pWaveR[i % SamplesCount] = pcmRightLpb[(pcmPos + i) % SAMPLE_SIZE_LPB];
         }
         pcmBufDrained = true;
@@ -133,8 +137,8 @@ void SetAudioBuf(const BYTE *pData, const UINT32 nNumFramesToRead, const WAVEFOR
         // Saving audio data for visualizer
         // 8-bit signed integer in Two's Complement Representation stored in unsigned char array
         // int8_t[-128 .. + 127] stored into uint8_t[0 .. 255]
-        pcmLeftLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = LeftSample8;
-        pcmRightLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = RightSample8;
+        pcmLeftLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = LeftSample8 * milkwave_amp_left;
+        pcmRightLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = RightSample8 * milkwave_amp_right;
     }
 
     pcmBufDrained = false;

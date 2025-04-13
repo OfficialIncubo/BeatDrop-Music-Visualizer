@@ -57,7 +57,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>.\Debug\</OutDir>
     <IntDir>.\Debug\</IntDir>
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -232,6 +232,7 @@
     <ClInclude Include="fft.h" />
     <ClInclude Include="md_defines.h" />
     <ClInclude Include="menu.h" />
+    <ClInclude Include="milkwave.h" />
     <ClInclude Include="plugin.h" />
     <ClInclude Include="pluginshell.h" />
     <ClInclude Include="resource.h" />

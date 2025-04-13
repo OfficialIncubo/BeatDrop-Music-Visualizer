@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 		Release\README.txt = Release\README.txt
 		Release\release.cmd = Release\release.cmd
+		Release\roadmap.md = Release\roadmap.md
 		Release\script-default.txt = Release\script-default.txt
 		Release\settings-milkwave.json = Release\settings-milkwave.json
 		Release\settings.ini = Release\settings.ini

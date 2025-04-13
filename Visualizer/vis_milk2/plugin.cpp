@@ -626,6 +626,7 @@ SPOUT :
 #include <Windows.h>
 #include "AutoCharFn.h"
 #include <sstream>
+#include "milkwave.h"
 
 #define FRAND ((rand() % 7381)/7380.0f)
 
@@ -1096,10 +1097,10 @@ void CPlugin::MyPreInitialize()
   m_fBlendTimeAuto = 2.7f;
   m_fTimeBetweenPresets = 16.0f;
   m_fTimeBetweenPresetsRand = 10.0f;
-  
+
   //m_bSequentialPresetOrder = false;
   m_bSequentialPresetOrder = true;
-  
+
   m_bHardCutsDisabled = true;
   m_fHardCutLoudnessThresh = 2.5f;
   m_fHardCutHalflife = 60.0f;
@@ -8346,30 +8347,31 @@ void CPlugin::OnFinishedLoadingPreset()
 
 
 void CPlugin::SendMessageToMilkwaveRemote(const wchar_t* presetFile) {
-    if (!presetFile || !*presetFile) {
-        wprintf(L"Preset file is null or empty.\n");
-        return;
-    }
+  if (!presetFile || !*presetFile) {
+    wprintf(L"Preset file is null or empty.\n");
+    return;
+  }
 
-    // Find the Milkwave Remote window
-    HWND hRemoteWnd = FindWindowW(NULL, L"Milkwave Remote");
-    if (!hRemoteWnd) {
-        wprintf(L"Milkwave Remote window not found.\n");
-        return;
-    }
+  // Find the Milkwave Remote window
+  HWND hRemoteWnd = FindWindowW(NULL, L"Milkwave Remote");
+  if (!hRemoteWnd) {
+    wprintf(L"Milkwave Remote window not found.\n");
+    return;
+  }
 
-    // Prepare the COPYDATASTRUCT
-    COPYDATASTRUCT cds;
-    cds.dwData = 1; // Custom identifier for the message
-    cds.cbData = (wcslen(presetFile) + 1) * sizeof(wchar_t); // Size of the data in bytes
-    cds.lpData = (void*)presetFile; // Pointer to the data
+  // Prepare the COPYDATASTRUCT
+  COPYDATASTRUCT cds;
+  cds.dwData = 1; // Custom identifier for the message
+  cds.cbData = (wcslen(presetFile) + 1) * sizeof(wchar_t); // Size of the data in bytes
+  cds.lpData = (void*)presetFile; // Pointer to the data
 
-    // Send the WM_COPYDATA message
-    if (SendMessage(hRemoteWnd, WM_COPYDATA, (WPARAM)GetPluginWindow(), (LPARAM)&cds) == 0) {
-        wprintf(L"Failed to send WM_COPYDATA message to Milkwave Remote.\n");
-    } else {
-        wprintf(L"WM_COPYDATA message sent successfully to Milkwave Remote.\n");
-    }
+  // Send the WM_COPYDATA message
+  if (SendMessage(hRemoteWnd, WM_COPYDATA, (WPARAM)GetPluginWindow(), (LPARAM)&cds) == 0) {
+    wprintf(L"Failed to send WM_COPYDATA message to Milkwave Remote.\n");
+  }
+  else {
+    wprintf(L"WM_COPYDATA message sent successfully to Milkwave Remote.\n");
+  }
 }
 
 void CPlugin::LoadPresetTick()
@@ -9786,6 +9788,34 @@ void CPlugin::LaunchMessage(wchar_t* sMessage) {
 
     m_supertext.fStartTime = GetTime();
   }
+  else if (wcsncmp(sMessage, L"AMP|", 4) == 0) {
+    // EQ message
+    std::wstring message(sMessage + 4); // Remove "AMP|"
+    std::wstringstream ss(message);
+    std::wstring token;
+    std::map<std::wstring, std::wstring> params;
+    // Parse key-value pairs
+    while (std::getline(ss, token, L'|')) {
+      size_t pos = token.find(L'=');
+      if (pos != std::wstring::npos) {
+        std::wstring key = token.substr(0, pos);
+        std::wstring value = token.substr(pos + 1);
+        params[key] = value;
+      }
+    }
+    if (params.find(L"l") != params.end() && params.find(L"r") != params.end()) {
+      // Convert the std::wstring to a float using std::stof
+      try {
+        milkwave_amp_left = std::stof(params[L"l"]);
+        milkwave_amp_right = std::stof(params[L"r"]);
+      }
+      catch (const std::exception& e) {
+        // Handle the error if the conversion fails
+        milkwave_amp_left = 1.0f; // Default value
+        milkwave_amp_right = 1.0f; // Default value
+      }
+    }
+  }
   else if (wcsncmp(sMessage, L"PRESET=", 7) == 0) {
     // Find the position of ".milk" in the string
     // wchar_t* pos = wcsstr(sMessage, L".milk");
@@ -9954,44 +9984,110 @@ void CPlugin::KillSprite(int iSlot)
 
 void CPlugin::DoCustomSoundAnalysis()
 {
-  memcpy(mysound.fWave[0], m_sound.fWaveform[0], sizeof(float) * 576);
-  memcpy(mysound.fWave[1], m_sound.fWaveform[1], sizeof(float) * 576);
+  bool useOriginalBeatdropDetection = false;
 
-  // do our own [UN-NORMALIZED] fft
-  float fWaveLeft[576];
-  float fWaveRight[576];
-  for (int i = 0; i < 576; i++)
-  {
-    fWaveLeft[i] = m_sound.fWaveform[0][i]; //left channel
-    fWaveRight[i] = m_sound.fWaveform[1][i]; //right channel
-  }
+  if (useOriginalBeatdropDetection) {
+    memcpy(mysound.fWave[0], m_sound.fWaveform[0], sizeof(float) * 576);
+    memcpy(mysound.fWave[1], m_sound.fWaveform[1], sizeof(float) * 576);
 
-  memset(mysound.fSpecLeft, 0, sizeof(float) * MY_FFT_SAMPLES);
-  memset(mysound.fSpecRight, 0, sizeof(float) * MY_FFT_SAMPLES);
+    // do our own [UN-NORMALIZED] fft
+    float fWaveLeft[576];
+    for (int i = 0; i < 576; i++)
+      fWaveLeft[i] = m_sound.fWaveform[0][i];
 
-  myfft.time_to_frequency_domain(fWaveLeft, mysound.fSpecLeft);
-  myfft.time_to_frequency_domain(fWaveRight, mysound.fSpecRight);
-  //for (i=0; i<MY_FFT_SAMPLES; i++) fSpecLeft[i] = sqrtf(fSpecLeft[i]*fSpecLeft[i] + fSpecTemp[i]*fSpecTemp[i]);
+    memset(mysound.fSpecLeft, 0, sizeof(float) * MY_FFT_SAMPLES);
 
-  // sum spectrum up into 3 bands
-  for (i = 0; i < 3; i++)
-  {
-    //note: only look at bottom half of spectrum!  (hence divide by 6 instead of 3)
-    int start = MY_FFT_SAMPLES * i / 200;
-    int end = MY_FFT_SAMPLES * (i + 1) / 142; // bass: 20hz-250hz
-    int j;
+    myfft.time_to_frequency_domain(fWaveLeft, mysound.fSpecLeft);
+    //for (i=0; i<MY_FFT_SAMPLES; i++) fSpecLeft[i] = sqrtf(fSpecLeft[i]*fSpecLeft[i] + fSpecTemp[i]*fSpecTemp[i]);
 
-    if (i == 1)
+    // sum spectrum up into 3 bands
+    for (i = 0; i < 3; i++)
     {
-      start = MY_FFT_SAMPLES * i / 68;
-      end = MY_FFT_SAMPLES * (i + 1) / 13; // mid: 250hz-4000hz
+      // note: only look at bottom half of spectrum!  (hence divide by 6 instead of 3)
+      int start = MY_FFT_SAMPLES * i / 6;
+      int end = MY_FFT_SAMPLES * (i + 1) / 6;
+      int j;
+
+      mysound.imm[i] = 0;
+
+      for (j = start; j < end; j++)
+        mysound.imm[i] += mysound.fSpecLeft[j];
     }
 
-    if (i == 2)
+
+    // do temporal blending to create attenuated and super-attenuated versions
+    for (i = 0; i < 3; i++)
     {
-      start = MY_FFT_SAMPLES * i / 8;
-      end = MY_FFT_SAMPLES * (i + 1) / 3; // treb: 4000hz-20000hz
-    } // new MD beat detection algorithm, clear, perfect, stable
+      float rate;
+
+      if (mysound.imm[i] > mysound.avg[i])
+        rate = 0.2f;
+      else
+        rate = 0.5f;
+      rate = AdjustRateToFPS(rate, 30.0f, GetFps());
+      mysound.avg[i] = mysound.avg[i] * rate + mysound.imm[i] * (1 - rate);
+
+      if (GetFrame() < 50)
+        rate = 0.9f;
+      else
+        rate = 0.992f;
+      rate = AdjustRateToFPS(rate, 30.0f, GetFps());
+      mysound.long_avg[i] = mysound.long_avg[i] * rate + mysound.imm[i] * (1 - rate);
+
+
+      // also get bass/mid/treble levels *relative to the past*
+      if (fabsf(mysound.long_avg[i]) < 0.001f)
+        mysound.imm_rel[i] = 1.0f;
+      else
+        mysound.imm_rel[i] = mysound.imm[i] / mysound.long_avg[i];
+
+      if (fabsf(mysound.long_avg[i]) < 0.001f)
+        mysound.avg_rel[i] = 1.0f;
+      else
+        mysound.avg_rel[i] = mysound.avg[i] / mysound.long_avg[i];
+    }
+  }
+  else {
+    // Incubo_ version
+
+    memcpy(mysound.fWave[0], m_sound.fWaveform[0], sizeof(float) * 576);
+    memcpy(mysound.fWave[1], m_sound.fWaveform[1], sizeof(float) * 576);
+
+    // do our own [UN-NORMALIZED] fft
+    float fWaveLeft[576];
+    float fWaveRight[576];
+    for (int i = 0; i < 576; i++)
+    {
+      fWaveLeft[i] = m_sound.fWaveform[0][i]; //left channel
+      fWaveRight[i] = m_sound.fWaveform[1][i]; //right channel
+    }
+
+    memset(mysound.fSpecLeft, 0, sizeof(float) * MY_FFT_SAMPLES);
+    memset(mysound.fSpecRight, 0, sizeof(float) * MY_FFT_SAMPLES);
+
+    myfft.time_to_frequency_domain(fWaveLeft, mysound.fSpecLeft);
+    myfft.time_to_frequency_domain(fWaveRight, mysound.fSpecRight);
+    //for (i=0; i<MY_FFT_SAMPLES; i++) fSpecLeft[i] = sqrtf(fSpecLeft[i]*fSpecLeft[i] + fSpecTemp[i]*fSpecTemp[i]);
+
+    // sum spectrum up into 3 bands
+    for (i = 0; i < 3; i++)
+    {
+      //note: only look at bottom half of spectrum!  (hence divide by 6 instead of 3)
+      int start = MY_FFT_SAMPLES * i / 200;
+      int end = MY_FFT_SAMPLES * (i + 1) / 142; // bass: 20hz-250hz
+      int j;
+
+      if (i == 1)
+      {
+        start = MY_FFT_SAMPLES * i / 68;
+        end = MY_FFT_SAMPLES * (i + 1) / 13; // mid: 250hz-4000hz
+      }
+
+      if (i == 2)
+      {
+        start = MY_FFT_SAMPLES * i / 8;
+        end = MY_FFT_SAMPLES * (i + 1) / 3; // treb: 4000hz-20000hz
+      } // new MD beat detection algorithm, clear, perfect, stable
 
   /*int start = MY_FFT_SAMPLES * i / 6;
     int end = MY_FFT_SAMPLES * (i+1) / 6;
@@ -9999,43 +10095,44 @@ void CPlugin::DoCustomSoundAnalysis()
     //it depends on the sample rate input in your computer, so possibly it's not reacting correctly. See fft.cpp
     //The recommended sample rate input for the new beat detection code is 48000hz.
 
-    mysound.imm[i] = 0;
+      mysound.imm[i] = 0;
 
-    for (j = start; j < end; j++)
-      mysound.imm[i] += (mysound.fSpecLeft[j] + mysound.fSpecRight[j]) / 2; //I made the beat detection reacting on both channels, like projectM. Why don't you try?
-  }
+      for (j = start; j < end; j++)
+        mysound.imm[i] += (mysound.fSpecLeft[j] + mysound.fSpecRight[j]) / 2; //I made the beat detection reacting on both channels, like projectM. Why don't you try?
+    }
 
-  // do temporal blending to create attenuated and super-attenuated versions
-  for (i = 0; i < 3; i++)
-  {
-    float rate;
+    // do temporal blending to create attenuated and super-attenuated versions
+    for (i = 0; i < 3; i++)
+    {
+      float rate;
 
-    if (mysound.imm[i] > mysound.avg[i])
-      rate = 0.2f;
-    else
-      rate = 0.5f;
-    rate = AdjustRateToFPS(rate, 30.0f, GetFps());
-    mysound.avg[i] = mysound.avg[i] * rate + mysound.imm[i] * (1 - rate);
+      if (mysound.imm[i] > mysound.avg[i])
+        rate = 0.2f;
+      else
+        rate = 0.5f;
+      rate = AdjustRateToFPS(rate, 30.0f, GetFps());
+      mysound.avg[i] = mysound.avg[i] * rate + mysound.imm[i] * (1 - rate);
 
-    if (GetFrame() < 50)
-      rate = 0.9f;
-    else
-      rate = 0.992f;
-    rate = AdjustRateToFPS(rate, 30.0f, GetFps());
-    mysound.long_avg[i] = mysound.long_avg[i] * rate + mysound.imm[i] * (1 - rate);
+      if (GetFrame() < 50)
+        rate = 0.9f;
+      else
+        rate = 0.992f;
+      rate = AdjustRateToFPS(rate, 30.0f, GetFps());
+      mysound.long_avg[i] = mysound.long_avg[i] * rate + mysound.imm[i] * (1 - rate);
 
 
-    // also get bass/mid/treble levels *relative to the past*
-    //changed all the values to 0 instead of 1 when it's no music
-    if (fabsf(mysound.long_avg[i]) < 0.001f)
-      mysound.imm_rel[i] = 0.0f;
-    else
-      mysound.imm_rel[i] = mysound.imm[i] / mysound.long_avg[i];
+      // also get bass/mid/treble levels *relative to the past*
+      //changed all the values to 0 instead of 1 when it's no music
+      if (fabsf(mysound.long_avg[i]) < 0.001f)
+        mysound.imm_rel[i] = 0.0f;
+      else
+        mysound.imm_rel[i] = mysound.imm[i] / mysound.long_avg[i];
 
-    if (fabsf(mysound.long_avg[i]) < 0.001f)
-      mysound.avg_rel[i] = 0.0f;
-    else
-      mysound.avg_rel[i] = mysound.avg[i] / mysound.long_avg[i];
+      if (fabsf(mysound.long_avg[i]) < 0.001f)
+        mysound.avg_rel[i] = 0.0f;
+      else
+        mysound.avg_rel[i] = mysound.avg[i] / mysound.long_avg[i];
+    }
   }
 }
 
