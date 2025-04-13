@@ -121,9 +121,11 @@ namespace MilkwaveRemote {
     }
 
     private enum MessageType {
+      Direct,
       Message,
       PresetFilePath,
-      Amplify
+      Amplify,
+      Wave
     }
 
     public MilkwaveRemoteForm() {
@@ -219,6 +221,22 @@ namespace MilkwaveRemote {
       ofd = new OpenFileDialog();
       ofd.Filter = "MilkDrop Presets|*.milk;*.milk2|All files (*.*)|*.*";
       ofd.RestoreDirectory = true;
+    }
+
+    private void MainForm_Shown(object sender, EventArgs e) {
+      txtMessage.Focus();
+      txtMessage.SelectAll();
+      
+      pnlColorMessage.BackColor = Color.FromArgb(191, 0, 0); // Color.FromArgb(230, 0, 120);
+      colorDialogMessage.Color = pnlColorMessage.BackColor;
+
+      pnlColorWave.BackColor = Color.FromArgb(0, 0, 225); // dark blue
+      colorDialogWave.Color = pnlColorWave.BackColor;
+
+      if (cboParameters.Items.Count > 0) {
+        cboParameters.SelectedIndex = 0;
+      }
+      SetFormattedMessage();
 
       string VisualizerPresetsFolder = AppDomain.CurrentDomain.BaseDirectory + "\\resources\\presets\\";
       if (Directory.Exists(VisualizerPresetsFolder)) {
@@ -233,18 +251,6 @@ namespace MilkwaveRemote {
       }
     }
 
-    private void MainForm_Shown(object sender, EventArgs e) {
-      txtMessage.Focus();
-      txtMessage.SelectAll();
-      pnlColor.BackColor = Color.FromArgb(230, 0, 120);
-      colorDialog1.Color = pnlColor.BackColor;
-      if (cboParameters.Items.Count > 0) {
-        cboParameters.SelectedIndex = 0;
-      }
-      SetFormattedMessage();
-
-    }
-
     protected override void WndProc(ref Message m) {
       const int WM_COPYDATA = 0x004A;
 
@@ -257,11 +263,13 @@ namespace MilkwaveRemote {
           if (receivedString.Length > 0) {
             string findString = "RESOURCES\\";
             int index = receivedString.IndexOf(findString, StringComparison.CurrentCultureIgnoreCase);
+            string displayText = receivedString;
             if (index > -1) {
-              receivedString = receivedString.Substring(index + findString.Length);
+              displayText = receivedString.Substring(index + findString.Length);
             }
             // Process the received string
-            txtVis.Text = receivedString;
+            txtVisRunning.Text = displayText;
+            toolTip1.SetToolTip(txtVisRunning, receivedString);
           }
         }
       }
@@ -307,7 +315,13 @@ namespace MilkwaveRemote {
     }
 
     private void btnSend_Click(object sender, EventArgs e) {
-      SendToMilkwaveVisualizer(txtMessage.Text, MessageType.Message);
+
+      if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
+        SendToMilkwaveVisualizer(txtMessage.Text, MessageType.Direct);
+      } else {
+        SendToMilkwaveVisualizer(txtMessage.Text, MessageType.Message);
+      }
+
       txtMessage.Focus();
       txtMessage.SelectAll();
     }
@@ -319,14 +333,23 @@ namespace MilkwaveRemote {
       IntPtr foundWindow = FindVisualizerWindow();
       if (foundWindow != IntPtr.Zero) {
         string message = "";
-        if (type == MessageType.PresetFilePath) {
+        if (type == MessageType.Direct) {
+          message = messageToSend;
+        } else if (type == MessageType.Wave) {
+          message = "WAVE" +
+            "|mode=" + numWavemode.Value +
+            "|colorr=" + pnlColorWave.BackColor.R +
+            "|colorg=" + pnlColorWave.BackColor.G +
+            "|colorb=" + pnlColorWave.BackColor.B;
+        } else if (type == MessageType.PresetFilePath) {
           message = "PRESET=" + messageToSend;
         } else if (type == MessageType.Amplify) {
-          message = "AMP|" +
-            "l=" + numAmpLeft.Value.ToString(CultureInfo.InvariantCulture) +
+          message = "AMP" +
+            "|l=" + numAmpLeft.Value.ToString(CultureInfo.InvariantCulture) +
             "|r=" + numAmpRight.Value.ToString(CultureInfo.InvariantCulture);
         } else if (type == MessageType.Message) {
-          message = "MSG|text=" + messageToSend;
+          message = "MSG" +
+            "|text=" + messageToSend;
           if (cboParameters.Text.Length > 0) {
             message += "|" + cboParameters.Text;
           }
@@ -334,9 +357,9 @@ namespace MilkwaveRemote {
             message += "|font=" + cboFonts.Text;
           }
           if (!message.Contains("r=") && !message.Contains("g=") && !message.Contains("b=")) {
-            message += "|r=" + pnlColor.BackColor.R;
-            message += "|g=" + pnlColor.BackColor.G;
-            message += "|b=" + pnlColor.BackColor.B;
+            message += "|r=" + pnlColorMessage.BackColor.R;
+            message += "|g=" + pnlColorMessage.BackColor.G;
+            message += "|b=" + pnlColorMessage.BackColor.B;
           }
           if (!message.Contains("size=")) {
             message += "|size=" + numSize.Value;
@@ -524,10 +547,16 @@ namespace MilkwaveRemote {
       AppendParam("font=" + cboFonts.Text);
     }
 
-    private void pnlColor_Click(object sender, EventArgs e) {
-      if (colorDialog1.ShowDialog() == DialogResult.OK) {
-        pnlColor.BackColor = colorDialog1.Color;
+    private void pnlColorMessage_Click(object sender, EventArgs e) {
+      if (colorDialogMessage.ShowDialog() == DialogResult.OK) {
+        pnlColorMessage.BackColor = colorDialogMessage.Color;
         SetFormattedMessage();
+      }
+    }
+
+    private void pnlColorWave_Click(object sender, EventArgs e) {
+      if (colorDialogWave.ShowDialog() == DialogResult.OK) {
+        pnlColorWave.BackColor = colorDialogWave.Color;
       }
     }
 
@@ -535,9 +564,9 @@ namespace MilkwaveRemote {
       RemoveParam("r");
       RemoveParam("g");
       RemoveParam("b");
-      AppendParam("r=" + pnlColor.BackColor.R);
-      AppendParam("g=" + pnlColor.BackColor.G);
-      AppendParam("b=" + pnlColor.BackColor.B);
+      AppendParam("r=" + pnlColorMessage.BackColor.R);
+      AppendParam("g=" + pnlColorMessage.BackColor.G);
+      AppendParam("b=" + pnlColorMessage.BackColor.B);
     }
 
     private void LoadMessages(string fileName) {
@@ -1052,7 +1081,7 @@ namespace MilkwaveRemote {
         string colorG = GetParam("g");
         string colorB = GetParam("b");
         if (colorR.Length == 0 || colorG.Length == 0 || colorB.Length == 0) {
-          fontColor = pnlColor.BackColor;
+          fontColor = pnlColorMessage.BackColor;
         } else {
           fontColor = Color.FromArgb(int.Parse(colorR), int.Parse(colorG), int.Parse(colorB));
         }
@@ -1134,7 +1163,7 @@ namespace MilkwaveRemote {
         string colorG = GetParam("g");
         string colorB = GetParam("b");
         if (colorR.Length > 0 && colorG.Length > 0 && colorB.Length > 0) {
-          pnlColor.BackColor = Color.FromArgb(int.Parse(colorR), int.Parse(colorG), int.Parse(colorB));
+          pnlColorMessage.BackColor = Color.FromArgb(int.Parse(colorR), int.Parse(colorG), int.Parse(colorB));
         }
 
         int fontSize;
@@ -1231,9 +1260,14 @@ namespace MilkwaveRemote {
     private void toolStripMenuItemDarkMode_Click(object sender, EventArgs e) {
       toolStripMenuItemDarkMode.Checked = !toolStripMenuItemDarkMode.Checked;
       Settings.DarkMode = toolStripMenuItemDarkMode.Checked;
+      var tmpColorMessage = pnlColorMessage.BackColor;
+      var tmpColorWave = pnlColorWave.BackColor;
       dm.ColorMode = Settings.DarkMode ? DisplayMode.DarkMode : DisplayMode.ClearMode;
       dm.ApplyTheme(Settings.DarkMode);
       SetBarIcon(Settings.DarkMode);
+      pnlColorMessage.BackColor = tmpColorMessage;
+      pnlColorWave.BackColor = tmpColorWave;
+      SetFormattedMessage();
     }
 
     private void toolStripMenuItemMessagePanel_Click(object sender, EventArgs e) {
@@ -1425,6 +1459,42 @@ namespace MilkwaveRemote {
         numAmpLeft.Value = numAmpRight.Value;
       }
       SendToMilkwaveVisualizer("", MessageType.Amplify);
+    }
+
+    private void numWavemode_ValueChanged(object sender, EventArgs e) {
+      if ((Control.ModifierKeys & Keys.Alt) == Keys.Alt) {
+        btnSendWave.PerformClick();
+      }
+    }
+
+    private void btnSendWave_Click(object sender, EventArgs e) {
+      SendToMilkwaveVisualizer("", MessageType.Wave);
+    }
+
+    private void lblWaveColor_DoubleClick(object sender, EventArgs e) {
+      string copyText = colorDialogWave.Color.R + "," + colorDialogWave.Color.G + "," + colorDialogWave.Color.B;
+      string displayText = copyText;
+
+      if ((Control.ModifierKeys & Keys.Alt) == Keys.Alt) {
+        float redValue = colorDialogWave.Color.R / 255f;
+        string formattedRedValue = redValue.ToString("F3", CultureInfo.InvariantCulture);
+        float greenValue = colorDialogWave.Color.G / 255f;
+        string formattedGreenValue = greenValue.ToString("F3", CultureInfo.InvariantCulture);
+        float blueValue = colorDialogWave.Color.B / 255f;
+        string formattedBlueValue = blueValue.ToString("F3", CultureInfo.InvariantCulture);
+        copyText = "r=" + formattedRedValue + Environment.NewLine + "g=" + formattedGreenValue + Environment.NewLine + "b=" + formattedBlueValue;
+        displayText = "r=" + formattedRedValue + ", g=" + formattedGreenValue + ", b=" + formattedBlueValue;
+      }
+      Clipboard.SetText(copyText);
+      statusBar.Text = $"Copied '{displayText}' to clipboard";
+    }
+
+    private void lblCurrentPreset_DoubleClick(object sender, EventArgs e) {
+      string? text = toolTip1.GetToolTip(txtVisRunning);
+      if (text != null && text.Length > 0) {
+        Clipboard.SetText(text);
+        statusBar.Text = $"Copied '{text}' to clipboard";
+      }
     }
   }
 }

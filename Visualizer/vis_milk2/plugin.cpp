@@ -9827,6 +9827,52 @@ void CPlugin::LaunchMessage(wchar_t* sMessage) {
     LoadPreset(message.c_str(), 1);
     // Handle other message types here if needed
   }
+  else if (wcsncmp(sMessage, L"WAVE|", 5) == 0) {
+    std::wstring message(sMessage + 5);
+    std::wstringstream ss(message);
+    std::wstring token;
+    std::map<std::wstring, std::wstring> params;
+
+    // Parse key-value pairs
+    while (std::getline(ss, token, L'|')) {
+      size_t pos = token.find(L'=');
+      if (pos != std::wstring::npos) {
+        std::wstring key = token.substr(0, pos);
+        std::wstring value = token.substr(pos + 1);
+        params[key] = value;
+      }
+    }
+
+    if (params.find(L"mode") != params.end()) {
+      g_plugin.m_pState->m_nWaveMode = std::stoi(params[L"mode"]);
+    }
+    if (params.find(L"colorr") != params.end()) {
+      // g_plugin.m_pState->var_pf_wave_r = g_plugin.m_pState->var_pf_wave_r;
+      g_plugin.m_pState->m_fWaveR = std::stoi(params[L"colorr"]);
+
+      // g_plugin.m_pState->m_fOuterBorderR = std::stoi(params[L"colorr"]);
+      // g_plugin.m_pState->m_fInnerBorderR = std::stoi(params[L"colorr"]);
+      
+      // amount of color in the motion vectors
+      g_plugin.m_pState->m_fMvR = std::stoi(params[L"colorr"]);      
+    }
+    if (params.find(L"colorg") != params.end()) {
+      g_plugin.m_pState->m_fWaveG = std::stoi(params[L"colorg"]);
+      // g_plugin.m_pState->m_fOuterBorderG = std::stoi(params[L"colorg"]);
+      // g_plugin.m_pState->m_fInnerBorderG = std::stoi(params[L"colorg"]);
+
+      // amount of color in the motion vectors
+      g_plugin.m_pState->m_fMvG = std::stoi(params[L"colorg"]);
+    }
+    if (params.find(L"colorb") != params.end()) {
+      g_plugin.m_pState->m_fWaveB = std::stoi(params[L"colorb"]);
+      // g_plugin.m_pState->m_fOuterBorderB = std::stoi(params[L"colorb"]);
+      // g_plugin.m_pState->m_fInnerBorderB = std::stoi(params[L"colorb"]);
+
+      // amount of color in the motion vectors
+      g_plugin.m_pState->m_fMvB = std::stoi(params[L"colorb"]);
+    }
+  }
 }
 
 bool CPlugin::LaunchSprite(int nSpriteNum, int nSlot)
