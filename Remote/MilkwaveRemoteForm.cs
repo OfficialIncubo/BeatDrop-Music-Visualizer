@@ -362,6 +362,23 @@ namespace MilkwaveRemote {
             "|l=" + numAmpLeft.Value.ToString(CultureInfo.InvariantCulture) +
             "|r=" + numAmpRight.Value.ToString(CultureInfo.InvariantCulture);
         } else if (type == MessageType.Message) {
+
+          if (chkWrap.Checked && messageToSend.Length >= numWrap.Value && !message.Contains("//") && !message.Contains(Environment.NewLine)) {
+            // try auto-wrap
+            if (chkWrap.Checked && !message.Contains("//") && !message.Contains(Environment.NewLine)) {
+              // Find the whitespace character closest to the middle of messageToSend
+              int middleIndex = messageToSend.Length / 2;
+              int closestWhitespaceIndex = messageToSend.LastIndexOf(' ', middleIndex);
+              if (closestWhitespaceIndex == -1) {
+                closestWhitespaceIndex = messageToSend.IndexOf(' ', middleIndex);
+              }
+              // Replace the closest whitespace with a newline character
+              if (closestWhitespaceIndex != -1) {
+                messageToSend = messageToSend.Remove(closestWhitespaceIndex, 1).Insert(closestWhitespaceIndex, "//");
+              }
+            }
+          }
+
           message = "MSG" +
             "|text=" + messageToSend;
           if (cboParameters.Text.Length > 0) {
@@ -378,6 +395,7 @@ namespace MilkwaveRemote {
           if (!message.Contains("size=")) {
             message += "|size=" + numSize.Value;
           }
+
           message = message
             .Replace(" //", "//")
             .Replace("// ", "//")
@@ -976,7 +994,10 @@ namespace MilkwaveRemote {
         RECT savedWindowRect;
         GetWindowRect(foundWindow, out savedWindowRect);
 
-        Settings.VisualizerWindowLocation = new Point(savedWindowRect.Left, savedWindowRect.Top);
+        Point visWindow = new Point(savedWindowRect.Left, savedWindowRect.Top);
+        if (visWindow.X > -32000 && visWindow.Y > -32000) {
+          Settings.VisualizerWindowLocation = visWindow;
+        }
         Settings.VisualizerWindowSize = new Size(savedWindowRect.Right - savedWindowRect.Left, savedWindowRect.Bottom - savedWindowRect.Top);
 
         // Close the Visualizer window
