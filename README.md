@@ -21,7 +21,7 @@ There are many tooltips explaining all features when you hover over the form ele
 
 ## History
 
-The original Milkdrop 2 WinAMP plugin created by Ryan Geiss was turned into a Windows standalone application by Maxim Volskiy as [BeatDrop](https://github.com/mvsoft74/BeatDrop) and been improved upon eg. in the [BeatDrop-Music-Visualizer](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer) and [MilkDrop3](https://github.com/milkdrop2077/MilkDrop3) projects.
+The original MilkDrop 2 WinAMP plugin created by Ryan Geiss was turned into a Windows standalone application by Maxim Volskiy as [BeatDrop](https://github.com/mvsoft74/BeatDrop) and been improved upon eg. in the [BeatDrop-Music-Visualizer](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer) and [MilkDrop3](https://github.com/milkdrop2077/MilkDrop3) projects.
 
 ## System Requirements
 * Windows 7 or later
@@ -41,7 +41,7 @@ However, if you're satisfied with the additions I made and you want to support m
 
 Many thanks to:
 
-* Ryan Geiss - [Milkdrop2](https://www.geisswerks.com/milkdrop/)
+* Ryan Geiss - [MilkDrop2](https://www.geisswerks.com/milkdrop/)
 * Maxim Volskiy - [BeatDrop](https://github.com/mvsoft74/BeatDrop)
 * oO-MrC-Oo - [XBMC plugin](https://github.com/oO-MrC-Oo/Milkdrop2-XBMC)
 * Casey Langen - [milkdrop2-musikcube](https://github.com/clangen/milkdrop2-musikcube)
