@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
+using System.Windows.Forms;
 using static DarkModeForms.DarkModeCS;
 
 namespace MilkwaveRemote {
@@ -160,6 +161,7 @@ namespace MilkwaveRemote {
       dm = new DarkModeCS(this) {
         ColorMode = Settings.DarkMode ? DarkModeCS.DisplayMode.DarkMode : DarkModeCS.DisplayMode.ClearMode,
       };
+
       toolStripMenuItemDarkMode.Checked = Settings.DarkMode;
       SetBarIcon(Settings.DarkMode);
 
@@ -187,12 +189,12 @@ namespace MilkwaveRemote {
     }
 
     private void MilkwaveRemoteForm_Load(object sender, EventArgs e) {
-      
-      // hide tab panel for now
-      tabControl1.Appearance = TabAppearance.Normal;
+
+      // hide tab panel for now      
+      tabControl1.Appearance = TabAppearance.FlatButtons;
       tabControl1.ItemSize = new Size(0, 1);
       tabControl1.SizeMode = TabSizeMode.Fixed;
-      tabRemote.UseVisualStyleBackColor = true;
+      //tabRemote.UseVisualStyleBackColor = false;
 
       Location = Settings.RemoteWindowLocation;
       Size = Settings.RemoteWindowSize;
@@ -1203,7 +1205,7 @@ namespace MilkwaveRemote {
     }
 
     private void PaintContainerBorder(PaintEventArgs e) {
-      // var col = dm.IsDarkMode ? Color.Silver : dm.OScolors.AccentDark;
+      // var col = dm.Is§ ? Color.Silver : dm.OScolors.AccentDark;
       // e.Graphics.DrawRectangle(new Pen(col, 1), 0, 0, e.ClipRectangle.Width - 1, e.ClipRectangle.Height - 1);
     }
 
@@ -1234,9 +1236,9 @@ namespace MilkwaveRemote {
     }
 
     private void SplitContainer1Changed() {
-      if (splitContainer1.Panel1.Height > Settings.Panel1DefaultHeight) {
-        splitContainer1.SplitterDistance = Settings.Panel1DefaultHeight;
-      }
+      // if (splitContainer1.Panel1.Height > Settings.Panel1DefaultHeight) {
+      //   splitContainer1.SplitterDistance = Settings.Panel1DefaultHeight;
+      // }
     }
 
     private void toolStripMenuItemReleases_Click(object sender, EventArgs e) {
