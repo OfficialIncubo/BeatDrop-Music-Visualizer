@@ -368,7 +368,7 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
                     // compute size of text if drawn w/font of THIS size:
 		            temp = rect;
 		            int h = d3dx_font->DrawTextW(NULL, szTextToDraw, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX*/, 0xFFFFFFFF);
-
+		            
                     // adjust & prepare to reiterate:
 		            if (temp.right >= rect.right || h > rect.bottom-rect.top)
 			            hi = mid;
@@ -384,15 +384,34 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
 
         if (gdi_font && d3dx_font)
         {
-	        // do actual drawing + set m_supertext.nFontSizeUsed; use 'lo' size
-            int h = d3dx_font->DrawTextW(NULL, szTextToDraw, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX*/ | DT_CENTER, 0xFFFFFFFF);
-	        temp.left   = 0;
-	        temp.right  = m_nTitleTexSizeX;  // now allow text to go all the way over, since we're actually drawing!
-            temp.top    = m_nTitleTexSizeY/2 - h/2;
-            temp.bottom = m_nTitleTexSizeY/2 + h/2;
-	        m_supertext.nFontSizeUsed = d3dx_font->DrawTextW(NULL, szTextToDraw, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX*/ | DT_CENTER, 0xFFFFFFFF);
+          int lineCount = 1;  
+          for (const wchar_t* p = szTextToDraw; *p != L'\0'; ++p) {
+              if (*p == L'\n') {
+                  ++lineCount;
+              }
+          }
 
-            ret = true;
+          // do actual drawing + set m_supertext.nFontSizeUsed; use 'lo' size
+          int h = d3dx_font->DrawTextW(NULL, szTextToDraw, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX*/ | DT_CENTER, 0xFFFFFFFF);
+
+          long offset = h / 2;
+          if (lineCount > 1) {
+            offset *= lineCount;
+          }
+
+          temp.left   = 0;
+          temp.right  = m_nTitleTexSizeX;  // now allow text to go all the way over, since we're actually drawing!
+          temp.top    = m_nTitleTexSizeY/2 - offset;
+          temp.bottom = m_nTitleTexSizeY/2 + offset;
+
+          if (lineCount == 1) {
+            m_supertext.nFontSizeUsed = d3dx_font->DrawTextW(NULL, szTextToDraw, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX*/ | DT_CENTER, 0xFFFFFFFF);
+          }
+          else {
+            m_supertext.nFontSizeUsed = d3dx_font->DrawTextW(NULL, szTextToDraw, -1, &temp, DT_WORDBREAK /*| DT_NOPREFIX*/ | DT_CENTER, 0xFFFFFFFF);
+          }
+
+          ret = true;
         }
         else
         {

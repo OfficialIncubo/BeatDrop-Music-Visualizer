@@ -12,7 +12,7 @@ namespace MilkwaveRemote {
       Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
       Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
       AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-
+      Application.EnableVisualStyles();
       Application.Run(new MilkwaveRemoteForm());
     }
 
