@@ -90,10 +90,11 @@ namespace MilkwaveRemote
       pnlColorWave = new Panel();
       lblCurrentPreset = new Label();
       chkAmpLinked = new CheckBox();
+      chkWrap = new CheckBox();
+      numWrap = new NumericUpDown();
       colorDialogMessage = new ColorDialog();
       splitContainer1 = new SplitContainer();
       txtStyle = new TextBox();
-      label5 = new Label();
       label2 = new Label();
       splitContainer2 = new SplitContainer();
       tableLayoutPanel1 = new TableLayoutPanel();
@@ -118,8 +119,6 @@ namespace MilkwaveRemote
       colorDialogWave = new ColorDialog();
       tabControl1 = new TabControl();
       tabRemote = new TabPage();
-      chkWrap = new CheckBox();
-      numWrap = new NumericUpDown();
       statusStrip1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)numSize).BeginInit();
       ((System.ComponentModel.ISupportInitialize)numBPM).BeginInit();
@@ -127,6 +126,7 @@ namespace MilkwaveRemote
       ((System.ComponentModel.ISupportInitialize)numAmpLeft).BeginInit();
       ((System.ComponentModel.ISupportInitialize)numAmpRight).BeginInit();
       ((System.ComponentModel.ISupportInitialize)numWavemode).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)numWrap).BeginInit();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -138,17 +138,16 @@ namespace MilkwaveRemote
       tableLayoutPanel1.SuspendLayout();
       tabControl1.SuspendLayout();
       tabRemote.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)numWrap).BeginInit();
       SuspendLayout();
       // 
       // statusStrip1
       // 
       statusStrip1.ImageScalingSize = new Size(20, 20);
       statusStrip1.Items.AddRange(new ToolStripItem[] { statusBar, toolStripDropDownButton });
-      statusStrip1.Location = new Point(0, 685);
+      statusStrip1.Location = new Point(0, 543);
       statusStrip1.Name = "statusStrip1";
-      statusStrip1.Padding = new Padding(1, 0, 15, 0);
-      statusStrip1.Size = new Size(878, 26);
+      statusStrip1.Padding = new Padding(1, 0, 12, 0);
+      statusStrip1.Size = new Size(702, 26);
       statusStrip1.TabIndex = 5;
       statusStrip1.Text = "statusStrip1";
       // 
@@ -156,7 +155,7 @@ namespace MilkwaveRemote
       // 
       statusBar.Margin = new Padding(7, 4, 0, 2);
       statusBar.Name = "statusBar";
-      statusBar.Size = new Size(760, 20);
+      statusBar.Size = new Size(601, 20);
       statusBar.Spring = true;
       statusBar.TextAlign = ContentAlignment.TopLeft;
       // 
@@ -167,55 +166,55 @@ namespace MilkwaveRemote
       toolStripDropDownButton.ImageTransparentColor = Color.Magenta;
       toolStripDropDownButton.Name = "toolStripDropDownButton";
       toolStripDropDownButton.ShowDropDownArrow = false;
-      toolStripDropDownButton.Size = new Size(95, 24);
+      toolStripDropDownButton.Size = new Size(81, 24);
       toolStripDropDownButton.Text = "Milkwave";
       // 
       // toolStripMenuItemHelp
       // 
       toolStripMenuItemHelp.Name = "toolStripMenuItemHelp";
-      toolStripMenuItemHelp.Size = new Size(189, 26);
+      toolStripMenuItemHelp.Size = new Size(152, 22);
       toolStripMenuItemHelp.Text = "Help";
       toolStripMenuItemHelp.Click += toolStripMenuItemHelp_Click;
       // 
       // toolStripMenuItemHomepage
       // 
       toolStripMenuItemHomepage.Name = "toolStripMenuItemHomepage";
-      toolStripMenuItemHomepage.Size = new Size(189, 26);
+      toolStripMenuItemHomepage.Size = new Size(152, 22);
       toolStripMenuItemHomepage.Text = "Releases";
       toolStripMenuItemHomepage.Click += toolStripMenuItemReleases_Click;
       // 
       // toolStripMenuItemSupporters
       // 
       toolStripMenuItemSupporters.Name = "toolStripMenuItemSupporters";
-      toolStripMenuItemSupporters.Size = new Size(189, 26);
+      toolStripMenuItemSupporters.Size = new Size(152, 22);
       toolStripMenuItemSupporters.Text = "Supporters";
       toolStripMenuItemSupporters.Click += toolStripMenuItemSupporters_Click;
       // 
       // toolStripSeparator1
       // 
       toolStripSeparator1.Name = "toolStripSeparator1";
-      toolStripSeparator1.Size = new Size(186, 6);
+      toolStripSeparator1.Size = new Size(149, 6);
       // 
       // toolStripMenuItemDarkMode
       // 
       toolStripMenuItemDarkMode.Checked = true;
       toolStripMenuItemDarkMode.CheckState = CheckState.Checked;
       toolStripMenuItemDarkMode.Name = "toolStripMenuItemDarkMode";
-      toolStripMenuItemDarkMode.Size = new Size(189, 26);
+      toolStripMenuItemDarkMode.Size = new Size(152, 22);
       toolStripMenuItemDarkMode.Text = "Dark Mode";
       toolStripMenuItemDarkMode.Click += toolStripMenuItemDarkMode_Click;
       // 
       // toolStripSeparator2
       // 
       toolStripSeparator2.Name = "toolStripSeparator2";
-      toolStripSeparator2.Size = new Size(186, 6);
+      toolStripSeparator2.Size = new Size(149, 6);
       // 
       // toolStripMenuItemMessagePanel
       // 
       toolStripMenuItemMessagePanel.Checked = true;
       toolStripMenuItemMessagePanel.CheckState = CheckState.Checked;
       toolStripMenuItemMessagePanel.Name = "toolStripMenuItemMessagePanel";
-      toolStripMenuItemMessagePanel.Size = new Size(189, 26);
+      toolStripMenuItemMessagePanel.Size = new Size(152, 22);
       toolStripMenuItemMessagePanel.Text = "Message Panel";
       toolStripMenuItemMessagePanel.Click += toolStripMenuItemMessagePanel_Click;
       // 
@@ -224,7 +223,7 @@ namespace MilkwaveRemote
       toolStripMenuItemPresetPanel.Checked = true;
       toolStripMenuItemPresetPanel.CheckState = CheckState.Checked;
       toolStripMenuItemPresetPanel.Name = "toolStripMenuItemPresetPanel";
-      toolStripMenuItemPresetPanel.Size = new Size(189, 26);
+      toolStripMenuItemPresetPanel.Size = new Size(152, 22);
       toolStripMenuItemPresetPanel.Text = "Preset Panel";
       toolStripMenuItemPresetPanel.Click += toolStripMenuItemPresetPanel_Click;
       // 
@@ -233,7 +232,7 @@ namespace MilkwaveRemote
       toolStripMenuItemButtonPanel.Checked = true;
       toolStripMenuItemButtonPanel.CheckState = CheckState.Checked;
       toolStripMenuItemButtonPanel.Name = "toolStripMenuItemButtonPanel";
-      toolStripMenuItemButtonPanel.Size = new Size(189, 26);
+      toolStripMenuItemButtonPanel.Size = new Size(152, 22);
       toolStripMenuItemButtonPanel.Text = "Button Panel";
       toolStripMenuItemButtonPanel.Click += toolStripMenuItemButtonPanel_Click;
       // 
@@ -244,10 +243,10 @@ namespace MilkwaveRemote
       chkPreview.Checked = true;
       chkPreview.CheckState = CheckState.Checked;
       chkPreview.FlatStyle = FlatStyle.System;
-      chkPreview.Location = new Point(468, 80);
-      chkPreview.Margin = new Padding(4, 2, 4, 2);
+      chkPreview.Location = new Point(413, 66);
+      chkPreview.Margin = new Padding(3, 2, 3, 2);
       chkPreview.Name = "chkPreview";
-      chkPreview.Size = new Size(80, 29);
+      chkPreview.Size = new Size(64, 23);
       chkPreview.TabIndex = 73;
       chkPreview.Text = "Preview";
       chkPreview.TextAlign = ContentAlignment.MiddleCenter;
@@ -259,10 +258,10 @@ namespace MilkwaveRemote
       // btnAppendSize
       // 
       btnAppendSize.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      btnAppendSize.Location = new Point(490, 155);
+      btnAppendSize.Location = new Point(387, 123);
       btnAppendSize.Margin = new Padding(0);
       btnAppendSize.Name = "btnAppendSize";
-      btnAppendSize.Size = new Size(58, 29);
+      btnAppendSize.Size = new Size(46, 23);
       btnAppendSize.TabIndex = 81;
       btnAppendSize.Text = "Set";
       toolTip1.SetToolTip(btnAppendSize, "Append to (or update in) parameters line");
@@ -272,11 +271,11 @@ namespace MilkwaveRemote
       // numSize
       // 
       numSize.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      numSize.Location = new Point(428, 155);
-      numSize.Margin = new Padding(4, 2, 4, 2);
+      numSize.Location = new Point(337, 123);
+      numSize.Margin = new Padding(3, 2, 3, 2);
       numSize.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
       numSize.Name = "numSize";
-      numSize.Size = new Size(58, 27);
+      numSize.Size = new Size(46, 23);
       numSize.TabIndex = 80;
       numSize.TextAlign = HorizontalAlignment.Center;
       toolTip1.SetToolTip(numSize, "Font size");
@@ -288,10 +287,9 @@ namespace MilkwaveRemote
       // 
       lblSize.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       lblSize.AutoSize = true;
-      lblSize.Location = new Point(387, 159);
-      lblSize.Margin = new Padding(4, 0, 4, 0);
+      lblSize.Location = new Point(305, 126);
       lblSize.Name = "lblSize";
-      lblSize.Size = new Size(36, 20);
+      lblSize.Size = new Size(27, 15);
       lblSize.TabIndex = 98;
       lblSize.Text = "Size";
       toolTip1.SetToolTip(lblSize, "Only used if no size parameter supplied\r\nDouble-click to clear the size value from the parameters line\r\n");
@@ -301,10 +299,9 @@ namespace MilkwaveRemote
       // 
       lblStyle.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       lblStyle.AutoSize = true;
-      lblStyle.Location = new Point(564, 122);
-      lblStyle.Margin = new Padding(4, 0, 4, 0);
+      lblStyle.Location = new Point(446, 97);
       lblStyle.Name = "lblStyle";
-      lblStyle.Size = new Size(41, 20);
+      lblStyle.Size = new Size(32, 15);
       lblStyle.TabIndex = 75;
       lblStyle.Text = "Style";
       toolTip1.SetToolTip(lblStyle, "Double-click to remove this style\r\nRight-click to fill form elements from current parameters");
@@ -314,11 +311,11 @@ namespace MilkwaveRemote
       // numBPM
       // 
       numBPM.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      numBPM.Location = new Point(490, 191);
-      numBPM.Margin = new Padding(4, 2, 4, 2);
+      numBPM.Location = new Point(387, 152);
+      numBPM.Margin = new Padding(3, 2, 3, 2);
       numBPM.Maximum = new decimal(new int[] { 999, 0, 0, 0 });
       numBPM.Name = "numBPM";
-      numBPM.Size = new Size(58, 27);
+      numBPM.Size = new Size(46, 23);
       numBPM.TabIndex = 85;
       numBPM.TextAlign = HorizontalAlignment.Center;
       toolTip1.SetToolTip(numBPM, "BPM");
@@ -329,10 +326,9 @@ namespace MilkwaveRemote
       // 
       lblBPM.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       lblBPM.AutoSize = true;
-      lblBPM.Location = new Point(442, 194);
-      lblBPM.Margin = new Padding(4, 0, 4, 0);
+      lblBPM.Location = new Point(349, 154);
       lblBPM.Name = "lblBPM";
-      lblBPM.Size = new Size(39, 20);
+      lblBPM.Size = new Size(32, 15);
       lblBPM.TabIndex = 97;
       lblBPM.Text = "BPM";
       toolTip1.SetToolTip(lblBPM, "Click to reset timer");
@@ -343,10 +339,10 @@ namespace MilkwaveRemote
       chkFileRandom.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       chkFileRandom.Appearance = Appearance.Button;
       chkFileRandom.FlatStyle = FlatStyle.System;
-      chkFileRandom.Location = new Point(664, 191);
-      chkFileRandom.Margin = new Padding(4, 2, 4, 2);
+      chkFileRandom.Location = new Point(526, 152);
+      chkFileRandom.Margin = new Padding(3, 2, 3, 2);
       chkFileRandom.Name = "chkFileRandom";
-      chkFileRandom.Size = new Size(61, 29);
+      chkFileRandom.Size = new Size(49, 23);
       chkFileRandom.TabIndex = 87;
       chkFileRandom.Text = "Rand";
       chkFileRandom.TextAlign = ContentAlignment.MiddleCenter;
@@ -358,10 +354,9 @@ namespace MilkwaveRemote
       // 
       pnlColorMessage.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       pnlColorMessage.BorderStyle = BorderStyle.FixedSingle;
-      pnlColorMessage.Location = new Point(611, 155);
-      pnlColorMessage.Margin = new Padding(4, 4, 4, 4);
+      pnlColorMessage.Location = new Point(484, 123);
       pnlColorMessage.Name = "pnlColorMessage";
-      pnlColorMessage.Size = new Size(47, 28);
+      pnlColorMessage.Size = new Size(38, 23);
       pnlColorMessage.TabIndex = 82;
       toolTip1.SetToolTip(pnlColorMessage, "Only used if no r, g, b parameters supplied");
       pnlColorMessage.Click += pnlColorMessage_Click;
@@ -369,10 +364,10 @@ namespace MilkwaveRemote
       // btnAppendColor
       // 
       btnAppendColor.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      btnAppendColor.Location = new Point(664, 155);
+      btnAppendColor.Location = new Point(526, 123);
       btnAppendColor.Margin = new Padding(0);
       btnAppendColor.Name = "btnAppendColor";
-      btnAppendColor.Size = new Size(61, 29);
+      btnAppendColor.Size = new Size(49, 23);
       btnAppendColor.TabIndex = 83;
       btnAppendColor.Text = "Set";
       toolTip1.SetToolTip(btnAppendColor, "Append to (or update in) parameters line");
@@ -383,10 +378,9 @@ namespace MilkwaveRemote
       // 
       lblColor.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       lblColor.AutoSize = true;
-      lblColor.Location = new Point(558, 160);
-      lblColor.Margin = new Padding(4, 0, 4, 0);
+      lblColor.Location = new Point(441, 127);
       lblColor.Name = "lblColor";
-      lblColor.Size = new Size(45, 20);
+      lblColor.Size = new Size(36, 15);
       lblColor.TabIndex = 96;
       lblColor.Text = "Color";
       toolTip1.SetToolTip(lblColor, "Only used if no r, g, b parameters supplied\r\nDouble-click to clear the color information from the parameters line\r\n");
@@ -395,10 +389,10 @@ namespace MilkwaveRemote
       // btnFontAppend
       // 
       btnFontAppend.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      btnFontAppend.Location = new Point(302, 155);
+      btnFontAppend.Location = new Point(237, 123);
       btnFontAppend.Margin = new Padding(0);
       btnFontAppend.Name = "btnFontAppend";
-      btnFontAppend.Size = new Size(61, 29);
+      btnFontAppend.Size = new Size(49, 23);
       btnFontAppend.TabIndex = 79;
       btnFontAppend.Text = "Set";
       toolTip1.SetToolTip(btnFontAppend, "Append to (or update in) parameters line");
@@ -408,10 +402,9 @@ namespace MilkwaveRemote
       // lblFont
       // 
       lblFont.AutoSize = true;
-      lblFont.Location = new Point(51, 160);
-      lblFont.Margin = new Padding(4, 0, 4, 0);
+      lblFont.Location = new Point(41, 127);
       lblFont.Name = "lblFont";
-      lblFont.Size = new Size(38, 20);
+      lblFont.Size = new Size(31, 15);
       lblFont.TabIndex = 95;
       lblFont.Text = "Font";
       toolTip1.SetToolTip(lblFont, "Only used if no font parameter supplied\r\nDouble-click to clear the font value from the parameters line\r\n");
@@ -423,10 +416,9 @@ namespace MilkwaveRemote
       cboFonts.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
       cboFonts.AutoCompleteSource = AutoCompleteSource.ListItems;
       cboFonts.FormattingEnabled = true;
-      cboFonts.Location = new Point(98, 155);
-      cboFonts.Margin = new Padding(4, 4, 4, 4);
+      cboFonts.Location = new Point(78, 123);
       cboFonts.Name = "cboFonts";
-      cboFonts.Size = new Size(196, 28);
+      cboFonts.Size = new Size(153, 23);
       cboFonts.TabIndex = 78;
       toolTip1.SetToolTip(cboFonts, "Only used if no font parameter supplied");
       cboFonts.SelectedIndexChanged += cboFonts_SelectedIndexChanged;
@@ -435,11 +427,11 @@ namespace MilkwaveRemote
       // numBeats
       // 
       numBeats.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      numBeats.Location = new Point(611, 191);
-      numBeats.Margin = new Padding(4, 2, 4, 2);
+      numBeats.Location = new Point(484, 152);
+      numBeats.Margin = new Padding(3, 2, 3, 2);
       numBeats.Maximum = new decimal(new int[] { 99, 0, 0, 0 });
       numBeats.Name = "numBeats";
-      numBeats.Size = new Size(48, 27);
+      numBeats.Size = new Size(38, 23);
       numBeats.TabIndex = 86;
       numBeats.TextAlign = HorizontalAlignment.Center;
       toolTip1.SetToolTip(numBeats, "Wait time between lines in beats");
@@ -449,10 +441,9 @@ namespace MilkwaveRemote
       // 
       label7.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       label7.AutoSize = true;
-      label7.Location = new Point(560, 194);
-      label7.Margin = new Padding(4, 0, 4, 0);
+      label7.Location = new Point(443, 154);
       label7.Name = "label7";
-      label7.Size = new Size(45, 20);
+      label7.Size = new Size(35, 15);
       label7.TabIndex = 94;
       label7.Text = "Beats";
       toolTip1.SetToolTip(label7, "Wait time between lines in beats");
@@ -460,10 +451,9 @@ namespace MilkwaveRemote
       // lblFromFile
       // 
       lblFromFile.AutoSize = true;
-      lblFromFile.Location = new Point(20, 196);
-      lblFromFile.Margin = new Padding(4, 0, 4, 0);
+      lblFromFile.Location = new Point(16, 156);
       lblFromFile.Name = "lblFromFile";
-      lblFromFile.Size = new Size(70, 20);
+      lblFromFile.Size = new Size(56, 15);
       lblFromFile.TabIndex = 93;
       lblFromFile.Text = "From File";
       toolTip1.SetToolTip(lblFromFile, "Double-click to reload file\r\nRight-click to load custom file");
@@ -475,10 +465,9 @@ namespace MilkwaveRemote
       chkAutoplay.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       chkAutoplay.Appearance = Appearance.Button;
       chkAutoplay.FlatStyle = FlatStyle.System;
-      chkAutoplay.Location = new Point(732, 155);
-      chkAutoplay.Margin = new Padding(4, 4, 4, 4);
+      chkAutoplay.Location = new Point(581, 123);
       chkAutoplay.Name = "chkAutoplay";
-      chkAutoplay.Size = new Size(104, 65);
+      chkAutoplay.Size = new Size(83, 52);
       chkAutoplay.TabIndex = 88;
       chkAutoplay.Text = "Autoplay";
       chkAutoplay.TextAlign = ContentAlignment.MiddleCenter;
@@ -490,11 +479,10 @@ namespace MilkwaveRemote
       // txtAutoplay
       // 
       txtAutoplay.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-      txtAutoplay.Location = new Point(98, 191);
-      txtAutoplay.Margin = new Padding(4, 4, 4, 4);
+      txtAutoplay.Location = new Point(78, 152);
       txtAutoplay.Name = "txtAutoplay";
       txtAutoplay.ReadOnly = true;
-      txtAutoplay.Size = new Size(319, 27);
+      txtAutoplay.Size = new Size(251, 23);
       txtAutoplay.TabIndex = 84;
       toolTip1.SetToolTip(txtAutoplay, "Next line from file script-default.txt");
       // 
@@ -502,10 +490,9 @@ namespace MilkwaveRemote
       // 
       btnSaveParam.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       btnSaveParam.FlatStyle = FlatStyle.System;
-      btnSaveParam.Location = new Point(732, 119);
-      btnSaveParam.Margin = new Padding(4, 4, 4, 4);
+      btnSaveParam.Location = new Point(581, 94);
       btnSaveParam.Name = "btnSaveParam";
-      btnSaveParam.Size = new Size(104, 29);
+      btnSaveParam.Size = new Size(83, 23);
       btnSaveParam.TabIndex = 77;
       btnSaveParam.Text = "Save";
       toolTip1.SetToolTip(btnSaveParam, "Save current parameters as style");
@@ -515,10 +502,9 @@ namespace MilkwaveRemote
       // lblParameters
       // 
       lblParameters.AutoSize = true;
-      lblParameters.Location = new Point(8, 122);
-      lblParameters.Margin = new Padding(4, 0, 4, 0);
+      lblParameters.Location = new Point(6, 97);
       lblParameters.Name = "lblParameters";
-      lblParameters.Size = new Size(82, 20);
+      lblParameters.Size = new Size(66, 15);
       lblParameters.TabIndex = 91;
       lblParameters.Text = "Parameters";
       toolTip1.SetToolTip(lblParameters, "Double-click to clear all saved styles");
@@ -528,10 +514,9 @@ namespace MilkwaveRemote
       // 
       cboParameters.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
       cboParameters.DropDownStyle = ComboBoxStyle.DropDownList;
-      cboParameters.Location = new Point(98, 119);
-      cboParameters.Margin = new Padding(4, 4, 4, 4);
+      cboParameters.Location = new Point(78, 94);
       cboParameters.Name = "cboParameters";
-      cboParameters.Size = new Size(449, 28);
+      cboParameters.Size = new Size(355, 23);
       cboParameters.TabIndex = 74;
       toolTip1.SetToolTip(cboParameters, resources.GetString("cboParameters.ToolTip"));
       cboParameters.SelectedIndexChanged += cboParameters_SelectedIndexChanged;
@@ -541,10 +526,9 @@ namespace MilkwaveRemote
       // lblWindow
       // 
       lblWindow.AutoSize = true;
-      lblWindow.Location = new Point(29, 85);
-      lblWindow.Margin = new Padding(4, 0, 4, 0);
+      lblWindow.Location = new Point(23, 68);
       lblWindow.Name = "lblWindow";
-      lblWindow.Size = new Size(64, 20);
+      lblWindow.Size = new Size(51, 15);
       lblWindow.TabIndex = 89;
       lblWindow.Text = "Window";
       toolTip1.SetToolTip(lblWindow, "Double-click to restore default Visualizer window position and size\r\nHold Ctrl while closing this window to clear all locally saved settings");
@@ -553,10 +537,9 @@ namespace MilkwaveRemote
       // txtWindowTitle
       // 
       txtWindowTitle.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-      txtWindowTitle.Location = new Point(98, 82);
-      txtWindowTitle.Margin = new Padding(4, 4, 4, 4);
+      txtWindowTitle.Location = new Point(78, 66);
       txtWindowTitle.Name = "txtWindowTitle";
-      txtWindowTitle.Size = new Size(196, 27);
+      txtWindowTitle.Size = new Size(251, 23);
       txtWindowTitle.TabIndex = 72;
       txtWindowTitle.Text = "Milkwave Visualizer";
       toolTip1.SetToolTip(txtWindowTitle, "Partitial window title of Milkwave Visualizer window");
@@ -564,10 +547,9 @@ namespace MilkwaveRemote
       // btnSend
       // 
       btnSend.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      btnSend.Location = new Point(732, 8);
-      btnSend.Margin = new Padding(4, 4, 4, 4);
+      btnSend.Location = new Point(581, 6);
       btnSend.Name = "btnSend";
-      btnSend.Size = new Size(104, 69);
+      btnSend.Size = new Size(83, 55);
       btnSend.TabIndex = 71;
       btnSend.Text = "Send";
       toolTip1.SetToolTip(btnSend, "Send to Visualizer (F2)");
@@ -577,11 +559,10 @@ namespace MilkwaveRemote
       // txtMessage
       // 
       txtMessage.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-      txtMessage.Location = new Point(98, 8);
-      txtMessage.Margin = new Padding(4, 4, 4, 4);
+      txtMessage.Location = new Point(78, 6);
       txtMessage.Multiline = true;
       txtMessage.Name = "txtMessage";
-      txtMessage.Size = new Size(626, 66);
+      txtMessage.Size = new Size(497, 54);
       txtMessage.TabIndex = 70;
       txtMessage.Text = "Hi from Milkwave Remote!";
       toolTip1.SetToolTip(txtMessage, "F1: Select all text\r\nEnter: Send to visualizer\r\nShift+Enter: line break (or use // in message text)");
@@ -591,10 +572,10 @@ namespace MilkwaveRemote
       // 
       tableLayoutPanel1.SetColumnSpan(btnSpace, 2);
       btnSpace.Dock = DockStyle.Fill;
-      btnSpace.Location = new Point(9, 7);
-      btnSpace.Margin = new Padding(4, 2, 4, 2);
+      btnSpace.Location = new Point(7, 6);
+      btnSpace.Margin = new Padding(3, 2, 3, 2);
       btnSpace.Name = "btnSpace";
-      btnSpace.Size = new Size(200, 66);
+      btnSpace.Size = new Size(158, 52);
       btnSpace.TabIndex = 0;
       btnSpace.Text = "Next Preset\r\n(Space)";
       toolTip1.SetToolTip(btnSpace, "F3");
@@ -605,10 +586,10 @@ namespace MilkwaveRemote
       // 
       tableLayoutPanel1.SetColumnSpan(btnBackspace, 2);
       btnBackspace.Dock = DockStyle.Fill;
-      btnBackspace.Location = new Point(217, 7);
-      btnBackspace.Margin = new Padding(4, 2, 4, 2);
+      btnBackspace.Location = new Point(171, 6);
+      btnBackspace.Margin = new Padding(3, 2, 3, 2);
       btnBackspace.Name = "btnBackspace";
-      btnBackspace.Size = new Size(200, 66);
+      btnBackspace.Size = new Size(158, 52);
       btnBackspace.TabIndex = 1;
       btnBackspace.Text = "Previous Preset\r\n(Backspace)";
       toolTip1.SetToolTip(btnBackspace, "F4");
@@ -618,10 +599,9 @@ namespace MilkwaveRemote
       // lblPreset
       // 
       lblPreset.AutoSize = true;
-      lblPreset.Location = new Point(44, 11);
-      lblPreset.Margin = new Padding(4, 0, 4, 0);
+      lblPreset.Location = new Point(35, 9);
       lblPreset.Name = "lblPreset";
-      lblPreset.Size = new Size(49, 20);
+      lblPreset.Size = new Size(39, 15);
       lblPreset.TabIndex = 98;
       lblPreset.Text = "Preset";
       toolTip1.SetToolTip(lblPreset, "Click to copy full path to clipboard\r\nDouble-click to clear all items");
@@ -632,10 +612,9 @@ namespace MilkwaveRemote
       // 
       btnPresetLoadFile.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       btnPresetLoadFile.FlatStyle = FlatStyle.System;
-      btnPresetLoadFile.Location = new Point(535, 8);
-      btnPresetLoadFile.Margin = new Padding(4, 4, 4, 4);
+      btnPresetLoadFile.Location = new Point(423, 6);
       btnPresetLoadFile.Name = "btnPresetLoadFile";
-      btnPresetLoadFile.Size = new Size(94, 29);
+      btnPresetLoadFile.Size = new Size(75, 23);
       btnPresetLoadFile.TabIndex = 99;
       btnPresetLoadFile.Text = "File";
       toolTip1.SetToolTip(btnPresetLoadFile, "Load a single preset");
@@ -646,10 +625,9 @@ namespace MilkwaveRemote
       // 
       btnPresetSend.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       btnPresetSend.FlatStyle = FlatStyle.System;
-      btnPresetSend.Location = new Point(732, 8);
-      btnPresetSend.Margin = new Padding(4, 4, 4, 4);
+      btnPresetSend.Location = new Point(581, 6);
       btnPresetSend.Name = "btnPresetSend";
-      btnPresetSend.Size = new Size(104, 29);
+      btnPresetSend.Size = new Size(83, 23);
       btnPresetSend.TabIndex = 100;
       btnPresetSend.Text = "Send";
       toolTip1.SetToolTip(btnPresetSend, "Send to Visualizer (F6)\r\nCtrl+Click: Send next to Visualizer (F7)");
@@ -660,10 +638,9 @@ namespace MilkwaveRemote
       // 
       btnPresetLoadDirectory.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       btnPresetLoadDirectory.FlatStyle = FlatStyle.System;
-      btnPresetLoadDirectory.Location = new Point(636, 8);
-      btnPresetLoadDirectory.Margin = new Padding(4, 4, 4, 4);
+      btnPresetLoadDirectory.Location = new Point(504, 6);
       btnPresetLoadDirectory.Name = "btnPresetLoadDirectory";
-      btnPresetLoadDirectory.Size = new Size(89, 29);
+      btnPresetLoadDirectory.Size = new Size(71, 23);
       btnPresetLoadDirectory.TabIndex = 101;
       btnPresetLoadDirectory.Text = "Directory";
       toolTip1.SetToolTip(btnPresetLoadDirectory, "Load all presets from a directory");
@@ -673,11 +650,10 @@ namespace MilkwaveRemote
       // txtVisRunning
       // 
       txtVisRunning.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-      txtVisRunning.Location = new Point(100, 44);
-      txtVisRunning.Margin = new Padding(4, 4, 4, 4);
+      txtVisRunning.Location = new Point(78, 35);
       txtVisRunning.Name = "txtVisRunning";
       txtVisRunning.ReadOnly = true;
-      txtVisRunning.Size = new Size(624, 27);
+      txtVisRunning.Size = new Size(497, 23);
       txtVisRunning.TabIndex = 96;
       toolTip1.SetToolTip(txtVisRunning, "Currently running Visualizer preset");
       // 
@@ -687,10 +663,9 @@ namespace MilkwaveRemote
       cboPresets.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
       cboPresets.AutoCompleteSource = AutoCompleteSource.ListItems;
       cboPresets.FormattingEnabled = true;
-      cboPresets.Location = new Point(98, 8);
-      cboPresets.Margin = new Padding(4, 4, 4, 4);
+      cboPresets.Location = new Point(78, 6);
       cboPresets.Name = "cboPresets";
-      cboPresets.Size = new Size(429, 28);
+      cboPresets.Size = new Size(339, 23);
       cboPresets.TabIndex = 97;
       toolTip1.SetToolTip(cboPresets, "Alt+Mousewheel: Send to Visualizer");
       cboPresets.SelectedIndexChanged += cboPresets_SelectedIndexChanged;
@@ -699,10 +674,9 @@ namespace MilkwaveRemote
       // txtDirFilter
       // 
       txtDirFilter.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      txtDirFilter.Location = new Point(732, 44);
-      txtDirFilter.Margin = new Padding(4, 4, 4, 4);
+      txtDirFilter.Location = new Point(581, 35);
       txtDirFilter.Name = "txtDirFilter";
-      txtDirFilter.Size = new Size(103, 27);
+      txtDirFilter.Size = new Size(83, 23);
       txtDirFilter.TabIndex = 102;
       toolTip1.SetToolTip(txtDirFilter, "When using Directory loading, load only files containing the text entered here");
       // 
@@ -710,11 +684,10 @@ namespace MilkwaveRemote
       // 
       numAmpLeft.DecimalPlaces = 1;
       numAmpLeft.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-      numAmpLeft.Location = new Point(100, 80);
-      numAmpLeft.Margin = new Padding(4, 4, 4, 4);
+      numAmpLeft.Location = new Point(78, 63);
       numAmpLeft.Maximum = new decimal(new int[] { 999, 0, 0, 65536 });
       numAmpLeft.Name = "numAmpLeft";
-      numAmpLeft.Size = new Size(72, 27);
+      numAmpLeft.Size = new Size(60, 23);
       numAmpLeft.TabIndex = 103;
       numAmpLeft.TextAlign = HorizontalAlignment.Center;
       toolTip1.SetToolTip(numAmpLeft, "Amplification factor for left channel");
@@ -724,10 +697,9 @@ namespace MilkwaveRemote
       // lblAmp
       // 
       lblAmp.AutoSize = true;
-      lblAmp.Location = new Point(22, 82);
-      lblAmp.Margin = new Padding(4, 0, 4, 0);
+      lblAmp.Location = new Point(18, 65);
       lblAmp.Name = "lblAmp";
-      lblAmp.Size = new Size(70, 20);
+      lblAmp.Size = new Size(56, 15);
       lblAmp.TabIndex = 104;
       lblAmp.Text = "Amp Left";
       toolTip1.SetToolTip(lblAmp, "Double-Click to reset");
@@ -736,10 +708,9 @@ namespace MilkwaveRemote
       // lblAmpRight
       // 
       lblAmpRight.AutoSize = true;
-      lblAmpRight.Location = new Point(182, 82);
-      lblAmpRight.Margin = new Padding(4, 0, 4, 0);
+      lblAmpRight.Location = new Point(146, 65);
       lblAmpRight.Name = "lblAmpRight";
-      lblAmpRight.Size = new Size(44, 20);
+      lblAmpRight.Size = new Size(35, 15);
       lblAmpRight.TabIndex = 105;
       lblAmpRight.Text = "Right";
       toolTip1.SetToolTip(lblAmpRight, "Double-Click to reset");
@@ -749,11 +720,11 @@ namespace MilkwaveRemote
       // 
       numAmpRight.DecimalPlaces = 1;
       numAmpRight.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-      numAmpRight.Location = new Point(231, 79);
-      numAmpRight.Margin = new Padding(4, 2, 4, 2);
+      numAmpRight.Location = new Point(185, 63);
+      numAmpRight.Margin = new Padding(3, 2, 3, 2);
       numAmpRight.Maximum = new decimal(new int[] { 999, 0, 0, 65536 });
       numAmpRight.Name = "numAmpRight";
-      numAmpRight.Size = new Size(72, 27);
+      numAmpRight.Size = new Size(60, 23);
       numAmpRight.TabIndex = 106;
       numAmpRight.TextAlign = HorizontalAlignment.Center;
       toolTip1.SetToolTip(numAmpRight, "Amplification factor for right channel");
@@ -763,11 +734,11 @@ namespace MilkwaveRemote
       // numWavemode
       // 
       numWavemode.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      numWavemode.Location = new Point(568, 79);
-      numWavemode.Margin = new Padding(4, 2, 4, 2);
+      numWavemode.Location = new Point(449, 63);
+      numWavemode.Margin = new Padding(3, 2, 3, 2);
       numWavemode.Maximum = new decimal(new int[] { 15, 0, 0, 0 });
       numWavemode.Name = "numWavemode";
-      numWavemode.Size = new Size(48, 27);
+      numWavemode.Size = new Size(38, 23);
       numWavemode.TabIndex = 109;
       numWavemode.TextAlign = HorizontalAlignment.Center;
       toolTip1.SetToolTip(numWavemode, "Alt+Mousewheel: Send to Visualizer");
@@ -778,10 +749,9 @@ namespace MilkwaveRemote
       // 
       btnSendWave.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       btnSendWave.FlatStyle = FlatStyle.System;
-      btnSendWave.Location = new Point(732, 79);
-      btnSendWave.Margin = new Padding(4, 4, 4, 4);
+      btnSendWave.Location = new Point(581, 63);
       btnSendWave.Name = "btnSendWave";
-      btnSendWave.Size = new Size(104, 29);
+      btnSendWave.Size = new Size(83, 23);
       btnSendWave.TabIndex = 110;
       btnSendWave.Text = "Send";
       toolTip1.SetToolTip(btnSendWave, "Send to Visualizer\r\n(only alters wave already defined in preset)");
@@ -792,10 +762,9 @@ namespace MilkwaveRemote
       // 
       lblWaveColor.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       lblWaveColor.AutoSize = true;
-      lblWaveColor.Location = new Point(626, 84);
-      lblWaveColor.Margin = new Padding(4, 0, 4, 0);
+      lblWaveColor.Location = new Point(496, 67);
       lblWaveColor.Name = "lblWaveColor";
-      lblWaveColor.Size = new Size(45, 20);
+      lblWaveColor.Size = new Size(36, 15);
       lblWaveColor.TabIndex = 112;
       lblWaveColor.Text = "Color";
       toolTip1.SetToolTip(lblWaveColor, "Wave color\r\nDouble-click: Copy R,G,B to clipboard\r\nAlt+Double-click: Copy R,G,B as float values (0..1)");
@@ -805,10 +774,9 @@ namespace MilkwaveRemote
       // 
       lblWavemode.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       lblWavemode.AutoSize = true;
-      lblWavemode.Location = new Point(474, 82);
-      lblWavemode.Margin = new Padding(4, 0, 4, 0);
+      lblWavemode.Location = new Point(374, 66);
       lblWavemode.Name = "lblWavemode";
-      lblWavemode.Size = new Size(88, 20);
+      lblWavemode.Size = new Size(70, 15);
       lblWavemode.TabIndex = 108;
       lblWavemode.Text = "Wave Mode";
       toolTip1.SetToolTip(lblWavemode, "Wave Mode (0-15)");
@@ -817,10 +785,9 @@ namespace MilkwaveRemote
       // 
       pnlColorWave.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       pnlColorWave.BorderStyle = BorderStyle.FixedSingle;
-      pnlColorWave.Location = new Point(678, 79);
-      pnlColorWave.Margin = new Padding(4, 4, 4, 4);
+      pnlColorWave.Location = new Point(537, 63);
       pnlColorWave.Name = "pnlColorWave";
-      pnlColorWave.Size = new Size(46, 28);
+      pnlColorWave.Size = new Size(37, 23);
       pnlColorWave.TabIndex = 111;
       toolTip1.SetToolTip(pnlColorWave, "Wave color");
       pnlColorWave.Click += pnlColorWave_Click;
@@ -828,10 +795,9 @@ namespace MilkwaveRemote
       // lblCurrentPreset
       // 
       lblCurrentPreset.AutoSize = true;
-      lblCurrentPreset.Location = new Point(28, 48);
-      lblCurrentPreset.Margin = new Padding(4, 0, 4, 0);
+      lblCurrentPreset.Location = new Point(22, 38);
       lblCurrentPreset.Name = "lblCurrentPreset";
-      lblCurrentPreset.Size = new Size(63, 20);
+      lblCurrentPreset.Size = new Size(52, 15);
       lblCurrentPreset.TabIndex = 95;
       lblCurrentPreset.Text = "Running";
       toolTip1.SetToolTip(lblCurrentPreset, "Double-click to copy full path");
@@ -843,16 +809,48 @@ namespace MilkwaveRemote
       chkAmpLinked.Checked = true;
       chkAmpLinked.CheckState = CheckState.Checked;
       chkAmpLinked.FlatStyle = FlatStyle.System;
-      chkAmpLinked.Location = new Point(311, 79);
-      chkAmpLinked.Margin = new Padding(4, 2, 4, 2);
+      chkAmpLinked.Location = new Point(250, 62);
+      chkAmpLinked.Margin = new Padding(3, 2, 3, 2);
       chkAmpLinked.Name = "chkAmpLinked";
-      chkAmpLinked.Size = new Size(64, 30);
+      chkAmpLinked.Size = new Size(51, 23);
       chkAmpLinked.TabIndex = 113;
       chkAmpLinked.Text = "Link";
       chkAmpLinked.TextAlign = ContentAlignment.MiddleCenter;
       chkAmpLinked.TextImageRelation = TextImageRelation.ImageAboveText;
       toolTip1.SetToolTip(chkAmpLinked, "Link amp for both channels");
       chkAmpLinked.UseVisualStyleBackColor = true;
+      // 
+      // chkWrap
+      // 
+      chkWrap.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      chkWrap.Appearance = Appearance.Button;
+      chkWrap.Checked = true;
+      chkWrap.CheckState = CheckState.Checked;
+      chkWrap.FlatStyle = FlatStyle.System;
+      chkWrap.Location = new Point(526, 65);
+      chkWrap.Margin = new Padding(3, 2, 3, 2);
+      chkWrap.Name = "chkWrap";
+      chkWrap.Size = new Size(48, 23);
+      chkWrap.TabIndex = 99;
+      chkWrap.Text = "Wrap";
+      chkWrap.TextAlign = ContentAlignment.MiddleCenter;
+      chkWrap.TextImageRelation = TextImageRelation.ImageAboveText;
+      toolTip1.SetToolTip(chkWrap, "If the line is longer than this value, try to wrap it in the middle");
+      chkWrap.UseVisualStyleBackColor = true;
+      // 
+      // numWrap
+      // 
+      numWrap.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      numWrap.Location = new Point(484, 66);
+      numWrap.Margin = new Padding(3, 2, 3, 2);
+      numWrap.Maximum = new decimal(new int[] { 99, 0, 0, 0 });
+      numWrap.Minimum = new decimal(new int[] { 10, 0, 0, 0 });
+      numWrap.Name = "numWrap";
+      numWrap.Size = new Size(38, 23);
+      numWrap.TabIndex = 100;
+      numWrap.TextAlign = HorizontalAlignment.Center;
+      toolTip1.SetToolTip(numWrap, "If the line is longer than this value, try to wrap it in the middle");
+      numWrap.Value = new decimal(new int[] { 30, 0, 0, 0 });
       // 
       // colorDialogMessage
       // 
@@ -895,7 +893,6 @@ namespace MilkwaveRemote
       splitContainer1.Panel1.Controls.Add(chkAutoplay);
       splitContainer1.Panel1.Controls.Add(txtAutoplay);
       splitContainer1.Panel1.Controls.Add(btnSaveParam);
-      splitContainer1.Panel1.Controls.Add(label5);
       splitContainer1.Panel1.Controls.Add(lblParameters);
       splitContainer1.Panel1.Controls.Add(cboParameters);
       splitContainer1.Panel1.Controls.Add(label2);
@@ -912,9 +909,9 @@ namespace MilkwaveRemote
       splitContainer1.Panel2.Controls.Add(splitContainer2);
       splitContainer1.Panel2.RightToLeft = RightToLeft.No;
       splitContainer1.Panel2MinSize = 0;
-      splitContainer1.Size = new Size(844, 677);
-      splitContainer1.SplitterDistance = 240;
-      splitContainer1.SplitterWidth = 10;
+      splitContainer1.Size = new Size(671, 535);
+      splitContainer1.SplitterDistance = 189;
+      splitContainer1.SplitterWidth = 8;
       splitContainer1.TabIndex = 28;
       splitContainer1.SplitterMoved += splitContainer1_SplitterMoved;
       splitContainer1.SizeChanged += splitContainer1_SizeChanged;
@@ -922,32 +919,20 @@ namespace MilkwaveRemote
       // txtStyle
       // 
       txtStyle.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      txtStyle.Location = new Point(615, 119);
-      txtStyle.Margin = new Padding(4, 2, 4, 2);
+      txtStyle.Location = new Point(484, 94);
+      txtStyle.Margin = new Padding(3, 2, 3, 2);
       txtStyle.Name = "txtStyle";
-      txtStyle.Size = new Size(109, 27);
+      txtStyle.Size = new Size(91, 23);
       txtStyle.TabIndex = 76;
       txtStyle.Text = "Style A";
       txtStyle.KeyDown += txtStyle_KeyDown;
       // 
-      // label5
-      // 
-      label5.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      label5.AutoSize = true;
-      label5.Location = new Point(301, 85);
-      label5.Margin = new Padding(4, 0, 4, 0);
-      label5.Name = "label5";
-      label5.Size = new Size(116, 20);
-      label5.TabIndex = 92;
-      label5.Text = "(partitial match)";
-      // 
       // label2
       // 
       label2.AutoSize = true;
-      label2.Location = new Point(24, 11);
-      label2.Margin = new Padding(4, 0, 4, 0);
+      label2.Location = new Point(19, 9);
       label2.Name = "label2";
-      label2.Size = new Size(67, 20);
+      label2.Size = new Size(53, 15);
       label2.TabIndex = 90;
       label2.Text = "Message";
       // 
@@ -990,9 +975,9 @@ namespace MilkwaveRemote
       splitContainer2.Panel2.RightToLeft = RightToLeft.No;
       splitContainer2.Panel2.Paint += splitContainer2_Panel2_Paint;
       splitContainer2.Panel2MinSize = 0;
-      splitContainer2.Size = new Size(844, 427);
-      splitContainer2.SplitterDistance = 122;
-      splitContainer2.SplitterWidth = 10;
+      splitContainer2.Size = new Size(671, 338);
+      splitContainer2.SplitterDistance = 96;
+      splitContainer2.SplitterWidth = 8;
       splitContainer2.TabIndex = 0;
       // 
       // tableLayoutPanel1
@@ -1028,26 +1013,26 @@ namespace MilkwaveRemote
       tableLayoutPanel1.Controls.Add(btnDelete, 6, 2);
       tableLayoutPanel1.Dock = DockStyle.Fill;
       tableLayoutPanel1.Location = new Point(0, 0);
-      tableLayoutPanel1.Margin = new Padding(4, 2, 4, 2);
+      tableLayoutPanel1.Margin = new Padding(3, 2, 3, 2);
       tableLayoutPanel1.Name = "tableLayoutPanel1";
-      tableLayoutPanel1.Padding = new Padding(5, 5, 5, 5);
+      tableLayoutPanel1.Padding = new Padding(4);
       tableLayoutPanel1.RowCount = 4;
       tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
       tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
       tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
       tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 25F));
-      tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 19F));
-      tableLayoutPanel1.Size = new Size(842, 293);
+      tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 15F));
+      tableLayoutPanel1.Size = new Size(669, 232);
       tableLayoutPanel1.TabIndex = 34;
       tableLayoutPanel1.Paint += tableLayoutPanel1_Paint;
       // 
       // btn77
       // 
       btn77.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn77.Location = new Point(737, 217);
-      btn77.Margin = new Padding(4, 2, 4, 2);
+      btn77.Location = new Point(581, 174);
+      btn77.Margin = new Padding(3, 2, 3, 2);
       btn77.Name = "btn77";
-      btn77.Size = new Size(96, 69);
+      btn77.Size = new Size(81, 52);
       btn77.TabIndex = 19;
       btn77.Text = "77";
       btn77.UseVisualStyleBackColor = true;
@@ -1056,10 +1041,10 @@ namespace MilkwaveRemote
       // btn66
       // 
       btn66.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn66.Location = new Point(633, 217);
-      btn66.Margin = new Padding(4, 2, 4, 2);
+      btn66.Location = new Point(499, 174);
+      btn66.Margin = new Padding(3, 2, 3, 2);
       btn66.Name = "btn66";
-      btn66.Size = new Size(96, 69);
+      btn66.Size = new Size(76, 52);
       btn66.TabIndex = 18;
       btn66.Text = "66";
       btn66.UseVisualStyleBackColor = true;
@@ -1068,10 +1053,10 @@ namespace MilkwaveRemote
       // btn55
       // 
       btn55.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn55.Location = new Point(529, 217);
-      btn55.Margin = new Padding(4, 2, 4, 2);
+      btn55.Location = new Point(417, 174);
+      btn55.Margin = new Padding(3, 2, 3, 2);
       btn55.Name = "btn55";
-      btn55.Size = new Size(96, 69);
+      btn55.Size = new Size(76, 52);
       btn55.TabIndex = 17;
       btn55.Text = "55";
       btn55.UseVisualStyleBackColor = true;
@@ -1080,10 +1065,10 @@ namespace MilkwaveRemote
       // btn44
       // 
       btn44.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn44.Location = new Point(425, 217);
-      btn44.Margin = new Padding(4, 2, 4, 2);
+      btn44.Location = new Point(335, 174);
+      btn44.Margin = new Padding(3, 2, 3, 2);
       btn44.Name = "btn44";
-      btn44.Size = new Size(96, 69);
+      btn44.Size = new Size(76, 52);
       btn44.TabIndex = 16;
       btn44.Text = "44";
       btn44.UseVisualStyleBackColor = true;
@@ -1092,10 +1077,10 @@ namespace MilkwaveRemote
       // btn33
       // 
       btn33.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn33.Location = new Point(321, 217);
-      btn33.Margin = new Padding(4, 2, 4, 2);
+      btn33.Location = new Point(253, 174);
+      btn33.Margin = new Padding(3, 2, 3, 2);
       btn33.Name = "btn33";
-      btn33.Size = new Size(96, 69);
+      btn33.Size = new Size(76, 52);
       btn33.TabIndex = 15;
       btn33.Text = "33";
       btn33.UseVisualStyleBackColor = true;
@@ -1104,10 +1089,10 @@ namespace MilkwaveRemote
       // btn22
       // 
       btn22.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn22.Location = new Point(217, 217);
-      btn22.Margin = new Padding(4, 2, 4, 2);
+      btn22.Location = new Point(171, 174);
+      btn22.Margin = new Padding(3, 2, 3, 2);
       btn22.Name = "btn22";
-      btn22.Size = new Size(96, 69);
+      btn22.Size = new Size(76, 52);
       btn22.TabIndex = 14;
       btn22.Text = "22";
       btn22.UseVisualStyleBackColor = true;
@@ -1117,10 +1102,10 @@ namespace MilkwaveRemote
       // 
       tableLayoutPanel1.SetColumnSpan(btnK, 2);
       btnK.Dock = DockStyle.Fill;
-      btnK.Location = new Point(217, 147);
-      btnK.Margin = new Padding(4, 2, 4, 2);
+      btnK.Location = new Point(171, 118);
+      btnK.Margin = new Padding(3, 2, 3, 2);
       btnK.Name = "btnK";
-      btnK.Size = new Size(200, 66);
+      btnK.Size = new Size(158, 52);
       btnK.TabIndex = 9;
       btnK.Text = "Sprite Mode\r\n(K)";
       btnK.UseVisualStyleBackColor = true;
@@ -1130,10 +1115,10 @@ namespace MilkwaveRemote
       // 
       tableLayoutPanel1.SetColumnSpan(btnF2, 2);
       btnF2.Dock = DockStyle.Fill;
-      btnF2.Location = new Point(9, 77);
-      btnF2.Margin = new Padding(4, 2, 4, 2);
+      btnF2.Location = new Point(7, 62);
+      btnF2.Margin = new Padding(3, 2, 3, 2);
       btnF2.Name = "btnF2";
-      btnF2.Size = new Size(200, 66);
+      btnF2.Size = new Size(158, 52);
       btnF2.TabIndex = 4;
       btnF2.Text = "Borderless \r\n(F2)";
       btnF2.UseVisualStyleBackColor = true;
@@ -1143,10 +1128,10 @@ namespace MilkwaveRemote
       // 
       tableLayoutPanel1.SetColumnSpan(btnN, 2);
       btnN.Dock = DockStyle.Fill;
-      btnN.Location = new Point(425, 7);
-      btnN.Margin = new Padding(4, 2, 4, 2);
+      btnN.Location = new Point(335, 6);
+      btnN.Margin = new Padding(3, 2, 3, 2);
       btnN.Name = "btnN";
-      btnN.Size = new Size(200, 66);
+      btnN.Size = new Size(158, 52);
       btnN.TabIndex = 2;
       btnN.Text = "Music Info\r\n(N)";
       btnN.UseVisualStyleBackColor = true;
@@ -1156,10 +1141,10 @@ namespace MilkwaveRemote
       // 
       tableLayoutPanel1.SetColumnSpan(btnAltEnter, 2);
       btnAltEnter.Dock = DockStyle.Fill;
-      btnAltEnter.Location = new Point(9, 147);
-      btnAltEnter.Margin = new Padding(4, 2, 4, 2);
+      btnAltEnter.Location = new Point(7, 118);
+      btnAltEnter.Margin = new Padding(3, 2, 3, 2);
       btnAltEnter.Name = "btnAltEnter";
-      btnAltEnter.Size = new Size(200, 66);
+      btnAltEnter.Size = new Size(158, 52);
       btnAltEnter.TabIndex = 8;
       btnAltEnter.Text = "Fullscreen\r\n(Alt+Enter)";
       btnAltEnter.UseVisualStyleBackColor = true;
@@ -1169,10 +1154,10 @@ namespace MilkwaveRemote
       // 
       tableLayoutPanel1.SetColumnSpan(btnY, 2);
       btnY.Dock = DockStyle.Fill;
-      btnY.Location = new Point(425, 147);
-      btnY.Margin = new Padding(4, 2, 4, 2);
+      btnY.Location = new Point(335, 118);
+      btnY.Margin = new Padding(3, 2, 3, 2);
       btnY.Name = "btnY";
-      btnY.Size = new Size(200, 66);
+      btnY.Size = new Size(158, 52);
       btnY.TabIndex = 10;
       btnY.Text = "Message Mode\r\n(Y)";
       btnY.UseVisualStyleBackColor = true;
@@ -1181,10 +1166,10 @@ namespace MilkwaveRemote
       // btn11
       // 
       btn11.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn11.Location = new Point(113, 217);
-      btn11.Margin = new Padding(4, 2, 4, 2);
+      btn11.Location = new Point(89, 174);
+      btn11.Margin = new Padding(3, 2, 3, 2);
       btn11.Name = "btn11";
-      btn11.Size = new Size(96, 69);
+      btn11.Size = new Size(76, 52);
       btn11.TabIndex = 13;
       btn11.Text = "11";
       btn11.UseVisualStyleBackColor = true;
@@ -1194,10 +1179,10 @@ namespace MilkwaveRemote
       // 
       tableLayoutPanel1.SetColumnSpan(btnTilde, 2);
       btnTilde.Dock = DockStyle.Fill;
-      btnTilde.Location = new Point(633, 7);
-      btnTilde.Margin = new Padding(4, 2, 4, 2);
+      btnTilde.Location = new Point(499, 6);
+      btnTilde.Margin = new Padding(3, 2, 3, 2);
       btnTilde.Name = "btnTilde";
-      btnTilde.Size = new Size(200, 66);
+      btnTilde.Size = new Size(163, 52);
       btnTilde.TabIndex = 3;
       btnTilde.Text = "Preset Lock \r\n(~)";
       btnTilde.UseVisualStyleBackColor = true;
@@ -1206,10 +1191,10 @@ namespace MilkwaveRemote
       // btn00
       // 
       btn00.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-      btn00.Location = new Point(9, 217);
-      btn00.Margin = new Padding(4, 2, 4, 2);
+      btn00.Location = new Point(7, 174);
+      btn00.Margin = new Padding(3, 2, 3, 2);
       btn00.Name = "btn00";
-      btn00.Size = new Size(96, 69);
+      btn00.Size = new Size(76, 52);
       btn00.TabIndex = 12;
       btn00.Text = "00";
       btn00.UseVisualStyleBackColor = true;
@@ -1219,10 +1204,10 @@ namespace MilkwaveRemote
       // 
       tableLayoutPanel1.SetColumnSpan(btnF7, 2);
       btnF7.Dock = DockStyle.Fill;
-      btnF7.Location = new Point(633, 77);
-      btnF7.Margin = new Padding(4, 2, 4, 2);
+      btnF7.Location = new Point(499, 62);
+      btnF7.Margin = new Padding(3, 2, 3, 2);
       btnF7.Name = "btnF7";
-      btnF7.Size = new Size(200, 66);
+      btnF7.Size = new Size(163, 52);
       btnF7.TabIndex = 7;
       btnF7.Text = "Always On Top\r\n(F7)";
       btnF7.UseVisualStyleBackColor = true;
@@ -1232,10 +1217,10 @@ namespace MilkwaveRemote
       // 
       tableLayoutPanel1.SetColumnSpan(btnF4, 2);
       btnF4.Dock = DockStyle.Fill;
-      btnF4.Location = new Point(425, 77);
-      btnF4.Margin = new Padding(4, 2, 4, 2);
+      btnF4.Location = new Point(335, 62);
+      btnF4.Margin = new Padding(3, 2, 3, 2);
       btnF4.Name = "btnF4";
-      btnF4.Size = new Size(200, 66);
+      btnF4.Size = new Size(158, 52);
       btnF4.TabIndex = 6;
       btnF4.Text = "Preset Info\r\n(F4)";
       btnF4.UseVisualStyleBackColor = true;
@@ -1245,10 +1230,10 @@ namespace MilkwaveRemote
       // 
       tableLayoutPanel1.SetColumnSpan(btnF3, 2);
       btnF3.Dock = DockStyle.Fill;
-      btnF3.Location = new Point(217, 77);
-      btnF3.Margin = new Padding(4, 2, 4, 2);
+      btnF3.Location = new Point(171, 62);
+      btnF3.Margin = new Padding(3, 2, 3, 2);
       btnF3.Name = "btnF3";
-      btnF3.Size = new Size(200, 66);
+      btnF3.Size = new Size(158, 52);
       btnF3.TabIndex = 5;
       btnF3.Text = "Change FPS\r\n(F3)";
       btnF3.UseVisualStyleBackColor = true;
@@ -1258,10 +1243,10 @@ namespace MilkwaveRemote
       // 
       tableLayoutPanel1.SetColumnSpan(btnDelete, 2);
       btnDelete.Dock = DockStyle.Fill;
-      btnDelete.Location = new Point(633, 147);
-      btnDelete.Margin = new Padding(4, 2, 4, 2);
+      btnDelete.Location = new Point(499, 118);
+      btnDelete.Margin = new Padding(3, 2, 3, 2);
       btnDelete.Name = "btnDelete";
-      btnDelete.Size = new Size(200, 66);
+      btnDelete.Size = new Size(163, 52);
       btnDelete.TabIndex = 11;
       btnDelete.Text = "Clear Latest Sprite\r\n(Delete)";
       btnDelete.UseVisualStyleBackColor = true;
@@ -1280,12 +1265,11 @@ namespace MilkwaveRemote
       tabControl1.Controls.Add(tabRemote);
       tabControl1.Dock = DockStyle.Fill;
       tabControl1.Location = new Point(0, 0);
-      tabControl1.Margin = new Padding(4, 4, 4, 4);
       tabControl1.Multiline = true;
       tabControl1.Name = "tabControl1";
       tabControl1.Padding = new Point(0, 0);
       tabControl1.SelectedIndex = 0;
-      tabControl1.Size = new Size(878, 685);
+      tabControl1.Size = new Size(702, 543);
       tabControl1.TabIndex = 114;
       // 
       // tabRemote
@@ -1294,54 +1278,22 @@ namespace MilkwaveRemote
       tabRemote.Location = new Point(4, 4);
       tabRemote.Margin = new Padding(0);
       tabRemote.Name = "tabRemote";
-      tabRemote.Size = new Size(844, 677);
+      tabRemote.Size = new Size(671, 535);
       tabRemote.TabIndex = 0;
       tabRemote.Text = "Remote";
       tabRemote.UseVisualStyleBackColor = true;
       // 
-      // chkWrap
-      // 
-      chkWrap.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      chkWrap.Appearance = Appearance.Button;
-      chkWrap.Checked = true;
-      chkWrap.CheckState = CheckState.Checked;
-      chkWrap.FlatStyle = FlatStyle.System;
-      chkWrap.Location = new Point(671, 81);
-      chkWrap.Margin = new Padding(4, 2, 4, 2);
-      chkWrap.Name = "chkWrap";
-      chkWrap.Size = new Size(53, 29);
-      chkWrap.TabIndex = 99;
-      chkWrap.Text = "Wrap";
-      chkWrap.TextAlign = ContentAlignment.MiddleCenter;
-      chkWrap.TextImageRelation = TextImageRelation.ImageAboveText;
-      toolTip1.SetToolTip(chkWrap, "If the line is longer than this value, try to wrap it in the middle");
-      chkWrap.UseVisualStyleBackColor = true;
-      // 
-      // numWrap
-      // 
-      numWrap.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      numWrap.Location = new Point(611, 82);
-      numWrap.Margin = new Padding(4, 2, 4, 2);
-      numWrap.Maximum = new decimal(new int[] { 99, 0, 0, 0 });
-      numWrap.Minimum = new decimal(new int[] { 10, 0, 0, 0 });
-      numWrap.Name = "numWrap";
-      numWrap.Size = new Size(48, 27);
-      numWrap.TabIndex = 100;
-      numWrap.TextAlign = HorizontalAlignment.Center;
-      toolTip1.SetToolTip(numWrap, "If the line is longer than this value, try to wrap it in the middle");
-      numWrap.Value = new decimal(new int[] { 30, 0, 0, 0 });
-      // 
       // MilkwaveRemoteForm
       // 
-      AutoScaleDimensions = new SizeF(120F, 120F);
+      AutoScaleDimensions = new SizeF(96F, 96F);
       AutoScaleMode = AutoScaleMode.Dpi;
-      ClientSize = new Size(878, 711);
+      ClientSize = new Size(702, 569);
       Controls.Add(tabControl1);
       Controls.Add(statusStrip1);
       Icon = (Icon)resources.GetObject("$this.Icon");
       KeyPreview = true;
-      Margin = new Padding(4, 2, 4, 2);
-      MinimumSize = new Size(326, 95);
+      Margin = new Padding(3, 2, 3, 2);
+      MinimumSize = new Size(264, 84);
       Name = "MilkwaveRemoteForm";
       Text = "Milkwave Remote";
       FormClosing += MainForm_FormClosing;
@@ -1356,6 +1308,7 @@ namespace MilkwaveRemote
       ((System.ComponentModel.ISupportInitialize)numAmpLeft).EndInit();
       ((System.ComponentModel.ISupportInitialize)numAmpRight).EndInit();
       ((System.ComponentModel.ISupportInitialize)numWavemode).EndInit();
+      ((System.ComponentModel.ISupportInitialize)numWrap).EndInit();
       splitContainer1.Panel1.ResumeLayout(false);
       splitContainer1.Panel1.PerformLayout();
       splitContainer1.Panel2.ResumeLayout(false);
@@ -1369,7 +1322,6 @@ namespace MilkwaveRemote
       tableLayoutPanel1.ResumeLayout(false);
       tabControl1.ResumeLayout(false);
       tabRemote.ResumeLayout(false);
-      ((System.ComponentModel.ISupportInitialize)numWrap).EndInit();
       ResumeLayout(false);
       PerformLayout();
     }
@@ -1408,7 +1360,6 @@ namespace MilkwaveRemote
     private CheckBox chkAutoplay;
     private TextBox txtAutoplay;
     private Button btnSaveParam;
-    private Label label5;
     private Label lblParameters;
     private ComboBox cboParameters;
     private Label label2;

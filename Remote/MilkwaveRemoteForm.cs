@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using static DarkModeForms.DarkModeCS;
 
 namespace MilkwaveRemote {
@@ -372,7 +373,7 @@ namespace MilkwaveRemote {
               if (closestWhitespaceIndex == -1) {
                 closestWhitespaceIndex = messageToSend.IndexOf(' ', middleIndex);
               }
-              // Replace the closest whitespace with a newline character
+              // Replace the closest whitespace with a newline placeholder
               if (closestWhitespaceIndex != -1) {
                 messageToSend = messageToSend.Remove(closestWhitespaceIndex, 1).Insert(closestWhitespaceIndex, "//");
               }
@@ -400,6 +401,14 @@ namespace MilkwaveRemote {
             .Replace(" //", "//")
             .Replace("// ", "//")
             .Replace("//", " " + Environment.NewLine + " ");
+
+          if (message.Contains(Environment.NewLine)) {
+            string size = GetParam("size", message);
+            if (size.Length > 0) {
+              int newSize = (int)(int.Parse(size) * 1.8);
+              message = message.Replace("size=" + size, "size=" + newSize);
+            }
+          }
         }
 
         byte[] messageBytes = Encoding.Unicode.GetBytes(message);
@@ -1053,19 +1062,19 @@ namespace MilkwaveRemote {
       }
     }
 
-    private string GetParam(string param) {
+    private string GetParam(string paramame, string haystack) {
       string result = "";
       try {
-        int rIndex = cboParameters.Text.IndexOf("|" + param + "=", StringComparison.CurrentCultureIgnoreCase);
+        int rIndex = haystack.IndexOf("|" + paramame + "=", StringComparison.CurrentCultureIgnoreCase);
         if (rIndex == -1) {
-          rIndex = cboParameters.Text.IndexOf(param + "=", StringComparison.CurrentCultureIgnoreCase);
+          rIndex = haystack.IndexOf(paramame + "=", StringComparison.CurrentCultureIgnoreCase);
         }
         if (rIndex > -1) {
-          int rIndex2 = cboParameters.Text.IndexOf("|", rIndex + 1);
+          int rIndex2 = haystack.IndexOf("|", rIndex + 1);
           if (rIndex2 > -1) {
-            result = cboParameters.Text.Substring(rIndex, rIndex2 - rIndex);
+            result = haystack.Substring(rIndex, rIndex2 - rIndex);
           } else {
-            result = cboParameters.Text.Substring(rIndex);
+            result = haystack.Substring(rIndex);
           }
         }
         if (result.Length > 0) {
@@ -1118,15 +1127,15 @@ namespace MilkwaveRemote {
         return;
       }
       try {
-        string fontName = GetParam("font");
+        string fontName = GetParam("font", cboParameters.Text);
         if (fontName.Length == 0) {
           fontName = cboFonts.Text;
         }
 
         Color fontColor;
-        string colorR = GetParam("r");
-        string colorG = GetParam("g");
-        string colorB = GetParam("b");
+        string colorR = GetParam("r", cboParameters.Text);
+        string colorG = GetParam("g", cboParameters.Text);
+        string colorB = GetParam("b", cboParameters.Text);
         if (colorR.Length == 0 || colorG.Length == 0 || colorB.Length == 0) {
           fontColor = pnlColorMessage.BackColor;
         } else {
@@ -1134,7 +1143,7 @@ namespace MilkwaveRemote {
         }
 
         int fontSize;
-        string size = GetParam("size");
+        string size = GetParam("size", cboParameters.Text);
         if (size.Length == 0 || !int.TryParse(size, out fontSize)) {
           fontSize = int.Parse(numSize.Text);
         }
@@ -1201,20 +1210,20 @@ namespace MilkwaveRemote {
 
     private void lblStyle_MouseClick(object sender, MouseEventArgs e) {
       if (e.Button == MouseButtons.Right) {
-        string fontName = GetParam("font");
+        string fontName = GetParam("font", cboParameters.Text);
         if (fontName.Length > 0) {
           cboFonts.Text = fontName;
         }
 
-        string colorR = GetParam("r");
-        string colorG = GetParam("g");
-        string colorB = GetParam("b");
+        string colorR = GetParam("r", cboParameters.Text);
+        string colorG = GetParam("g", cboParameters.Text);
+        string colorB = GetParam("b", cboParameters.Text);
         if (colorR.Length > 0 && colorG.Length > 0 && colorB.Length > 0) {
           pnlColorMessage.BackColor = Color.FromArgb(int.Parse(colorR), int.Parse(colorG), int.Parse(colorB));
         }
 
         int fontSize;
-        string size = GetParam("size");
+        string size = GetParam("size", cboParameters.Text);
         if (size.Length > 0 && int.TryParse(size, out fontSize)) {
           numSize.Value = fontSize;
         }
