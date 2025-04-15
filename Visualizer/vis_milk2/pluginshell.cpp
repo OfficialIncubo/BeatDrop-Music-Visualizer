@@ -1018,7 +1018,7 @@ int CPluginShell::PluginPreInitialize(HWND hWinampWnd, HINSTANCE hWinampInstance
 	wchar_t *p = m_szPluginsDirPath + wcslen(m_szPluginsDirPath);
 	while (p >= m_szPluginsDirPath && *p != L'\\') p--;
 	if (++p >= m_szPluginsDirPath) *p = 0;
-    swprintf(m_szConfigIniFile, L"%s%s", m_szPluginsDirPath, INIFILE);
+  swprintf(m_szConfigIniFile, L"%s%s", m_szPluginsDirPath, INIFILE);
 	lstrcpyn(m_szConfigIniFileA,AutoCharFn(m_szConfigIniFile),MAX_PATH);
 
 	// PRIVATE CONFIG PANEL SETTINGS

@@ -32,6 +32,9 @@ CPrefs::CPrefs(int argc, LPCWSTR argv[], HRESULT &hr)
 , m_pwfx(NULL)
 , m_szFilename(NULL)
 {
+    
+  // list_devices();
+    
     switch (argc) {
         case 2:
             if (0 == _wcsicmp(argv[1], L"-?") || 0 == _wcsicmp(argv[1], L"/?")) {
@@ -71,9 +74,13 @@ CPrefs::CPrefs(int argc, LPCWSTR argv[], HRESULT &hr)
 
                     hr = get_specific_device(argv[i], &m_pMMDevice);
                     if (FAILED(hr)) {
+                      // invalid device, use default
+                      hr = get_default_device(&m_pMMDevice);
+                      if (FAILED(hr)) {
+                        MessageBox(NULL, "Could not find any suitable audio devices.", "Milkwave Error", MB_OK | MB_ICONERROR);
                         return;
+                      }
                     }
-
                     continue;
                 }
 
@@ -116,7 +123,8 @@ CPrefs::CPrefs(int argc, LPCWSTR argv[], HRESULT &hr)
             if (NULL == m_pMMDevice) {
                 hr = get_default_device(&m_pMMDevice);
                 if (FAILED(hr)) {
-                    return;
+                  MessageBox(NULL, "Could not find any suitable audio devices.", "Milkwave Error", MB_OK | MB_ICONERROR);
+                  return;
                 }
             }
 

@@ -209,9 +209,6 @@
     <ClCompile Include="wasabi.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="plugin_icon.ico.old" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\audio\cleanup.h" />
     <ClInclude Include="..\audio\common.h" />
     <ClInclude Include="..\audio\audiobuf.h" />

@@ -1396,7 +1396,7 @@ void CPlugin::MyReadConfig()
 
   GetPrivateProfileStringW(L"Settings", L"szPresetDir", m_szPresetDir, m_szPresetDir, sizeof(m_szPresetDir), pIni);
   GetPrivateProfileStringW(L"Settings", L"szPresetStartup", m_szPresetStartup, m_szPresetStartup, sizeof(m_szPresetStartup), pIni);
-
+  GetPrivateProfileStringW(L"Settings", L"MilkwaveAudioDevice", m_szAudioDevice, m_szAudioDevice, sizeof(m_szAudioDevice), pIni);
   ReadCustomMessages();
 
   // bounds-checking:
@@ -1495,6 +1495,7 @@ void CPlugin::MyWriteConfig()
 
   WritePrivateProfileIntW(m_adapterId, L"nVideoAdapterIndex", pIni, L"Settings");
 
+  WritePrivateProfileStringW(L"Settings", L"MilkwaveAudioDevice", m_szAudioDevice, pIni);
 }
 
 //----------------------------------------------------------------------
@@ -9852,9 +9853,9 @@ void CPlugin::LaunchMessage(wchar_t* sMessage) {
 
       // g_plugin.m_pState->m_fOuterBorderR = std::stoi(params[L"colorr"]);
       // g_plugin.m_pState->m_fInnerBorderR = std::stoi(params[L"colorr"]);
-      
+
       // amount of color in the motion vectors
-      g_plugin.m_pState->m_fMvR = std::stoi(params[L"colorr"]);      
+      g_plugin.m_pState->m_fMvR = std::stoi(params[L"colorr"]);
     }
     if (params.find(L"colorg") != params.end()) {
       g_plugin.m_pState->m_fWaveG = std::stoi(params[L"colorg"]);
@@ -9872,6 +9873,12 @@ void CPlugin::LaunchMessage(wchar_t* sMessage) {
       // amount of color in the motion vectors
       g_plugin.m_pState->m_fMvB = std::stoi(params[L"colorb"]);
     }
+  }
+  else if (wcsncmp(sMessage, L"DEVICE=", 7) == 0) {
+    std::wstring message(sMessage + 7);
+    wcscpy(g_plugin.m_szAudioDevice, message.c_str());
+    // Restart audio
+    m_AudioLoopState = 1;
   }
 }
 

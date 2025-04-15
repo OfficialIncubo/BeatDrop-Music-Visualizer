@@ -120,11 +120,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="plugin_icon.ico.old">
-      <Filter>library\resources</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="wasabi.h">
       <Filter>library\headers</Filter>
     </ClInclude>

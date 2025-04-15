@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using static DarkModeForms.DarkModeCS;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace MilkwaveRemote {
   public partial class MilkwaveRemoteForm : Form {
@@ -72,6 +73,7 @@ namespace MilkwaveRemote {
     string milkwaveSettingsFile = "settings-milkwave.json";
     private OpenFileDialog ofd;
     private static readonly IntPtr HWND_TOPMOST = new IntPtr(-1);
+    private RemoteHelper helper;
 
     [StructLayout(LayoutKind.Sequential)]
     private struct COPYDATASTRUCT {
@@ -127,12 +129,14 @@ namespace MilkwaveRemote {
       Message,
       PresetFilePath,
       Amplify,
-      Wave
+      Wave,
+      AudioDevice
     }
 
     public MilkwaveRemoteForm() {
       InitializeComponent();
       FixNumericUpDownMouseWheel(this);
+      helper = new RemoteHelper();
 
       Assembly executingAssembly = Assembly.GetExecutingAssembly();
       var fieVersionInfo = FileVersionInfo.GetVersionInfo(executingAssembly.Location);
@@ -142,10 +146,10 @@ namespace MilkwaveRemote {
       cboParameters.DropDownStyle = ComboBoxStyle.DropDown;
       cboParameters.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
 
-      // Initialize 'ofd' to avoid CS8618 error
+      // Initialize 'ofd' to avoid CS8618 error  
       ofd = new OpenFileDialog();
 
-      // #if !DEBUG
+      // #if !DEBUG  
       try {
         string jsonString = File.ReadAllText(milkwaveSettingsFile);
         Settings? loadedSettings = JsonSerializer.Deserialize<Settings>(jsonString, new JsonSerializerOptions {
@@ -157,7 +161,7 @@ namespace MilkwaveRemote {
       } catch (Exception ex) {
         Settings = new Settings();
       }
-      //  #endif
+      //  #endif  
 
       dm = new DarkModeCS(this) {
         ColorMode = Settings.DarkMode ? DarkModeCS.DisplayMode.DarkMode : DarkModeCS.DisplayMode.ClearMode,
@@ -172,8 +176,8 @@ namespace MilkwaveRemote {
         cboParameters.Text = "size=25|time=5.0|x=0.5|y=0.5|growth=2";
       }
 
-      // Fill cboFonts with available system fonts and add a blank first entry
-      cboFonts.Items.Add(""); // Add a blank first entry
+      // Fill cboFonts with available system fonts and add a blank first entry  
+      cboFonts.Items.Add(""); // Add a blank first entry  
       using (InstalledFontCollection fontsCollection = new InstalledFontCollection()) {
         foreach (FontFamily font in fontsCollection.Families) {
           cboFonts.Items.Add(font.Name);
@@ -191,7 +195,7 @@ namespace MilkwaveRemote {
 
     private void MilkwaveRemoteForm_Load(object sender, EventArgs e) {
 
-      // hide tab panel for now      
+      // hide tab panel for now
       tabControl1.Appearance = TabAppearance.FlatButtons;
       tabControl1.ItemSize = new Size(0, 1);
       tabControl1.SizeMode = TabSizeMode.Fixed;
@@ -212,30 +216,34 @@ namespace MilkwaveRemote {
       toolStripMenuItemButtonPanel.Checked = Settings.ShowButtonPanel;
       SetPanelsVisibility();
 
+      if (StartVisualizerIfNotFound() != IntPtr.Zero) {
+        SetVisualizerWindowSizeAndPosition(true);
+      }
+
+      ofd = new OpenFileDialog();
+      ofd.Filter = "MilkDrop Presets|*.milk;*.milk2|All files (*.*)|*.*";
+      ofd.RestoreDirectory = true;
+
+      helper.FillAudioDevices(cboAudioDevice);
+    }
+
+    private IntPtr StartVisualizerIfNotFound() {
+      IntPtr result = FindVisualizerWindow();
       if (FindVisualizerWindow() == IntPtr.Zero) {
         // Try to run MilkwaveVisualizer.exe from the same directory as the assembly
         string visualizerPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "MilkwaveVisualizer.exe");
         if (File.Exists(visualizerPath)) {
           Process.Start(new ProcessStartInfo(visualizerPath) { UseShellExecute = true });
         }
+        int maxWait = 30; // 3 seconds
+        while (result == IntPtr.Zero && maxWait > 0) {
+          // Wait for the visualizer window to be found
+          Thread.Sleep(100);
+          result = FindVisualizerWindow();
+          maxWait--;
+        }
       }
-
-#if !DEBUG
-
-
-      int maxWait = 30; // 3 seconds
-      while (FindVisualizerWindow() == IntPtr.Zero && maxWait > 0) {
-        // Wait for the visualizer window to be found
-        Thread.Sleep(100);
-        maxWait--;
-      }
-      SetVisualizerWindowSizeAndPosition(false);
-
-#endif
-
-      ofd = new OpenFileDialog();
-      ofd.Filter = "MilkDrop Presets|*.milk;*.milk2|All files (*.*)|*.*";
-      ofd.RestoreDirectory = true;
+      return result;
     }
 
     private void MainForm_Shown(object sender, EventArgs e) {
@@ -303,6 +311,9 @@ namespace MilkwaveRemote {
 
       if (VisualizerSize.Height > 0 && VisualizerSize.Width > 0) {
         IntPtr foundWindow = FindVisualizerWindow();
+        if (foundWindow == IntPtr.Zero) {
+          foundWindow = StartVisualizerIfNotFound();
+        }
         if (foundWindow != IntPtr.Zero) {
           SetWindowPos(foundWindow, HWND_TOPMOST, VisualizerLocation.X, VisualizerLocation.Y, VisualizerSize.Width, VisualizerSize.Height, SWP_NOACTIVATE);
         }
@@ -344,26 +355,35 @@ namespace MilkwaveRemote {
     private void SendToMilkwaveVisualizer(string messageToSend, MessageType type) {
       SetStatusText("");
       string partialTitle = txtWindowTitle.Text;
-
+      string statusMessage = "";
       IntPtr foundWindow = FindVisualizerWindow();
       if (foundWindow != IntPtr.Zero) {
         string message = "";
         if (type == MessageType.Direct) {
           message = messageToSend;
+          statusMessage = $"Sent '{messageToSend}' to";
         } else if (type == MessageType.Wave) {
           message = "WAVE" +
             "|mode=" + numWavemode.Value +
             "|colorr=" + pnlColorWave.BackColor.R +
             "|colorg=" + pnlColorWave.BackColor.G +
             "|colorb=" + pnlColorWave.BackColor.B;
+          statusMessage = $"Changed Wave in";
         } else if (type == MessageType.PresetFilePath) {
           message = "PRESET=" + messageToSend;
+          statusMessage = $"Sent preset {messageToSend} to";
         } else if (type == MessageType.Amplify) {
           message = "AMP" +
             "|l=" + numAmpLeft.Value.ToString(CultureInfo.InvariantCulture) +
             "|r=" + numAmpRight.Value.ToString(CultureInfo.InvariantCulture);
+          statusMessage = $"Sent amplification {numAmpLeft.Value.ToString(CultureInfo.InvariantCulture)}" +
+            $"/{numAmpRight.Value.ToString(CultureInfo.InvariantCulture)} to";
+        } else if (type == MessageType.AudioDevice) {
+          if (cboAudioDevice.Text.Length > 0) {
+            message = "DEVICE=" + cboAudioDevice.Text;
+            statusMessage = $"Set device '{cboAudioDevice.Text}' in";
+          }
         } else if (type == MessageType.Message) {
-
           if (chkWrap.Checked && messageToSend.Length >= numWrap.Value && !message.Contains("//") && !message.Contains(Environment.NewLine)) {
             // try auto-wrap
             if (chkWrap.Checked && !message.Contains("//") && !message.Contains(Environment.NewLine)) {
@@ -409,6 +429,8 @@ namespace MilkwaveRemote {
               message = message.Replace("size=" + size, "size=" + newSize);
             }
           }
+
+          statusMessage = $"Sent '{messageToSend}' to";
         }
 
         byte[] messageBytes = Encoding.Unicode.GetBytes(message);
@@ -422,8 +444,8 @@ namespace MilkwaveRemote {
         };
 
         SendMessageW(foundWindow, WM_COPYDATA, IntPtr.Zero, ref cds);
-        if (messageToSend.Length > 0) {
-          SetStatusText($"Sent '{messageToSend}' to {foundWindowTitle}");
+        if (statusMessage.Length > 0) {
+          SetStatusText($"{statusMessage} {foundWindowTitle}");
         }
 
         Marshal.FreeHGlobal(messagePtr);
@@ -1278,7 +1300,7 @@ namespace MilkwaveRemote {
 
     private void toolStripMenuItemHelp_Click(object sender, EventArgs e) {
       string dialogtext =
-  "There are many tooltips explaining all features when you hover over the form elements." + Environment.NewLine +
+  "There are many tooltips explaining all features when you hover over the frm elements." + Environment.NewLine +
   "" + Environment.NewLine +
   "More help resources:" + Environment.NewLine +
   "" + Environment.NewLine +
@@ -1552,5 +1574,17 @@ namespace MilkwaveRemote {
         SetStatusText($"Copied '{text}' to clipboard");
       }
     }
+
+    private void btnSetAudioDevice_Click(object sender, EventArgs e) {
+      SendToMilkwaveVisualizer("", MessageType.AudioDevice);
+    }
+
+    private void cboAudioDevice_SelectedIndexChanged(object sender, EventArgs e) {
+      // Check if the Alt key is pressed
+      if ((Control.ModifierKeys & Keys.Alt) == Keys.Alt) {
+        SendToMilkwaveVisualizer("", MessageType.AudioDevice);
+      }
+    }
+
   }
 }
