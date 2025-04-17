@@ -122,8 +122,6 @@ namespace MilkwaveRemote
       colorDialogWave = new ColorDialog();
       tabControl1 = new TabControl();
       tabRemote = new TabPage();
-      tabExperimental = new TabPage();
-      label1 = new Label();
       statusStrip1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)numSize).BeginInit();
       ((System.ComponentModel.ISupportInitialize)numBPM).BeginInit();
@@ -143,7 +141,6 @@ namespace MilkwaveRemote
       tableLayoutPanel1.SuspendLayout();
       tabControl1.SuspendLayout();
       tabRemote.SuspendLayout();
-      tabExperimental.SuspendLayout();
       SuspendLayout();
       // 
       // statusStrip1
@@ -1305,7 +1302,6 @@ namespace MilkwaveRemote
       // 
       tabControl1.Alignment = TabAlignment.Right;
       tabControl1.Controls.Add(tabRemote);
-      tabControl1.Controls.Add(tabExperimental);
       tabControl1.Dock = DockStyle.Fill;
       tabControl1.Location = new Point(0, 0);
       tabControl1.Multiline = true;
@@ -1325,25 +1321,6 @@ namespace MilkwaveRemote
       tabRemote.TabIndex = 0;
       tabRemote.Text = "Remote";
       tabRemote.UseVisualStyleBackColor = true;
-      // 
-      // tabExperimental
-      // 
-      tabExperimental.Controls.Add(label1);
-      tabExperimental.Location = new Point(4, 4);
-      tabExperimental.Name = "tabExperimental";
-      tabExperimental.Size = new Size(671, 535);
-      tabExperimental.TabIndex = 1;
-      tabExperimental.Text = "Experimental";
-      tabExperimental.UseVisualStyleBackColor = true;
-      // 
-      // label1
-      // 
-      label1.AutoSize = true;
-      label1.Location = new Point(17, 14);
-      label1.Name = "label1";
-      label1.Size = new Size(100, 15);
-      label1.TabIndex = 0;
-      label1.Text = "Ctrl-Tab to switch";
       // 
       // MilkwaveRemoteForm
       // 
@@ -1384,8 +1361,6 @@ namespace MilkwaveRemote
       tableLayoutPanel1.ResumeLayout(false);
       tabControl1.ResumeLayout(false);
       tabRemote.ResumeLayout(false);
-      tabExperimental.ResumeLayout(false);
-      tabExperimental.PerformLayout();
       ResumeLayout(false);
       PerformLayout();
     }
@@ -1485,10 +1460,8 @@ namespace MilkwaveRemote
     private TabPage tabRemote;
     private NumericUpDown numWrap;
     private CheckBox chkWrap;
-    private TabPage tabExperimental;
     private Button btnSetAudioDevice;
     private Label lblAudioDevice;
     private ComboBox cboAudioDevice;
-    private Label label1;
   }
 }
