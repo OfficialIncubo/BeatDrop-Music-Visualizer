@@ -81,7 +81,6 @@ namespace MilkwaveRemote
       txtDirFilter = new TextBox();
       numAmpLeft = new NumericUpDown();
       lblAmp = new Label();
-      lblAmpRight = new Label();
       numAmpRight = new NumericUpDown();
       numWavemode = new NumericUpDown();
       btnSendWave = new Button();
@@ -694,7 +693,7 @@ namespace MilkwaveRemote
       numAmpLeft.Location = new Point(78, 63);
       numAmpLeft.Maximum = new decimal(new int[] { 999, 0, 0, 65536 });
       numAmpLeft.Name = "numAmpLeft";
-      numAmpLeft.Size = new Size(60, 23);
+      numAmpLeft.Size = new Size(50, 23);
       numAmpLeft.TabIndex = 103;
       numAmpLeft.TextAlign = HorizontalAlignment.Center;
       toolTip1.SetToolTip(numAmpLeft, "Amplification factor for left channel");
@@ -706,32 +705,21 @@ namespace MilkwaveRemote
       lblAmp.AutoSize = true;
       lblAmp.Location = new Point(18, 66);
       lblAmp.Name = "lblAmp";
-      lblAmp.Size = new Size(56, 15);
+      lblAmp.Size = new Size(54, 15);
       lblAmp.TabIndex = 104;
-      lblAmp.Text = "Amp Left";
+      lblAmp.Text = "Amp L/R";
       toolTip1.SetToolTip(lblAmp, "Double-Click to reset");
       lblAmp.Click += lblAmpLeft_Click;
-      // 
-      // lblAmpRight
-      // 
-      lblAmpRight.AutoSize = true;
-      lblAmpRight.Location = new Point(146, 65);
-      lblAmpRight.Name = "lblAmpRight";
-      lblAmpRight.Size = new Size(35, 15);
-      lblAmpRight.TabIndex = 105;
-      lblAmpRight.Text = "Right";
-      toolTip1.SetToolTip(lblAmpRight, "Double-Click to reset");
-      lblAmpRight.Click += lblAmpRight_Click;
       // 
       // numAmpRight
       // 
       numAmpRight.DecimalPlaces = 1;
       numAmpRight.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
-      numAmpRight.Location = new Point(185, 63);
+      numAmpRight.Location = new Point(134, 63);
       numAmpRight.Margin = new Padding(3, 2, 3, 2);
       numAmpRight.Maximum = new decimal(new int[] { 999, 0, 0, 65536 });
       numAmpRight.Name = "numAmpRight";
-      numAmpRight.Size = new Size(60, 23);
+      numAmpRight.Size = new Size(50, 23);
       numAmpRight.TabIndex = 106;
       numAmpRight.TextAlign = HorizontalAlignment.Center;
       toolTip1.SetToolTip(numAmpRight, "Amplification factor for right channel");
@@ -816,7 +804,7 @@ namespace MilkwaveRemote
       chkAmpLinked.Checked = true;
       chkAmpLinked.CheckState = CheckState.Checked;
       chkAmpLinked.FlatStyle = FlatStyle.System;
-      chkAmpLinked.Location = new Point(250, 62);
+      chkAmpLinked.Location = new Point(190, 62);
       chkAmpLinked.Margin = new Padding(3, 2, 3, 2);
       chkAmpLinked.Name = "chkAmpLinked";
       chkAmpLinked.Size = new Size(51, 23);
@@ -1004,7 +992,6 @@ namespace MilkwaveRemote
       splitContainer2.Panel1.Controls.Add(numWavemode);
       splitContainer2.Panel1.Controls.Add(lblWavemode);
       splitContainer2.Panel1.Controls.Add(numAmpRight);
-      splitContainer2.Panel1.Controls.Add(lblAmpRight);
       splitContainer2.Panel1.Controls.Add(numAmpLeft);
       splitContainer2.Panel1.Controls.Add(lblAmp);
       splitContainer2.Panel1.Controls.Add(txtDirFilter);
@@ -1469,7 +1456,6 @@ namespace MilkwaveRemote
     private NumericUpDown numAmpLeft;
     private Label lblAmp;
     private NumericUpDown numAmpRight;
-    private Label lblAmpRight;
     private Button btnSendWave;
     private NumericUpDown numWavemode;
     private Label lblWavemode;
