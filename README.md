@@ -17,6 +17,10 @@ Milkwave's main new feature is a standalone window called **Milkwave Remote** wh
 * Amplify the virtual audio signal to make the visualizer more (or less) responsive
 * Modify the currently playing preset's waveform type, color and alpha value
 * Send common key combinations using buttons
+* Customizable interface - show only what you need
+
+![image](https://github.com/user-attachments/assets/daa3752d-fb8b-4f07-b438-63c19ec07014)
+
 
 There are many tooltips explaining all features when you hover over the form elements.
 
