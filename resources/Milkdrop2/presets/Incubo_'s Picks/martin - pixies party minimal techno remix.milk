@@ -1,5 +1,5 @@
 MILKDROP_PRESET_VERSION=201
-PSVERSION=2
+PSVERSION=3
 PSVERSION_WARP=2
 PSVERSION_COMP=3
 [preset00]
@@ -482,8 +482,8 @@ per_frame_init_79=
 per_frame_init_80=//-----------------------------------------
 per_frame_init_81=
 per_frame_1=dt = gSpeed/fps; 
-per_frame_2=dec_s = 1-.015*30/fps; dec_m = pow(.95, 30/fps); dec_f = pow(.8, 30/fps);
-per_frame_3=dt2 = dt ; //# unabhaengig machen ?
+per_frame_2=dec_s = 1-.015*30/fps; dec_m = 1-0.05*30/fps; dec_f = pow(.8, 30/fps);
+per_frame_3=dt2 = dt ;
 per_frame_4=vol_att = (bass + mid + treb)/3;
 per_frame_5=avg = avg*dec_s + (1-dec_s)*vol_att*(1.2-.2/cal);
 per_frame_6=
@@ -783,12 +783,6 @@ per_frame_299=gg = .5;
 per_frame_300=dx = -v2*gg; dy = v1*gg;
 per_frame_301=
 per_frame_302=zoom = 1+(dxcam*reg36 + dycam*reg37 + dzcam*reg38)*0;
-per_frame_303=monitor = free;
-per_frame_304=
-per_frame_305=
-per_frame_306=//#funkenflug (mittels self +14) weniger cw optimieren
-per_frame_307=//colr etc durch q var ersetzen
-per_frame_308=//Kamera-Offset !
 per_pixel_1=rot = q8;
 warp_1=`shader_body {
 warp_2=`float corr = texsize.xy*texsize_noise_lq.zw;

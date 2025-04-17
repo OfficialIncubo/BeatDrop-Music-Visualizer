@@ -1006,7 +1006,7 @@ int CPluginShell::PluginPreInitialize(HWND hWinampWnd, HINSTANCE hWinampInstance
 	//m_screenmode: set at end (derived setting)
 	m_frame = 0;
 	m_time = 0;
-	m_fps = 144;
+	m_fps = 60;
 	m_hInstance = hWinampInstance;
 	m_lpDX = NULL;
 	m_szPluginsDirPath[0] = 0;  // will be set further down
@@ -1640,7 +1640,7 @@ void CPluginShell::DoTime()
 {
 	if (m_frame==0)
 	{
-		m_fps = 144;
+		m_fps = 60;
 		m_time = 0;
 		m_time_hist_pos = 0;
 	}
@@ -1677,6 +1677,11 @@ void CPluginShell::DoTime()
 	int slots_to_look_back = (m_high_perf_timer_freq.QuadPart==0) ? TIME_HIST_SLOTS : TIME_HIST_SLOTS/2;
 
 	m_time += 1.0f/m_fps;
+	if (m_time >= 250000)
+		m_time = 0; // Reset the time variable after 250000 seconds.
+
+	if ((GetAsyncKeyState(VK_CONTROL) & 0x8000) && (GetAsyncKeyState('T') & 0x8000))
+		m_time = 0;
 
 	// timekeeping goals:
 	//    1. keep 'm_time' increasing SMOOTHLY: (smooth animation depends on it)
@@ -1975,7 +1980,23 @@ void CPluginShell::RenderBuiltInTextMsgs()
 		// render 'Press F1 for Help' message in lower-right corner:
 		if (_show_press_f1_NOW)
 		{
-			int dx = (int)(160.0f * powf(m_time/(float)(PRESS_F1_DUR), (float)(PRESS_F1_EXP)));
+			//DeepSeek & Incubo_ - New Press F1 for Help Animation
+			int dx;
+			if (m_time < 0.75f) {
+				// Phase 1: Exponential ease-in (0s to 0.75s)
+				float t = m_time / 0.75f;
+				dx = (int)(PRESS_F1_MAX_DX * (1 - log10f(1.0f + t * (PRESS_F1_LOG_BASE - 1.0f)))*1.5); //Tweak
+			}
+			else if (m_time <= 4.25f) {
+				// Phase 2: Stationary (0.75s to 4.25s)
+				dx = 0; // Tweak
+			}
+			else {
+				// Phase 3: Exponential ease-out (4.25s to 5s)
+				float t = (m_time - 4.25f) / 0.75f;
+				dx = (int)(PRESS_F1_MAX_DX * powf(t, PRESS_F1_EXP/1.5)); //Tweak
+			}
+
 			SetRect(&r, m_left_edge, m_lower_right_corner_y - GetFontHeight(DECORATIVE_FONT), m_right_edge + dx, m_lower_right_corner_y);
 			m_lower_right_corner_y -= m_d3dx_font[DECORATIVE_FONT]->DrawTextW(NULL, wasabiApiLangString(IDS_PRESS_F1_MSG), -1, &r, DT_RIGHT, 0xFFFFFFFF);
 		}

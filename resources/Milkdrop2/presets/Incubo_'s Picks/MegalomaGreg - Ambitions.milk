@@ -226,7 +226,7 @@ per_frame_1=ob_size = 0.05 + 0.3*sin(bass);
 per_frame_2=
 per_frame_3=wave_b = if (treb>1.1&mid<=1&bass<=1, abs(0.5+0.1*sin(treb)),0);
 per_frame_4=wave_r = if (bass>1.1&mid<=1&treb<=1, abs(0.5+0.1*sin(bass)),0);
-per_frame_5=wave_g = if (mid>1.1&bass<=1&trev<=1, abs(0.5+0.1*sin(mid)),0);
+per_frame_5=wave_g = if (mid>1.1&bass<=1&treb<=1, abs(0.5+0.1*sin(mid)),0);
 per_frame_6=
 per_frame_7= 
 per_frame_8=

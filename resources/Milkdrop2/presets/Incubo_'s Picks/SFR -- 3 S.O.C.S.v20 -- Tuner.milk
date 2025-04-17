@@ -1,0 +1,453 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=0.000
+fGammaAdj=1.000
+fDecay=1.000
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=0.261
+fWaveSmoothing=0.774
+fWaveParam=0.000
+fModWaveAlphaStart=0.000
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00001
+dy=0.00001
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.570
+wave_y=0.620
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=1.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=1.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=0.000
+mv_g=0.000
+mv_b=0.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+shapecode_0_enabled=1
+shapecode_0_sides=4
+shapecode_0_additive=0
+shapecode_0_thickOutline=1
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.055
+shapecode_0_y=0.910
+shapecode_0_rad=0.15805
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=1.00000
+shapecode_0_r=1.000
+shapecode_0_g=0.000
+shapecode_0_b=0.000
+shapecode_0_a=0.000
+shapecode_0_r2=1.000
+shapecode_0_g2=0.000
+shapecode_0_b2=0.000
+shapecode_0_a2=0.780
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=0.000
+shape_0_per_frame1=a2 = q19;
+shapecode_1_enabled=1
+shapecode_1_sides=4
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_num_inst=1
+shapecode_1_x=0.055
+shapecode_1_y=0.771
+shapecode_1_rad=0.16074
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=1.00000
+shapecode_1_r=0.150
+shapecode_1_g=0.000
+shapecode_1_b=0.000
+shapecode_1_a=0.000
+shapecode_1_r2=0.000
+shapecode_1_g2=1.000
+shapecode_1_b2=0.000
+shapecode_1_a2=1.000
+shapecode_1_border_r=1.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=1.000
+shapecode_1_border_a=0.000
+shape_1_per_frame1=a2 = q24;
+shapecode_2_enabled=1
+shapecode_2_sides=4
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_num_inst=1
+shapecode_2_x=0.056
+shapecode_2_y=0.632
+shapecode_2_rad=0.15710
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=1.00000
+shapecode_2_r=0.000
+shapecode_2_g=0.000
+shapecode_2_b=0.000
+shapecode_2_a=0.000
+shapecode_2_r2=0.100
+shapecode_2_g2=0.100
+shapecode_2_b2=1.000
+shapecode_2_a2=1.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=1.000
+shapecode_2_border_a=0.000
+shape_2_per_frame1=a2 = q29;
+shapecode_3_enabled=1
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=1
+shapecode_3_textured=0
+shapecode_3_num_inst=1
+shapecode_3_x=0.060
+shapecode_3_y=0.096
+shapecode_3_rad=0.04467
+shapecode_3_ang=0.79796
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.00000
+shapecode_3_r=1.000
+shapecode_3_g=1.000
+shapecode_3_b=1.000
+shapecode_3_a=1.000
+shapecode_3_r2=1.000
+shapecode_3_g2=0.750
+shapecode_3_b2=0.000
+shapecode_3_a2=0.300
+shapecode_3_border_r=1.000
+shapecode_3_border_g=1.000
+shapecode_3_border_b=1.000
+shapecode_3_border_a=1.000
+shape_3_per_frame1=y+= q32 * 0.186;
+shapecode_4_enabled=1
+shapecode_4_sides=4
+shapecode_4_additive=0
+shapecode_4_thickOutline=1
+shapecode_4_textured=0
+shapecode_4_num_inst=1
+shapecode_4_x=0.207
+shapecode_4_y=0.096
+shapecode_4_rad=0.04511
+shapecode_4_ang=0.79796
+shapecode_4_tex_ang=0.00000
+shapecode_4_tex_zoom=1.00000
+shapecode_4_r=1.000
+shapecode_4_g=1.000
+shapecode_4_b=1.000
+shapecode_4_a=1.000
+shapecode_4_r2=1.000
+shapecode_4_g2=0.750
+shapecode_4_b2=0.000
+shapecode_4_a2=0.300
+shapecode_4_border_r=1.000
+shapecode_4_border_g=1.000
+shapecode_4_border_b=1.000
+shapecode_4_border_a=1.000
+shape_4_per_frame1=y+= q31 * 0.186;
+shapecode_5_enabled=1
+shapecode_5_sides=4
+shapecode_5_additive=0
+shapecode_5_thickOutline=1
+shapecode_5_textured=0
+shapecode_5_num_inst=1
+shapecode_5_x=0.208
+shapecode_5_y=0.769
+shapecode_5_rad=0.04511
+shapecode_5_ang=0.79796
+shapecode_5_tex_ang=0.00000
+shapecode_5_tex_zoom=1.00000
+shapecode_5_r=1.000
+shapecode_5_g=1.000
+shapecode_5_b=1.000
+shapecode_5_a=1.000
+shapecode_5_r2=0.000
+shapecode_5_g2=1.000
+shapecode_5_b2=0.000
+shapecode_5_a2=0.510
+shapecode_5_border_r=1.000
+shapecode_5_border_g=1.000
+shapecode_5_border_b=1.000
+shapecode_5_border_a=1.000
+shape_5_per_frame1=y +=  q14 * 0.186;
+shape_5_per_frame2=
+shape_5_per_frame3=r2 = max(q14, 0);
+shape_5_per_frame4=g2 = 1 - abs(q14);
+shape_5_per_frame5=b2 = max(-1 * q14, 0);
+shapecode_6_enabled=1
+shapecode_6_sides=4
+shapecode_6_additive=0
+shapecode_6_thickOutline=1
+shapecode_6_textured=0
+shapecode_6_num_inst=4
+shapecode_6_x=0.401
+shapecode_6_y=0.116
+shapecode_6_rad=0.04588
+shapecode_6_ang=0.78540
+shapecode_6_tex_ang=0.00000
+shapecode_6_tex_zoom=1.00000
+shapecode_6_r=0.000
+shapecode_6_g=0.000
+shapecode_6_b=0.000
+shapecode_6_a=0.000
+shapecode_6_r2=1.000
+shapecode_6_g2=1.000
+shapecode_6_b2=1.000
+shapecode_6_a2=1.000
+shapecode_6_border_r=1.000
+shapecode_6_border_g=1.000
+shapecode_6_border_b=1.000
+shapecode_6_border_a=1.000
+shape_6_per_frame1=x += instance * (0.05 + instance * 0.0035);
+shape_6_per_frame2=x += if(equal(instance, 2), 0.005, 0);
+shape_6_per_frame3=i = instance;
+shape_6_per_frame4=ty = if(equal(i, 0), q30, if(equal(i, 1),q27, if(equal(i, 2),q22, if(equal(i, 3), q17, 0))));
+shape_6_per_frame5=y += ty * 0.37;
+shape_6_per_frame6=r2 = if(equal(i, 1), 0, if(equal(i, 2), 0, if(equal(i, 3), 1, r2)));
+shape_6_per_frame7=g2 = if(equal(i, 1), 0, if(equal(i, 2), 1, if(equal(i, 3), 0, g2)));
+shape_6_per_frame8=b2 = if(equal(i, 1), 1, if(equal(i, 2), 0, if(equal(i, 3), 0, b2)));
+shapecode_7_enabled=1
+shapecode_7_sides=4
+shapecode_7_additive=0
+shapecode_7_thickOutline=1
+shapecode_7_textured=0
+shapecode_7_num_inst=4
+shapecode_7_x=0.727
+shapecode_7_y=0.112
+shapecode_7_rad=0.04602
+shapecode_7_ang=0.78540
+shapecode_7_tex_ang=0.00000
+shapecode_7_tex_zoom=1.00000
+shapecode_7_r=0.000
+shapecode_7_g=0.000
+shapecode_7_b=0.000
+shapecode_7_a=0.000
+shapecode_7_r2=1.000
+shapecode_7_g2=1.000
+shapecode_7_b2=1.000
+shapecode_7_a2=1.000
+shapecode_7_border_r=1.000
+shapecode_7_border_g=1.000
+shapecode_7_border_b=1.000
+shapecode_7_border_a=1.000
+shape_7_per_frame1=x += instance * (0.05 + instance * 0.0035);
+shape_7_per_frame2=x += if(equal(instance, 2), 0.005, 0);
+shape_7_per_frame3=i = instance;
+shape_7_per_frame4=ty = if(equal(i, 0), q13, if(equal(i, 1),q26, if(equal(i, 2),q21, if(equal(i, 3), q16, 0))));
+shape_7_per_frame5=y += ty * 0.37;
+shape_7_per_frame6=r2 = if(equal(i, 1), 0, if(equal(i, 2), 0, if(equal(i, 3), 1, r2)));
+shape_7_per_frame7=g2 = if(equal(i, 1), 0, if(equal(i, 2), 1, if(equal(i, 3), 0, g2)));
+shape_7_per_frame8=b2 = if(equal(i, 1), 1, if(equal(i, 2), 0, if(equal(i, 3), 0, b2)));
+shapecode_8_enabled=1
+shapecode_8_sides=4
+shapecode_8_additive=0
+shapecode_8_thickOutline=1
+shapecode_8_textured=0
+shapecode_8_num_inst=3
+shapecode_8_x=0.425
+shapecode_8_y=0.608
+shapecode_8_rad=0.04467
+shapecode_8_ang=0.78540
+shapecode_8_tex_ang=0.00000
+shapecode_8_tex_zoom=1.00000
+shapecode_8_r=0.000
+shapecode_8_g=0.000
+shapecode_8_b=0.000
+shapecode_8_a=0.000
+shapecode_8_r2=0.000
+shapecode_8_g2=0.000
+shapecode_8_b2=0.000
+shapecode_8_a2=1.000
+shapecode_8_border_r=1.000
+shapecode_8_border_g=1.000
+shapecode_8_border_b=1.000
+shapecode_8_border_a=0.990
+shape_8_per_frame1=i = instance;
+shape_8_per_frame2=x += if(equal(i, 1), 0.065, if(equal(i, 2), 0.128, 0));
+shape_8_per_frame3=ty = if(equal(i, 0), q28, if(equal(i, 1), q23, q18));
+shape_8_per_frame4=y+= ty * 0.37;
+shape_8_per_frame5=r2 = if(equal(i, 2), 1, 0);
+shape_8_per_frame6=g2 = if(equal(i, 1), 1, 0);
+shape_8_per_frame7=b2 = if(equal(i, 0), 1, 0);
+shapecode_9_enabled=1
+shapecode_9_sides=4
+shapecode_9_additive=0
+shapecode_9_thickOutline=1
+shapecode_9_textured=0
+shapecode_9_num_inst=3
+shapecode_9_x=0.750
+shapecode_9_y=0.608
+shapecode_9_rad=0.04422
+shapecode_9_ang=0.78540
+shapecode_9_tex_ang=0.00000
+shapecode_9_tex_zoom=1.00000
+shapecode_9_r=0.000
+shapecode_9_g=0.000
+shapecode_9_b=0.000
+shapecode_9_a=0.000
+shapecode_9_r2=0.000
+shapecode_9_g2=0.000
+shapecode_9_b2=0.000
+shapecode_9_a2=1.000
+shapecode_9_border_r=1.000
+shapecode_9_border_g=1.000
+shapecode_9_border_b=1.000
+shapecode_9_border_a=0.960
+shape_9_per_frame1=i = instance;
+shape_9_per_frame2=x += if(equal(i, 1), 0.065, if(equal(i, 2), 0.128, 0));
+shape_9_per_frame3=ty = if(equal(i, 0), q25, if(equal(i, 1), q20, q15));
+shape_9_per_frame4=y+= ty * 0.37;
+shape_9_per_frame5=r2 = if(equal(i, 2), 1, 0);
+shape_9_per_frame6=g2 = if(equal(i, 1), 1, 0);
+shape_9_per_frame7=b2 = if(equal(i, 0), 1, 0);
+per_frame_1=//          3 SOCS.20 -- Standard Operating Control System
+per_frame_2=//                      By: Stirfriedramen
+per_frame_3=// OUTPUTS:-------------------------------------------------------------------------------------------
+per_frame_4=//q32 -- volume        Rough signal indicating loudness (0 to 2-ish)
+per_frame_5=//q31 -- volume_att    Attenuated loudness signal       (0 to 2-ish)
+per_frame_6=//q30 -- vol_texture   How rough or smooth is volume (0=leg, 1=stec)
+per_frame_7=//q29 -- bass_beat     boolian (1 or 0) 1 = sudden spike in bass
+per_frame_8=//q28 -- bass_weight   % of total volume that is bass (0 to 1)
+per_frame_9=//q27 -- bass_text     How rough or smooth is bass   (0=leg, 1=stec) 
+per_frame_10=//q26 -- bass_swell    How fast is the bass signal strengthening
+per_frame_11=//q25 -- bass_presence How bassy is the overall sound
+per_frame_12=//q24 -- mid_beat      boolian (1 or 0) 1 = sudden spike in mid
+per_frame_13=//q23 -- mid_weight    % of total volume that is mid  (0 to 1)
+per_frame_14=//q22 -- mid_text      How rough or smooth is mid    (0=leg, 1=stec) 
+per_frame_15=//q21 -- nid_swell     How fast is the mid signal rising
+per_frame_16=//q20 -- mid_presence  How mid is the sound overall
+per_frame_17=//q19 -- treb_beat     boolian (1 or 0) 1 = sudden spike in treb
+per_frame_18=//q18 -- treb_weight   % of total volume that is treb (0 to 1)
+per_frame_19=//q17 -- treb_tex      How rough or smooth is treb   (0=leg, 1=stec) 
+per_frame_20=//q16 -- treb_swell    How fast is the treb signal rising
+per_frame_21=//q15 -- treb_presence How Treb is the sound overall
+per_frame_22=//q14 -- tone          How high or low is the sound (-1 = bass - +1 = treb)
+per_frame_23=//q13 -- swell         How fast is the volume increasing
+per_frame_24=
+per_frame_25=// CONTROLS:-----------------------------------------------------------------------------------------
+per_frame_26=//   set these variables to taste, or control them with your code!
+per_frame_27=
+per_frame_28=// These increase the senstivity of the beat detectors (0 to 1)
+per_frame_29=b_beat_sens = .5;    
+per_frame_30=m_beat_sens = .5;    
+per_frame_31=t_beat_sens = .5;
+per_frame_32=
+per_frame_33=// Use these to reduce the sensitivity of the texture signals (0 .. 100)
+per_frame_34=v_tex_sens = 5.00;    
+per_frame_35=b_tex_sens = 5.00;    
+per_frame_36=m_tex_sens = 5.00;    
+per_frame_37=t_tex_sens = 5.00;
+per_frame_38=
+per_frame_39=// Set weights_smooth to 0 if you want to use the rougher signal
+per_frame_40=weights_smooth = 1;
+per_frame_41=
+per_frame_42=// SOCS Code:----------------------------------------------------------------------------------------
+per_frame_43=q32 = 1 / min((bass + mid + treb), 33);    q31 = 1 / min((bass_att + mid_att + treb_att), 33);
+per_frame_44=q29 = if((floor(max(bass - bass_att, 0) * (20 * b_beat_sens))),1,0);
+per_frame_45=q28 = if((weights_smooth), bass_att * q31, bass * q32);
+per_frame_46=b_tex = (b_tex * (100 - b_tex_sens) + abs(bass - bass_att) * b_tex_sens) * 0.01;
+per_frame_47=q27 = min(b_tex * 1.333, 1);    q25 = min(q28 * bass_att, 1.00);
+per_frame_48=q26 = min(max(bass - bass_att, 0), 1);    q24 = if((floor(max(mid  -  mid_att, 0) * (20 * m_beat_sens))),1,0);
+per_frame_49=q23 = if((weights_smooth), mid_att * q31, mid * q32);
+per_frame_50=m_tex = (m_tex * (100 - m_tex_sens) + abs(mid  -  mid_att) * m_tex_sens) * 0.01;
+per_frame_51=q22 = min(m_tex * 1.166, 1);    q20 = min(q23 * bass_att, 1.00);    
+per_frame_52=q21 = min(max(mid - mid_att, 0), 1);
+per_frame_53=q19 = if((floor(max(treb - treb_att, 0) * (20 * t_beat_sens))),1,0);
+per_frame_54=q18 = if((weights_smooth), treb_att * q31, treb * q32);
+per_frame_55=t_tex = (t_tex * (100 - t_tex_sens) + abs(treb - treb_att) * t_tex_sens) * 0.01;
+per_frame_56=q17 = min(t_tex * 1.166, 1);    q15 = q18 * bass_att;
+per_frame_57=q16 = min(max(treb - treb_att, 0), 1);    q14 = (q18 - q28);    q32 = min((bass + mid + treb)* 0.25, 2);
+per_frame_58=q31 = min((bass_att + mid_att + treb_att) * 0.25, 2);     q13 = min(max((q32 - q31), 0), 1);
+per_frame_59=v_tex = (v_tex * (100 - v_tex_sens) + abs(q32 - q31) * v_tex_sens) * 0.01;
+per_frame_60=q30 = min(v_tex, 1);    //q31 *= 0.99;   //q32 *= 0.60606;   
+per_frame_61=// OUTPUTS:-------------------------------------------------------------------------------------------
+per_frame_62=//q32 -- volume        Rough signal indicating loudness (0 to 2-ish)
+per_frame_63=//q31 -- volume_att    Attenuated loudness signal       (0 to 2-ish)
+per_frame_64=//q30 -- vol_texture   How rough or smooth is volume (0=leg, 1=stec)
+per_frame_65=//q29 -- bass_beat     boolian (1 or 0) 1 = sudden spike in bass
+per_frame_66=//q28 -- bass_weight   % of total volume that is bass (0 to 1)
+per_frame_67=//q27 -- bass_text     How rough or smooth is bass   (0=leg, 1=stec) 
+per_frame_68=//q26 -- bass_swell    How fast is the bass signal strengthening
+per_frame_69=//q25 -- bass_presence How bassy is the overall sound
+per_frame_70=//q24 -- mid_beat      boolian (1 or 0) 1 = sudden spike in mid
+per_frame_71=//q23 -- mid_weight    % of total volume that is mid  (0 to 1)
+per_frame_72=//q22 -- mid_text      How rough or smooth is mid    (0=leg, 1=stec) 
+per_frame_73=//q21 -- nid_swell     How fast is the mid signal rising
+per_frame_74=//q20 -- mid_presence  How mid is the sound overall
+per_frame_75=//q19 -- treb_beat     boolian (1 or 0) 1 = sudden spike in treb
+per_frame_76=//q18 -- treb_weight   % of total volume that is treb (0 to 1)
+per_frame_77=//q17 -- treb_tex      How rough or smooth is treb   (0=leg, 1=stec) 
+per_frame_78=//q16 -- treb_swell    How fast is the treb signal rising
+per_frame_79=//q15 -- treb_presence How Treb is the sound overall
+per_frame_80=//q14 -- tone          How high or low is the sound (-1 = bass - +1 = treb)
+per_frame_81=//q13 -- swell         How fast is the volume increasing
+per_frame_82=//------------------------------------------------------------------------------------------------------
+per_frame_83=//                   You should still have 52 user variables left and q1 to q12 
+per_frame_84=//                    VVVVVVVVVVV  Add your beautiful code below  VVVVVVVVVVV
+per_frame_85=//---------------------------------vvvvvvvvvvvvvvvvvvvvvvvvvvvvv----------------------------------------
+warp_1=`sampler sampler_SOCS_20;
+warp_2=`
+warp_3=`shader_body
+warp_4=`{
+warp_5=`    // sample previous frame
+warp_6=`    ret = tex2D( sampler_SOCS_20, uv ).xyz;
+warp_7=`    
+warp_8=`    // darken (decay) over time
+warp_9=`    ret *= 0.98; //or try: ret -= 0.004;
+warp_10=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    ret = tex2D(sampler_main, uv).xyz;;
+comp_4=`}

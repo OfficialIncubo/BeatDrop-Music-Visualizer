@@ -1,0 +1,251 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=2
+[preset00]
+fRating=5.000
+fGammaAdj=1.140
+fDecay=1.000
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=0.010
+fWaveSmoothing=0.270
+fWaveParam=-0.380
+fModWaveAlphaStart=0.710
+fModWaveAlphaEnd=1.300
+fWarpAnimSpeed=0.010
+fWarpScale=1.470
+fZoomExponent=4.77802
+fShader=0.000
+zoom=0.99816
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=1.00183
+sy=1.00000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.005
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.500
+ib_size=0.500
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=1.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=1
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=0
+wavecode_0_scaling=2.98779
+wavecode_0_smoothing=0.50000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wave_0_per_point1=x = .5+.25*(sample*2)/sin(sample*100+time*10);
+wave_0_per_point2=y = .5+.25*(sample*2)*cos(sample*100+time*10);
+wave_0_per_point3=r = .01+.5*sin(sample*250+time*1);
+wave_0_per_point4=b = .01+.5*sin(sample*220-time*2);
+wave_0_per_point5=g = .01+.5*sin(sample*130+time*4);
+wave_0_per_point6=
+wave_0_per_point7=b = if(above(b,0),b,0);
+wave_0_per_point8=r = if(above(r,0),r,0);
+wave_0_per_point9=g = if(above(g,0),g,0);
+wavecode_1_enabled=1
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=1
+wavecode_1_bDrawThick=1
+wavecode_1_bAdditive=0
+wavecode_1_scaling=1.00000
+wavecode_1_smoothing=0.50000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=1.000
+wave_1_per_point1=x = .5+.25*(sample*2)*sin(sample*100+time*10);
+wave_1_per_point2=y = .5+.25*(sample*2)/cos(sample*100+time*10);
+wave_1_per_point3=r = .01+.5*sin(sample*250+time*1);
+wave_1_per_point4=b = .01+.5*sin(sample*220-time*2);
+wave_1_per_point5=g = .01+.5*sin(sample*130+time*4);
+wave_1_per_point6=
+wave_1_per_point7=b = if(above(b,0),b,0);
+wave_1_per_point8=r = if(above(r,0),r,0);
+wave_1_per_point9=g = if(above(g,0),g,0);
+per_frame_1=decay=.999;
+per_frame_2=wrap=sin(time*10);
+per_frame_3=mv_dx=bass;
+per_frame_4=ib_a=.005;
+per_frame_5=
+per_frame_6=
+per_frame_7=vol=(bass+mid+treb)*0.55;
+per_frame_8=vol=vol*vol;
+per_frame_9=
+per_frame_10=mtime=mtime+vol*0.01*(48/fps);
+per_frame_11=
+per_frame_12=q1=mtime*0.5;
+per_frame_13=
+per_frame_14=
+per_frame_15=dt=1/FPS;
+per_frame_16=mytime=mytime+dt;
+per_frame_17=contvol=min( max(.5, (1-.5*dt)*contvol+.5*dt*(bass+mid+treb)*.133 ) ,2 ) ;
+per_frame_18=q2=contvol;
+per_frame_19=q3=mytime;
+per_frame_20=echo_zoom=1+(vol*0.01);
+per_frame_21=sx=-.019-sin(time)*0.1+0.5;
+per_pixel_1=zoom=1.005-(rad/100);
+per_pixel_2=rot=rad/100;
+per_pixel_3=//sy=-1.02;
+warp_1=`float sigmoid(float t, float c){
+warp_2=`   return 1 / ( 1 + exp(t*c));
+warp_3=`}
+warp_4=`
+warp_5=`float2 vortex(float2 domain, float2 position, float2 motionVector, float4 domainAspect, float radius, float sharpness, float spin, float zoom){
+warp_6=`   domain -= position;
+warp_7=`   domain *= domainAspect.xy;
+warp_8=`   float sigmoidFilter = sigmoid( length(domain) - radius , sharpness );
+warp_9=`   domain +=  + motionVector*sigmoidFilter;
+warp_10=`   spin *= sigmoidFilter;
+warp_11=`   float s = sin(spin);
+warp_12=`   float c = cos(spin);
+warp_13=`   float2 uv_rot;
+warp_14=`   uv_rot.x = c*domain.x - s*domain.y;
+warp_15=`   uv_rot.y = s*domain.x + c*domain.y;
+warp_16=`   uv_rot *= domainAspect.zw;
+warp_17=`   uv_rot += position;
+warp_18=`   return saturate(position + (uv_rot-position)*lerp(1,zoom,sigmoidFilter));
+warp_19=`}
+warp_20=`
+warp_21=`shader_body
+warp_22=`{
+warp_23=`
+warp_24=`
+warp_25=`float2 domain = uv;
+warp_26=`float2 position = float2(q4,1-q8) + 0.49*0;
+warp_27=`float2 motionVector = float2(-q15,q16)*q13*aspect.wz;
+warp_28=`float4 domainAspect = aspect;
+warp_29=`float radius = 0.07;
+warp_30=`float sharpness = 50;
+warp_31=`float spin = 1;
+warp_32=`float zoom = 4;
+warp_33=`
+warp_34=`float2 uv_vortex = vortex( domain, position, motionVector, domainAspect, radius, sharpness, spin, zoom);
+warp_35=`
+warp_36=`uv = uv_vortex + texsize.zw*float2(0,0.15);
+warp_37=`uv = lerp( uv_orig,uv,0.2);
+warp_38=`
+warp_39=`    float2 scale = float2(1280,1024)*texsize.zw; // 1280x1024 : the resolution i modelled this shader with
+warp_40=`    float1 d = 0.0039;
+warp_41=`    float1 dx = ( GetBlur2(uv + float2(d,0)) - GetBlur2(uv-float2(d,0)) ).x*scale.x;
+warp_42=`    float1 dy = ( GetBlur2(uv + float2(0,d)) - GetBlur2(uv-float2(0,d)) ).x*scale.y;
+warp_43=`    float1 dxb = ( GetBlur2(uv + float2(d,0)) - GetBlur2(uv-float2(d,0)) ).x*scale.x;
+warp_44=`    float1 dyb = ( GetBlur2(uv + float2(0,d)) - GetBlur2(uv-float2(0,d)) ).x*scale.y;
+warp_45=`    float2 my_uv = uv - float2(dx,dy)*0.0068 + float2(dxb,dyb)*0.0031;
+warp_46=`
+warp_47=`
+warp_48=`
+warp_49=`    float2 v = 0.008;
+warp_50=`    ret.x = tex2D( sampler_fw_main, my_uv).x;
+warp_51=`
+warp_52=`    
+warp_53=`    ret.x += (ret.x - GetBlur3(uv).x)*0.11;
+warp_54=`    ret.x += 0.0041;
+warp_55=`
+warp_56=`
+warp_57=`//--------------------------------
+warp_58=`
+warp_59=`    my_uv = uv_orig + float2(dy,-dx)*0.058*(1.01-GetBlur3(uv_orig).y);
+warp_60=`
+warp_61=`
+warp_62=`
+warp_63=`    v = 0.009;
+warp_64=`    ret.z = tex2D( sampler_fw_main, my_uv).z;
+warp_65=`    
+warp_66=`    ret.z += (ret.z - GetBlur1(uv_orig).z)*length(my_uv-uv_orig)*180/length(scale);
+warp_67=`    ret.z *= 0.646;
+warp_68=`    ret.z += 0.0076;
+warp_69=`
+warp_70=`
+warp_71=`
+warp_72=`//--------------------------------
+warp_73=`
+warp_74=`    d = 0.009;
+warp_75=`    my_uv = float2(-dy,dx)*0.0355;
+warp_76=`
+warp_77=`    dx = ( GetBlur2(uv + float2(d,0)) - GetBlur2(uv-float2(d,0)) ).y*scale.x;
+warp_78=`    dy = ( GetBlur2(uv + float2(0,d)) - GetBlur2(uv-float2(0,d)) ).y*scale.y;
+warp_79=`    my_uv += uv - float2(dx,dy)*0.025;
+warp_80=`
+warp_81=`
+warp_82=`
+warp_83=`    v = 0.012;
+warp_84=`    ret.y =tex2D( sampler_fw_main, my_uv).y;
+warp_85=`
+warp_86=`    
+warp_87=`    ret.y += (ret.y - GetBlur3(my_uv).y)*.11 + 0.034;
+warp_88=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`
+comp_4=`    float2 uv_echo = (uv - 0.5)*1.000*float2(-1,-1) + 0.5;
+comp_5=`    ret = lerp( tex2D(sampler_main, uv).xyz, 
+comp_6=`                tex2D(sampler_main, uv_echo).xyz, 
+comp_7=`                0.50 
+comp_8=`              ); //video echo
+comp_9=`    ret *= 2.00; //gamma
+comp_10=`    float3 retish = 1 - ret*(1-ret)*4; //solarize
+comp_11=`    ret = float3(retish[int(bass*roam_sin.x)]*0.5,
+comp_12=`                 retish[int(treb*roam_cos.y)]*0.5,
+comp_13=`                 retish[int(mid *roam_sin.z)]);
+comp_14=`    ret *= 0.5;
+comp_15=`//MilkDrop3 Brightness Mode:
+comp_16=`ret *= 1.6;
+comp_17=`//MilkDrop3 Color Mode:
+comp_18=`ret /= float3(2.6,-0.5,2.7);
+comp_19=`//MilkDrop3 SoftColor Mode:
+comp_20=`ret += float3(-0.1,0.1,0.2);
+comp_21=`}

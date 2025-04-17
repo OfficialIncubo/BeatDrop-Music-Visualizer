@@ -243,9 +243,9 @@ per_frame_20=wave_y=wave_y+.25*cos(t*0.5-time);
 per_frame_21=
 per_frame_22=q1=t;
 per_frame_23=q2=bc;
-per_frame_24=q3=if(numbeat,2+rand(5),oq3);
+per_frame_24=q3=if(numbeat,2+int(rand(5)),oq3);
 per_frame_25=oq3=q3;
-per_frame_26=q4=if(numbeat,2+rand(5),oq4);
+per_frame_26=q4=if(numbeat,2+int(rand(5)),oq4);
 per_frame_27=oq4=q4;
 per_frame_28=q5=numbeat;
 per_pixel_1=zoom=zoom+.05*sin(ang*(q2%9)+1.4*q1);

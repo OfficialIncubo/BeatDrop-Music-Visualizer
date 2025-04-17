@@ -518,277 +518,279 @@ per_frame_init_55=gmegabuf(n)=.2; gmegabuf(n+1)=.0; gmegabuf(n+2)=3; gmegabuf(n+
 per_frame_init_56=n += csize;
 per_frame_init_57=
 per_frame_init_58=tstart = rand (1000)-500;
-per_frame_1=dec_m = pow (0.85, 30/fps); dec_s = pow (0.95, 30/fps); 
-per_frame_2=speed0 = 0.2 + 0.06*sin(time*0.083) ; //##spielen, 0.15... 0.3
-per_frame_3=SysTime = SysTime + (exp(-Bild) * 0.3+ 0.03)/30; 
-per_frame_4=if (SysTime >= 1.2, SysTime = 0; Start = 1, 0);
-per_frame_5=RelZ    = max(0,pow(1-SysTime,1.4));
-per_frame_6=SysZ = RelZ*MaxDist+.1;
-per_frame_7=copyable = (reg50 <= 400);
-per_frame_8=
-per_frame_9= //-------------- Gelaende definieren ------------------
-per_frame_10=if (Start == 1,
-per_frame_11=  n = 0;     loop (MaxZw,  megabuf (n+6) = 0; n+= recsize);
-per_frame_12=  n = sbase; loop (MaxZw2, megabuf (n+6) = 0; n+= recsize);
-per_frame_13=  fov = rand(10)/15 + .5;reg06 = fov;
-per_frame_14=  YCam = 1 + rand(8); reg05 = YCam; ///###
-per_frame_15=  AngCam = (YCam-7) * .015; //neg: nach oben
-per_frame_16=  NumTree = 0;
-per_frame_17=  reg50 = 0; //(Randueberschr. aus shape 1)
-per_frame_18=  CopyNow = 0; 
-per_frame_19=  reg10 = (rand(100)/100-.3)*0.2;
-per_frame_20=  reg11 = (rand (20)-10)*0.0075;
-per_frame_21=  reg12 = (rand (20)-10)*0.01;  
-per_frame_22=  reg13 = (rand (10)-5)*0.01; 
-per_frame_23=  reg14 = ((rand (100)/100)-.4)*0.008;
-per_frame_24=  par1  = rand(10); //fuer Weg
-per_frame_25=  par2  = rand(6);
-per_frame_26=,0);
-per_frame_27=
-per_frame_28=//-------------- Baeume pflanzen ------------------
-per_frame_29=if ((SysZ > 25*fov) && (frame%20==0) && (IstZw < MaxZw/3), 
-per_frame_30=  base = nextfree*recsize;
-per_frame_31=  NumTree += 1;
-per_frame_32=  Prog = int(NumTree/10);
-per_frame_33=  bpow = sin(prog)*.05 + .33;
-per_frame_34=  z0 = SysZ;
-per_frame_35=  x0 = (rand(50)/50-.5)*z0/fov*.8;
-per_frame_36=//  x0 = WegX + 12 * ((NumTree%2)-0.5);
-per_frame_37=  y0 = reg10*z0*(sin(x0*reg11 + z0*reg13)) * sin(z0*reg12+reg13) + pow(x0,2)*reg14; //reg13 im zweiten Term ?
-per_frame_38=  Weg = max(min(4-abs(WegX-x0),1),0);
-per_frame_39=  if (weg == 0,
-per_frame_40=    megabuf (base) = x0;  megabuf (base+1) = y0; megabuf (base+2) = z0;
-per_frame_41=    megabuf (base+3) = 0; megabuf (base+4) = 1;  megabuf (base+5) = 0;
-per_frame_42=    megabuf(base+6) = 1.5;  megabuf(base+7) = 0.8 ;  megabuf(base+8) = 0;
-per_frame_43=    megabuf(base+9) = 0;   megabuf(base+10) = 0; megabuf(base+11) = y0;
-per_frame_44=  ,0);
-per_frame_45=,0);
-per_frame_46=
-per_frame_47=//-------------- Wachstum / Verzweigung Baeume ------------------
-per_frame_48=n = 0; loop (MaxZw, gmegabuf (n+6) = 0; n+=recsize);
-per_frame_49=mindex = 0;
-per_frame_50=while(exec2(
-per_frame_51=n = 0; nextfree = IstZw + 1;
-per_frame_52=loop (min (MaxZw,IstZW), 
-per_frame_53=  base = n*recsize;
-per_frame_54=  Quer = megabuf (base + 6); RQuer = sqrt (Quer);
-per_frame_55=  Alter = megabuf (base + 8);
-per_frame_56=  Height = megabuf(base+1)-megabuf(base+11);
-per_frame_57=  Dist = megabuf (base + 2);
-per_frame_58=  if (Quer > 0,
-per_frame_59=    cb = cbase+csize* megabuf(base + 10);  
-per_frame_60=    Kraus=gmegabuf(cb);   Hang=gmegabuf(cb+1);  ZwLen=gmegabuf(cb+2);
-per_frame_61=    Verzw =gmegabuf(cb+3);    Straight=gmegabuf(cb+4);    Waag =gmegabuf(cb+5);
-per_frame_62=    speed = speed0 * pow(Quer,bpow);
-per_frame_63=    i = 0; loop (3, megabuf(base+i) += megabuf(base+3+i) * speed; i+=1);
-per_frame_64=    megabuf(base+3) += (rand(100)/100-.5)*Kraus*(1-RQuer);
-per_frame_65=    megabuf(base+4) += (rand(100)/100-.5)*Kraus*(1-RQuer) +(.002/Quer)*Hang;
-per_frame_66=    megabuf(base+5) += (rand(100)/100-.5)*Kraus*(1-RQuer);
-per_frame_67=    len = sqrt (pow(megabuf(base+3),2)+pow(megabuf(base+4),2)+pow(megabuf(base+5),2));
-per_frame_68=    i = 0; loop (3, megabuf(base+3+i) /= len; i+=1);
-per_frame_69=    dec = 0.28;
-per_frame_70=    megabuf (base + 6) = (0.996-dec)*megabuf (base + 6) + dec* megabuf(base + 7);
-per_frame_71=    megabuf (base + 8) += 1;     megabuf (base + 9) += len;
-per_frame_72=  ,0);
-per_frame_73=  if ((Quer <=0.000003*Dist) ||(Quer < 0.00001*Dist) && (IstZw > 0.9*MaxZw) 
-per_frame_74=    ||((Quer < 0.003) && ((rand(1000000*Quer*ZwLen) < 20*megabuf (base +9)))),
-per_frame_75=      megabuf (base + 6) = 0;
-per_frame_76=      //ausgewachsen, Zweig kann ausgelistet werden 
-per_frame_77=  , 
-per_frame_78=    //ansonsten: Verzweigung ?
-per_frame_79=    if ( (rand (500 + 500 * (1-quer)) < Verzw*Alter ) && (Height > 0), 
-per_frame_80=      //Suche freien Platz in Umgebung
-per_frame_81=      m = nextfree; nextfree += 1;
-per_frame_82=      if ((m < MaxZw), //noch ein Platz frei ?
-per_frame_83=        newbase = m*recsize;
-per_frame_84=        //Anfangsbed. des neuen Zweiges setzen 
-per_frame_85=        i = 0; loop (3, megabuf(newbase+i) = megabuf(base+i); i+=1); 
-per_frame_86=
-per_frame_87=        //Dicke 
-per_frame_88=        ran = straight + (1-straight)*2*(rand(100)/100-.5);    
-per_frame_89=        megabuf (newbase + 6) = megabuf (base + 6);
-per_frame_90=        megabuf (base + 7) = megabuf (base + 6) * (ran);
-per_frame_91=        megabuf (newbase + 7) = megabuf (base + 6) * (1-ran) ;
-per_frame_92=
-per_frame_93=        //Richtung
-per_frame_94=        megabuf(newbase+3)  =   megabuf(base+3)+ (rand(100)/100-.5); 
-per_frame_95=        megabuf(newbase+4)  =   megabuf(base+4)+ (rand(100)/100-.5); 
-per_frame_96=        megabuf(newbase+5)  =   megabuf(base+5)+ (rand(100)/100-.5); 
-per_frame_97=        megabuf(newbase+4)  *= Waag; 
-per_frame_98=
-per_frame_99=        len = sqrt (pow(megabuf(newbase+3),2)+pow(megabuf(newbase+4),2)+pow(megabuf(newbase+5),2));
-per_frame_100=        i = 0; loop (3, megabuf(newbase+3+i) /= len; i+=1);
-per_frame_101=
-per_frame_102=        /// Alter   
-per_frame_103=        megabuf (base + 8) = 0; megabuf (newbase + 8) = 0; megabuf (newbase + 9)= 0; 
-per_frame_104=        megabuf (newbase + 10)= megabuf (base + 10);;
-per_frame_105=        megabuf (newbase + 11)= megabuf (base + 11);;
-per_frame_106=     ,0);
-per_frame_107=  ,0));
-per_frame_108=  n += 1;
-per_frame_109=);
-per_frame_110=//Loeschen gmegabuf, komprimieren, umkopieren und zuruekkopieren
-per_frame_111=n = 0; m = 0; k= 0; IstZw = 0;
-per_frame_112=loop (MaxZw,
-per_frame_113=  if (megabuf (n + 6) > 0,
-per_frame_114=    IstZW += 1; k = 0;
-per_frame_115=    loop (recsize, 
-per_frame_116=      gmegabuf(mindex+k) = megabuf(n+k); 
-per_frame_117=      megabuf (m+k) = gmegabuf(mindex+k); 
-per_frame_118=       k += 1;);
-per_frame_119=       if (!(m==n), megabuf (n+6) = 0;,0);
-per_frame_120=    m += recsize; mindex += recsize,0); 
-per_frame_121=  n += recsize;
-per_frame_122=);, (IstZW > 0) && (mindex/recsize < MaxShape))); //Ende B
-per_frame_123=
-per_frame_124=
+per_frame_1=dec_m = exp (-5/fps);
+per_frame_2=dec_s = exp (-1/fps);
+per_frame_3=
+per_frame_4=speed0 = 0.2 + 0.06*sin(time*0.083) ;
+per_frame_5=SysTime = SysTime + (exp(-Bild) * 0.3+ 0.03)/30; 
+per_frame_6=if (SysTime >= 1.2, SysTime = 0; Start = 1, 0);
+per_frame_7=RelZ    = max(0,pow(1-SysTime,1.4));
+per_frame_8=SysZ = RelZ*MaxDist+.1;
+per_frame_9=copyable = (reg50 <= 400);
+per_frame_10=
+per_frame_11= //-------------- Gelaende definieren ------------------
+per_frame_12=if (Start == 1,
+per_frame_13=  n = 0;     loop (MaxZw,  megabuf (n+6) = 0; n+= recsize);
+per_frame_14=  n = sbase; loop (MaxZw2, megabuf (n+6) = 0; n+= recsize);
+per_frame_15=  fov = rand(10)/15 + .5;reg06 = fov;
+per_frame_16=  YCam = 1 + rand(8); reg05 = YCam; ///###
+per_frame_17=  AngCam = (YCam-7) * .015; //neg: nach oben
+per_frame_18=  NumTree = 0;
+per_frame_19=  reg50 = 0; //(Randueberschr. aus shape 1)
+per_frame_20=  CopyNow = 0; 
+per_frame_21=  reg10 = (rand(100)/100-.3)*0.2;
+per_frame_22=  reg11 = (rand (20)-10)*0.0075;
+per_frame_23=  reg12 = (rand (20)-10)*0.01;  
+per_frame_24=  reg13 = (rand (10)-5)*0.01; 
+per_frame_25=  reg14 = ((rand (100)/100)-.4)*0.008;
+per_frame_26=  par1  = rand(10); //fuer Weg
+per_frame_27=  par2  = rand(6);
+per_frame_28=,0);
+per_frame_29=
+per_frame_30=//-------------- Baeume pflanzen ------------------
+per_frame_31=if ((SysZ > 25*fov) && (frame%20==0) && (IstZw < MaxZw/3), 
+per_frame_32=  base = nextfree*recsize;
+per_frame_33=  NumTree += 1;
+per_frame_34=  Prog = int(NumTree/10);
+per_frame_35=  bpow = sin(prog)*.05 + .33;
+per_frame_36=  z0 = SysZ;
+per_frame_37=  x0 = (rand(50)/50-.5)*z0/fov*.8;
+per_frame_38=//  x0 = WegX + 12 * ((NumTree%2)-0.5);
+per_frame_39=  y0 = reg10*z0*(sin(x0*reg11 + z0*reg13)) * sin(z0*reg12+reg13) + pow(x0,2)*reg14; //reg13 im zweiten Term ?
+per_frame_40=  Weg = max(min(4-abs(WegX-x0),1),0);
+per_frame_41=  if (weg == 0,
+per_frame_42=    megabuf (base) = x0;  megabuf (base+1) = y0; megabuf (base+2) = z0;
+per_frame_43=    megabuf (base+3) = 0; megabuf (base+4) = 1;  megabuf (base+5) = 0;
+per_frame_44=    megabuf(base+6) = 1.5;  megabuf(base+7) = 0.8 ;  megabuf(base+8) = 0;
+per_frame_45=    megabuf(base+9) = 0;   megabuf(base+10) = 0; megabuf(base+11) = y0;
+per_frame_46=  ,0);
+per_frame_47=,0);
+per_frame_48=
+per_frame_49=//-------------- Wachstum / Verzweigung Baeume ------------------
+per_frame_50=n = 0; loop (MaxZw, gmegabuf (n+6) = 0; n+=recsize);
+per_frame_51=mindex = 0;
+per_frame_52=while(exec2(
+per_frame_53=n = 0; nextfree = IstZw + 1;
+per_frame_54=loop (min (MaxZw,IstZW), 
+per_frame_55=  base = n*recsize;
+per_frame_56=  Quer = megabuf (base + 6); RQuer = sqrt (Quer);
+per_frame_57=  Alter = megabuf (base + 8);
+per_frame_58=  Height = megabuf(base+1)-megabuf(base+11);
+per_frame_59=  Dist = megabuf (base + 2);
+per_frame_60=  if (Quer > 0,
+per_frame_61=    cb = cbase+csize* megabuf(base + 10);  
+per_frame_62=    Kraus=gmegabuf(cb);   Hang=gmegabuf(cb+1);  ZwLen=gmegabuf(cb+2);
+per_frame_63=    Verzw =gmegabuf(cb+3);    Straight=gmegabuf(cb+4);    Waag =gmegabuf(cb+5);
+per_frame_64=    speed = speed0 * pow(Quer,bpow);
+per_frame_65=    i = 0; loop (3, megabuf(base+i) += megabuf(base+3+i) * speed; i+=1);
+per_frame_66=    megabuf(base+3) += (rand(100)/100-.5)*Kraus*(1-RQuer);
+per_frame_67=    megabuf(base+4) += (rand(100)/100-.5)*Kraus*(1-RQuer) +(.002/Quer)*Hang;
+per_frame_68=    megabuf(base+5) += (rand(100)/100-.5)*Kraus*(1-RQuer);
+per_frame_69=    len = sqrt (pow(megabuf(base+3),2)+pow(megabuf(base+4),2)+pow(megabuf(base+5),2));
+per_frame_70=    i = 0; loop (3, megabuf(base+3+i) /= len; i+=1);
+per_frame_71=    dec = 0.28;
+per_frame_72=    megabuf (base + 6) = (0.996-dec)*megabuf (base + 6) + dec* megabuf(base + 7);
+per_frame_73=    megabuf (base + 8) += 1;     megabuf (base + 9) += len;
+per_frame_74=  ,0);
+per_frame_75=  if ((Quer <=0.000003*Dist) ||(Quer < 0.00001*Dist) && (IstZw > 0.9*MaxZw) 
+per_frame_76=    ||((Quer < 0.003) && ((rand(1000000*Quer*ZwLen) < 20*megabuf (base +9)))),
+per_frame_77=      megabuf (base + 6) = 0;
+per_frame_78=      //ausgewachsen, Zweig kann ausgelistet werden 
+per_frame_79=  , 
+per_frame_80=    //ansonsten: Verzweigung ?
+per_frame_81=    if ( (rand (500 + 500 * (1-quer)) < Verzw*Alter ) && (Height > 0), 
+per_frame_82=      //Suche freien Platz in Umgebung
+per_frame_83=      m = nextfree; nextfree += 1;
+per_frame_84=      if ((m < MaxZw), //noch ein Platz frei ?
+per_frame_85=        newbase = m*recsize;
+per_frame_86=        //Anfangsbed. des neuen Zweiges setzen 
+per_frame_87=        i = 0; loop (3, megabuf(newbase+i) = megabuf(base+i); i+=1); 
+per_frame_88=
+per_frame_89=        //Dicke 
+per_frame_90=        ran = straight + (1-straight)*2*(rand(100)/100-.5);    
+per_frame_91=        megabuf (newbase + 6) = megabuf (base + 6);
+per_frame_92=        megabuf (base + 7) = megabuf (base + 6) * (ran);
+per_frame_93=        megabuf (newbase + 7) = megabuf (base + 6) * (1-ran) ;
+per_frame_94=
+per_frame_95=        //Richtung
+per_frame_96=        megabuf(newbase+3)  =   megabuf(base+3)+ (rand(100)/100-.5); 
+per_frame_97=        megabuf(newbase+4)  =   megabuf(base+4)+ (rand(100)/100-.5); 
+per_frame_98=        megabuf(newbase+5)  =   megabuf(base+5)+ (rand(100)/100-.5); 
+per_frame_99=        megabuf(newbase+4)  *= Waag; 
+per_frame_100=
+per_frame_101=        len = sqrt (pow(megabuf(newbase+3),2)+pow(megabuf(newbase+4),2)+pow(megabuf(newbase+5),2));
+per_frame_102=        i = 0; loop (3, megabuf(newbase+3+i) /= len; i+=1);
+per_frame_103=
+per_frame_104=        /// Alter   
+per_frame_105=        megabuf (base + 8) = 0; megabuf (newbase + 8) = 0; megabuf (newbase + 9)= 0; 
+per_frame_106=        megabuf (newbase + 10)= megabuf (base + 10);;
+per_frame_107=        megabuf (newbase + 11)= megabuf (base + 11);;
+per_frame_108=     ,0);
+per_frame_109=  ,0));
+per_frame_110=  n += 1;
+per_frame_111=);
+per_frame_112=//Loeschen gmegabuf, komprimieren, umkopieren und zuruekkopieren
+per_frame_113=n = 0; m = 0; k= 0; IstZw = 0;
+per_frame_114=loop (MaxZw,
+per_frame_115=  if (megabuf (n + 6) > 0,
+per_frame_116=    IstZW += 1; k = 0;
+per_frame_117=    loop (recsize, 
+per_frame_118=      gmegabuf(mindex+k) = megabuf(n+k); 
+per_frame_119=      megabuf (m+k) = gmegabuf(mindex+k); 
+per_frame_120=       k += 1;);
+per_frame_121=       if (!(m==n), megabuf (n+6) = 0;,0);
+per_frame_122=    m += recsize; mindex += recsize,0); 
+per_frame_123=  n += recsize;
+per_frame_124=);, (IstZW > 0) && (mindex/recsize < MaxShape))); //Ende B
 per_frame_125=
-per_frame_126=//-------------- Buesche pflanzen ------------------
-per_frame_127=if ((SysZ > 10*fov) && (frame%17==0) && (IstZw2 < MaxZw2/3), 
-per_frame_128=  n = 0;
-per_frame_129=  x00 = (rand(50)/50-.5);
-per_frame_130=  loop (8,
-per_frame_131=    base = (n+nextf2)*recsize+sbase;
-per_frame_132=    z0 = SysZ;
-per_frame_133=    x0 = (x00 + (rand(50)/50-.5)*.1)*z0;
-per_frame_134=    y0 = reg10*z0*(sin(x0*reg11 + z0*reg13)) * sin(z0*reg12+reg13) + pow(x0,2)*fov*reg14;
-per_frame_135=    y0 +=  -.001*rand(10);
-per_frame_136=//    x0 *= MaxDist; y0 *= MaxDist; z0 *= MaxDist;
-per_frame_137=    weg = WegX - x0;
-per_frame_138=    weg = max(min(4-abs(weg),1),0);
-per_frame_139=    if (weg == 0,
-per_frame_140=      megabuf (base) = x0;  megabuf (base+1) = y0; megabuf (base+2) = z0;
-per_frame_141=      megabuf (base+3) = rand(100)/100-.5; megabuf (base+4) = 1;  megabuf (base+5) = 0;
-per_frame_142=      megabuf(base+6) = .02;  megabuf(base+7) = .03; ;  megabuf(base+8) = 4;
-per_frame_143=      megabuf(base+9) = 0;    megabuf(base+10) = 0; 
-per_frame_144=    ,0);
-per_frame_145=   n+= 1;);  
-per_frame_146=,0);
-per_frame_147=
-per_frame_148=//-------------- Wachstum / Verzweigung Buesche------------------
-per_frame_149=n = sbase; loop (MaxZw2, gmegabuf (n+6) = 0; n+=recsize);
-per_frame_150=mindex2 = sbase;
-per_frame_151=while(exec2(
-per_frame_152=n = 0; nextf2 = IstZw2 + 1;
-per_frame_153=loop (min (MaxZw2,IstZW2), 
-per_frame_154=  base = n*recsize+sbase;
-per_frame_155=  Quer = megabuf (base + 6); Alter = megabuf (base + 8); 
-per_frame_156=  if (Quer > 0,
-per_frame_157=    cb = cbase2+csize*megabuf(base + 10);  
-per_frame_158=    Kraus=gmegabuf(cb);   Hang=gmegabuf(cb+1);  ZwLen=gmegabuf(cb+2);
-per_frame_159=    Verzw =gmegabuf(cb+3);    Straight=gmegabuf(cb+4);    Waag =gmegabuf(cb+5);
-per_frame_160=    speed = speed0 * pow(megabuf (base + 6),.32);
-per_frame_161=    i = 0; loop (3, megabuf(base+i) += megabuf(base+3+i) * speed; i+=1);
-per_frame_162=    megabuf(base+3) += (rand(100)/100-.5)*Kraus;
-per_frame_163=    megabuf(base+4) += (rand(100)/100-.5)*Kraus +(.002/Quer)*Hang;
-per_frame_164=    megabuf(base+5) += (rand(100)/100-.5)*Kraus;
-per_frame_165=    len = sqrt (pow(megabuf(base+3),2)+pow(megabuf(base+4),2)+pow(megabuf(base+5),2));
-per_frame_166=    i = 0; loop (3, megabuf(base+3+i) /= len; i+=1);
-per_frame_167=    megabuf (base + 9) += len;
-per_frame_168=    dec = 0.3;
-per_frame_169=    megabuf (base + 6) = (0.98-dec)*megabuf (base + 6) + dec* megabuf(base + 7);
-per_frame_170=    megabuf (base + 8) += 1;
-per_frame_171=  ,0);
-per_frame_172=  if ((rand(1000000*Quer*ZwLen) < 50*megabuf (base +8) ), //ausgewachsen, Zweig kann ausgelistet werden
-per_frame_173=      megabuf (base + 6) = 0;
-per_frame_174=  , 
-per_frame_175=    //ansonsten: Verzweigung ?
-per_frame_176=    if ( (rand (500 + 500 * (1-quer)) < Verzw*Alter), 
-per_frame_177=      //Suche freien Platz in Umgebung
-per_frame_178=      m = nextf2; nextf2 += 1;
-per_frame_179=      if ((m < MaxZw2), //noch ein Platz frei ?
-per_frame_180=        newbase = m*recsize+sbase;
-per_frame_181=        //Anfangsbed. des neuen Zweiges setzen 
-per_frame_182=        i = 0; loop (3, megabuf(newbase+i) = megabuf(base+i); i+=1); 
-per_frame_183=
-per_frame_184=        //Dicke 
-per_frame_185=        ran = straight + (1-straight)*2*(rand(100)/100-.5);    
-per_frame_186=        megabuf (newbase + 6) = megabuf (base + 6);
-per_frame_187=        megabuf (base + 7) = megabuf (base + 6) * (ran);
-per_frame_188=        megabuf (newbase + 7) = megabuf (base + 6) * (1-ran) ;
-per_frame_189=
-per_frame_190=        //Richtung
-per_frame_191=        megabuf(newbase+3)  =   megabuf(base+3)+ (rand(100)/100-.5); 
-per_frame_192=        megabuf(newbase+4)  =   megabuf(base+4)+ (rand(100)/100-.5); 
-per_frame_193=        megabuf(newbase+5)  =   megabuf(base+5)+ (rand(100)/100-.5); 
-per_frame_194=        megabuf(newbase+4)  *= Waag; 
-per_frame_195=
-per_frame_196=        len = sqrt (pow(megabuf(newbase+3),2)+pow(megabuf(newbase+4),2)+pow(megabuf(newbase+5),2));
-per_frame_197=        i = 0; loop (3, megabuf(newbase+3+i) /= len; i+=1);
-per_frame_198=
-per_frame_199=        /// Alter   
-per_frame_200=        megabuf (base + 8) = 0; megabuf (newbase + 8) = 0; megabuf (newbase + 9)= 0;
-per_frame_201=        megabuf (newbase + 10)= megabuf (base + 10);;
-per_frame_202=     ,0);
-per_frame_203=  ,0));
-per_frame_204=  n += 1;
-per_frame_205=);
-per_frame_206=
-per_frame_207=//Loeschen gmegabuf, komprimieren, umkopieren und zuruekkopieren
-per_frame_208=n = sbase; m = sbase; k= 0; IstZw2 = 0;
-per_frame_209=loop (MaxZw2,
-per_frame_210=  if (megabuf (n + 6) > 0,
-per_frame_211=    IstZW2 += 1; k = 0;
-per_frame_212=    loop (recsize, 
-per_frame_213=      gmegabuf(mindex2+k) = megabuf(n+k); 
-per_frame_214=      megabuf (m+k) = gmegabuf(mindex2+k); 
-per_frame_215=       k += 1;);
-per_frame_216=       if (!(m==n), megabuf (n+6) = 0;,0);
-per_frame_217=    m += recsize; mindex2 += recsize,0); 
-per_frame_218=  n += recsize;
-per_frame_219=);, (IstZW2 > 0) && (mindex2/recsize < MaxShap2))); //Ende B
-per_frame_220=  
-per_frame_221=
-per_frame_222=CopyNow = (reg50 <= 50) && (reg14 <= .003); //###
-per_frame_223=Zeichnen = if((SysTime >1) && (IstZW ==0) && (IstZw2 == 0),0,1); ///### wird nie null weil SysTime <=1
-per_frame_224=Bild     += Start;
-per_frame_225=Bild = 10;
-per_frame_226=q5 = YCam; 
-per_frame_227=q6 = reg06; //fov
-per_frame_228=q7 = reg07; //MaxDist
-per_frame_229=q8 = cos(AngCam);
-per_frame_230=q9 = sin(AngCam);
-per_frame_231=q10 = reg10; q11 = reg11; q12 = reg12; q13 = reg13; q14 = reg14;
-per_frame_232=
-per_frame_233=q17 = SysTime;
-per_frame_234=q18 = SysZ;
-per_frame_235=VisDist = MaxDist * 1.3;
-per_frame_236=q19 = VisDist;
-per_frame_237=
-per_frame_238=q30 = start;
-per_frame_239=q31 = CopyNow;
-per_frame_240=start = 0;
-per_frame_241=q32 = aspecty;
-per_frame_242=monitor = reg50;
-per_frame_243=
-per_frame_244=//-----------------Wave shrubs, wave 3&4 ----------------
-per_frame_245=h_shrub = abs(sin(RelZ*15))*hfac ;
-per_frame_246=x_shrub = if (h_shrub < 0.1,sin(rand(100))/3,x_shrub+0.1*(rand(1)-.5));
-per_frame_247=if (h_shrub < 0.1, hfac = 1 + rand(2), 0);
-per_frame_248=reg20 = x_shrub;
-per_frame_249=reg21 = h_shrub;
-per_frame_250=reg22 = abs(sin(time*0.15)); //Hell. Blueten
-per_frame_251=
-per_frame_252=//--------------------WEG------------------------------
-per_frame_253=WegX = (cos(RelZ*par1+par2))*SysZ*0.2;
-per_frame_254=x0 = WegX;
-per_frame_255=z0 = SysZ;
-per_frame_256=WegY = reg10*z0*(sin(x0*reg11 + z0*reg13)) * sin(z0*reg12+reg13) + pow(x0,2)*reg14;
-per_frame_257=
-per_frame_258=q1 = WegX;
-per_frame_259=q2 = WegY;
-per_frame_260=q3 = 0.5 + 3 * (1+sin(time*0.072)); //Weg zerklueftet
-per_frame_261=q4 = 1+0*RelZ; //generelle Helligkeit
-per_frame_262=
-per_frame_263=
-per_frame_264=trelx = time + tstart;
-per_frame_265=q25 = copyable;
-per_frame_266=q26 = 0.5 + 0.4*sin(trelx*0.1); //ambient
-per_frame_267=q27 = 0.35 + 0.3*sin(trelx*0.045); //fog
-per_frame_268=q28 = 0.5 + 0.4*sin(trelx*0.013); //sky
-per_frame_269=//q28 = 1;
-per_frame_270=monitor = q28;
-per_frame_271=
+per_frame_126=
+per_frame_127=
+per_frame_128=//-------------- Buesche pflanzen ------------------
+per_frame_129=if ((SysZ > 10*fov) && (frame%17==0) && (IstZw2 < MaxZw2/3), 
+per_frame_130=  n = 0;
+per_frame_131=  x00 = (rand(50)/50-.5);
+per_frame_132=  loop (8,
+per_frame_133=    base = (n+nextf2)*recsize+sbase;
+per_frame_134=    z0 = SysZ;
+per_frame_135=    x0 = (x00 + (rand(50)/50-.5)*.1)*z0;
+per_frame_136=    y0 = reg10*z0*(sin(x0*reg11 + z0*reg13)) * sin(z0*reg12+reg13) + pow(x0,2)*fov*reg14;
+per_frame_137=    y0 +=  -.001*rand(10);
+per_frame_138=//    x0 *= MaxDist; y0 *= MaxDist; z0 *= MaxDist;
+per_frame_139=    weg = WegX - x0;
+per_frame_140=    weg = max(min(4-abs(weg),1),0);
+per_frame_141=    if (weg == 0,
+per_frame_142=      megabuf (base) = x0;  megabuf (base+1) = y0; megabuf (base+2) = z0;
+per_frame_143=      megabuf (base+3) = rand(100)/100-.5; megabuf (base+4) = 1;  megabuf (base+5) = 0;
+per_frame_144=      megabuf(base+6) = .02;  megabuf(base+7) = .03; ;  megabuf(base+8) = 4;
+per_frame_145=      megabuf(base+9) = 0;    megabuf(base+10) = 0; 
+per_frame_146=    ,0);
+per_frame_147=   n+= 1;);  
+per_frame_148=,0);
+per_frame_149=
+per_frame_150=//-------------- Wachstum / Verzweigung Buesche------------------
+per_frame_151=n = sbase; loop (MaxZw2, gmegabuf (n+6) = 0; n+=recsize);
+per_frame_152=mindex2 = sbase;
+per_frame_153=while(exec2(
+per_frame_154=n = 0; nextf2 = IstZw2 + 1;
+per_frame_155=loop (min (MaxZw2,IstZW2), 
+per_frame_156=  base = n*recsize+sbase;
+per_frame_157=  Quer = megabuf (base + 6); Alter = megabuf (base + 8); 
+per_frame_158=  if (Quer > 0,
+per_frame_159=    cb = cbase2+csize*megabuf(base + 10);  
+per_frame_160=    Kraus=gmegabuf(cb);   Hang=gmegabuf(cb+1);  ZwLen=gmegabuf(cb+2);
+per_frame_161=    Verzw =gmegabuf(cb+3);    Straight=gmegabuf(cb+4);    Waag =gmegabuf(cb+5);
+per_frame_162=    speed = speed0 * pow(megabuf (base + 6),.32);
+per_frame_163=    i = 0; loop (3, megabuf(base+i) += megabuf(base+3+i) * speed; i+=1);
+per_frame_164=    megabuf(base+3) += (rand(100)/100-.5)*Kraus;
+per_frame_165=    megabuf(base+4) += (rand(100)/100-.5)*Kraus +(.002/Quer)*Hang;
+per_frame_166=    megabuf(base+5) += (rand(100)/100-.5)*Kraus;
+per_frame_167=    len = sqrt (pow(megabuf(base+3),2)+pow(megabuf(base+4),2)+pow(megabuf(base+5),2));
+per_frame_168=    i = 0; loop (3, megabuf(base+3+i) /= len; i+=1);
+per_frame_169=    megabuf (base + 9) += len;
+per_frame_170=    dec = 0.3;
+per_frame_171=    megabuf (base + 6) = (0.98-dec)*megabuf (base + 6) + dec* megabuf(base + 7);
+per_frame_172=    megabuf (base + 8) += 1;
+per_frame_173=  ,0);
+per_frame_174=  if ((rand(1000000*Quer*ZwLen) < 50*megabuf (base +8) ), //ausgewachsen, Zweig kann ausgelistet werden
+per_frame_175=      megabuf (base + 6) = 0;
+per_frame_176=  , 
+per_frame_177=    //ansonsten: Verzweigung ?
+per_frame_178=    if ( (rand (500 + 500 * (1-quer)) < Verzw*Alter), 
+per_frame_179=      //Suche freien Platz in Umgebung
+per_frame_180=      m = nextf2; nextf2 += 1;
+per_frame_181=      if ((m < MaxZw2), //noch ein Platz frei ?
+per_frame_182=        newbase = m*recsize+sbase;
+per_frame_183=        //Anfangsbed. des neuen Zweiges setzen 
+per_frame_184=        i = 0; loop (3, megabuf(newbase+i) = megabuf(base+i); i+=1); 
+per_frame_185=
+per_frame_186=        //Dicke 
+per_frame_187=        ran = straight + (1-straight)*2*(rand(100)/100-.5);    
+per_frame_188=        megabuf (newbase + 6) = megabuf (base + 6);
+per_frame_189=        megabuf (base + 7) = megabuf (base + 6) * (ran);
+per_frame_190=        megabuf (newbase + 7) = megabuf (base + 6) * (1-ran) ;
+per_frame_191=
+per_frame_192=        //Richtung
+per_frame_193=        megabuf(newbase+3)  =   megabuf(base+3)+ (rand(100)/100-.5); 
+per_frame_194=        megabuf(newbase+4)  =   megabuf(base+4)+ (rand(100)/100-.5); 
+per_frame_195=        megabuf(newbase+5)  =   megabuf(base+5)+ (rand(100)/100-.5); 
+per_frame_196=        megabuf(newbase+4)  *= Waag; 
+per_frame_197=
+per_frame_198=        len = sqrt (pow(megabuf(newbase+3),2)+pow(megabuf(newbase+4),2)+pow(megabuf(newbase+5),2));
+per_frame_199=        i = 0; loop (3, megabuf(newbase+3+i) /= len; i+=1);
+per_frame_200=
+per_frame_201=        /// Alter   
+per_frame_202=        megabuf (base + 8) = 0; megabuf (newbase + 8) = 0; megabuf (newbase + 9)= 0;
+per_frame_203=        megabuf (newbase + 10)= megabuf (base + 10);;
+per_frame_204=     ,0);
+per_frame_205=  ,0));
+per_frame_206=  n += 1;
+per_frame_207=);
+per_frame_208=
+per_frame_209=//Loeschen gmegabuf, komprimieren, umkopieren und zuruekkopieren
+per_frame_210=n = sbase; m = sbase; k= 0; IstZw2 = 0;
+per_frame_211=loop (MaxZw2,
+per_frame_212=  if (megabuf (n + 6) > 0,
+per_frame_213=    IstZW2 += 1; k = 0;
+per_frame_214=    loop (recsize, 
+per_frame_215=      gmegabuf(mindex2+k) = megabuf(n+k); 
+per_frame_216=      megabuf (m+k) = gmegabuf(mindex2+k); 
+per_frame_217=       k += 1;);
+per_frame_218=       if (!(m==n), megabuf (n+6) = 0;,0);
+per_frame_219=    m += recsize; mindex2 += recsize,0); 
+per_frame_220=  n += recsize;
+per_frame_221=);, (IstZW2 > 0) && (mindex2/recsize < MaxShap2))); //Ende B
+per_frame_222=  
+per_frame_223=
+per_frame_224=CopyNow = (reg50 <= 50) && (reg14 <= .003); //###
+per_frame_225=Zeichnen = if((SysTime >1) && (IstZW ==0) && (IstZw2 == 0),0,1); ///### wird nie null weil SysTime <=1
+per_frame_226=Bild     += Start;
+per_frame_227=Bild = 10;
+per_frame_228=q5 = YCam; 
+per_frame_229=q6 = reg06; //fov
+per_frame_230=q7 = reg07; //MaxDist
+per_frame_231=q8 = cos(AngCam);
+per_frame_232=q9 = sin(AngCam);
+per_frame_233=q10 = reg10; q11 = reg11; q12 = reg12; q13 = reg13; q14 = reg14;
+per_frame_234=
+per_frame_235=q17 = SysTime;
+per_frame_236=q18 = SysZ;
+per_frame_237=VisDist = MaxDist * 1.3;
+per_frame_238=q19 = VisDist;
+per_frame_239=
+per_frame_240=q30 = start;
+per_frame_241=q31 = CopyNow;
+per_frame_242=start = 0;
+per_frame_243=q32 = aspecty;
+per_frame_244=monitor = reg50;
+per_frame_245=
+per_frame_246=//-----------------Wave shrubs, wave 3&4 ----------------
+per_frame_247=h_shrub = abs(sin(RelZ*15))*hfac ;
+per_frame_248=x_shrub = if (h_shrub < 0.1,sin(rand(100))/3,x_shrub+0.1*(rand(1)-.5));
+per_frame_249=if (h_shrub < 0.1, hfac = 1 + rand(2), 0);
+per_frame_250=reg20 = x_shrub;
+per_frame_251=reg21 = h_shrub;
+per_frame_252=reg22 = abs(sin(time*0.15)); //Hell. Blueten
+per_frame_253=
+per_frame_254=//--------------------WEG------------------------------
+per_frame_255=WegX = (cos(RelZ*par1+par2))*SysZ*0.2;
+per_frame_256=x0 = WegX;
+per_frame_257=z0 = SysZ;
+per_frame_258=WegY = reg10*z0*(sin(x0*reg11 + z0*reg13)) * sin(z0*reg12+reg13) + pow(x0,2)*reg14;
+per_frame_259=
+per_frame_260=q1 = WegX;
+per_frame_261=q2 = WegY;
+per_frame_262=q3 = 0.5 + 3 * (1+sin(time*0.072)); //Weg zerklueftet
+per_frame_263=q4 = 1+0*RelZ; //generelle Helligkeit
+per_frame_264=
+per_frame_265=
+per_frame_266=trelx = time + tstart;
+per_frame_267=q25 = copyable;
+per_frame_268=q26 = 0.5 + 0.4*sin(trelx*0.1); //ambient
+per_frame_269=q27 = 0.35 + 0.3*sin(trelx*0.045); //fog
+per_frame_270=q28 = 0.5 + 0.4*sin(trelx*0.013); //sky
+per_frame_271=//q28 = 1;
+per_frame_272=monitor = q28;
+per_frame_273=
 warp_1=`#define sat saturate
 warp_2=`sampler sampler_pw_noise_lq;
 warp_3=`float2 uv1,uv2, rs, uvpat, grasart;

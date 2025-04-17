@@ -3,7 +3,7 @@ PSVERSION=3
 PSVERSION_WARP=3
 PSVERSION_COMP=3
 [preset00]
-fRating=5.000000
+fRating=1.000000
 fGammaAdj=1.980
 fDecay=0.500
 fVideoEchoZoom=1.000
@@ -85,18 +85,18 @@ wavecode_0_r=0.200
 wavecode_0_g=0.300
 wavecode_0_b=1.000
 wavecode_0_a=0.600
-wave_0_init1=t1 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
-wave_0_init2=t2 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
-wave_0_init3=t3 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
-wave_0_init4=t4 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
-wave_0_init5=t5 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
-wave_0_init6=t6 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
-wave_0_init7=t7 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
-wave_0_init8=t8 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init1=t1 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init2=t2 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init3=t3 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init4=t4 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init5=t5 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init6=t6 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init7=t7 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init8=t8 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
 wave_0_init9=
 wave_0_per_frame1=t2 = t2 + bass_att;
 wave_0_per_point1=x = sample;
-wave_0_per_point2=y = value1 * int(rand(50))/100 * abs(sample-.5)+ .49;
+wave_0_per_point2=y = value1 * rand(50)/100 * abs(sample-.5)+ .49;
 wave_0_per_point3=
 wave_0_per_point4=a = q26/4 * (.2 + abs(sample-.5)); 
 wave_0_per_point5=a = .01;
@@ -113,8 +113,8 @@ wavecode_1_r=1.000
 wavecode_1_g=1.000
 wavecode_1_b=1.000
 wavecode_1_a=0.100
-wave_1_per_point1=xi = int(rand(100))/100;
-wave_1_per_point2=yi = int(rand(100))/100;
+wave_1_per_point1=xi = rand(100)/100;
+wave_1_per_point2=yi = rand(100)/100;
 wave_1_per_point3=
 wave_1_per_point4=x = xi; y = yi;
 wave_1_per_point5=
@@ -132,14 +132,14 @@ wavecode_2_r=0.000
 wavecode_2_g=0.200
 wavecode_2_b=0.000
 wavecode_2_a=1.000
-wave_2_init1=t1 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
-wave_2_init2=t2 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
-wave_2_init3=t3 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
-wave_2_init4=t4 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
-wave_2_init5=t5 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
-wave_2_init6=t6 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
-wave_2_init7=t7 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
-wave_2_init8=t8 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init1=t1 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_2_init2=t2 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_2_init3=t3 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_2_init4=t4 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_2_init5=t5 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_2_init6=t6 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_2_init7=t7 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_2_init8=t8 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
 wave_2_init9=
 wavecode_3_enabled=0
 wavecode_3_samples=512
@@ -217,8 +217,8 @@ shapecode_1_border_a=0.000
 shape_1_per_frame1=trig = q24;
 shape_1_per_frame2=
 shape_1_per_frame3=
-shape_1_per_frame4=x0 = x0*bnot(trig) + trig*(.5+ int(rand(100))/200); 
-shape_1_per_frame5=y0 = y0*bnot(trig) + trig*(.5+ int(rand(100))/200); 
+shape_1_per_frame4=x0 = x0*bnot(trig) + trig*(.5+ rand(100)/200); 
+shape_1_per_frame5=y0 = y0*bnot(trig) + trig*(.5+ rand(100)/200); 
 shape_1_per_frame6=
 shape_1_per_frame7=
 shape_1_per_frame8=x0 = x0 + .1*q1*(3+q26)/fps;
@@ -231,13 +231,13 @@ shape_1_per_frame14=tex_ang = time;
 shape_1_per_frame15=tex_zoom = q1;
 shape_1_per_frame16=ang = time/100*q2;
 shape_1_per_frame17=x = x0; y = y0;
-shape_1_per_frame18=rad0 = rad0*bnot(trig) + trig*(.04+int(rand(100))/1000);
+shape_1_per_frame18=rad0 = rad0*bnot(trig) + trig*(.04+rand(100)/1000);
 shape_1_per_frame19=rad = rad0;
 shape_1_per_frame20=
 shape_1_per_frame21=
-shape_1_per_frame22=r0 = bnot(trig)*r0 + trig * int(rand(10))/10;
-shape_1_per_frame23=g0 = bnot(trig)*g0 + trig * int(rand(10))/10;
-shape_1_per_frame24=b0 = bnot(trig)*b0 + trig * int(rand(10))/10;
+shape_1_per_frame22=r0 = bnot(trig)*r0 + trig * rand(10)/10;
+shape_1_per_frame23=g0 = bnot(trig)*g0 + trig * rand(10)/10;
+shape_1_per_frame24=b0 = bnot(trig)*b0 + trig * rand(10)/10;
 shape_1_per_frame25=
 shape_1_per_frame26=r = r0; b = b0; g = g0;
 shape_1_per_frame27=r2 = 0; b2 = 0; g2 = 0;
@@ -266,8 +266,8 @@ shapecode_2_border_r=0.500
 shapecode_2_border_g=0.500
 shapecode_2_border_b=0.500
 shapecode_2_border_a=0.000
-shape_2_per_frame1=x = int(rand(50))/50;
-shape_2_per_frame2=y = .5 - 0*int(rand(15))/200;
+shape_2_per_frame1=x = rand(50)/50;
+shape_2_per_frame2=y = .5 - 0*rand(15)/200;
 shape_2_per_frame3=
 shape_2_per_frame4=r = .4;
 shape_2_per_frame5=g = .6;
@@ -304,12 +304,8 @@ shapecode_3_border_b=0.500
 shapecode_3_border_a=0.000
 shape_3_per_frame1=rad = q2+.02
 shape_3_per_frame2=;
-per_frame_1=dec_med = pow (0.7, 30/fps);
-per_frame_2=dec_slow = pow (0.95, 30/fps);
-per_frame_3=
-per_frame_4=
-per_frame_5=q1 = 1; //daytime
-per_frame_6=q2 = 0; //wind;
+per_frame_1=q1 = 1; //daytime
+per_frame_2=q2 = 0; //wind;
 per_pixel_1=zoom = 1.;
 warp_1=`sampler sampler_worms;
 warp_2=`float3 color, mus;

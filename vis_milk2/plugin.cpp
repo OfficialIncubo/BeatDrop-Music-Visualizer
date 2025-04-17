@@ -626,7 +626,10 @@ SPOUT :
 #include <Windows.h>
 #include "AutoCharFn.h"
 
+#include <dwmapi.h>  // Link with Dwmapi.lib
+#pragma comment(lib, "dwmapi.lib")
 #define FRAND ((rand() % 7381)/7380.0f)
+#define clamp(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
 
 static bool m_bAlwaysOnTop = false;
 int ToggleFPSNumPressed = 7;			// Default is Unlimited FPS.
@@ -641,8 +644,25 @@ int NumTotalPresetsLoaded = 0;
 bool AutoLockedPreset = false;
 //bool ShowPresetOnTitle = 0;
 
-void NSEEL_HOSTSTUB_EnterMutex(){}
-void NSEEL_HOSTSTUB_LeaveMutex(){}
+//For Sample Rate auto-detection
+#include <windows.h>
+#include <mmdeviceapi.h>
+#include <propsys.h>
+#include <functiondiscoverykeys_devpkey.h>
+#pragma comment(lib, "ole32.lib")
+#pragma comment(lib, "propsys.lib")
+//
+
+void NSEEL_HOSTSTUB_EnterMutex() {}
+void NSEEL_HOSTSTUB_LeaveMutex() {}
+
+#ifdef NS_EEL2
+void NSEEL_VM_resetvars(NSEEL_VMCTX ctx)
+{
+    NSEEL_VM_freeRAM(ctx);
+    NSEEL_VM_remove_all_nonreg_vars(ctx);
+}
+#endif
 
 // note: these must match layouts in support.h!!
 D3DVERTEXELEMENT9 g_MyVertDecl[] =
@@ -1371,6 +1391,12 @@ void CPlugin::MyReadConfig()
     m_nMaxPSVersion_ConfigPanel = GetPrivateProfileIntW(L"settings",L"MaxPSVersion",m_nMaxPSVersion_ConfigPanel,pIni);
     m_nMaxImages    = GetPrivateProfileIntW(L"settings",L"MaxImages",m_nMaxImages,pIni);
     m_nMaxBytes     = GetPrivateProfileIntW(L"settings",L"MaxBytes" ,m_nMaxBytes ,pIni);
+    m_nBassStart = GetPrivateProfileIntW(L"settings", L"BassStart", m_nBassStart, pIni);
+    m_nBassEnd = GetPrivateProfileIntW(L"settings", L"BassEnd", m_nBassEnd, pIni);
+    m_nMidStart = GetPrivateProfileIntW(L"settings", L"MidStart", m_nMidStart, pIni);
+    m_nMidEnd = GetPrivateProfileIntW(L"settings", L"MidEnd", m_nMidEnd, pIni);
+    m_nTrebStart = GetPrivateProfileIntW(L"settings", L"TrebStart", m_nTrebStart, pIni);
+    m_nTrebEnd = GetPrivateProfileIntW(L"settings", L"TrebEnd", m_nTrebEnd, pIni);
 
 	m_fBlendTimeUser			= GetPrivateProfileFloatW(L"settings",L"fBlendTimeUser"         ,m_fBlendTimeUser         ,pIni);
 	m_fBlendTimeAuto			= GetPrivateProfileFloatW(L"settings",L"fBlendTimeAuto"         ,m_fBlendTimeAuto         ,pIni);
@@ -1474,6 +1500,12 @@ void CPlugin::MyWriteConfig()
 	WritePrivateProfileIntW(m_nMaxPSVersion_ConfigPanel, L"MaxPSVersion",  	pIni, L"settings");
     WritePrivateProfileIntW(m_nMaxImages, L"MaxImages",  	pIni, L"settings");
     WritePrivateProfileIntW(m_nMaxBytes , L"MaxBytes",  	pIni, L"settings");
+    WritePrivateProfileIntW(m_nBassStart, L"BassStart", pIni, L"settings");
+    WritePrivateProfileIntW(m_nBassEnd, L"BassEnd", pIni, L"settings");
+    WritePrivateProfileIntW(m_nMidStart, L"MidStart", pIni, L"settings");
+    WritePrivateProfileIntW(m_nMidEnd, L"MidEnd", pIni, L"settings");
+    WritePrivateProfileIntW(m_nTrebStart, L"TrebStart", pIni, L"settings");
+    WritePrivateProfileIntW(m_nTrebEnd, L"TrebEnd", pIni, L"settings");
 
 	WritePrivateProfileFloatW(m_fBlendTimeAuto,          L"fBlendTimeAuto",           pIni, L"settings");
 	WritePrivateProfileFloatW(m_fBlendTimeUser,          L"fBlendTimeUser",           pIni, L"settings");
@@ -4131,8 +4163,8 @@ void CPlugin::MyRenderFn(int redraw)
     HWND focus = GetFocus();
     HWND cur = plugin;
 
-    timetick += 0.0177; //Optimized for 60 FPS
-    timetick2 += 0.0177;
+    timetick += 1/GetFps(); //Now these timeticks variables are now became FPS-independent.
+    timetick2 += 1/GetFps();
 
     //HardCut Modes (controlled via F11 hotkey)
     if (HardcutMode == 2) //Bass Blend
@@ -4305,7 +4337,7 @@ void CPlugin::MyRenderFn(int redraw)
         if (((double)mysound.imm_rel[0] + (double)mysound.imm_rel[1] + (double)mysound.imm_rel[2]) == 0)
         {
             if (TimeToAutoLockPreset <= 2.5)
-                TimeToAutoLockPreset += 0.0177;
+                TimeToAutoLockPreset += 1/GetFps();
             else
             {
                 if (!AutoLockedPreset)
@@ -4585,19 +4617,20 @@ void CPlugin::MyRenderUI(
         }
 
         // d) debug information
-		if (m_bShowDebugInfo)
-		{
+        if (m_bShowDebugInfo)
+        {
             SelectFont(SIMPLE_FONT);
-			swprintf(buf, L" %s: %6.4f ", wasabiApiLangString(IDS_PF_MONITOR), (float)(*m_pState->var_pf_monitor));
+            swprintf(buf, L" %s: %6.4f ", wasabiApiLangString(IDS_PF_MONITOR), (float)(*m_pState->var_pf_monitor));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-                swprintf(buf, L"%s %s %6.4f ",((double)mysound.imm_rel[0] >= 1.3) ? L"+" : L" ", L"bass:", (float)(*m_pState->var_pf_bass));
+            swprintf(buf, L"%s %s %6.4f ", ((double)mysound.imm_rel[0] >= 1.3) ? L"+" : L" ", L"bass:", (float)(*m_pState->var_pf_bass));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-                swprintf(buf, L"%s %s %6.4f ", ((double)mysound.imm_rel[1] >= 1.3) ? L"+" : L" ", L"mid:", (float)(*m_pState->var_pf_mid));
+            swprintf(buf, L"%s %s %6.4f ", ((double)mysound.imm_rel[1] >= 1.3) ? L"+" : L" ", L"mid:", (float)(*m_pState->var_pf_mid));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-                swprintf(buf, L"%s %s %6.4f ", ((double)mysound.imm_rel[2] >= 1.3) ? L"+" : L" ", L"treb:", (float)(*m_pState->var_pf_treb));
+            swprintf(buf, L"%s %s %6.4f ", ((double)mysound.imm_rel[2] >= 1.3) ? L"+" : L" ", L"treb:", (float)(*m_pState->var_pf_treb));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-		}
-
+            swprintf(buf, L"BeatDrop v1.3.2.2 RC1");
+            MyTextOut_Shadow(buf, MTO_LOWER_RIGHT);
+        }
         // NOTE: custom timed msg comes at the end!!
     }
 
@@ -5555,17 +5588,31 @@ void ToggleTransparency(HWND hwnd)
     int width = rect.right - rect.left;
     int height = rect.bottom - rect.top;
 
+    //Checks if DWM (Aero) is enabled or disabled
+    BOOL dwmEnabled = FALSE;
+    DwmIsCompositionEnabled(&dwmEnabled);
+
+    LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+
+    // Enable the layered window attribute without affecting other styles
+    exStyle |= WS_EX_LAYERED;
+    SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
+
+    SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_DRAWFRAME | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED); // Redraws the window to fix the transparency mode issue for Windows 7, 8 and 8.1.
     if (TranspaMode)
     {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        //SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, ULW_COLORKEY | LWA_ALPHA);
+        if (dwmEnabled)
+            DwmEnableComposition(DWM_EC_DISABLECOMPOSITION); //Disable Aero Composition
+        //SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, LWA_COLORKEY);
         OpacityControl = 10; //Reverts the window opacity back to 100%
         DragAcceptFiles(hwnd, TRUE);
     }
     else
     {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
+        if (!dwmEnabled)
+            DwmEnableComposition(DWM_EC_ENABLECOMPOSITION); //Reenable Aero Composition
+        //SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, LWA_ALPHA);
         DragAcceptFiles(hwnd, TRUE);
     }
@@ -6692,6 +6739,9 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 		switch(wParam)
 		{
 		case VK_LEFT:
+		    if (m_UI_mode == UI_REGULAR)
+                SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_REWIND));
+            break;
 		case VK_RIGHT:
 			if (m_UI_mode == UI_LOAD)
 			{
@@ -6712,6 +6762,8 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                     m_nMashSlot = min(MASH_SLOTS-1, m_nMashSlot+1);
 				return 0; // we processed (or absorbed) the key
             }
+            else if (m_UI_mode == UI_REGULAR)
+                SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_FAST_FORWARD));
             break;
 
 		case VK_ESCAPE:
@@ -6926,6 +6978,41 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 ToggleWindowOpacity(hWnd);
             }
 			break;
+			
+		case 'X':
+            if (m_UI_mode == UI_REGULAR)
+            {
+                keybd_event(VK_MEDIA_PLAY_PAUSE, 0, 0, 0);
+                keybd_event(VK_MEDIA_PLAY_PAUSE, 0, KEYEVENTF_KEYUP, 0);
+                /*
+                SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_PLAY_PAUSE));
+                Sleep(200);
+                */ //YouTube inaccurately plays/pauses the video when you do this.
+            }
+            break;
+
+        case 'C':
+            if (m_UI_mode == UI_REGULAR)
+            {
+                keybd_event(VK_MEDIA_STOP, 0, 0, 0);
+                keybd_event(VK_MEDIA_STOP, 0, KEYEVENTF_KEYUP, 0);
+                /*
+                SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_STOP));
+                Sleep(200);
+                */ //Any media players force stops the track without fading (Ex: AIMP) - so I think I don't need this.
+            }
+            break;
+        case 'V':
+            if (m_UI_mode == UI_REGULAR)
+            {
+                keybd_event(VK_MEDIA_NEXT_TRACK, 0, 0, 0);
+                keybd_event(VK_MEDIA_NEXT_TRACK, 0, KEYEVENTF_KEYUP, 0);
+                /*
+                SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_NEXTTRACK));
+                Sleep(200);
+                */ //AIMP freezes when you do this.
+            }
+            break;
 
 		case VK_SPACE:
 			if (m_UI_mode == UI_LOAD)
@@ -7540,6 +7627,18 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
     case '`':
     case '~':
         m_bPresetLockedByUser = !m_bPresetLockedByUser;
+	    if (m_bPresetLockedByUser)
+        {
+            wchar_t buf[1024], tmp[64];
+            swprintf(buf, L"Preset locked.", tmp, 64);
+            AddError(buf, 3.0f, ERR_NOTIFY, false);
+        }
+        else
+        {
+            wchar_t buf[1024], tmp[64];
+            swprintf(buf, L"Preset unlocked.", tmp, 64);
+            AddError(buf, 3.0f, ERR_NOTIFY, false);
+        }
         return 0;
 
 	case 'l': // LOAD PRESET
@@ -8045,7 +8144,7 @@ void CPlugin::RandomizeBlendPattern()
 
     // note: we now avoid constant uniform blend b/c it's half-speed for shader blending.
     //       (both old & new shaders would have to run on every pixel...)           reenabled due to further notice
-    int mixtype = 0 + (rand()%4);//rand()%4;
+    int mixtype = 0 + (rand()%17);//rand()%4;
 
     if (mixtype==0)
     {
@@ -8155,6 +8254,739 @@ void CPlugin::RandomizeBlendPattern()
                 m_vertinfo[nVert].a = inv_band * (1 + band);
                 m_vertinfo[nVert].c = -inv_band + inv_band*t;
 			    nVert++;
+            }
+        }
+    }
+    else if (mixtype == 4)
+    {
+        // DeepSeek - seamless clock transition
+        float band = 0.08f + 0.14f * FRAND;  // optimal band width for clock transition
+        float inv_band = 1.0f / band;
+        float dir = (rand() % 2) ? 1.0f : -1.0f; // random direction
+        float start_angle = FRAND * 6.2831853f;  // random starting angle
+
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy = (y / (float)m_nGridY - 0.5f) * m_fAspectY;
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx = (x / (float)m_nGridX - 0.5f) * m_fAspectX;
+
+                // Calculate angle and distance from center
+                float angle = atan2f(fy, fx); // range: -PI to PI
+                float dist = sqrtf(fx * fx + fy * fy) * 1.41421356f; // normalized 0-1
+
+                // Convert angle to 0-2PI range and apply direction/start
+                if (angle < 0) angle += 6.2831853f;
+                angle = fmodf(angle * dir + start_angle + 10.0f * 6.2831853f, 6.2831853f);
+
+                // Calculate blend factor with seamless wrap-around
+                float t = angle / 6.2831853f;
+                float t_adjusted = t;
+
+                // Handle wrap-around for smooth transition
+                if (t < band) {
+                    t_adjusted = t + 1.0f; // treat as next cycle
+                }
+
+                // Combine with distance for better visual (optional)
+                float blend = (t_adjusted - dist * 0.1f); // slight radial component
+
+                m_vertinfo[nVert].a = inv_band * (1.0f + band);
+                m_vertinfo[nVert].c = -inv_band + inv_band * blend;
+                nVert++;
+            }
+        }
+    }
+    else if (mixtype == 5)
+    {
+        // DeepSeek - Spiral/Snail transition
+        float band = 0.07f + 0.1f * FRAND;  // optimal band width for spiral
+        float inv_band = 1.0f / band;
+        int loops = 2 + (rand() % 7);       // random loops between 2-8
+        float rotation_speed = FRAND * 0.5f; // optional slow rotation (0-0.5)
+        bool inward_spiral = (rand() % 2) == 0; // random inward/outward direction
+
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy = (y / (float)m_nGridY - 0.5f) * m_fAspectY;
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx = (x / (float)m_nGridX - 0.5f) * m_fAspectX;
+
+                // Calculate polar coordinates
+                float angle = atan2f(fy, fx); // range: -PI to PI
+                float radius = sqrtf(fx * fx + fy * fy) * 1.41421356f; // normalized 0-1
+
+                // Convert angle to 0-2PI range
+                if (angle < 0) angle += 6.2831853f;
+
+                // Calculate spiral progression (0-1)
+                float spiral_progress = fmodf(angle / (6.2831853f) + loops * radius + rotation_speed, 1.0f);
+
+                // Reverse direction if inward spiral
+                if (inward_spiral) {
+                    spiral_progress = 1.0f - spiral_progress;
+                }
+
+                // Apply band blending
+                m_vertinfo[nVert].a = inv_band * (1.0f + band);
+                m_vertinfo[nVert].c = -inv_band + inv_band * spiral_progress;
+                nVert++;
+            }
+        }
+    }
+    else if (mixtype == 6)
+    {
+        // DeepSeek - Rhombus/Diamond transition
+        float band = 0.07f + 0.12f * FRAND;  // slightly narrower band for sharper edges
+        float inv_band = 1.0f / band;
+        float angle = FRAND * 6.2831853f;     // random rotation angle (0-2π)
+        float aspect = 0.8f + FRAND * 2.4f;   // aspect ratio (0.8-3.2)
+        bool reverse = (rand() % 2) == 0;     // random direction
+
+        // Precompute rotation matrix and normalization factor
+        float cos_a = cosf(angle);
+        float sin_a = sinf(angle);
+        float norm_factor = 1.0f / (1.0f + aspect);
+
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy = (y / (float)m_nGridY - 0.5f) * m_fAspectY;
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx = (x / (float)m_nGridX - 0.5f) * m_fAspectX;
+
+                // Rotate coordinates
+                float rx = fx * cos_a - fy * sin_a;
+                float ry = fx * sin_a + fy * cos_a;
+
+                // Rhombus distance function (manhattan distance)
+                float diamond = (fabsf(rx) * aspect + fabsf(ry)) * norm_factor;
+
+                // Apply direction
+                float t = reverse ? (1.0f - diamond) : diamond;
+
+                // Apply band blending with edge clamping
+                m_vertinfo[nVert].a = inv_band * (1.0f + band);
+                m_vertinfo[nVert].c = -inv_band + inv_band * t;
+                nVert++;
+            }
+        }
+    }
+    else if (mixtype == 7)
+    {
+        // DeepSeek - Nuclear Clock Wipe Transition
+        float band = 0.05f + 0.15f * FRAND;  // band width for the transition edge
+        float inv_band = 1.0f / band;
+        const int exact_repeats = 3;         // exactly 3 full rotations
+        bool reverse_direction = (rand() % 2) == 0;
+        float glow_intensity = 0.5f + FRAND * 1.5f; // nuclear glow effect
+
+        // Calculate center point with slight random offset
+        float center_x = 0.5f + (FRAND - 0.5f) * 0.1f;
+        float center_y = 0.5f + (FRAND - 0.5f) * 0.1f;
+
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy = (y / (float)m_nGridY - center_y) * m_fAspectY;
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx = (x / (float)m_nGridX - center_x) * m_fAspectX;
+
+                // Calculate angle and distance from center
+                float angle = atan2f(fy, fx); // range: -PI to PI
+                float dist = sqrtf(fx * fx + fy * fy) * 1.41421356f; // normalized distance
+
+                // Convert angle to 0-2PI range
+                if (angle < 0) angle += 6.2831853f;
+
+                // Calculate exact 3-repeat position (0-3 range)
+                float clock_pos = angle / 6.2831853f * exact_repeats;
+
+                if (reverse_direction)
+                    clock_pos = exact_repeats - clock_pos;
+
+                // Keep only fractional part for seamless looping
+                clock_pos = clock_pos - floorf(clock_pos);
+
+                // Create nuclear effect by combining distance and angle
+                float t = clock_pos;
+
+                // Add distance-based falloff for glow effect
+                float glow = (1.0f - dist) * glow_intensity;
+                t += glow * 0.3f; // blend in some glow
+
+                // Apply band blending
+                m_vertinfo[nVert].a = inv_band * (1.0f + band);
+                m_vertinfo[nVert].c = -inv_band + inv_band * t;
+                nVert++;
+            }
+        }
+    }
+    else if (mixtype == 8)
+    {
+        // DeepSeek - Square/Diamond Transition
+        float band = 0.08f + 0.12f * FRAND;  // transition edge width
+        float inv_band = 1.0f / band;
+        bool diagonal = (rand() % 2) == 0;    // true = X-shape, false = +-shape
+        float center_bias = 0.3f + FRAND * 0.4f; // 0.3-0.7, controls center emphasis
+        float softness = 0.1f + FRAND * 0.2f; // edge softness
+
+        // Define our own clamp function
+        auto clamp = [](float value, float min, float max) {
+            return (value < min) ? min : ((value > max) ? max : value);
+            };
+
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy = (y / (float)m_nGridY - 0.5f) * m_fAspectY;
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx = (x / (float)m_nGridX - 0.5f) * m_fAspectX;
+
+                float t;
+                if (diagonal)
+                {
+                    // X-shaped wipe (diagonal)
+                    float d1 = (fx + fy) * 0.7071f; // 1/sqrt(2)
+                    float d2 = (fx - fy) * 0.7071f;
+                    t = (fabsf(d1) > fabsf(d2)) ? fabsf(d1) : fabsf(d2);
+                }
+                else
+                {
+                    // +-shaped wipe (cardinal directions)
+                    t = (fabsf(fx) > fabsf(fy)) ? fabsf(fx) : fabsf(fy);
+                }
+
+                // Apply center bias for more interesting pattern
+                t = powf(t, center_bias);
+
+                // Add optional softness to edges
+                t = t * (1.0f + softness) - softness * 0.5f;
+                t = clamp(t, 0.0f, 1.0f);
+
+                // Apply band blending
+                m_vertinfo[nVert].a = inv_band * (1.0f + band);
+                m_vertinfo[nVert].c = -inv_band + inv_band * t;
+                nVert++;
+            }
+        }
+    }
+    else if (mixtype == 9)
+    {
+        // DeepSeek - Animated Checkerboard Transition
+        float band = 0.05f + 0.15f * FRAND;  // transition edge sharpness
+        float inv_band = 1.0f / band;
+        int checker_size = 4 + (rand() % 12); // checker squares size (4-15)
+        float anim_speed = 0.5f + FRAND * 2.0f; // animation speed (0.5-2.5)
+        bool diagonal_anim = (rand() % 2) == 0; // diagonal or straight animation
+        bool reverse = (rand() % 2) == 0; // reverse animation direction
+
+        // Get current time for animation (using a fake time if not available)
+        static float fake_time = 0.0f;
+        fake_time += 1 / GetFps();
+        float time = fake_time; // replace with actual time if available
+
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy = y / (float)m_nGridY;
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx = x / (float)m_nGridX;
+
+                // Calculate checkerboard pattern (0 or 1)
+                int cx = (int)(fx * checker_size);
+                int cy = (int)(fy * checker_size * m_fAspectY);
+                int checker = (cx + cy) % 2;
+
+                // Calculate animation progress
+                float anim_progress;
+                if (diagonal_anim)
+                {
+                    // Diagonal animation (top-left to bottom-right)
+                    anim_progress = (fx + fy) * 0.5f + time * anim_speed;
+                }
+                else
+                {
+                    // Horizontal animation
+                    anim_progress = fx + time * anim_speed;
+                }
+
+                // Wrap around and reverse if needed
+                anim_progress = fmodf(anim_progress, 2.0f);
+                if (anim_progress > 1.0f) anim_progress = 2.0f - anim_progress;
+                if (reverse) anim_progress = 1.0f - anim_progress;
+
+                // Combine checker pattern with animation
+                float t;
+                if (checker == 0)
+                {
+                    // First set of squares - delayed animation
+                    t = anim_progress - 0.3f;
+                }
+                else
+                {
+                    // Second set of squares - advanced animation
+                    t = anim_progress + 0.3f;
+                }
+
+                // Apply band blending
+                m_vertinfo[nVert].a = inv_band * (1.0f + band);
+                m_vertinfo[nVert].c = -inv_band + inv_band * t;
+                nVert++;
+            }
+        }
+    }
+    else if (mixtype == 10)
+    {
+        // DeepSeek - Curtain Transition
+        float band = 0.05f + 0.15f * FRAND;  // transition edge width
+        float inv_band = 1.0f / band;
+        bool opening = (rand() % 2) == 0;    // true = opening, false = closing
+        bool vertical = (rand() % 2) == 0;   // true = vertical curtains, false = horizontal
+        float curtain_wrinkles = 0.5f + FRAND * 2.0f; // amount of wrinkles/folds (0.5-2.5)
+        float center_gap = 0.05f + FRAND * 0.15f; // gap between curtains (0.05-0.2)
+        bool reverse_motion = (rand() % 2) == 0; // reverse motion direction
+
+        // NEW: Configure repeats/wipe patterns
+        int repeats = 1 + (rand() % 4); // 1-4 repeats (1=normal curtain, 2-4=striped patterns)
+        float repeat_width = 1.0f / repeats; // width of each repeat segment
+        float repeat_variation = 0.3f * FRAND; // 0-0.3 variation in repeat timing
+        bool alternate_direction = (rand() % 2) == 0; // alternate stripe directions
+
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy = (y / (float)m_nGridY);
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx = (x / (float)m_nGridX);
+
+                float t;
+                if (vertical)
+                {
+                    // Vertical curtains (left and right)
+                    float pos = fx;
+                    float segment_pos = pos * repeats; // position within repeat segments
+                    int segment_idx = (int)floorf(segment_pos); // which segment we're in
+                    float segment_local = segment_pos - segment_idx; // 0-1 within segment
+
+                    float center_dist = fabsf(segment_local - 0.5f) - center_gap / 2;
+                    if (center_dist < 0) center_dist = 0;
+
+                    // Determine which curtain this pixel belongs to
+                    float curtain_side = (segment_local < 0.5f) ? -1.0f : 1.0f;
+
+                    // Calculate base transition value
+                    t = center_dist * 2.0f; // ranges 0-1 for each curtain segment
+
+                    // Add per-segment variation
+                    float segment_variation = sinf(segment_idx * 1.618f) * repeat_variation;
+                    t += segment_variation;
+
+                    // Add wrinkles/folds effect using sine wave
+                    float wrinkles = sinf(fy * 3.14159f * curtain_wrinkles) * 0.1f;
+                    t += wrinkles * (1.0f - t);
+
+                    // Adjust for opening/closing
+                    if (opening)
+                        t = 1.0f - t;
+
+                    // Adjust for curtain side and alternate directions
+                    if (alternate_direction && (segment_idx % 2 == 1))
+                        curtain_side *= -1.0f;
+
+                    if (reverse_motion)
+                        t = curtain_side > 0 ? t : 1.0f - t;
+                    else
+                        t = curtain_side > 0 ? 1.0f - t : t;
+                }
+                else
+                {
+                    // Horizontal curtains (top and bottom)
+                    float pos = fy;
+                    float segment_pos = pos * repeats; // position within repeat segments
+                    int segment_idx = (int)floorf(segment_pos); // which segment we're in
+                    float segment_local = segment_pos - segment_idx; // 0-1 within segment
+
+                    float center_dist = fabsf(segment_local - 0.5f) - center_gap / 2;
+                    if (center_dist < 0) center_dist = 0;
+
+                    // Determine which curtain this pixel belongs to
+                    float curtain_side = (segment_local < 0.5f) ? -1.0f : 1.0f;
+
+                    // Calculate base transition value
+                    t = center_dist * 2.0f; // ranges 0-1 for each curtain segment
+
+                    // Add per-segment variation
+                    float segment_variation = sinf(segment_idx * 1.618f) * repeat_variation;
+                    t += segment_variation;
+
+                    // Add wrinkles/folds effect using sine wave
+                    float wrinkles = sinf(fx * 3.14159f * curtain_wrinkles) * 0.1f;
+                    t += wrinkles * (1.0f - t);
+
+                    // Adjust for opening/closing
+                    if (opening)
+                        t = 1.0f - t;
+
+                    // Adjust for curtain side and alternate directions
+                    if (alternate_direction && (segment_idx % 2 == 1))
+                        curtain_side *= -1.0f;
+
+                    if (reverse_motion)
+                        t = curtain_side > 0 ? t : 1.0f - t;
+                    else
+                        t = curtain_side > 0 ? 1.0f - t : t;
+                }
+
+                // Apply band blending
+                m_vertinfo[nVert].a = inv_band * (1.0f + band);
+                m_vertinfo[nVert].c = -inv_band + inv_band * t;
+                nVert++;
+            }
+        }
+    }
+    else if (mixtype == 11)
+    {
+        // DeepSeek - Bubble Transition
+        float band = 0.05f + 0.15f * FRAND;  // transition edge width
+        float inv_band = 1.0f / band;
+        int bubble_count = 10 + (rand() % 30); // number of bubbles (10-40)
+        float bubble_size_min = 0.05f + FRAND * 0.1f; // min bubble size (0.05-0.15)
+        float bubble_size_max = 0.15f + FRAND * 0.2f; // max bubble size (0.15-0.35)
+        bool growing_bubbles = (rand() % 2) == 0; // true = bubbles grow, false = shrink
+
+        // Generate random bubble positions and sizes
+        struct Bubble {
+            float x, y;     // position (0-1 range)
+            float size;     // radius (0-1 range)
+            float speed;    // growth/shrink speed
+        };
+
+        Bubble* bubbles = new Bubble[bubble_count];
+        for (int i = 0; i < bubble_count; i++)
+        {
+            bubbles[i].x = FRAND;
+            bubbles[i].y = FRAND;
+            bubbles[i].size = bubble_size_min + FRAND * (bubble_size_max - bubble_size_min);
+            bubbles[i].speed = 0.5f + FRAND * 1.5f; // speed multiplier (0.5-2.0)
+        }
+
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy = (y / (float)m_nGridY);
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx = (x / (float)m_nGridX);
+
+                // Find the maximum bubble influence at this pixel
+                float max_influence = 0.0f;
+
+                for (int i = 0; i < bubble_count; i++)
+                {
+                    // Calculate distance to bubble center
+                    float dx = (fx - bubbles[i].x) * m_fAspectX;
+                    float dy = (fy - bubbles[i].y) * m_fAspectY;
+                    float dist = sqrtf(dx * dx + dy * dy);
+
+                    // Calculate bubble influence (1 at center, 0 at edge)
+                    float influence = 1.0f - (dist / bubbles[i].size);
+                    if (influence < 0) influence = 0;
+
+                    // Apply smoothstep for smoother edges
+                    influence = influence * influence * (3.0f - 2.0f * influence);
+
+                    if (influence > max_influence)
+                        max_influence = influence;
+                }
+
+                // If we're shrinking bubbles, invert the influence
+                float t = growing_bubbles ? max_influence : (1.0f - max_influence);
+
+                // Apply band blending
+                m_vertinfo[nVert].a = inv_band * (1.0f + band);
+                m_vertinfo[nVert].c = -inv_band + inv_band * t;
+                nVert++;
+            }
+        }
+        delete[] bubbles;
+    }
+    else if (mixtype == 12)
+    {
+        // DeepSeek - Kaleidoscope Wipe Transition
+        float band = 0.06f + 0.14f * FRAND;  // transition edge width
+        float inv_band = 1.0f / band;
+
+        // Kaleidoscope parameters
+        int segments = 3 + (rand() % 9);     // 3-12 segments (triangular to dodecagonal)
+        float segment_angle = 6.2831853f / segments; // angle per segment in radians
+        float rotation = FRAND * 6.2831853f; // random initial rotation
+        bool mirror_effect = (rand() % 2) == 0; // true = mirrored segments, false = just rotated
+        float radial_factor = 0.5f + FRAND;  // 0.5-1.5 - how much radial distance affects the pattern
+
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy = (y / (float)m_nGridY - 0.5f) * m_fAspectY;
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx = (x / (float)m_nGridX - 0.5f) * m_fAspectX;
+
+                // Calculate polar coordinates
+                float angle = atan2f(fy, fx) + rotation; // range: -PI to PI plus rotation
+                float radius = sqrtf(fx * fx + fy * fy) * 1.41421356f; // normalized distance
+
+                // Wrap angle to 0-2PI range
+                if (angle < 0) angle += 6.2831853f;
+                if (angle >= 6.2831853f) angle -= 6.2831853f;
+
+                // Find which segment we're in and map to first segment
+                int segment = (int)(angle / segment_angle);
+                float segment_offset = angle - segment * segment_angle;
+
+                // For mirrored segments, reflect angles past the halfway point
+                if (mirror_effect && segment_offset > segment_angle * 0.5f) {
+                    segment_offset = segment_angle - segment_offset;
+                }
+
+                // Normalize the segment angle to 0-1 range
+                float normalized_angle = segment_offset / segment_angle;
+
+                // Combine angle and radius for the pattern
+                float t = (normalized_angle * 0.7f + radius * 0.3f * radial_factor);
+
+                // Apply band blending
+                m_vertinfo[nVert].a = inv_band * (1.0f + band);
+                m_vertinfo[nVert].c = -inv_band + inv_band * t;
+                nVert++;
+            }
+        }
+    }
+    else if (mixtype == 13)
+    {
+        // DeepSeek - Moebius Strip Transition
+        float band = 0.07f + 0.13f * FRAND;  // transition edge width
+        float inv_band = 1.0f / band;
+
+        // Moebius parameters
+        float twist_factor = 1.0f + FRAND * 2.0f; // 1-3 controls twist intensity
+        bool reverse_twist = (rand() % 2) == 0;   // random twist direction
+        float strip_width = 0.3f + FRAND * 0.4f;  // 0.3-0.7 width of the moebius strip
+        float progress_offset = FRAND * 0.5f;     // 0-0.5 random phase offset
+
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy = (y / (float)m_nGridY - 0.5f) * m_fAspectY;
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx = (x / (float)m_nGridX - 0.5f) * m_fAspectX;
+
+                // Convert to polar coordinates
+                float angle = atan2f(fy, fx); // range: -PI to PI
+                float radius = sqrtf(fx * fx + fy * fy) * 1.41421356f; // normalized 0-1
+
+                // Create moebius strip effect
+                float normalized_angle = (angle + 3.14159265f) / 6.2831853f; // 0-1
+
+                // Calculate the twist - makes a half-twist as we go around the circle
+                float twist_progress = (normalized_angle + progress_offset) * twist_factor;
+                if (reverse_twist) twist_progress = -twist_progress;
+
+                // Moebius strip effect combines radius with twisted angle
+                float moebius_value = radius + 0.3f * sinf(twist_progress * 3.14159265f);
+
+                // Apply strip width to create the banding effect
+                float t = fmodf(moebius_value * (1.0f / strip_width), 1.0f);
+
+                // Make the transition flow outward
+                t = 1.0f - t;
+
+                // Apply band blending
+                m_vertinfo[nVert].a = inv_band * (1.0f + band);
+                m_vertinfo[nVert].c = -inv_band + inv_band * t;
+                nVert++;
+            }
+        }
+    }
+    else if (mixtype == 14)
+    {
+        // DeepSeek - Star Wipe Transition
+        float band = 0.05f + 0.15f * FRAND;  // transition edge width
+        float inv_band = 1.0f / band;
+        int points = 5 + (rand() % 2);      // 5-6 points on the star
+        float inner_radius = 0.3f + FRAND * 0.4f; // 0.3-0.7 inner radius
+        float rotation = FRAND * 6.2831853f; // random initial rotation
+        bool reverse = (rand() % 2) == 0;    // reverse direction
+
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy = (y / (float)m_nGridY - 0.5f) * m_fAspectY;
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx = (x / (float)m_nGridX - 0.5f) * m_fAspectX;
+
+                // Convert to polar coordinates
+                float angle = atan2f(fy, fx) + rotation; // range: -PI to PI plus rotation
+                float radius = sqrtf(fx * fx + fy * fy) * 1.41421356f; // normalized distance
+
+                // Wrap angle to 0-2PI range
+                if (angle < 0) angle += 6.2831853f;
+                if (angle >= 6.2831853f) angle -= 6.2831853f;
+
+                // Calculate star pattern
+                float segment = 6.2831853f / points;
+                float point_angle = fmodf(angle, segment) / segment; // 0-1 within each segment
+
+                // Alternate between inner and outer radius
+                float star_radius;
+                if (point_angle < 0.5f) {
+                    // First half of segment - interpolate from inner to outer radius
+                    star_radius = inner_radius + (1.0f - inner_radius) * point_angle * 2.0f;
+                }
+                else {
+                    // Second half of segment - interpolate from outer back to inner radius
+                    star_radius = 1.0f - (1.0f - inner_radius) * (point_angle - 0.5f) * 2.0f;
+                }
+
+                // Calculate how far we are from the star edge
+                float t = (radius / star_radius);
+                if (reverse) t = 1.0f - t;
+
+                // Apply band blending
+                m_vertinfo[nVert].a = inv_band * (1.0f + band);
+                m_vertinfo[nVert].c = -inv_band + inv_band * t;
+                nVert++;
+            }
+        }
+    }
+    else if (mixtype == 15)
+    {
+        // DeepSeek - Disco Floor Transition
+        float band = 0.08f + 0.12f * FRAND;  // transition edge width
+        float inv_band = 1.0f / band;
+
+        // Disco floor parameters
+        int tile_size = 8 + (rand() % 25);    // 8-32 pixel tile size (approximate)
+        float beat_sync = 0.5f + FRAND * 1.5f; // 0.5-2.0 beat sync intensity
+        bool diagonal_pattern = (rand() % 2) == 0; // alternate diagonal pattern
+        bool color_cycling = (rand() % 2) == 0;   // enable color cycling effect
+        float speed_factor = 0.5f + FRAND * 2.0f; // animation speed (0.5-2.5)
+
+        // Get current time for animation (using a fake time if not available)
+        static float fake_time = 0.0f;
+        fake_time += 1 / GetFps();
+        float time = fake_time * speed_factor;
+
+        // Simulate beat detection with a sine wave if real beat info isn't available
+        float beat = sinf(time * 3.0f) * 0.5f + 0.5f;
+        beat = powf(beat, beat_sync);
+
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy = y / (float)m_nGridY;
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx = x / (float)m_nGridX;
+
+                // Calculate tile coordinates
+                int tile_x = (int)(fx * m_nGridX / tile_size);
+                int tile_y = (int)(fy * m_nGridY / tile_size);
+
+                // Create alternating pattern
+                float pattern;
+                if (diagonal_pattern)
+                {
+                    // Diagonal checkerboard pattern
+                    pattern = ((tile_x + tile_y) % 2) * 0.8f + 0.1f;
+                }
+                else
+                {
+                    // Standard checkerboard pattern
+                    pattern = ((tile_x % 2) == (tile_y % 2)) * 0.8f + 0.1f;
+                }
+
+                // Add animation based on tile position and time
+                float anim = sinf(time * 2.0f + tile_x * 0.3f + tile_y * 0.7f) * 0.5f + 0.5f;
+
+                // Combine with beat detection
+                float t = (pattern * 0.7f + anim * 0.3f) * beat;
+
+                // Add color cycling effect if enabled
+                if (color_cycling)
+                {
+                    float hue = fmodf(time * 0.2f + tile_x * 0.1f + tile_y * 0.15f, 1.0f);
+                    t = fmodf(t + hue * 0.3f, 1.0f);
+                }
+
+                // Apply band blending
+                m_vertinfo[nVert].a = inv_band * (1.0f + band);
+                m_vertinfo[nVert].c = -inv_band + inv_band * t;
+                nVert++;
+            }
+        }
+    }
+    else if (mixtype == 16)
+    {
+        // DeepSeek - Fire/Flame Transition - rising upward with random patterns
+        float band = 0.08f + 0.04f * FRAND;  // flame edge thickness
+        float inv_band = 1.0f / band;
+
+        // Fire parameters
+        float flame_speed = 0.7f + FRAND * 0.6f;    // speed (0.7-1.3)
+        float base_height = 0.0f;                   // always start at bottom
+
+        // Pre-compute some random flame properties
+        float seed1 = FRAND * 10.0f;
+        float seed2 = FRAND * 20.0f;
+        float seed3 = FRAND * 30.0f;
+
+        // Get current time for animation
+        static float fire_time = 0.0f;
+        fire_time += 1 / GetFps();
+        float time = fire_time;
+
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy = (y / (float)m_nGridY); // 0-1 from bottom to top
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx = (x / (float)m_nGridX);
+
+                // Generate deterministic random patterns using noise functions
+                float random_flame =
+                    sinf(fx * 15.0f + seed1 + time * 2.0f) * 0.4f +
+                    sinf(fx * 30.0f + seed2 + time * 3.7f) * 0.2f +
+                    sinf(fx * 45.0f + seed3 + time * 5.3f) * 0.1f;
+
+                // Shape the flame (wider at bottom, narrower at top)
+                float flame_shape = (1.0f - fy) * (0.3f + random_flame * 0.7f);
+
+                // Calculate flame front position (rising from bottom)
+                float flame_front = fmodf(time * flame_speed, 1.5f);
+
+                // Flame transition value - positive when below flame front
+                float t = 1.0f - (fy - flame_front + flame_shape);
+
+                // Basic 0-1 clamping
+                t = (t < 0) ? 0 : ((t > 1) ? 1 : t);
+
+                // Apply band blending
+                m_vertinfo[nVert].a = inv_band * (1.0f + band);
+                m_vertinfo[nVert].c = -inv_band + inv_band * t;
+                nVert++;
             }
         }
     }
@@ -9717,11 +10549,79 @@ bool CPlugin::LaunchSprite(int nSpriteNum, int nSlot)
 
 void CPlugin::KillSprite(int iSlot)
 {
-	m_texmgr.KillTex(iSlot);
+    m_texmgr.KillTex(iSlot);
+}
+
+int SAMPLE_RATE = 44100; //Initialize sample rate globally, 44100hz is the default sample rate for MilkDrop
+
+HRESULT DetectSampleRate()
+{
+    HRESULT hr = S_OK;
+    IMMDeviceEnumerator* pEnumerator = NULL;
+    IMMDevice* pDevice = NULL;
+    IPropertyStore* pProps = NULL;
+    PROPVARIANT var;
+    PropVariantInit(&var);
+
+    // Initialize COM
+    hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+    if (FAILED(hr)) return hr;
+
+    // Create device enumerator
+    hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL,
+        CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
+        (void**)&pEnumerator);
+    if (FAILED(hr)) goto Cleanup;
+
+    // Get default audio endpoint
+    hr = pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &pDevice);
+    if (FAILED(hr)) goto Cleanup;
+
+    // Open property store
+    hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
+    if (FAILED(hr)) goto Cleanup;
+
+    // Get the format property
+    hr = pProps->GetValue(PKEY_AudioEngine_DeviceFormat, &var);
+    if (SUCCEEDED(hr) && var.vt == VT_BLOB)
+    {
+        WAVEFORMATEX* pwfx = (WAVEFORMATEX*)var.blob.pBlobData;
+        if (pwfx != NULL)
+        {
+            SAMPLE_RATE = pwfx->nSamplesPerSec;
+        }
+    }
+
+Cleanup:
+    // Clean up
+    PropVariantClear(&var);
+    if (pProps) pProps->Release();
+    if (pDevice) pDevice->Release();
+    if (pEnumerator) pEnumerator->Release();
+    CoUninitialize();
+
+    return hr;
 }
 
 void CPlugin::DoCustomSoundAnalysis()
 {
+	//Now uses configurations via beatdrop.ini, don't modify here.
+    //Bass
+    int BASS_MIN = m_nBassStart;
+    int BASS_MAX = m_nBassEnd;
+
+    //Middle
+    int MID_MIN = m_nMidStart;
+    int MID_MAX = m_nMidEnd;
+
+    //Treble
+    int TREBLE_MIN = m_nTrebStart;
+    int TREBLE_MAX = m_nTrebEnd;
+
+    // This uses the sample rate dependent on your speaker device.
+    // Beat Detection Configuration
+    // Look at the start of line 10566 for the new beat detection splitting algorithm.
+    
     memcpy(mysound.fWave[0], m_sound.fWaveform[0], sizeof(float)*576);
     memcpy(mysound.fWave[1], m_sound.fWaveform[1], sizeof(float)*576);
 
@@ -9741,37 +10641,49 @@ for (int i=0;i<576;i++)
     myfft.time_to_frequency_domain(fWaveRight, mysound.fSpecRight);
 	//for (i=0; i<MY_FFT_SAMPLES; i++) fSpecLeft[i] = sqrtf(fSpecLeft[i]*fSpecLeft[i] + fSpecTemp[i]*fSpecTemp[i]);
 
-	// sum spectrum up into 3 bands
-	for (i=0; i<3; i++)
-	{
-		//note: only look at bottom half of spectrum!  (hence divide by 6 instead of 3)
-        int start = MY_FFT_SAMPLES*i/200;
-        int end = MY_FFT_SAMPLES*(i+1)/142; // bass: 20hz-250hz
-		int j;
+	// DeepSeek - Update the sample rate (we don't need to check HRESULT every frame)
+    static DWORD lastCheck = 0;
+    DWORD currentTime = GetTickCount();
+    if (currentTime - lastCheck > 5000) // Check once per second
+    {
+        DetectSampleRate();
+        lastCheck = currentTime;
+    }
 
-        if (i == 1)
-        {
-            start = MY_FFT_SAMPLES * i / 68;
-            end = MY_FFT_SAMPLES * (i + 1) / 13; // mid: 250hz-4000hz
+	// sum spectrum up into 3 bands
+	//DeepSeek - Updated Beat Detection Splitting Algorithm
+    for (int i = 0; i < 3; i++)
+    {
+        // Calculate which FFT bins correspond to our frequency ranges
+        int start_bin, end_bin;
+
+        switch (i) {
+        case 0: // Bass (0-250Hz)
+            start_bin = (int)(BASS_MIN * MY_FFT_SAMPLES / (SAMPLE_RATE / 2));
+            end_bin = (int)(BASS_MAX * MY_FFT_SAMPLES / (SAMPLE_RATE / 2));
+            break;
+        case 1: // Mid (250-4000Hz)
+            start_bin = (int)(MID_MIN * MY_FFT_SAMPLES / (SAMPLE_RATE / 2));
+            end_bin = (int)(MID_MAX * MY_FFT_SAMPLES / (SAMPLE_RATE / 2));
+            break;
+        case 2: // Treble (4000-20000Hz)
+            start_bin = (int)(TREBLE_MIN * MY_FFT_SAMPLES / (SAMPLE_RATE / 2));
+            end_bin = (int)(TREBLE_MAX * MY_FFT_SAMPLES / (SAMPLE_RATE / 2));
+            break;
         }
 
-        if (i == 2)
+        // Clamp values to valid range
+        start_bin = max(0, min(start_bin, MY_FFT_SAMPLES - 1));
+        end_bin = max(0, min(end_bin, MY_FFT_SAMPLES - 1));
+
+        mysound.imm[i] = 0; //To prevent the waveform's spikyness and performance lag
+
+        // Sum the energy in the frequency range
+        for (int j = start_bin; j <= end_bin; j++)
         {
-            start = MY_FFT_SAMPLES*i/8;
-            end = MY_FFT_SAMPLES*(i + 1)/3; // treb: 4000hz-20000hz
-        } // new MD beat detection algorithm, clear, perfect, stable
-        
-      /*int start = MY_FFT_SAMPLES * i / 6;
-        int end = MY_FFT_SAMPLES * (i+1) / 6;
-        int j;*/ //old MD beat detection algorithm, not accurate, only reacts only at the quarter of middle and treble.
-		//it depends on the sample rate input in your computer, so possibly it's not reacting correctly. See fft.cpp
-		//The recommended sample rate input for the new beat detection code is 48000hz.
-
-		mysound.imm[i] = 0;
-
-		for (j=start; j<end; j++)
-			mysound.imm[i] += (mysound.fSpecLeft[j] + mysound.fSpecRight[j])/2; //I made the beat detection reacting on both channels, like projectM. Why don't you try?
-	}
+            mysound.imm[i] += (mysound.fSpecLeft[j] + mysound.fSpecRight[j]);
+        }
+    }
 
 	// do temporal blending to create attenuated and super-attenuated versions
 	for (i=0; i<3; i++)

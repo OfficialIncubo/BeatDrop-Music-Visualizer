@@ -79,10 +79,10 @@ per_frame_15=q2=sfx;
 per_frame_16=
 per_frame_17=zoom=1-q1*(.15*bass_pulse+
 per_frame_18=.3*equal(bass_pulse+mid_pulse+treb_pulse,3));
-per_frame_19=rot=q1*mid_pulse*(rand(11)-5);
+per_frame_19=rot=q1*mid_pulse*(int(rand(11))-5);
 per_frame_20=
-per_frame_21=dx=q1*.02*treb_pulse*(rand(11)-5);
-per_frame_22=dy=q1*.02*treb_pulse*(rand(11)-5);
+per_frame_21=dx=q1*.02*treb_pulse*(int(rand(11))-5);
+per_frame_22=dy=q1*.02*treb_pulse*(int(rand(11))-5);
 per_frame_23=
 per_frame_24=ib_a=q1;
 per_frame_25=ib_r=.5+.3*sin(1.13*time)+.2*sin(3.57*time);

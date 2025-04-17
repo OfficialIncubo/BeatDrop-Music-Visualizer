@@ -443,3 +443,4 @@ per_frame_6=q7=mtime;
 per_frame_7=q8=vol
 per_pixel_1=zoom=-1.02 + rad*10;
 per_pixel_2=//rot=rad*500;
+per_pixel_3=dy += 1;

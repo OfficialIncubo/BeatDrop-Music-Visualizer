@@ -1,0 +1,450 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=3.000000
+fGammaAdj=1.000
+fDecay=1.000
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=0.261
+fWaveSmoothing=0.774
+fWaveParam=0.000
+fModWaveAlphaStart=0.000
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00001
+dy=0.00001
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.570
+wave_y=0.620
+ob_size=0.000
+ob_r=0.630
+ob_g=0.890
+ob_b=0.770
+ob_a=1.000
+ib_size=0.000
+ib_r=0.740
+ib_g=0.959
+ib_b=0.110
+ib_a=1.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=0.000
+mv_g=0.000
+mv_b=0.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=0
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.50000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wavecode_1_enabled=0
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=0
+wavecode_1_scaling=1.00000
+wavecode_1_smoothing=0.50000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=1.000
+wavecode_2_enabled=0
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.00000
+wavecode_2_smoothing=0.50000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=1.000
+wavecode_2_a=1.000
+wavecode_3_enabled=0
+wavecode_3_samples=512
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=1.000
+shapecode_0_enabled=0
+shapecode_0_sides=6
+shapecode_0_additive=0
+shapecode_0_thickOutline=1
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.446
+shapecode_0_y=0.501
+shapecode_0_rad=0.50026
+shapecode_0_ang=6.28319
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=1.00000
+shapecode_0_r=1.000
+shapecode_0_g=1.000
+shapecode_0_b=1.000
+shapecode_0_a=1.000
+shapecode_0_r2=1.000
+shapecode_0_g2=1.000
+shapecode_0_b2=0.080
+shapecode_0_a2=1.000
+shapecode_0_border_r=0.050
+shapecode_0_border_g=0.500
+shapecode_0_border_b=0.000
+shapecode_0_border_a=0.000
+shapecode_1_enabled=0
+shapecode_1_sides=4
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_num_inst=1
+shapecode_1_x=0.500
+shapecode_1_y=0.500
+shapecode_1_rad=0.10000
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=1.00000
+shapecode_1_r=1.000
+shapecode_1_g=0.000
+shapecode_1_b=0.000
+shapecode_1_a=1.000
+shapecode_1_r2=0.000
+shapecode_1_g2=1.000
+shapecode_1_b2=0.000
+shapecode_1_a2=0.000
+shapecode_1_border_r=1.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=1.000
+shapecode_1_border_a=0.100
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_num_inst=1
+shapecode_2_x=0.500
+shapecode_2_y=0.500
+shapecode_2_rad=0.10000
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=1.00000
+shapecode_2_r=1.000
+shapecode_2_g=0.000
+shapecode_2_b=0.000
+shapecode_2_a=1.000
+shapecode_2_r2=0.000
+shapecode_2_g2=1.000
+shapecode_2_b2=0.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=1.000
+shapecode_2_border_a=0.100
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=1
+shapecode_3_x=0.500
+shapecode_3_y=0.500
+shapecode_3_rad=0.10000
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.00000
+shapecode_3_r=1.000
+shapecode_3_g=0.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=1.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=1.000
+shapecode_3_border_b=1.000
+shapecode_3_border_a=0.100
+per_frame_1=//           SOCS.12 -- Standard Operating Control System
+per_frame_2=//                      By: Stirfriedramen
+per_frame_3=// OUTPUTS:-------------------------------------------------------------
+per_frame_4=//q32 -- volume        Rough signal indicating loudness (0 to 2-ish)
+per_frame_5=//q31 -- volume_att    Attenuated loudness signal       (0 to 2-ish)
+per_frame_6=//q30 -- vol_texture   How rough or smooth is volume (0=leg, 1=stec)
+per_frame_7=//q29 -- bass_beat     boolian (1 or 0) 1 = sudden spike in bass
+per_frame_8=//q28 -- bass_weight   % of total volume that is bass (0 to 1)
+per_frame_9=//q27 -- bass_text     How rough or smooth is bass   (0=leg, 1=stec) 
+per_frame_10=//q26 -- mid_beat      boolian (1 or 0) 1 = sudden spike in mid
+per_frame_11=//q25 -- mid_weight    % of total volume that is mid  (0 to 1)
+per_frame_12=//q24 -- mid_text      How rough or smooth is mid    (0=leg, 1=stec) 
+per_frame_13=//q23 -- treb_beat     boolian (1 or 0) 1 = sudden spike in treb
+per_frame_14=//q22 -- treb_weight   % of total volume that is treb (0 to 1)
+per_frame_15=//q21 -- treb_tex      How rough or smooth is treb   (0=leg, 1=stec) 
+per_frame_16=
+per_frame_17=// CONTROLS:------------------------------------------------------------
+per_frame_18=//   set these variables to taste, or control them with your code!
+per_frame_19=// These increase the senstivity of the beat detectors (0 to 1)
+per_frame_20=b_beat_sens = .5;  m_beat_sens = .5;  t_beat_sens = .5;
+per_frame_21=// Use these to reduce the sensitivity of the texture signals (0 .. 100)
+per_frame_22=v_tex_sens = 5.00;  b_tex_sens = 5.00;  m_tex_sens = 5.00;  t_tex_sens = 5.00;
+per_frame_23=// Set weights_smooth to 0 if you want to use the rougher signal
+per_frame_24=weights_smooth = 1;
+per_frame_25=
+per_frame_26=// SOCS Code:-----------------------------------------------------------
+per_frame_27=q32 = 1 / min((bass + mid + treb), 33);
+per_frame_28=q31 = 1 / min((bass_att + mid_att + treb_att), 33);
+per_frame_29=q29 = if((floor(max(bass - bass_att, 0) * (20 * b_beat_sens))),1,0);
+per_frame_30=q28 = if((weights_smooth), bass_att * q31, bass * q32);
+per_frame_31=b_tex = (b_tex * (100 - b_tex_sens) + abs(bass - bass_att) * b_tex_sens) * 0.01;
+per_frame_32=q27 = min(b_tex * 1.333, 1);
+per_frame_33=q26 = if((floor(max(mid  -  mid_att, 0) * (20 * m_beat_sens))),1,0);
+per_frame_34=q25 = if((weights_smooth), mid_att * q31, mid * q32);
+per_frame_35=m_tex = (m_tex * (100 - m_tex_sens) + abs(mid  -  mid_att) * m_tex_sens) * 0.01;
+per_frame_36=q24 = min(m_tex * 1.166, 1);
+per_frame_37=q23 = if((floor(max(treb - treb_att, 0) * (20 * t_beat_sens))),1,0);
+per_frame_38=q22 = if((weights_smooth), treb_att * q31, treb * q32);
+per_frame_39=t_tex = (t_tex * (100 - t_tex_sens) + abs(treb - treb_att) * t_tex_sens) * 0.01;
+per_frame_40=q21 = min(t_tex * 1.166, 1);
+per_frame_41=q32 = (bass + mid + treb);
+per_frame_42=q31 = (bass_att + mid_att + treb_att);
+per_frame_43=v_tex = (v_tex * (100 - v_tex_sens) + abs(q32 - q31) * v_tex_sens) * 0.01;
+per_frame_44=q30 = min(v_tex, 1);
+per_frame_45=q31 *= 0.060606;
+per_frame_46=q32 *= 0.060606;
+per_frame_47=//----------------------------------------------------------------------
+per_frame_48=//      You should still have 20 user variables left and q1 to q20 
+per_frame_49=//       VVVVVVVVVVV  Add your beautiful code below  VVVVVVVVVVV
+per_frame_50=//--------------------vvvvvvvvvvvvvvvvvvvvvvvvvvvvv---------------------
+per_frame_51=
+per_frame_52=//                           Lighting Controls
+per_frame_53=//============================================================================
+per_frame_54=// q1 = spotlight x (0 ... 1 = left to right)
+per_frame_55=// q2 = spotlight y (0 ... 1 = top to bottom)
+per_frame_56=// q3 = spotlight z (0 ... 1 = in to and out of screen)
+per_frame_57=// q4 = spotlight color (0...1 = r=>y=>g=>bg=>b=>v=>r)
+per_frame_58=// q5 = brightness  (still wonky)
+per_frame_59=// q6 = environmental light angle phi (0 ... 2pi = angle in the x,y plane)
+per_frame_60=// q7 = env light angle theta (-1/2pi ... 0 ... 1/2pi = elevation of q6 angle)
+per_frame_61=// q8 = environmental light color (0...1 = r=>y=>g=>bg=>b=>v=>r)
+per_frame_62=// q9 = env dim/washout (0...1 = black => q8 color => white)
+per_frame_63=  q10 = pixelsx;
+per_frame_64=  q11 = pixelsy;
+per_frame_65=//============================================================================
+per_frame_66=q1 = (0.5 + (cos(rotor1*6.2831853)*0.45)) * pixelsx;//0.5 * pixelsx;//
+per_frame_67=q2 = (0.5 + (sin(rotor1*6.2831853)*0.45)) * pixelsy;//0.5 * pixelsy;//
+per_frame_68=q3 = 0.750 * pixelsx;//ob_b * pixelsx;
+per_frame_69=q4 = 0.05;
+per_frame_70=q5 = 1.0;
+per_frame_71=q6 = (rotor1-0.5)*6.2831853;//0.785398;
+per_frame_72=q7 = (ib_g-0.5)*3.14159265;//1.170796;
+per_frame_73=q8 = 0.45;
+per_frame_74=q9 = 0.60;
+per_frame_75=rotor1 += 0.0025;
+per_frame_76=rotor1 = if(above(rotor1, 1.0),rotor1 -1.0, rotor1);
+per_frame_77=
+per_frame_78=monitor = q10;
+warp_1=`
+warp_2=`sampler sampler_TiledBumps;
+warp_3=`
+warp_4=`shader_body
+warp_5=`{
+warp_6=`    // sample previous frame
+warp_7=`    float scale = 1.0;
+warp_8=`    float3 materialc = float3(0.725,0.5,1.0);
+warp_9=`    float3 materialb = float3(abs(sin(rad+(q10 * 3.14159))), 0.45, 1.0);
+warp_10=`    float3 materiala = float3(0.175, 0.5, 1.0);
+warp_11=`    float3 colorA = tex2D( sampler_TiledBumps, uv_orig * scale).xyz;
+warp_12=`    float3 colorB = tex2D( sampler_TiledBumps, float2(uv_orig.x + 0.1000, uv_orig.y) * scale).xyz;
+warp_13=`    float3 colorC = tex2D( sampler_TiledBumps, float2(uv_orig.x - 0.10, uv_orig.y)*scale).xyz;
+warp_14=`    float3 colorD = tex2D( sampler_TiledBumps, float2(uv_orig.x + 0.0150, uv_orig.y )*scale).xyz;
+warp_15=`    float3 fractile = float3(1.0, 1.0, colorC.z * 0.5) * materialc;
+warp_16=`    float3 squares = float3(1.0, 1.0, 0.55 - colorD.y) * materialc;
+warp_17=`    float3 octagonsA = float3(0.175, 0.5, colorA.x);
+warp_18=`    float3 octagonsB = float3(0.175, 0.5, colorB.x);
+warp_19=`    float3 octagonsC = float3(0.175, 0.5, colorC.x );
+warp_20=`    float3 octagonsD = float3(0.725, 0.65, 0.5 - colorD.x );
+warp_21=`
+warp_22=`    //ret = min(min(octagonsA + octagonsB,1.0) + min(octagonsC + octagonsD,1.0),1.0);
+warp_23=`    //float3 grillwork = min(min(octagonsA+octagonsB, 1.0) + min(octagonsC, octagonsD),1.0);
+warp_24=`    //ret = ((grillwork.z > 0.0) * grillwork);
+warp_25=`    ret = octagonsD;
+warp_26=`    // darken (decay) over time
+warp_27=`    //ret *= float3(1.00,1.00,0.00);
+warp_28=`    //ret *= (ret.z > 0.00);
+warp_29=`    //ret += 0.001;
+warp_30=`}
+comp_1=`sampler sampler_fw_ColorLUT;
+comp_2=`shader_body
+comp_3=`{//==============>>>>>>>>> Setting Up All The Lighting Data <<<<<<<<<====================
+comp_4=`//---------------------------------------------------------------------------------------
+comp_5=`// Sample the current texel, take its' blue value to be its 3D z value & build its' vector
+comp_6=`    float3 TexColor = tex2D(sampler_main, uv).xyz;
+comp_7=`    float TexHeight = TexColor.z;
+comp_8=`    float3 vecToTex = float3(uv.x * texsize.x, uv.y * texsize.y, TexHeight);//derived from uv & blue channel of texel
+comp_9=`    float3 input = TexColor;
+comp_10=`// Use the r & g channels & the Color Look Up Table to get a new float3 color for the Texel.
+comp_11=`//***********TODO3:  Pull material data from LUT before TexColor gets changed!!!
+comp_12=`// Pull the material properties from the material samples (hardcoding is temp only!!!!!)
+comp_13=`    float hardness = 0.05; //how pollished is the surface
+comp_14=`    float metalic = 0.0; //how mirror like is the reflection
+comp_15=`    float opacity = 1.0; //how transparent is this material
+comp_16=`    float refIndex = 0.0; //how much does this material bend light
+comp_17=`    float3 transColor = float3(1.0, 1.0, 1.0); //color of light that the material lets pass through itself
+comp_18=`    float2 fresnel = float2(0.0, 0.0); //
+comp_19=`    float subSurf = 0.25;
+comp_20=`    float3 subSurfColor = float3(1.0, 1.0, 1.0);
+comp_21=`    TexColor = tex2D(sampler_fw_ColorLUT, float2(TexColor.x, TexColor.y)).xyz;//use ColorLUT
+comp_22=`    TexColor = (TexHeight>0.00) * TexColor;// 0 out any pixel that falls into negative z space
+comp_23=`// Sample the texel one step to the right, get its' height.
+comp_24=`    float2 Huv = float2(uv.x + texsize.z, uv.y);
+comp_25=`    float3 Color = tex2D(sampler_main, Huv).xyz;
+comp_26=`    float3 HorHeight = Color.z;
+comp_27=`// Sample the texel one step below, get its' height.
+comp_28=`    float2 Vuv = float2(uv.x, uv.y + texsize.w);
+comp_29=`    Color = tex2D(sampler_main, Vuv).xyz;
+comp_30=`    float VrtHeight = Color.z;
+comp_31=`// Use the sampled heights to calculate the surface normal for this texel
+comp_32=`    float Hor = (TexHeight - HorHeight);// lateral angle
+comp_33=`    float Vrt = (TexHeight - VrtHeight);// vertical angle
+comp_34=`    float3 TexNorm = float3(Hor, Vrt, 0);
+comp_35=`    // If Normal vector length > 1.0, normalize it to 1.0, else leave it as is:
+comp_36=`    float normLength = sqrt(pow(TexNorm.x,2)+pow(TexNorm.y,2));
+comp_37=`    TexNorm =  ((normLength > 1.0) * (TexNorm * (1.0 / normLength))) + ((normLength <= 1.0) * TexNorm);
+comp_38=`    float z = sqrt(1 - (pow(TexNorm.x, 2) + pow(TexNorm.y, 2)));// Asking Pythagoras what z is
+comp_39=`    TexNorm = float3(TexNorm.x, TexNorm.y, z);// Putting it all together for a proper vector. (-1 to 1 ranged)
+comp_40=`    TexNorm = normalize(TexNorm);
+comp_41=`    float3 DspNorm = (TexNorm + 1.0)*0.5;//  normal map, ranged for monitor display
+comp_42=`
+comp_43=`
+comp_44=`
+comp_45=`
+comp_46=`// Camera -- Get the vector to the camera relative to the current pixel in pixels,
+comp_47=`//  so as to give the aproximate location of the viewers head.
+comp_48=`    float3 vecToCam = float3(0.5 * q10, 0.50 * q11, 1.15 * q10);//Where's your head at in screen coordinate space?
+comp_49=`    vecToCam = vecToCam - vecToTex;//vector fom texel to your head in pixels
+comp_50=`    vecToCam = normalize(vecToCam);
+comp_51=`
+comp_52=`// Point Light--Get the Point Light vector and color data, then use data to get point light color.
+comp_53=`    float3 vecToPtL = float3(q1,q2,q3);//provided in per frame
+comp_54=`    vecToPtL = vecToPtL - vecToTex;//make vector relative to this texel
+comp_55=`    float vTPLLength = sqrt(pow(vecToPtL.x,2)+pow(vecToPtL.y,2)+pow(vecToPtL.z,2));
+comp_56=`    vecToPtL = normalize(vecToPtL);//normalize
+comp_57=`    float3 PtLColor = tex2D(sampler_fw_ColorLUT, float2(q4, 0.5)).xyz;//use ColorLUT
+comp_58=`
+comp_59=`// Environment Light--Using q6 = phi & q7 = theta to get the vector to the Environmental Light
+comp_60=`    z = sin(q7);  float n = cos(q7);  float y = sin(q6) * n;  float x = cos(q6) * n;
+comp_61=`    float3 vecToEnL = float3(x,y,z);//calculate from phi & theta
+comp_62=`    float3 EnLColor = tex2D(sampler_fw_ColorLUT, float2(q8, q9)).xyz;//use ColorLUT
+comp_63=`
+comp_64=`
+comp_65=`//=======================>>>>>>>>>>> Generate Lighting <<<<<<<<<<<<======================
+comp_66=`//---------------------------------------------------------------------------------------
+comp_67=`//***********TODO2: lay in material properties equations on both lights
+comp_68=`// Generate the Environmental light contribution
+comp_69=`    float EnLAngularFactor = (TexHeight > 0.0) * min(max(dot(TexNorm,vecToEnL),0.002),1.0);
+comp_70=`    float3 EnLContrib = pow(1.7 * EnLAngularFactor, 2) * EnLColor * TexColor; 
+comp_71=`// Generate Environmental light specular highlights
+comp_72=`    float3 EnLSpecVec = float3(250 * vecToEnL.x + vecToCam.x, 250 * vecToEnL.y + vecToCam.y, 250 * vecToEnL.z + vecToCam.z);
+comp_73=`    EnLSpecVec = normalize(EnLSpecVec);
+comp_74=`    float EnLSAngFact = max(0.0, dot(EnLSpecVec, TexNorm));
+comp_75=`    EnLSAngFact = pow((1 - sqrt(1 - pow(EnLSAngFact, 2))) * (TexHeight > 0.0), 1.0 + (hardness * 255));
+comp_76=`    EnLContrib = lerp(EnLContrib, EnLColor, EnLSAngFact);
+comp_77=`
+comp_78=`// Generate point light contribution
+comp_79=`    float PtLAngularFactor = (TexHeight > 0.0) * min(max(dot(TexNorm, vecToPtL),0.00),1.0);
+comp_80=`    float brightness = q5;//***********TODO4: rework point light falloff
+comp_81=`    float factor = (1.0 - brightness) * 0.01805;
+comp_82=`    float falloff = 0.01805 + max(0,(1.0 - (vTPLLength * (0.000075 + factor))));//brightness of 1 = 0.00025 0 = 0.0183 gives a ranging factor of 0.01805
+comp_83=`    float3 PtLContrib = (PtLAngularFactor * falloff) * PtLColor * TexColor;
+comp_84=`// Generate point lights specular highlight
+comp_85=`    float3 PtLSpecVec = float3(vecToPtL.x + vecToCam.x, vecToPtL.y + vecToCam.y, vecToPtL.z + vecToCam.z);
+comp_86=`    PtLSpecVec = normalize(PtLSpecVec);
+comp_87=`    float PtLSAngFact = max(0.0, dot(PtLSpecVec, TexNorm));
+comp_88=`    PtLSAngFact = pow((1 - sqrt(1 - pow(PtLSAngFact, 2))) * (TexHeight > 0.0), 1.0 + (hardness * 255));
+comp_89=`    PtLContrib = lerp(PtLContrib, min(PtLColor * q5, 1.0), PtLSAngFact);
+comp_90=`
+comp_91=`ret = PtLContrib + EnLContrib;//PtLAngularFactor * falloff;//input;//EnLContrib;//DspNorm;//EnLAngularFactor;// distToPtL;// float3(uv.x, uv.y, TexHeight);//
+comp_92=`//ret = PtLSAngFact; //(1 + PtLSpecVec) * 0.5;
+comp_93=`
+comp_94=`//  Dev Blog!!!
+comp_95=`//  tracked the problem with the point light down to the interaction between the surface normal and the vector to point light
+comp_96=`//  works just fine if I plug in the environmental light vector, so the prob is in the vector to point light, or one or more
+comp_97=`//    of the components that go into it,
+comp_98=`//  Probs need to remake both vectors measured in pixels not 0.0 to 1.0, then subtract those vectors and normalize.
+comp_99=`//  That should give good values to the dot product function.
+comp_100=`//  yup!! That fixed it.  now to lay in the point light's falloff.
+comp_101=`//  K, PtL falloff working, next up is the specular reflections
+comp_102=`//  Then the material properties, followed by the MaterialsLUT
+comp_103=`//
+comp_104=`//  Well, this is not going well...  seems to be some problem with vecToCam and/or the part where I add it to the vecToPtL
+comp_105=`//    and normalize, may be some mismatch in the vector data, may be a dodgey normalize() function, I Don't Know.
+comp_106=`//  I do Know that I am brain-fried though, so Imma play games now.
+comp_107=`//
+comp_108=`//  K, so got the specular working for both lights, and hardness is working.
+comp_109=`//  Next up is Sub-Surface Scattering.
+comp_110=`//  Oh yeah, the problem with my vector to cam seems to have been that pixelsx/y is not the same as texsize.xy
+comp_111=`//    I suspect that one returns internal canvas size in pixels, while the other is monitor size in pixels.
+comp_112=`//    I just put the pixelsx/y onto q10 & 11 to use them in the shader as needed.  It works.
+comp_113=`//  Thinking I'm gonna need an object to test a lot of these material properties, so that I can manipulate
+comp_114=`//    its material properties and location, for tranaparency, SSS and fresnel development.
+comp_115=`//  Also need to split a couple of branches for lighting non-LUT pluggins, one on socks_12 and one on 8
+comp_116=`//    will split them off once all material properties are functional except refractive index, which will be 
+comp_117=`//    dropped and transparency will be replaced with translucency, since transpareny won't work without 
+comp_118=`//    using a LUT to pull it off, among other things.
+comp_119=`//  I'm cooked, more to come.
+comp_120=`}

@@ -1,0 +1,246 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=2
+[preset00]
+fRating=3.000
+fGammaAdj=1.000
+fDecay=1.000
+fVideoEchoZoom=1.010
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=2
+nWaveMode=6
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.312
+fWaveScale=1.229
+fWaveSmoothing=0.000
+fWaveParam=0.200
+fModWaveAlphaStart=0.710
+fModWaveAlphaEnd=1.300
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00001
+dy=0.00001
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.005
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=1.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.000
+mv_g=0.910
+mv_b=0.710
+mv_a=1.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=1
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.50000
+wavecode_0_r=0.700
+wavecode_0_g=0.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wave_0_per_frame1=advance=advance+ 0.005;
+wave_0_per_frame2=advance=if( above(advance,2) , 0, advance);
+wave_0_per_frame3=t1=advance
+wave_0_per_point1=s=sample*6.28;
+wave_0_per_point2=
+wave_0_per_point3=//plot random x position via function of sample pos;
+wave_0_per_point4=xp=sin(s)+sin(s*0.44)+sin(s*14.3)+sin(s*12.8);
+wave_0_per_point5=xp=xp*0.20;
+wave_0_per_point6=
+wave_0_per_point7=//plot random y position via function of sample pos;
+wave_0_per_point8=yp=cos(s)+sin(s*0.29)+cos(s*19.4)+sin(s*37.7);
+wave_0_per_point9=yp=yp*0.20;
+wave_0_per_point10=
+wave_0_per_point11=//plot random z position via function of sample pos;
+wave_0_per_point12=zp=cos(s)+cos(s*6.24)+cos(s*37.4)+cos(s*29.7);
+wave_0_per_point13=zp=zp*0.25;
+wave_0_per_point14=
+wave_0_per_point15=//pull stars toward screen
+wave_0_per_point16=zp=zp + 1 - t1;
+wave_0_per_point17=
+wave_0_per_point18=//correct when below 0
+wave_0_per_point19=zp=if( below(zp,0) , zp+2 , zp );
+wave_0_per_point20=
+wave_0_per_point21=//darken far stars
+wave_0_per_point22=a=(1 - zp*0.5);
+wave_0_per_point23=
+wave_0_per_point24=zp=zp*0.7;
+wave_0_per_point25=
+wave_0_per_point26=x_screen=xp/zp + 0.5;
+wave_0_per_point27=y_screen=yp/zp + 0.5;
+wave_0_per_point28=
+wave_0_per_point29=x=x_screen;
+wave_0_per_point30=y=y_screen;
+wave_0_per_point31=
+wave_0_per_point32=r=1;
+wave_0_per_point33=g=1;
+wave_0_per_point34=b=1;
+wave_0_per_point35=
+wave_0_per_point36=
+shapecode_0_enabled=1
+shapecode_0_sides=40
+shapecode_0_additive=0
+shapecode_0_thickOutline=1
+shapecode_0_textured=1
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.85357
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=1.22019
+shapecode_0_r=0.980
+shapecode_0_g=0.000
+shapecode_0_b=0.890
+shapecode_0_a=0.020
+shapecode_0_r2=0.920
+shapecode_0_g2=1.000
+shapecode_0_b2=1.000
+shapecode_0_a2=0.050
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=0.000
+shapecode_0_border_a=0.000
+shape_0_init1=t1 = rand(100)*0.01;
+shape_0_init2=t2 = rand(100)*0.01;
+shape_0_init3=te = 1;
+shape_0_init4=poly = 5;
+shape_0_per_frame1=ang=sin(time*0.4)*0.05 * (sin(time*0.4)*0.5+0.5);
+shape_0_per_frame2=r=q1;
+shape_0_per_frame3=g=q2;
+shape_0_per_frame4=b=q3;
+per_frame_1=wave_r = 0.5 + 0.5*sin(6*time);
+per_frame_2=wave_g = 0.5 + 0.5*sin(4.1*time);
+per_frame_3=wave_b = -1 + (1-wave_r + 1-wave_g);
+per_frame_4=warp = 0;
+per_frame_5=//echo_zoom = echo_zoom + 0.2*sin(bass_att);
+per_pixel_1=thresh = above(bass_att,thresh)*2+(1-above(bass_att,thresh))*((thresh-1.3)*0.96+1.3);
+per_pixel_2=dx_r = equal(thresh,2)*0.015*sin(5*time)+(1-equal(thresh,2))*dx_r;
+per_pixel_3=dy_r = equal(thresh,2)*0.015*sin(6*time)+(1-equal(thresh,2))*dy_r;
+per_pixel_4=
+per_pixel_5=
+per_pixel_6=zoom = zoom - 12*dx_r*abs(0.1*tan((1.12*time)-rad));
+per_pixel_7=rot = rot +  12*dy_r*(0.1*tan((1.4*time)-rad));
+per_pixel_8=sw = ang/6.2832 + 1;
+per_pixel_9=sw = sw*8;
+per_pixel_10=
+per_pixel_11=bl = equal(int(sw)%2,0);
+per_pixel_12=sw = sw - int(sw);
+per_pixel_13=sw = if(bl,sw,1-sw)*3;
+per_pixel_14=
+per_pixel_15=
+per_pixel_16=rd = pow(rad*.8,.9);
+per_pixel_17=rd = rd*6.2832*2 - (q2+sw)*3;
+per_pixel_18=zm = .01 + .01*sin(rd);
+per_pixel_19=
+per_pixel_20=dx = (x-.5)*zm;
+per_pixel_21=dy = (y-.5)*zm;
+warp_1=`shader_body {
+warp_2=`float corr = texsize.xy*texsize_noise_lq.zw;
+warp_3=`//float2 uv1 = float2(uv.x-0.5,uv.y-0.5);//*aspect.xy;
+warp_4=`
+warp_5=`
+warp_6=`float2 hor = float2 (.003,0);
+warp_7=`float2 ver = float2 (0,.003);
+warp_8=`float dx = lum(tex2D(sampler_main,uv+hor) - tex2D(sampler_main,uv-hor));
+warp_9=`float dy = lum(tex2D(sampler_main,uv+ver) - tex2D(sampler_main,uv-ver));
+warp_10=`
+warp_11=`float2 dz = float2 (dx,dy);
+warp_12=`
+warp_13=`
+warp_14=`float3 noise2 = lum(tex2D(sampler_noise_hq, 
+warp_15=`                    uv+ .0*time+.01*rand_frame));
+warp_16=`noise2 = 2*(noise2-.5);
+warp_17=`
+warp_18=`float3 noise3 = lum(tex2D(sampler_noise_lq, 
+warp_19=`                    corr*uv*.5 + 0.1*rand_frame));
+warp_20=`
+warp_21=`
+warp_22=`float3 blur = GetBlur1(frac(uv));
+warp_23=`float3 blur2 = GetBlur1(frac(uv*noise3));
+warp_24=`
+warp_25=`float2 zz = (blur*noise3)* (dz);
+warp_26=`
+warp_27=`double3 crisp = tex2D(sampler_main,uv+zz*.03);
+warp_28=`crisp += noise2*(.01) +.02 ;
+warp_29=`
+warp_30=`
+warp_31=`float3 ret1 = -0.03*blur2+ crisp - length(zz)*.0;
+warp_32=`
+warp_33=`//ret1 -= .1*pow(rad,4);
+warp_34=`ret1 -= .07*pow(uv.x-.6,2) + .1*pow(uv.y-.6,2);
+warp_35=`
+warp_36=`ret = ret1 * .99 -  .01;
+warp_37=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`
+comp_4=`    float2 uv_echo = (uv - 0.5)*1.000*float2(-1,-1) + 0.5;
+comp_5=`    ret = lerp( tex2D(sampler_main, uv).xyz, 
+comp_6=`                tex2D(sampler_main, uv_echo).xyz, 
+comp_7=`                0.50 
+comp_8=`              ); //video echo
+comp_9=`    ret *= 2.00; //gamma
+comp_10=`    float3 retish = 1 - ret*(1-ret)*4; //solarize
+comp_11=`    ret = float3(retish[int(bass*roam_sin.x)]*0.5,
+comp_12=`                 retish[int(treb*roam_cos.y)]*0.5,
+comp_13=`                 retish[int(mid *roam_sin.z)]);
+comp_14=`    ret *= 0.5;
+comp_15=`//MilkDrop3 Brightness Mode:
+comp_16=`ret *= 2.4;
+comp_17=`//MilkDrop3 Color Mode:
+comp_18=`ret /= float3(0.1,0.3,-2.1);
+comp_19=`//MilkDrop3 SoftColor Mode:
+comp_20=`ret += float3(-0.1,0.1,0.2);
+comp_21=`//MilkDrop3 Blow Mode:
+comp_22=`float3 avg_col = GetBlur2(uv);ret = abs(avg_col - ret)*2;
+comp_23=`//MilkDrop3 Invert Mode:
+comp_24=`ret = 1 - ret;
+comp_25=`}

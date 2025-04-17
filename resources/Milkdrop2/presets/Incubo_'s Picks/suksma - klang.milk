@@ -85,10 +85,10 @@ wavecode_0_r=1.000
 wavecode_0_g=1.000
 wavecode_0_b=1.000
 wavecode_0_a=1.000
-wave_0_per_point1=x=.5+(bass*.1)*cos(sample*10)+(0|value2*9)*.2;
-wave_0_per_point2=y= .5+.1*sin(sample*10)+(0|value1*9)*.2;
-wave_0_per_point3=r=.5+(bass*.1)*cos(sample*10)+(0|value2*9)*.2;
-wave_0_per_point4=g = .5+.1*sin(sample*10)+(0|value1*9)*.2;
+wave_0_per_point1=x=.5+(bass*.1)*cos(sample*10)+(-1&value2*15)*.2;
+wave_0_per_point2=y= .5+.1*sin(sample*10)+(-1&value1*15)*.2;
+wave_0_per_point3=r=.5+(bass*.1)*cos(sample*10)+(-1&value2*15)*.2;
+wave_0_per_point4=g = .5+.1*sin(sample*10)+(-1&value1*15)*.2;
 wave_0_per_point5=b = value2;
 wavecode_1_enabled=1
 wavecode_1_samples=512

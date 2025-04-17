@@ -148,7 +148,7 @@ shapecode_0_border_r=1.000
 shapecode_0_border_g=1.000
 shapecode_0_border_b=1.000
 shapecode_0_border_a=0.000
-shape_0_per_frame1=x=.11+.22*rand(5);
+shape_0_per_frame1=x=.11+.22*int(rand(5));
 shape_0_per_frame2=y=.1+.16*(2*time%6);
 shape_0_per_frame3=
 shape_0_per_frame4=b=.6+.3*q3;
@@ -182,7 +182,7 @@ shapecode_1_border_r=0.000
 shapecode_1_border_g=0.000
 shapecode_1_border_b=0.000
 shapecode_1_border_a=0.000
-shape_1_per_frame1=x=.11+.22*rand(5);
+shape_1_per_frame1=x=.11+.22*int(rand(5));
 shape_1_per_frame2=y=.1+.16*(2*time%6);
 shape_1_per_frame3=
 shape_1_per_frame4=b=.6+.3*q3;
@@ -216,7 +216,7 @@ shapecode_2_border_r=0.000
 shapecode_2_border_g=0.000
 shapecode_2_border_b=0.000
 shapecode_2_border_a=0.200
-shape_2_per_frame1=x=.22*rand(6);
+shape_2_per_frame1=x=.22*int(rand(6));
 shape_2_per_frame2=y=.18+.16*(2*time%5);
 shape_2_per_frame3=
 shape_2_per_frame4=g=1.5*q3;
@@ -249,7 +249,7 @@ shapecode_3_border_r=0.000
 shapecode_3_border_g=0.000
 shapecode_3_border_b=0.000
 shapecode_3_border_a=0.200
-shape_3_per_frame1=x=.11+.22*rand(5);
+shape_3_per_frame1=x=.11+.22*int(rand(5));
 shape_3_per_frame2=y=.1+.16*(2*time%6);
 shape_3_per_frame3=
 shape_3_per_frame4=r=.3*q3;

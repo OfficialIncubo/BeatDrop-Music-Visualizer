@@ -110,7 +110,7 @@ wavecode_1_a=0.000
 wave_1_init1=t8 = 1;
 wave_1_init2=t1 = q5;
 wavecode_2_enabled=1
-wavecode_2_samples=31
+wavecode_2_samples=21
 wavecode_2_sep=0
 wavecode_2_bSpectrum=0
 wavecode_2_bUseDots=1
@@ -321,7 +321,7 @@ per_frame_37=q22=0.2*sin(tf*13); //cx
 per_frame_38=q23=0.2*sin(tf*11); //cy
 per_frame_39=
 per_frame_40=trig = ib&&(idx%8==0);
-per_frame_41=if (trig, psp=max(0,-1+rand(4)*rand(3)*sqrt(vol)), 0);
+per_frame_41=if (trig, psp=max(0,-1+rand(4)*rand(4)*sqrt(vol)), 0);
 per_frame_42=psp_ += min(0.1, max(-0.1, psp-psp_))*dt*32;
 per_frame_43=osp_ = osp_*dec_xs + (1-dec_xs)*psp_;
 per_frame_44=dist = dist+(psp_-osp_)*dt*2;
@@ -341,7 +341,7 @@ per_frame_57=rot = -neig*0.01;
 per_frame_58=q10 = neig ;
 per_frame_59=zoom = 1.001 + osp_*0.002;
 per_frame_60=q11=zoom;
-per_frame_61=q26=sqrt(vol_)*0.5;
+per_frame_61=q26=sqrt(vol_)*0.4;
 per_frame_62=
 per_frame_63=tb = tb + (bass_att*.2 + .2)*dt;
 per_frame_64=t2 = t2 + (mid_att *.2 + .2)*dt;
@@ -454,8 +454,8 @@ comp_65=`
 comp_66=`shader_body {
 comp_67=`float ra=q10/2;
 comp_68=`uv3 = mul(uv-.5,float2x2(cos(ra),sin(ra),-sin(ra),cos(ra)));
-comp_69=`float rain = sat(tex2D(sampler_noise_lq, uv3*float2 (1,0.02)*2-4*float2(0,time/4))-.6)*q28;
-comp_70=`uv.x+=0.01*rain;
+comp_69=`float rain = sat(tex2D(sampler_noise_lq, uv3*float2 (1,0.02)*2-4*float2(0,time/4))-.6)*q28*0;
+comp_70=`uv.x+=0.02*rain;
 comp_71=`
 comp_72=`uv10=(uv-0.5)*aspect.xy;
 comp_73=`uv1=uv10+fpos.xy;

@@ -68,7 +68,7 @@ per_frame_4=state = 1 + bass;
 per_frame_5=wave_r = wave_r + 0.25*(0.6*sin(0.784*time) + 0.4*sin(0.986*time))*state;
 per_frame_6=wave_g = wave_g + 0.25*(0.6*sin(0.671*time) + 0.4*sin(1.164*time))*(4-state);
 per_frame_7=wave_b = wave_b + 0.25*(0.6*sin(1.423*time) + 0.4*sin(0.687*time))*(4/state);
-per_frame_8=wave_y=if(equal(state,1),wave_y+rand(10)*.1*sin(time*3),wave_y);
+per_frame_8=wave_y=if(equal(state,1),wave_y+int(rand(10))*.1*sin(time*3),wave_y);
 per_frame_9=bass_effect = if(above(bass_att,1.4),pow(1.1,bass_att),1);
 per_frame_10=treb_effect = if(above(treb_att,1.4),pow(0.97,treb_att),1);
 per_frame_11=net_effect = if(above(bass_att,0.8*treb_att),bass_effect,treb_effect);

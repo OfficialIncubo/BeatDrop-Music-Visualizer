@@ -103,7 +103,7 @@ per_frame_42=ib_g = 1- mv_g;
 per_frame_43=ib_b = 0.5*mv_b + 0.5*ob_b;
 per_frame_44=ib_a = if(above(treb_effect,0), if(above(mid_effect,0),1,0),0);
 per_pixel_1=bass_effect = max(max(bass,bass_att)-1.18,0);
-per_pixel_2=grid=rad*10%(above(q1,q4)+above(q2,q5)+above(q3,q4)) + (sqrt(2)-rad)*10%(above(q1,q5)+above(q2,q4)+above(q3,q5))*q1;
+per_pixel_2=grid=(rad*10)%(above(q1,q4)+above(q2,q5)+above(q3,q4)) + ((sqrt(2)-rad)*10)%(above(q1,q5)+above(q2,q4)+above(q3,q5))*q1;
 per_pixel_3=rot=if(grid,.12*cos(rad*3.14+x*q1*3.14+y*q2*3.14)*(q5+q4),0);
 per_pixel_4=zoom=zoom-bnot(grid)*atan2(x*q3*3.14,y*q5*3.14)*.14*(x*2-1)+0.12*bass_effect;
 per_pixel_5=sx=sx+.2*q1*sin(x*1.6)*-grid;

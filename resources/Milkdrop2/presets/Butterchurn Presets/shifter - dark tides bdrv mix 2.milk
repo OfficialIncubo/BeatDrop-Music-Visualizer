@@ -262,7 +262,7 @@ per_frame_39=swi = above(bd - vm,0);
 per_frame_40=
 per_frame_41=q4 = 1-swi;
 per_frame_42=
-per_frame_43=cm = if(above(iter,30) + equal(time,0),rand(3) + 1,cm);
+per_frame_43=cm = if(above(iter,30) + equal(time,0),int(rand(3)) + 1,cm);
 per_frame_44=iter = (iter + tic)*(1-above(iter,30));
 per_frame_45=q5 = if(equal(cm,0),3,cm);
 per_frame_46=

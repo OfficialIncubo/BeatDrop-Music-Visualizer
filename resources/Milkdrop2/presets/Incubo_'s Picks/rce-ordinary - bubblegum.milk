@@ -220,8 +220,8 @@ shapecode_3_border_r=1.000
 shapecode_3_border_g=1.000
 shapecode_3_border_b=1.000
 shapecode_3_border_a=0.100
-per_frame_init_1=rnd=rand(100);
-per_frame_init_2=rnd2=rand(100);
+per_frame_init_1=rnd=int(rand(100));
+per_frame_init_2=rnd2=int(rand(100));
 per_frame_1=num0=numbeat*(abs(num-num_att)+pump)+bnot(numbeat)*num0;
 per_frame_2=pump=numbeat*(sin(t)*.1+.1)+bnot(numbeat)*pump;
 per_frame_3=pump=pump*.98;

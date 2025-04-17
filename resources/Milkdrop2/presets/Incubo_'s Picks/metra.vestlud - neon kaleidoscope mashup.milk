@@ -170,7 +170,7 @@ wave_1_per_point2=
 wave_1_per_point3=//Sphere
 wave_1_per_point4=fvar = sample*512;
 wave_1_per_point5=svar = fvar*128;
-wave_1_per_point6=tvar = 0&svar;
+wave_1_per_point6=tvar = 0|svar;
 wave_1_per_point7=nsample = tvar*4.5;
 wave_1_per_point8=x1 = -.75+(1.5)*sin(sample);
 wave_1_per_point9=y1 = (1)*cos(t8*nsample);
@@ -235,7 +235,7 @@ wave_2_per_point2=
 wave_2_per_point3=//Sphere
 wave_2_per_point4=fvar = sample*512;
 wave_2_per_point5=svar = fvar*128;
-wave_2_per_point6=tvar = 0&svar;
+wave_2_per_point6=tvar = 0|svar;
 wave_2_per_point7=nsample = tvar*4.59;
 wave_2_per_point8=x1 = -0.48+(20.48)*sin(sample);
 wave_2_per_point9=y1 = (1)*cos(t8*nsample);
@@ -298,7 +298,7 @@ wave_3_per_point2=
 wave_3_per_point3=//Sphere
 wave_3_per_point4=fvar = sample*512;
 wave_3_per_point5=svar = fvar*128;
-wave_3_per_point6=tvar = 0&svar;
+wave_3_per_point6=tvar = 0|svar;
 wave_3_per_point7=nsample = tvar*4.91;
 wave_3_per_point8=x1 = -.75+(1.5)*sin(sample);
 wave_3_per_point9=y1 = (1)*cos(t8*nsample);

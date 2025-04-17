@@ -247,7 +247,7 @@ per_frame_12=sy=1;
 per_frame_13=
 per_frame_14=echo_zoom=1;
 per_frame_15=//sy=0.98;
-per_frame_16=dy=-1;
+per_frame_16=dx-=1;
 per_frame_17=
 per_frame_18=
 per_frame_19=

@@ -1,0 +1,138 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=2
+[preset00]
+fRating=3.000
+fGammaAdj=2.000
+fDecay=1.000
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=3
+nWaveMode=2
+bAdditiveWaves=0
+bWaveDots=1
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=1
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=0.012
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=0.228
+fWarpScale=4.141
+fZoomExponent=0.43865
+fShader=0.000
+zoom=0.99010
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.18090
+sx=1.00000
+sy=1.00000
+wave_r=0.500
+wave_g=0.400
+wave_b=0.300
+wave_x=0.500
+wave_y=0.500
+ob_size=0.005
+ob_r=0.670
+ob_g=0.000
+ob_b=0.000
+ob_a=1.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=1.000
+nMotionVectorsX=3.000
+nMotionVectorsY=2.000
+mv_dx=0.020
+mv_dy=-0.020
+mv_l=0.150
+mv_r=0.490
+mv_g=0.480
+mv_b=0.300
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=x1 = 0.9;
+per_frame_init_2=y1 = 0.5;
+per_frame_init_3=
+per_frame_init_4=x2 = 0.5; y2 = 0.5;
+per_frame_init_5=x3 = 0.5; y3 = 0.5;
+per_frame_init_6=x4 = 0.5; y4 = 0.5;
+per_frame_1=wave_a = 0;
+per_frame_2=zoom = 0.996;
+per_frame_3=warp = 0.18 - (bass-treb)*0.15;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  // sample previous frame
+warp_4=`  ret = tex2D( sampler_pw_main, uv ).xyz*1.26;
+warp_5=`
+warp_6=`  float n;
+warp_7=`  float2 d = texsize.zw*bass*3;
+warp_8=`  n  = saturate(tex2D(sampler_pw_main, uv+d*float2( 1, 1)).x);
+warp_9=`  n += saturate(tex2D(sampler_pw_main, uv+d*float2( 3, 0)).x);
+warp_10=`  n += saturate(tex2D(sampler_pw_main, uv+d*float2( 1,-1)).x);
+warp_11=`  n += saturate(tex2D(sampler_pw_main, uv+d*float2( 0, 1)).x);
+warp_12=`  n += saturate(tex2D(sampler_pw_main, uv+d*float2( 0,-1)).x);
+warp_13=`  n += saturate(tex2D(sampler_pw_main, uv+d*float2(-1, 1)).x);
+warp_14=`  n += saturate(tex2D(sampler_pw_main, uv+d*float2(-1, 0)).x);
+warp_15=`  n += saturate(tex2D(sampler_pw_main, uv+d*float2(-1,-1)).x);
+warp_16=`float4 noise9 = tex3D(sampler_noisevol_hq, 
+warp_17=`                      ((uv.xyy*q27
+warp_18=`                       )*texsize.xyy*texsize_noisevol_hq.zww
+warp_19=`                      ).xyz*
+warp_20=`                      float3(1.5,2.3,2.9)*0.05 + 
+warp_21=`                      time*float3(2,2.1,1.6)*q29
+warp_22=`                     );
+warp_23=`if(ret.x> q21*q13         && ret.x<= q24*q11        )ret.y += (noise9).x*.5; 
+warp_24=`if(ret.y> q22*q11         && ret.y<= q25*q12        )ret.z += (noise9).y*.5; 
+warp_25=`if(ret.z> q23*q12         && ret.z<= q26*q13        )ret.x += (noise9).z*.5; 
+warp_26=`float t = 3;
+warp_27=`  if (n < 1)
+warp_28=`    ret -= t;
+warp_29=`  if (n > 3.1)
+warp_30=`    ret -= t;
+warp_31=`  if (ret.x < 0.09 && abs(n-3) < .88)
+warp_32=`    ret += t;
+warp_33=`
+warp_34=`  ret *= saturate(7 - 19*(GetBlur1(uv_orig).y));
+warp_35=`  
+warp_36=`  float dist_from_bar = abs(uv_orig.x - frac(bass*0.23));
+warp_37=`  //ret *= saturate( 24*dist_from_bar - 0.46 );  
+warp_38=`
+warp_39=`  // darken (decay) over time
+warp_40=`  ret = (ret - 0.016)*0.995;
+warp_41=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`ret = tex2D(sampler_main, uv).x,
+comp_4=`
+comp_5=`ret = lerp (
+comp_6=`GetBlur1(uv).x + GetBlur3(uv).x,
+comp_7=`ret,
+comp_8=`pow(ret,1));
+comp_9=`  
+comp_10=`//  ret = tex2D(sampler_main, uv).x - GetBlur1(uv).x;
+comp_11=`    ret = pow(ret,float3(5,1,.5));
+comp_12=`    ret *= 1.0; //gamma
+comp_13=` 
+comp_14=`}

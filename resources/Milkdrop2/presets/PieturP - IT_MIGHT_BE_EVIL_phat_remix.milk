@@ -416,7 +416,7 @@ per_frame_6=dy=0;
 per_frame_7=sx=1;
 per_frame_8=sy=1;
 per_frame_9=//mm=mm+pow(mid,3);
-per_frame_10=mm=5/mid;
+per_frame_10=mm=mm+(5/mid);
 per_frame_11=mt=mt+pow(treb,3);
 per_frame_12=//q1=sin(mm*.1)*.002+1;
 per_frame_13=q1=mm;
@@ -428,8 +428,8 @@ per_pixel_3=v=v%2;
 per_pixel_4=d=equal(v,0);
 per_pixel_5=
 per_pixel_6=rot=(sin(q3))*0.05;
-per_pixel_7=cx=sin(x*255*q2)*.5+.5;
-per_pixel_8=cy=cos(y*255*q2)*.5+.5;
+per_pixel_7=cx=sin((x*255)*(q2))*.5+.5;
+per_pixel_8=cy=cos((y*255)*(q2))*.5+.5;
 per_pixel_9=
 per_pixel_10=
 per_pixel_11=

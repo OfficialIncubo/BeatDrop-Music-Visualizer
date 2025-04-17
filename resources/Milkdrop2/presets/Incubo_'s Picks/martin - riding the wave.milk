@@ -84,7 +84,7 @@ wavecode_0_smoothing=0.00000
 wavecode_0_r=0.000
 wavecode_0_g=0.500
 wavecode_0_b=1.000
-wavecode_0_a=0.230
+wavecode_0_a=0.250
 wave_0_per_frame1=t1 = 0; reg33=0; reg40 = 0;
 wave_0_per_frame2=t3=sin(q5); t4=cos(q5);
 wave_0_per_point1=ni = 256;
@@ -335,7 +335,7 @@ per_frame_39=
 per_frame_40=clk = (megabuf(maxind+5)*om)<0;
 per_frame_41=om  = megabuf(maxind+5);
 per_frame_42=idx += clk;
-per_frame_43=if ((idx%20==0)&&clk, o=max(0,rand(40)-10),0);
+per_frame_43=if ((idx%20==0)&&clk, o=max(0,rand(50)-10),0);
 per_frame_44=q7=o;
 per_frame_45=
 per_frame_46=q5=.40*sin(time/3)*sin(time/5);
@@ -358,9 +358,10 @@ warp_6=`float k= saturate(abs(uv1.y)*3+.2);
 warp_7=`float3 noise = tex2D(sampler_noise_lq,uv*min(8,1.5/k)+rand_frame)-0.5;
 warp_8=`uv += noise.xy * 0.02*max(0,rand_preset.x-.4) *k;
 warp_9=`noise = tex2D(sampler_pw_noise_lq,uv+rand_frame);
-warp_10=`ret = GetPixel(uv)*0.985-0.008*(noise.z>0.86)* (frame%2);
-warp_11=`
-warp_12=`}
+warp_10=`ret = GetPixel(uv)*0.985-0.008*(noise.z>0.86)* (frame%2) - 0.1*(lum(GetBlur1(uv))>0.7);
+warp_11=`ret -= pow(lum(GetBlur1(uv_orig)),4)*.1;
+warp_12=`
+warp_13=`}
 comp_1=`sampler sampler_pw_noise_lq;
 comp_2=`float2 uv1,uv2,uv4,dz,uvw;
 comp_3=`
@@ -376,7 +377,7 @@ comp_12=`uvw = frac (uvw);
 comp_13=`
 comp_14=`ret = (GetPixel(uv) + GetBlur2(uv) * (0.75+abs(uv1.y)*3));
 comp_15=`ret += saturate (1-2*lum(ret)) * pow(GetBlur1(uvw),2)*saturate(.4/z)*64*saturate(1-rad);
-comp_16=`ret *= 1.1;
+comp_16=`ret *= 1.2;
 comp_17=`
 comp_18=`uv=1-uv;
 comp_19=`uv1=(uv-.5)*aspect.xy;

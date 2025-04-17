@@ -185,12 +185,12 @@ wave_2_per_point8=y = 0.5 + (gmegabuf(index+1)-0.5)/q2;
 wave_2_per_point9=
 wave_2_per_point10=// collecting pairs of index and distance to the current object in a local buffer
 wave_2_per_point11=i = 0;
-wave_2_per_point12=j = 0;
+wave_2_per_point12=j = 0; 
 wave_2_per_point13=loop(q31,
 wave_2_per_point14=     d = sqrt( sqr(gmegabuf(index)-gmegabuf(i)) + sqr(gmegabuf(index+1)-gmegabuf(i+1)));
 wave_2_per_point15=     d = if( equal(d,0), 1, d);
 wave_2_per_point16=     megabuf(j)   = i; // store index/distance pairs
-wave_2_per_point17=     megabuf(j+1) = d;
+wave_2_per_point17=     megabuf(j+1) = d; 
 wave_2_per_point18=     j = j+2;
 wave_2_per_point19=     i = i+q32;
 wave_2_per_point20=    );
@@ -437,7 +437,7 @@ shape_3_per_frame32=
 shape_3_per_frame33=i3 = i3 + 1;
 shape_3_per_frame34=i4 = if( equal(i3%ppo,0), i4 +1, i4);
 per_frame_init_1=// clear buffer
-per_frame_init_2=i = 0; loop(1024*1024, gmegabuf(i) = 0; i = i+1;);
+per_frame_init_2=i = 0; loop(1024*1024, gmegabuf(i) = 0; megabuf(i)=0; i = i+1);
 per_frame_init_3=
 per_frame_init_4=count = 50;
 per_frame_init_5=attributes = 32;
@@ -449,7 +449,7 @@ per_frame_init_10=v = 0.0;
 per_frame_init_11=
 per_frame_init_12=// randomize initial coordinates
 per_frame_init_13=index = 0;
-per_frame_init_14=loop(count,
+per_frame_init_14=loop(count, 
 per_frame_init_15=     gmegabuf(index*attributes) = rand(1000)/1000;
 per_frame_init_16=     gmegabuf(index*attributes+1) = rand(1000)/1000;
 per_frame_init_17=     gmegabuf(index*attributes+2) = v*(rand(1000)/1000-0.5);
@@ -516,7 +516,7 @@ per_frame_30=
 per_frame_31=
 per_frame_32=h = (aspecty-1)*0.5; w = (aspectx-1)*0.5;
 per_frame_33=index = 0; index2 = 0;
-per_frame_34=loop(count,
+per_frame_34=loop(count, 
 per_frame_35=
 per_frame_36=     random = rand(1000)/1000;
 per_frame_37=     sample = gmegabuf(index+13);
@@ -526,7 +526,7 @@ per_frame_40=     gmegabuf(index + 11) = gmegabuf(index + 11)*0.92 - 4*gmegabuf(
 per_frame_41=
 per_frame_42=     // bend
 per_frame_43=     gmegabuf(index + 12) += 60*gmegabuf(index + 11)*dt;
-per_frame_44=
+per_frame_44=     
 per_frame_45=     v = sqrt( sqr( gmegabuf(index + 2) ) + sqr( gmegabuf(index + 3) ) );
 per_frame_46=
 per_frame_47=     // apply friction
@@ -585,7 +585,7 @@ per_frame_99=           d = sqrt( sqr(gmegabuf(index)-gmegabuf(i)) + sqr(gmegabu
 per_frame_100=           d = if( equal(d,0), 10, d); // leave out comparison with itself (where d == 0, set d to a high value)
 per_frame_101=           d = d - (gmegabuf(index+4)+gmegabuf(i+4))*0.5; // subtract radius (surface to surface distance)
 per_frame_102=           megabuf(j)   = i; // store index/distance pairs
-per_frame_103=           megabuf(j+1) = d;
+per_frame_103=           megabuf(j+1) = d; 
 per_frame_104=           j = j+2;
 per_frame_105=           i = i+attributes; );
 per_frame_106=     i = 0; // sort that buffer, but only as many cycles as needed for the _nn_ nearest neighbors
@@ -619,7 +619,7 @@ per_frame_133=                      )
 per_frame_134=                 *
 per_frame_135=                 above( sqrt( sqr( gmegabuf(index)   - gmegabuf(index2))+
 per_frame_136=                        sqr( gmegabuf(index+1) - gmegabuf(index2+1))),
-per_frame_137=                        sqrt( sqr( gmegabuf(index+0) - gmegabuf(index2+0)+
+per_frame_137=                        sqrt( sqr( gmegabuf(index+0) - gmegabuf(index2+0)+ 
 per_frame_138=                                   gmegabuf(index+2) - gmegabuf(index2+2))+
 per_frame_139=                              sqr( gmegabuf(index+1) - gmegabuf(index2+1)+
 per_frame_140=                                   gmegabuf(index+3) - gmegabuf(index2+3)) ) );

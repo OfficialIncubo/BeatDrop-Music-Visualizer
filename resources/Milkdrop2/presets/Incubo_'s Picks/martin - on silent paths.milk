@@ -3,7 +3,7 @@ PSVERSION=3
 PSVERSION_WARP=3
 PSVERSION_COMP=3
 [preset00]
-fRating=4.000
+fRating=2.000
 fGammaAdj=1.980
 fDecay=0.500
 fVideoEchoZoom=1.000
@@ -284,8 +284,8 @@ shapecode_3_border_a=0.000
 shape_3_per_frame1=x = .5+.3*cos(time/59);
 shape_3_per_frame2=y = .5+.3 *sin(time/59);
 per_frame_init_1=q28 = 0; q29 = 0; p1= 0;
-per_frame_1=dec_med = pow (0.9, 30/fps);
-per_frame_2=dec_slow = pow (0.99, 30/fps);
+per_frame_1=dec_med = exp (-3/fps);
+per_frame_2=dec_slow = exp (-.3/fps);
 per_frame_3=beat = max (max (bass, mid), treb); 
 per_frame_4=avg = avg*dec_slow + beat*(1-dec_slow);
 per_frame_5=is_beat = above(beat, .5+avg+peak) * above (time, t0+.2);

@@ -80,9 +80,9 @@ wave_0_per_frame1=r=bass*.5;
 wave_0_per_frame2=g=treb*.5;
 wave_0_per_frame3=b=mid*.5;
 wave_0_per_point1=x = .5+.2*sin(time*.7454);
-wave_0_per_point2=x = x+(.0005-rand(10)*.001);
+wave_0_per_point2=x = x+(.0005-int(rand(10))*.001);
 wave_0_per_point3=y = .5+.2*cos(time*.455);
-wave_0_per_point4=y = y+(.0005-rand(10)*.01);
+wave_0_per_point4=y = y+(.0005-int(rand(10))*.01);
 wave_0_per_point5=
 wave_0_per_point6=bassc = if(above(bcount,0),1,0);
 wave_0_per_point7=bcount = if(above(bcount,0),bcount - .00005,if(below(bassc,1),if(above(bass,1.5),.3,0),0));
@@ -104,9 +104,9 @@ wave_1_per_frame1=r=bass*.5;
 wave_1_per_frame2=g=treb*.5;
 wave_1_per_frame3=b=mid*.5;
 wave_1_per_point1=x = .5+.2*sin(time*.7454);
-wave_1_per_point2=x = x+(.0005-rand(10)*.008);
+wave_1_per_point2=x = x+(.0005-int(rand(10))*.008);
 wave_1_per_point3=y = .5+.2*cos(time*.455);
-wave_1_per_point4=y = y+(.0005-rand(10)*.001);
+wave_1_per_point4=y = y+(.0005-int(rand(10))*.001);
 wave_1_per_point5=
 wave_1_per_point6=
 wave_1_per_point7=bassc = if(above(bcount,0),1,0);
@@ -129,9 +129,9 @@ wave_2_per_frame1=r=bass*.5;
 wave_2_per_frame2=g=treb*.5;
 wave_2_per_frame3=b=mid*.5;
 wave_2_per_point1=x = .5+.2*sin(time*.7454);
-wave_2_per_point2=x = x+(.0005+rand(10)*.008);
+wave_2_per_point2=x = x+(.0005+int(rand(10))*.008);
 wave_2_per_point3=y = .5+.2*cos(time*.455);
-wave_2_per_point4=y = y+(.0005-rand(10)*.001);
+wave_2_per_point4=y = y+(.0005-int(rand(10))*.001);
 wave_2_per_point5=
 wave_2_per_point6=bassc = if(above(bcount,0),1,0);
 wave_2_per_point7=bcount = if(above(bcount,0),bcount - .00005,if(below(bassc,1),if(above(bass,1.5),.2,0),0));
@@ -153,9 +153,9 @@ wave_3_per_frame1=r=bass*.5;
 wave_3_per_frame2=g=treb*.5;
 wave_3_per_frame3=b=mid*.5;
 wave_3_per_point1=x = .5+.2*sin(time*.7454);
-wave_3_per_point2=x = x+(.0005-rand(10)*.001);
+wave_3_per_point2=x = x+(.0005-int(rand(10))*.001);
 wave_3_per_point3=y = .5+.2*cos(time*.455);
-wave_3_per_point4=y = y-(.0005-rand(10)*.01);
+wave_3_per_point4=y = y-(.0005-int(rand(10))*.01);
 wave_3_per_point5=
 wave_3_per_point6=
 wave_3_per_point7=bassc = if(above(bcount,0),1,0);
@@ -237,7 +237,7 @@ shape_2_per_frame2=angc = angc + bass*.01;
 shape_2_per_frame3=x = .45;
 shape_2_per_frame4=y = .55;
 shape_2_per_frame5=
-shape_2_per_frame6=r2 = (rand100)*.01
+shape_2_per_frame6=r2 = int(rand(10))*.01
 shapecode_3_enabled=1
 shapecode_3_sides=4
 shapecode_3_additive=1

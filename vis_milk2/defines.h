@@ -38,8 +38,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //   'output file name'.  Don't forget to do it for both Debug AND
 //   Release builds!
 #define SHORTNAME        "BeatDrop" // used as window caption for both MilkDrop and the config panel.  avoid numbers or punctuation; when 'integrate with winamp' option is enabled, these characters don't always work with all skins.
-#define LONGNAME         "BeatDrop v1.3.2" // appears at bottom of config panel
-#define LONGNAMEW        L"BeatDrop v1.3.2" // appears at bottom of config panel
+#define LONGNAME         "BeatDrop v1.3.2.2" // appears at bottom of config panel
+#define LONGNAMEW        L"BeatDrop v1.3.2.2" // appears at bottom of config panel
 
 // INT_VERSION is the major version #, multipled by 100 (ie. version 1.02
 // would be 102).  If the app goes to read in the INI file and sees that
@@ -217,7 +217,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //#define PRESS_F1_MSG                 "Press F1 for Help " // leave extra space @ end, so italicized fonts don't get clipped
 // defined in the stringtable resources now since 2.0e
-#define PRESS_F1_DUR                 3.0f // in seconds
+#define PRESS_F1_DUR                 5.0f // in seconds
 #define PRESS_F1_EXP                 10.0f // exponent for how quickly it accelerates to leave the screen. 1 = linear; >1 = stays & then dashes off @ end
+#define PRESS_F1_MAX_DX              160
+#define PRESS_F1_LOG_BASE            10.0f // base logarithm for how quickly it accelerates to enter the screen.
 
 #endif

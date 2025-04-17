@@ -566,7 +566,7 @@ per_frame_init_81=index2 = int(rand(32));
 per_frame_init_82=start = .9;
 per_frame_init_83=//-----------------------------------------
 per_frame_1=dt = gSpeed/fps; dt2 = dt ; 
-per_frame_2=dec_s = 1-.015*30/fps; dec_m = pow(.95, 30/fps); dec_f = pow(.85, 30/fps);
+per_frame_2=dec_s = exp(-.015*30/fps); dec_m = exp(-1.5/fps); dec_f = exp(-5/fps);
 per_frame_3=vol_att = (bass + mid + treb)/3;
 per_frame_4=avg = avg*dec_s + (1-dec_s)*vol_att*(1.5-.2/cal);
 per_frame_5=
@@ -893,10 +893,6 @@ per_frame_325=
 per_frame_326=start = max(0,start-dt2);
 per_frame_327=q3 = start;
 per_frame_328=if (ltest > 2000, fail = 1, 0);
-per_frame_329=monitor = q17;;
-per_frame_330=
-per_frame_331=
-per_frame_332=//frei: q4, q8, q9
 warp_1=`#define sat saturate
 warp_2=`float3 Get1 (float2 uvi) {return lerp (GetPixel(uvi), GetBlur1(uvi), .2);}
 warp_3=`shader_body

@@ -1,0 +1,308 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=2
+PSVERSION_COMP=3
+[preset00]
+fRating=3.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=6
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.000
+fWaveSmoothing=0.500
+fWaveParam=0.000
+fModWaveAlphaStart=0.500
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=1.0
+fWarpScale=2.853
+fZoomExponent=3.6
+fShader=0.0
+zoom=1.02
+rot=0.0
+cx=0.5
+cy=0.5
+dx=0.0
+dy=0.0
+warp=1.42000
+sx=1.0
+sy=1.0
+wave_r=0.500
+wave_g=0.500
+wave_b=0.500
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.300
+ob_g=0.300
+ob_b=0.500
+ob_a=1.000
+ib_size=0.260
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=51.200
+nMotionVectorsY=33.600
+mv_dx=0.000
+mv_dy=0.000
+mv_l=5.000
+mv_r=0.400
+mv_g=0.300
+mv_b=0.500
+mv_a=0.000
+b1n=0.0
+b2n=0.0
+b3n=0.0
+b1x=1.0
+b2x=1.0
+b3x=1.0
+b1ed=0.250
+wavecode_0_enabled=0
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=1
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=60.80387
+wavecode_0_smoothing=0.70000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=0.050
+wavecode_1_enabled=0
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=1
+wavecode_1_bUseDots=1
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=0
+wavecode_1_scaling=67.16520
+wavecode_1_smoothing=0.70000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=1.000
+wavecode_2_enabled=0
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=1
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.00000
+wavecode_2_smoothing=0.50000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=0.000
+wavecode_2_a=1.000
+wavecode_3_enabled=0
+wavecode_3_samples=512
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=1
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=0.700
+wavecode_3_g=0.700
+wavecode_3_b=1.000
+wavecode_3_a=0.600
+shapecode_0_enabled=1
+shapecode_0_sides=50
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=0
+shapecode_0_num_inst=3
+shapecode_0_x=0.500000
+shapecode_0_y=0.500000
+shapecode_0_rad=0.158028
+shapecode_0_ang=1.598142
+shapecode_0_tex_ang=0.000000
+shapecode_0_tex_zoom=1.000000
+shapecode_0_r=1.000000
+shapecode_0_g=1.000000
+shapecode_0_b=1.000000
+shapecode_0_a=1.000000
+shapecode_0_r2=1.000000
+shapecode_0_g2=1.000000
+shapecode_0_b2=1.000000
+shapecode_0_a2=0.000000
+shapecode_0_border_r=0.000000
+shapecode_0_border_g=0.000000
+shapecode_0_border_b=0.000000
+shapecode_0_border_a=0.000000
+shape_0_per_frame1=ang = 1.571;
+shape_0_per_frame2=x = int(rand(11))*.1;
+shape_0_per_frame3=y = int(rand(11))*.13;
+shape_0_per_frame4=
+shape_0_per_frame5=r = int(rand(100))*.01;
+shape_0_per_frame6=g = int(rand(100))*.01;
+shape_0_per_frame7=b = int(rand(100))*.01;
+shapecode_1_enabled=0
+shapecode_1_sides=16
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_num_inst=800
+shapecode_1_x=0.800
+shapecode_1_y=0.500
+shapecode_1_rad=0.55692
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=1.50796
+shapecode_1_tex_zoom=4.72143
+shapecode_1_r=1.000
+shapecode_1_g=1.000
+shapecode_1_b=1.000
+shapecode_1_a=0.500
+shapecode_1_r2=1.000
+shapecode_1_g2=1.000
+shapecode_1_b2=1.000
+shapecode_1_a2=0.000
+shapecode_1_border_r=1.000
+shapecode_1_border_g=0.700
+shapecode_1_border_b=0.400
+shapecode_1_border_a=0.000
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=0
+shapecode_2_thickOutline=1
+shapecode_2_textured=1
+shapecode_2_num_inst=4
+shapecode_2_x=0.500
+shapecode_2_y=0.500
+shapecode_2_rad=0.57386
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=1.50790
+shapecode_2_tex_zoom=1.13805
+shapecode_2_r=0.800
+shapecode_2_g=1.000
+shapecode_2_b=1.000
+shapecode_2_a=0.000
+shapecode_2_r2=0.800
+shapecode_2_g2=1.000
+shapecode_2_b2=1.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=0.800
+shapecode_2_border_g=0.400
+shapecode_2_border_b=0.000
+shapecode_2_border_a=0.000
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=1
+shapecode_3_x=0.500
+shapecode_3_y=0.500
+shapecode_3_rad=3.95513
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.54929
+shapecode_3_r=0.000
+shapecode_3_g=0.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=0.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=0.600
+shapecode_3_border_b=0.100
+shapecode_3_border_a=0.000
+per_frame_1=warp = 0;
+per_frame_2=
+per_frame_3=// composite shader control
+per_frame_4=// stars
+per_frame_5=time_mod2 = time_mod2 + .01*30/fps;
+per_frame_6=q31 = time_mod2;
+per_frame_7=
+per_frame_8=// tunnel
+per_frame_9=time_mod = time_mod + .01*60/fps;
+per_frame_10=q30 = time_mod;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // sample previous frame
+warp_4=`    ret = tex2D( sampler_main, uv ).xyz;
+warp_5=`
+warp_6=`    // feather pen
+warp_7=`    ret = max(ret, tex2D( sampler_main, (uv-0.5)*(1-8*length(texsize.zw)) + 0.5 ).xyz);
+warp_8=`    ret = max(ret, tex2D( sampler_main, (uv-0.5)*(1+8*length(texsize.zw)) + 0.5 ).xyz);
+warp_9=`
+warp_10=`    // darken over time
+warp_11=`    ret -= 0.024;
+warp_12=`}
+comp_1=`sampler sampler_kmj_blue_black;
+comp_2=`float4 texsize_kmj_blue_black;
+comp_3=`sampler sampler_spacetower01;
+comp_4=`sampler sampler_space_stars;
+comp_5=`
+comp_6=`float2 rs, rs2, rs3, uv1, uv4, uv5, uv6, uv3, uv2;
+comp_7=`shader_body
+comp_8=`{
+comp_9=`
+comp_10=`// This is the tower and star section, composite shader mod edited
+comp_11=`float2 uv6 = (uv-.5)*aspect.xy ;
+comp_12=`float rad4 = 6*length(uv6);
+comp_13=`float rad3 = 1/(rad4+.1);
+comp_14=`
+comp_15=`uv5 = float2 (ang*0.10, rad3*2);
+comp_16=`rs3 = uv5;
+comp_17=`uv5.y = uv5.y + q31;
+comp_18=`////////////////
+comp_19=`float2 uv1 = (uv-.5)*aspect.xy ;
+comp_20=`float rad2 = 6*length(uv1);
+comp_21=`float rad1 = 3/(rad2+.1);
+comp_22=`
+comp_23=`uv2 = float2 (ang*1.15, rad1*2);
+comp_24=`rs2 = uv2;
+comp_25=`uv2.y = uv2.y + q30;
+comp_26=`// End to edited
+comp_27=`
+comp_28=`    ret = tex2D(sampler_main, uv).xyz;
+comp_29=`    //ret = max( ret, tex2D(sampler_main, 1-uv).zyx );
+comp_30=`
+comp_31=`    float L = lum(ret);
+comp_32=`    float use_tex = 0.75 - saturate(L*10-1);
+comp_33=`
+comp_34=`    float3 tex= tex2D(sampler_kmj_blue_black,uv).xyz;
+comp_35=`    
+comp_36=`    tex*= tex;
+comp_37=`      // shadow:
+comp_38=`      float L2 = lum(GetBlur2(uv - 0.01));
+comp_39=`      
+comp_40=`    ret = lerp(ret, tex, use_tex);
+comp_41=`
+comp_42=`// STARS
+comp_43=`float uv_stars = tex2D( sampler_space_stars, uv5);
+comp_44=`if (uv_stars > .2)
+comp_45=`   { ret = tex2D( sampler_space_stars, uv5); }
+comp_46=`// END //
+comp_47=`
+comp_48=`// TOWER
+comp_49=`float uv_tower = tex2D( sampler_spacetower01, uv2);
+comp_50=`if (uv_tower > .2)
+comp_51=`   { ret = tex2D( sampler_spacetower01, uv2)*(bass_att*0.3); }
+comp_52=`// END //
+comp_53=`
+comp_54=`    ret *= 1.00; //gamma
+comp_55=`
+comp_56=`// Thank you for edited by Jian Simanjuntak //
+comp_57=`}

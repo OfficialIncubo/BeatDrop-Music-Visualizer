@@ -4,6 +4,7 @@
    ALT + ENTER          toggle fullscreen (or double-click)
    ALT + S              toggle multiple monitor stretch
    CTRL + Z             enable/disable spout output
+   CTRL + T             instantly reset time variable
    SHIFT + UP           increase window opacity
    SHIFT + DOWN         decrease window opacity
 
@@ -36,6 +37,15 @@
    F11                  hardcut mode: normal/based of music
    F12                  transparency mode (removes the black background)
    N                    show per-frame monitor
+
+ PLAYBACK:
+
+   Z                    previous track
+   X                    play/pause track
+   C                    stop track
+   V                    next track
+   LEFT ARROW           rewind track (seek -5 seconds)
+   RIGHT ARROW          fast forward track (seek +5 seconds)
 
  CUSTOM SPRITES/MESSAGES:
 

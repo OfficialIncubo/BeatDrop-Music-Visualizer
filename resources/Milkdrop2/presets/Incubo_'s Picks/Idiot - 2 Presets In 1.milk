@@ -110,6 +110,6 @@ per_pixel_16=pxdx=.01*sin(rade*sin(q2))/2/2/2/2/2;
 per_pixel_17=pxdy=.01*Sin(ange*sin(q1))/2/2/2/2/2;
 per_pixel_18=zoom=if(Above(p1,p2),pzoom,pxzoom);
 per_pixel_19=rot=if(above(p1,p2),prot,pxrot);
-per_pixel_20=dx=if(Above(q1,q2),pdx,pxdx);
-per_pixel_21=dy=if(Above(p1,p2),pdy,pxdy);
+per_pixel_20=dx=if(Above(q1,q2),pdx-1,pxdx);
+per_pixel_21=dy=if(Above(p1,p2),pdy+1,pxdy);
 per_pixel_22=pick=if(above(p1,p2),pick1,pick2);

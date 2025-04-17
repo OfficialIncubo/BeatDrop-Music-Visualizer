@@ -1,0 +1,147 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=3
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.010
+fWaveSmoothing=0.630
+fWaveParam=-1.000
+fModWaveAlphaStart=0.710
+fModWaveAlphaEnd=1.300
+fWarpAnimSpeed=0.037
+fWarpScale=0.015
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.03300
+sx=1.00000
+sy=1.00000
+wave_r=0.650
+wave_g=0.650
+wave_b=0.650
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.300
+ib_size=0.090
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=12.800
+nMotionVectorsY=9.600
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.000
+mv_g=0.910
+mv_b=0.710
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.300
+b1x=0.000
+b2x=0.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=mv_x=64;mv_y=48;
+per_frame_init_2=nut=0;
+per_frame_init_3=stp=0;stq=0;
+per_frame_init_4=rtp=0;rtq=0;
+per_frame_init_5=wvr=0;
+per_frame_init_6=decay=0;
+per_frame_init_7=dcsp=0
+per_frame_init_8=
+per_frame_1=decay=1;
+per_frame_2=zoom=1.1;
+per_frame_3=
+per_frame_4=warp = 0;
+per_frame_5=
+per_frame_6=vol=(bass_att+mid_att+treb_att)*0.25;
+per_frame_7=vol=vol*vol;
+per_frame_8=mtime=mtime+vol*0.1;
+per_frame_9=
+per_frame_10=q1=mtime*0.4;
+per_frame_11=
+per_frame_12=
+per_frame_13=
+per_frame_14=
+warp_1=`float2 uv0, uv1;
+warp_2=`float d;
+warp_3=`static const float2 par = float2 (q1,q2);
+warp_4=`
+warp_5=`shader_body
+warp_6=`{
+warp_7=`uv0 = 5*uv;
+warp_8=`uv1 = uv0;
+warp_9=`d= length(uv1);
+warp_10=`
+warp_11=`for ( int n=0; (n <10) && (n<14*d) ; n++ )
+warp_12=`{
+warp_13=`uv1 += sin(uv1.yx+par.yx) + uv0 - par;
+warp_14=`d=frac(.1*length (uv1));
+warp_15=`}
+warp_16=`
+warp_17=`ret= d*float3 (1, 1, 4);
+warp_18=`}
+comp_1=`
+comp_2=`float2 rs, rs0, uv2, uv3,uv4,dz;
+comp_3=`float3 noise, ret1, neu;
+comp_4=`
+comp_5=`shader_body {
+comp_6=`float2 uv1 = (uv-.5 )*aspect.xy;
+comp_7=`
+comp_8=`float2 hor = float2 (texsize.z,0)*4;
+comp_9=`float2 ver = float2 (0, texsize.w)*4;
+comp_10=`
+comp_11=`//    uv *= aspect.yx;
+comp_12=`uv3 = uv;
+comp_13=`
+comp_14=`dz.x = (2*lum(GetPixel(uv3+hor))- 2*lum(GetPixel(uv3-hor)));
+comp_15=`dz.y = (2*lum(GetPixel(uv3+ver))- 2*lum(GetPixel(uv3-ver)));
+comp_16=`neu = GetPixel(uv3+dz.yx*0);
+comp_17=`ret1 = neu;
+comp_18=`
+comp_19=`dz = dz*12;
+comp_20=`float2 pos = 1;
+comp_21=`float2 uv_rr = sin(2*uv1 + dz*.8 + pos);
+comp_22=`float2 uv_gg = sin(2*uv1 + dz*1 + pos);
+comp_23=`float2 uv_bb = sin(2*uv1 + dz*1.2 +pos);
+comp_24=`float3 fac = .1;
+comp_25=`float3 mus = float3(fac.x/length(uv_rr),
+comp_26=`fac.y/length(uv_gg),
+comp_27=`fac.z/length(uv_bb));
+comp_28=`
+comp_29=`ret = mus -  ret1 *.15 + ret1.g/2;
+comp_30=`ret *= 1+ret;
+comp_31=`//MilkDrop3 Color Mode:
+comp_32=`ret /= float3(0.7,2.0,0.4);
+comp_33=`}

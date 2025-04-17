@@ -3,7 +3,7 @@ PSVERSION=2
 PSVERSION_WARP=2
 PSVERSION_COMP=2
 [preset00]
-fRating=5.000
+fRating=3.000
 fGammaAdj=1.980
 fDecay=0.500
 fVideoEchoZoom=1.000
@@ -365,80 +365,81 @@ per_frame_init_11=q11 = rand(100) >= 30;
 per_frame_init_12=q12 = (rand(100) >= 30)*9+3;
 per_frame_init_13=q13 = min(max((rand(100)/50-.5),.2),1);
 per_frame_init_14=q14 = 0;
-per_frame_1=dec_m = pow(.9, 30/fps);dec_s = pow(.98, 30/fps);dec_xs = pow(.985, 30/fps);
-per_frame_2=
-per_frame_3=flen = 128; shapes = 16;
-per_frame_4=
-per_frame_5=beat = (bass + treb + mid)/3;
-per_frame_6=beat_ = beat_*dec_m + (1-dec_m)*beat; 
-per_frame_7=is_beat = above(beat, peak*8) * above (time, t0+.2);
-per_frame_8=t0 = is_beat*time + (1-is_beat)*t0;
-per_frame_9=peak = is_beat * beat + (1-is_beat)*peak*dec_m;
-per_frame_10=index = (index + is_beat) %8;
-per_frame_11=q22 = peak;
-per_frame_12=q27 = index;
-per_frame_13=
-per_frame_14=n = 0; vol = .5; bbase = 5000;
-per_frame_15=loop (flen,
-per_frame_16=  value = gmegabuf(n) * (1+1/(n+.5));
-per_frame_17=  trig = value >= megabuf(n);
-per_frame_18=  dec = if(trig,0.2,pow(.98-.1*n/flen,30/fps));
-per_frame_19=  megabuf(n) = megabuf(n)*dec + (1-dec)*value;
-per_frame_20=  vol = vol + pow(megabuf(n),2);
-per_frame_21=  n = n+1;
-per_frame_22=);
-per_frame_23=vol = sqrt(vol);
-per_frame_24=vol_ = dec_m*vol_ + (1-dec_m)*vol;
-per_frame_25=
-per_frame_26=// post smoothing
-per_frame_27=n = 0;
-per_frame_28=loop (flen,
-per_frame_29=  value = megabuf(n);
-per_frame_30=  dec = if (megabuf(1000+n)<=value,.9,.95-0.1*n/flen);
-per_frame_31=  dec = pow(dec,30/fps);
-per_frame_32=//  dec = 1; //#
-per_frame_33=    megabuf(n+1000) = megabuf(n+1000)*dec+ (1-dec)*value/vol_;
-per_frame_34=  n = n+1;
-per_frame_35=);
-per_frame_36=
+per_frame_1=dec_m = exp(-3/fps);
+per_frame_2=dec_s = exp(-.6/fps);
+per_frame_3=dec_xs = exp(-.4/fps);
+per_frame_4=flen = 128; shapes = 16;
+per_frame_5=
+per_frame_6=beat = (bass + treb + mid)/3;
+per_frame_7=beat_ = beat_*dec_m + (1-dec_m)*beat; 
+per_frame_8=is_beat = above(beat, peak*8) * above (time, t0+.2);
+per_frame_9=t0 = is_beat*time + (1-is_beat)*t0;
+per_frame_10=peak = is_beat * beat + (1-is_beat)*peak*dec_m;
+per_frame_11=index = (index + is_beat) %8;
+per_frame_12=q22 = peak;
+per_frame_13=q27 = index;
+per_frame_14=
+per_frame_15=n = 0; vol = .5; bbase = 5000;
+per_frame_16=loop (flen,
+per_frame_17=  value = gmegabuf(n) * (1+1/(n+.5));
+per_frame_18=  trig = value >= megabuf(n);
+per_frame_19=  dec = if(trig,0.2,pow(.98-.1*n/flen,30/fps));
+per_frame_20=  megabuf(n) = megabuf(n)*dec + (1-dec)*value;
+per_frame_21=  vol = vol + pow(megabuf(n),2);
+per_frame_22=  n = n+1;
+per_frame_23=);
+per_frame_24=vol = sqrt(vol);
+per_frame_25=vol_ = dec_m*vol_ + (1-dec_m)*vol;
+per_frame_26=
+per_frame_27=// post smoothing
+per_frame_28=n = 0;
+per_frame_29=loop (flen,
+per_frame_30=  value = megabuf(n);
+per_frame_31=  dec = if (megabuf(1000+n)<=value,.9,.95-0.1*n/flen);
+per_frame_32=  dec = pow(dec,30/fps);
+per_frame_33=//  dec = 1; //#
+per_frame_34=    megabuf(n+1000) = megabuf(n+1000)*dec+ (1-dec)*value/vol_;
+per_frame_35=  n = n+1;
+per_frame_36=);
 per_frame_37=
-per_frame_38=// Berechnung Ortskoordinaten aus Spektrum
-per_frame_39=dist = 2; reduce = flen/shapes;
-per_frame_40=n = 2000; m = 1000+dist; k=0;
-per_frame_41=loop (shapes,
-per_frame_42=  betr = (megabuf(m)+megabuf(m-dist)+megabuf(m+dist))/3;
-per_frame_43=  megabuf(n)   = megabuf(m) - megabuf(m+dist);
-per_frame_44=  megabuf(n+1) = megabuf(m) - megabuf(m-dist);
-per_frame_45=  z1 = max(.03/betr,.05);
-per_frame_46=  z2 = ((k+q22*q14+time*2)%shapes)/shapes+.06;
-per_frame_47=  megabuf(n+2) = q13*z1+(1-q13)*z2;
-per_frame_48=  m = m + reduce; n = n+8; k= k+1;
-per_frame_49=);
-per_frame_50=
+per_frame_38=
+per_frame_39=// Berechnung Ortskoordinaten aus Spektrum
+per_frame_40=dist = 2; reduce = flen/shapes;
+per_frame_41=n = 2000; m = 1000+dist; k=0;
+per_frame_42=loop (shapes,
+per_frame_43=  betr = (megabuf(m)+megabuf(m-dist)+megabuf(m+dist))/3;
+per_frame_44=  megabuf(n)   = megabuf(m) - megabuf(m+dist);
+per_frame_45=  megabuf(n+1) = megabuf(m) - megabuf(m-dist);
+per_frame_46=  z1 = max(.03/betr,.05);
+per_frame_47=  z2 = ((k+q22*q14+time*2)%shapes)/shapes+.06;
+per_frame_48=  megabuf(n+2) = q13*z1+(1-q13)*z2;
+per_frame_49=  m = m + reduce; n = n+8; k= k+1;
+per_frame_50=);
 per_frame_51=
-per_frame_52=//Projektion
-per_frame_53=n = 1000; m = 2000;
-per_frame_54=loop (shapes,
-per_frame_55=  gmegabuf(n) = megabuf(m)/megabuf(m+2);
-per_frame_56=  gmegabuf(n+1) = megabuf(m+1)/megabuf(m+2);
-per_frame_57=  gmegabuf(n+2) = megabuf(m+2);
-per_frame_58=  mx = mx + gmegabuf(n)/shapes/fps;
-per_frame_59=  my = my + gmegabuf(n+1)/shapes/fps;
-per_frame_60=  n = n+8; m = m+8;
-per_frame_61=);
-per_frame_62=
+per_frame_52=
+per_frame_53=//Projektion
+per_frame_54=n = 1000; m = 2000;
+per_frame_55=loop (shapes,
+per_frame_56=  gmegabuf(n) = megabuf(m)/megabuf(m+2);
+per_frame_57=  gmegabuf(n+1) = megabuf(m+1)/megabuf(m+2);
+per_frame_58=  gmegabuf(n+2) = megabuf(m+2);
+per_frame_59=  mx = mx + gmegabuf(n)/shapes/fps;
+per_frame_60=  my = my + gmegabuf(n+1)/shapes/fps;
+per_frame_61=  n = n+8; m = m+8;
+per_frame_62=);
 per_frame_63=
-per_frame_64=q1 = sin(8*mx+time*.1)/2;
-per_frame_65=q2 = sin(-8*my+time*.03);
-per_frame_66=q3 = atan2(gmegabuf(1000+8),gmegabuf(1000+8+1));
-per_frame_67=
-per_frame_68=trel = trel + bass_att/fps;
-per_frame_69=q4 = trel;
-per_frame_70=
-per_frame_71=monitor = q13;
-per_frame_72=
-per_frame_73=q32 = aspecty;
-per_frame_74=q31 = min(.996,dec_xs);
+per_frame_64=
+per_frame_65=q1 = sin(8*mx+time*.1)/2;
+per_frame_66=q2 = sin(-8*my+time*.03);
+per_frame_67=q3 = atan2(gmegabuf(1000+8),gmegabuf(1000+8+1));
+per_frame_68=
+per_frame_69=trel = trel + bass_att/fps;
+per_frame_70=q4 = trel;
+per_frame_71=
+per_frame_72=monitor = q13;
+per_frame_73=
+per_frame_74=q32 = aspecty;
+per_frame_75=q31 = min(.996,dec_xs);
 per_pixel_1=rot = 0.0; zoom = 1.04; warp = 0; dx = 0; dy = 0;
 warp_1=`sampler sampler_pw_noise_lq;
 warp_2=`float dx,dy,rad1,mask1;

@@ -3,7 +3,7 @@ PSVERSION=3
 PSVERSION_WARP=3
 PSVERSION_COMP=3
 [preset00]
-fRating=4.000
+fRating=4.000000
 fGammaAdj=1.980
 fDecay=0.500
 fVideoEchoZoom=1.000
@@ -261,7 +261,7 @@ per_frame_30=q6  = 0.6;
 per_frame_31=
 per_frame_32=q20 = -0.05 * abs (sin(ranh+posy*0.0005));
 per_frame_33=q21 = 0.6 + 0.3*  cos(ranh+posy*0.0063); 
-per_frame_34=q22 = 0.15 + 0.05*  cos(ranh+posy*0.0028);
+per_frame_34=q22 = 0.14 + 0.05*  cos(ranh+posy*0.0028);
 per_frame_35=
 warp_1=`#define sat saturate
 warp_2=`#define snl sampler_noise_lq
@@ -270,7 +270,7 @@ warp_4=`float3 rsl, rsl3, ret1, sky, mod,mod2;
 warp_5=`float2 dz, uv0, uv1, uv2, uv3, uv4, uvc, dz1;
 warp_6=`float  lav_gnd,lav_gnd2, smask, ripple, l,d,i,p;
 warp_7=`static const float hory = q6, xyscale = q7, alti = q8;
-warp_8=`static const float2 hor = texsize.zw*float2 (1.5,0), dir = float2 (q3,q4), modran = float2 (q15,q16);
+warp_8=`static const float2 hor = texsize.zw*float2 (2.2,0), dir = float2 (q3,q4), modran = float2 (q15,q16);
 warp_9=`static const float2 dpxy = float2 (q12, q13);
 warp_10=`static const float3 mov = float3 (q10,q11,0);
 warp_11=`
@@ -279,11 +279,11 @@ warp_13=`  for (int n = 1; n <= 2; n +=1 ) {tmp *= 1-tex2D(snl,uvi*s); s*= 3;} r
 warp_14=`
 warp_15=`float2 noise3 (float3 uvi, float3 mod) {float tmp = 1; float s = 2; float diff,path;
 warp_16=`
-warp_17=` tmp = (tex2D(sampler_noise_mq,uvi*xyscale*float2(1,.5)+modran.x).r-0.6)*mod.z*2.5; 
+warp_17=` tmp = (tex2D(sampler_noise_mq,uvi*xyscale*float2(1,.5)+modran.x).r-0.6)*mod.z*2.25; 
 warp_18=`  diff = tmp;
 warp_19=`  for (int n = 1; n <= 4; n +=1 ) {tmp += tex2D(snl,uvi.xy*s*xyscale)/s/2; s*= 3;}
 warp_20=`  tmp = lerp (0.3,tmp,saturate(+pow(uvi.x*xmod,2)));
-warp_21=`  tmp = lerp (0.2,tmp,1-pow(sin(smod*abs(uvi.x)+(uvi.y*.02+(1-tmp)*mod.x)),8));
+warp_21=`  tmp = lerp (0.2,tmp,sat(1-pow(sin(smod*abs(uvi.x)+(uvi.y*.02+(1-tmp)*mod.x)),8)+sat(abs(uvi.x*.004))));
 warp_22=` return 1-pow (tmp,0.8+mod.y);}
 warp_23=`
 warp_24=`float3 rs_lav (float2 uvi, float berg) {  float z; float2 rs;
@@ -295,7 +295,7 @@ warp_29=`
 warp_30=`
 warp_31=`shader_body {
 warp_32=`uv = uv_orig; uv1 = uv-0.5;
-warp_33=`lav_gnd=  -min (tex2D(sampler_fc_main,uv).b, tex2D(sampler_fc_main,uv+hor.yx*1.5).b);
+warp_33=`lav_gnd=  -min (tex2D(sampler_fc_main,uv).b, tex2D(sampler_fc_main,uv+hor.yx).b);
 warp_34=`rsl = rs_lav(uv1,lav_gnd); 
 warp_35=`mod = tex2D(sampler_noise_hq,rsl.xy*xyscale+modran);
 warp_36=`i=0, p=0;
@@ -304,10 +304,10 @@ warp_38=`  p =  ((lav_gnd+noise3 (rsl, mod))/quality);
 warp_39=`  i += p;  lav_gnd -= p*0.1+i*0.07; rsl = rs_lav(uv1,lav_gnd);}
 warp_40=`
 warp_41=`l = saturate(-lav_gnd);
-warp_42=`d= 2;
-warp_43=`dz = -1/rsl.z*d*dir;
-warp_44=`ripple = (noise3 (rsl,mod) - noise3 (rsl+float3 (dz,0),mod))*sat(rsl.z/16)*42;
-warp_45=`ripple += ((noise2 (rsl-dz) - noise2 (rsl+dz))* (1-l))+0.05;
+warp_42=`d= 4;
+warp_43=`dz = -sat(1-0.003*rsl.z)*0.1*d*dir;
+warp_44=`ripple = (noise3 (rsl,mod) - noise3 (rsl+float3 (dz,0),mod))*sat(rsl.z/16)*20/d;
+warp_45=`ripple += ((noise2 (rsl-dz) - noise2 (rsl+dz))* (1-l))/d+0.05;
 warp_46=`ripple = 1-exp(-ripple*2);
 warp_47=`
 warp_48=`ret = float3 (ripple, sqrt (rsl.z)*0.05, l);

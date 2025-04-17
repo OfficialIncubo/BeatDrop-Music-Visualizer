@@ -3926,6 +3926,71 @@ void CPlugin::DrawWave(float *fL, float *fR)
 					}
 
 					break;
+
+				case 16:
+					// DeepSeek - Triangle Wave
+					nVerts = 256; // More vertices for smoother audio modulation
+
+					if (m_pState->m_bModWaveAlphaByVolume)
+						alpha *= ((mysound.imm_rel[0] + mysound.imm_rel[1] + mysound.imm_rel[2]) * 0.333f - m_pState->m_fModWaveAlphaStart.eval(GetTime())) / (m_pState->m_fModWaveAlphaEnd.eval(GetTime()) - m_pState->m_fModWaveAlphaStart.eval(GetTime()));
+					if (alpha < 0) alpha = 0;
+					if (alpha > 1) alpha = 1;
+
+					{
+						float size = 0.575f;
+						float rotation = (fWaveParam2) * 3.141593f;
+						float cos_rot = cosf(rotation);
+						float sin_rot = sinf(rotation);
+
+						float inv_nverts = 1.0f / (float)(nVerts - 1);
+
+						for (i = 0; i < nVerts; i++)
+						{
+							// Create perfect triangle shape
+							float phase = i * inv_nverts;
+							float x, y;
+
+							if (phase < 0.3333f) {
+								// First segment (bottom left to top)
+								float t = phase * 3.0f;
+								x = -size + t * size;
+								y = -size + t * 2.0f * size;
+							}
+							else if (phase < 0.6666f) {
+								// Second segment (top to bottom right)
+								float t = (phase - 0.3333f) * 3.0f;
+								x = 0.0f + t * size;
+								y = size - t * 2.0f * size;
+							}
+							else {
+								// Third segment (bottom right to bottom left)
+								float t = (phase - 0.6666f) * 3.0f;
+								x = size - t * 2.0f * size;
+								y = -size;
+							}
+
+							// Apply audio modulation (using circular buffer position)
+							float audio_mod = 1.0f + 0.3f * fL[(i * 2) % NUM_WAVEFORM_SAMPLES];
+							x *= audio_mod;
+							y *= audio_mod;
+
+							// Apply rotation
+							float x_rot = x * cos_rot - y * sin_rot;
+							float y_rot = x * sin_rot + y * cos_rot;
+
+							// Apply position and aspect ratio
+							v[i].x = x_rot * m_fAspectY + fWavePosX;
+							v[i].y = y_rot * m_fAspectX + fWavePosY;
+						}
+					}
+
+					// Close the triangle
+					if (!m_pState->m_bBlending)
+					{
+						nVerts++;
+						memcpy(&v[nVerts - 1], &v[0], sizeof(WFVERTEX));
+					}
+					break;
 		}
 
 		if (it==0)
@@ -4633,7 +4698,7 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
 
     float time_since_preset_start = GetTime() - pState->GetPresetStartTime();
     float time_since_preset_start_wrapped = time_since_preset_start - (int)(time_since_preset_start/10000)*10000;
-    float time = GetTime() - m_fStartTime;
+    double time = GetTime() - m_fStartTime;
     float progress = (GetTime() - m_fPresetStartTime) / (m_fNextPresetTime - m_fPresetStartTime);
     float mip_x = logf((float)GetWidth())/logf(2.0f);
     float mip_y = logf((float)GetWidth())/logf(2.0f);

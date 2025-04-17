@@ -3,7 +3,7 @@ PSVERSION=3
 PSVERSION_WARP=3
 PSVERSION_COMP=3
 [preset00]
-fRating=2.000000
+fRating=5.000
 fGammaAdj=1.980
 fDecay=0.500
 fVideoEchoZoom=1.000
@@ -290,8 +290,8 @@ per_frame_init_11=  megabuf(n) = 0;
 per_frame_init_12=  n = n+1;
 per_frame_init_13=);
 per_frame_init_14=
-per_frame_1=dec_m = pow (0.8, 30/fps); dec_s = pow (0.94, 30/fps); 
-per_frame_2=
+per_frame_1=dec_m = exp (-7/fps);
+per_frame_2=dec_s = exp (-1.5/fps);
 per_frame_3=
 per_frame_4=beat = bass+mid+treb; 
 per_frame_5=avg = avg*dec_s + beat*(1-dec_s);
@@ -381,6 +381,7 @@ per_frame_88=oz = mz;
 per_frame_89=q17=ox; q18 = oy; q19 = oz;
 per_frame_90=
 per_frame_91=
+per_frame_92=monitor = dec_m;
 per_pixel_1=dx = .02;
 warp_1=`sampler sampler_pw_noise_lq;
 warp_2=`sampler sampler_pw_noise_hq;
@@ -442,7 +443,7 @@ warp_57=`
 warp_58=`
 warp_59=`}
 comp_1=`sampler sampler_pw_noise_lq;
-comp_2=`static const float quality =3, depth = q29;
+comp_2=`static const float quality =2, depth = q29;
 comp_3=`float3 screen3, sun, cog;
 comp_4=`float2 dz, uv0, uv1, uv2, uv4, rsk, dz1,tmp2, Kugel1, rsl;
 comp_5=`float  m,n,noise,mask, smoke, mask1, gmask,dx,dy,rad1, lprof,dist,flash;

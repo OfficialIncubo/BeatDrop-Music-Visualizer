@@ -523,7 +523,7 @@ per_frame_init_81=index2 = int(rand(32));
 per_frame_init_82=start = .9;
 per_frame_init_83=//-----------------------------------------
 per_frame_1=dt = gSpeed/fps; dt2 = dt ; 
-per_frame_2=dec_s = 1-.015*30/fps; dec_m = pow(.95, 30/fps); dec_f = pow(.85, 30/fps);
+per_frame_2=dec_s = 1-.015*30/fps; dec_m = exp(-1.5/fps); dec_f = exp(-5/fps);
 per_frame_3=vol_att = (bass + mid + treb)/3;
 per_frame_4=avg = avg*dec_s + (1-dec_s)*vol_att*(1.5-.2/cal);
 per_frame_5=

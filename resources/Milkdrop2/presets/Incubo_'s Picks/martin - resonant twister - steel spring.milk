@@ -284,70 +284,69 @@ per_frame_init_25=reg00 = num_res;
 per_frame_1=dt = min (1/fps,0.1) ; //Stability !
 per_frame_2=dec_m = 1 - 4*dt; dec_s = 1 - 1.25*dt;
 per_frame_3=vol =  (bass+mid+treb); 
-per_frame_4=
-per_frame_5=vol_ = vol_*dec_m + (1-dec_m)*vol; exc = vol-vol_;
-per_frame_6=excite = atan (exc*2)/1.6;
-per_frame_7=
-per_frame_8=index=0; ratio = log(maxbpm/minbpm); maxquad = .5; meanquad = 0;
-per_frame_9=loop (num_res,
-per_frame_10=  n = index*8;
-per_frame_11=  omega      =   megabuf(n) * 6.2832/60;
-per_frame_12=  megabuf (n+1) *= 1-0.22*dt; //damping
-per_frame_13=  EC_Steps = int (10*omega*dt)+1; 
-per_frame_14=  loop (EC_Steps, // Euler-Cauchy steps
-per_frame_15=    megabuf (n+1) += (excite - sqr(omega)*megabuf(n + 2)) * dt/EC_Steps;
-per_frame_16=    megabuf (n+2) += megabuf(n+1) * dt/EC_Steps);
-per_frame_17=  beatcos  = megabuf(n+1);  
-per_frame_18=  beatsin = megabuf(n+2)*omega; //2pi/60
-per_frame_19=  quad     = sqrt (pow(beatsin,2) + pow(beatcos,2)) ;
-per_frame_20=  if (maxquad < quad, maxquad = quad, 0);
-per_frame_21=  meanquad += quad / num_res;
-per_frame_22=  megabuf (n+3) = megabuf(n+3) *dec_s +  quad* (1-dec_s);
-per_frame_23=  megabuf (n+4) = megabuf(n+3);
-per_frame_24=  megabuf (n+5) = beatcos;
-per_frame_25=  megabuf (n+6) = beatsin ;
-per_frame_26=  index += 1;
-per_frame_27=);
-per_frame_28=
-per_frame_29=n = 0; maxind = 0;
-per_frame_30=loop (num_res,
-per_frame_31=  scale =  (1+megabuf(n+3)/2)/3; 
-per_frame_32=  if (megabuf(n+3) > megabuf(maxind+3), maxind = n, 0);
-per_frame_33=  gmegabuf(n+5) = megabuf(n+5) * scale;
-per_frame_34=  gmegabuf(n+6) = megabuf(n+6) * scale;
-per_frame_35=n+=8;);
+per_frame_4=vol_ = vol_*dec_m + (1-dec_m)*vol; exc = vol-vol_;
+per_frame_5=excite = atan (exc*2)/1.6;
+per_frame_6=
+per_frame_7=index=0; ratio = log(maxbpm/minbpm); maxquad = .5; meanquad = 0;
+per_frame_8=loop (num_res,
+per_frame_9=  n = index*8;
+per_frame_10=  omega      =   megabuf(n) * 6.2832/60;
+per_frame_11=  megabuf (n+1) *= 1-0.22*dt; //damping
+per_frame_12=  EC_Steps = int (10*omega*dt)+1; 
+per_frame_13=  loop (EC_Steps, // Euler-Cauchy steps
+per_frame_14=    megabuf (n+1) += (excite - sqr(omega)*megabuf(n + 2)) * dt/EC_Steps;
+per_frame_15=    megabuf (n+2) += megabuf(n+1) * dt/EC_Steps);
+per_frame_16=  beatcos  = megabuf(n+1);  
+per_frame_17=  beatsin = megabuf(n+2)*omega; //2pi/60
+per_frame_18=  quad     = sqrt (pow(beatsin,2) + pow(beatcos,2)) ;
+per_frame_19=  if (maxquad < quad, maxquad = quad, 0);
+per_frame_20=  meanquad += quad / num_res;
+per_frame_21=  megabuf (n+3) = megabuf(n+3) *dec_s +  quad* (1-dec_s);
+per_frame_22=  megabuf (n+4) = megabuf(n+3);
+per_frame_23=  megabuf (n+5) = beatcos;
+per_frame_24=  megabuf (n+6) = beatsin ;
+per_frame_25=  index += 1;
+per_frame_26=);
+per_frame_27=
+per_frame_28=n = 0; maxind = 0;
+per_frame_29=loop (num_res,
+per_frame_30=  scale =  (1+megabuf(n+3)/2)/3; 
+per_frame_31=  if (megabuf(n+3) > megabuf(maxind+3), maxind = n, 0);
+per_frame_32=  gmegabuf(n+5) = megabuf(n+5) * scale;
+per_frame_33=  gmegabuf(n+6) = megabuf(n+6) * scale;
+per_frame_34=n+=8;);
+per_frame_35=
 per_frame_36=
-per_frame_37=
-per_frame_38=sig0 = sig;
-per_frame_39=sig = megabuf(maxind+6);
-per_frame_40=gp = (maxquad* (1+gp*0.3) > 3.5*meanquad );
-per_frame_41=prog += (sig*sig0 <0) * gp;
-per_frame_42=q27 = ((prog%8)/4-1);
-per_frame_43=
-per_frame_44=gp2 = (maxquad* (1+gp2*0.3) > 7*meanquad );
-per_frame_45=prog2 += (sig*sig0 <0) * gp2;
-per_frame_46=q28 = prog2/3;
-per_frame_47=flash = if ((sig*sig0 < 0)* (maxquad > 8.5*meanquad),4, flash * 0.5) ;
-per_frame_48=q29 = flash;
-per_frame_49=maxind0 = maxind;
-per_frame_50=
-per_frame_51=n = 0; imax = 0;
-per_frame_52=loop (num_res,
-per_frame_53=  q12 += megabuf(n*8+1);
-per_frame_54=  q13 += megabuf(n*8+2);
-per_frame_55=n+=1;);
-per_frame_56=
-per_frame_57=maxquad_ = maxquad_*dec_m + (1-dec_m)*maxquad;
-per_frame_58=q1 = sqrt(3/maxquad_);
-per_frame_59=tr2 += maxquad_/fps;
-per_frame_60=q2 = tr2*1.85; //vert. mov. muster
-per_frame_61=
-per_frame_62=q3 = 0.01; //scale x-shift shapes
-per_frame_63=
-per_frame_64=q32 = aspecty;
+per_frame_37=sig0 = sig;
+per_frame_38=sig = megabuf(maxind+6);
+per_frame_39=gp = (maxquad* (1+gp*0.3) > 3.5*meanquad );
+per_frame_40=prog += (sig*sig0 <0) * gp;
+per_frame_41=q27 = ((prog%8)/4-1);
+per_frame_42=
+per_frame_43=gp2 = (maxquad* (1+gp2*0.3) > 7*meanquad );
+per_frame_44=prog2 += (sig*sig0 <0) * gp2;
+per_frame_45=q28 = prog2/3;
+per_frame_46=flash = if ((sig*sig0 < 0)* (maxquad > 8.5*meanquad),4, flash * 0.5) ;
+per_frame_47=q29 = flash;
+per_frame_48=maxind0 = maxind;
+per_frame_49=
+per_frame_50=n = 0; imax = 0;
+per_frame_51=loop (num_res,
+per_frame_52=  q12 += megabuf(n*8+1);
+per_frame_53=  q13 += megabuf(n*8+2);
+per_frame_54=n+=1;);
+per_frame_55=
+per_frame_56=maxquad_ = maxquad_*dec_m + (1-dec_m)*maxquad;
+per_frame_57=q1 = sqrt(3/maxquad_);
+per_frame_58=tr2 += maxquad_/fps;
+per_frame_59=q2 = tr2*1.85; //vert. mov. muster
+per_frame_60=
+per_frame_61=q3 = 0.01; //scale x-shift shapes
+per_frame_62=
+per_frame_63=q32 = aspecty;
+per_frame_64=
 per_frame_65=
-per_frame_66=
-per_frame_67=monitor = q15;
+per_frame_66=monitor = q15;
 per_pixel_1=rot = 0; warp = 0; dy = -0.00;  dx = 0.00;
 per_pixel_2=
 per_pixel_3=zoom = 1.03;

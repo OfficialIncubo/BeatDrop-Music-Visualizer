@@ -90,4 +90,4 @@ per_pixel_5=pre_dx=radical_dx*bnot(q1%21);
 per_pixel_6=pre_dy=radical_dy*bnot(q1%3);
 per_pixel_7=dx=if(bnot(q1%13),dx-bnot(q3%17)*grid_shift*sign(q5),sin(pre_dx));
 per_pixel_8=dy=if(bnot(q1%3),dx-bnot(q3%34)*grid_shift*sign(q5),cos(pre_dy));
-per_pixel_9=
+per_pixel_9=dy -= 1;

@@ -3,7 +3,7 @@ PSVERSION=3
 PSVERSION_WARP=3
 PSVERSION_COMP=3
 [preset00]
-fRating=3.000
+fRating=4.000000
 fGammaAdj=1.980
 fDecay=0.500
 fVideoEchoZoom=0.952
@@ -505,8 +505,6 @@ per_frame_171=Nenner = q9 + q28*x0 + q26*y0 - q27*z0;
 per_frame_172=x = (q7 + q22*x0 + q20*y0 -q21*z0)/Nenner + 0.5;
 per_frame_173=y = -(q8 + q25*x0 + q23*y0 -q24*z0 )/Nenner*q32 +0.5;
 per_frame_174=q5 = x-0.5; q6 = y-0.5;
-per_frame_175=
-per_frame_176=monitor = reg04;
 per_pixel_1=dx = 0; dy = 0; zoom = 1.005; rot = 0.;
 warp_1=`shader_body {
 warp_2=`

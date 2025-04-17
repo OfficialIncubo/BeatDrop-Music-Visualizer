@@ -1,0 +1,318 @@
+[preset00]
+fRating=3.000
+fGammaAdj=2.000
+fDecay=0.925
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=3
+nWaveMode=7
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.157
+fWaveSmoothing=0.630
+fWaveParam=0.000
+fModWaveAlphaStart=0.710
+fModWaveAlphaEnd=1.300
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99951
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=0.650
+wave_g=0.650
+wave_b=0.650
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=0
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.50000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wavecode_1_enabled=0
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=0
+wavecode_1_scaling=1.00000
+wavecode_1_smoothing=0.50000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=1.000
+wavecode_2_enabled=0
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.00000
+wavecode_2_smoothing=0.50000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=1.000
+wavecode_2_a=1.000
+wavecode_3_enabled=0
+wavecode_3_samples=512
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=1.000
+shapecode_0_enabled=1
+shapecode_0_sides=4
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.91973
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=1.00000
+shapecode_0_r=1.000
+shapecode_0_g=1.000
+shapecode_0_b=1.000
+shapecode_0_a=1.000
+shapecode_0_r2=0.000
+shapecode_0_g2=0.000
+shapecode_0_b2=0.000
+shapecode_0_a2=0.000
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=0.000
+shape_0_per_frame1=a = q1;
+shapecode_1_enabled=0
+shapecode_1_sides=4
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_num_inst=1
+shapecode_1_x=0.500
+shapecode_1_y=0.500
+shapecode_1_rad=0.10000
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=1.00000
+shapecode_1_r=1.000
+shapecode_1_g=0.000
+shapecode_1_b=0.000
+shapecode_1_a=1.000
+shapecode_1_r2=0.000
+shapecode_1_g2=1.000
+shapecode_1_b2=0.000
+shapecode_1_a2=0.000
+shapecode_1_border_r=1.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=1.000
+shapecode_1_border_a=0.100
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_num_inst=1
+shapecode_2_x=0.500
+shapecode_2_y=0.500
+shapecode_2_rad=0.10000
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=1.00000
+shapecode_2_r=1.000
+shapecode_2_g=0.000
+shapecode_2_b=0.000
+shapecode_2_a=1.000
+shapecode_2_r2=0.000
+shapecode_2_g2=1.000
+shapecode_2_b2=0.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=1.000
+shapecode_2_border_a=0.100
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=1
+shapecode_3_x=0.500
+shapecode_3_y=0.500
+shapecode_3_rad=0.10000
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.00000
+shapecode_3_r=1.000
+shapecode_3_g=0.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=1.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=1.000
+shapecode_3_border_b=1.000
+shapecode_3_border_a=0.100
+per_frame_init_1=//Configurable parameters:
+per_frame_init_2=scale_factor = .35; //for dynamically adjusted value_delay.
+per_frame_init_3=pre_delay_prevention = 0.05; //Duration in subtraction to prevent saving the interval when it's too early from the delayed interval.
+per_frame_init_4=delay_prevention = 0.05; // Duration in addition from the delayed interval.
+per_frame_init_5=log_pow_val = 100;
+per_frame_init_6=bass_pow_mult = 2; // Logarithmic-Powered Bass multiplier
+per_frame_init_7=bass_thresh = 55; // The maximum value of bass when it's triggered.
+per_frame_init_8=phase_shift = 3; //Phase shift of logarithmic-powered bass;
+per_frame_init_9=
+per_frame_init_10=
+per_frame_init_11=//Main BPM Smooth Settings
+per_frame_init_12=smooth_speed = 0.7; // The speed of real-time BPM smoothing.
+per_frame_init_13=bpm_change_speed = 10; // The speed of smooth BPM changing value.
+per_frame_init_14=
+per_frame_init_15=//Delay-Controlled BPM Smooth Settings
+per_frame_init_16=dc_smooth_speed = 0.5;
+per_frame_init_17=
+per_frame_init_18=MinBPM = 80; //Minimum BPM
+per_frame_init_19=MaxBPM = 240; //Maximum BPM
+per_frame_init_20=
+per_frame_init_21=//DON'T MODIFY BELOW. I WARNED YOU
+per_frame_init_22=interval_dc = interval_2 = interval_ = interval = 60/(MinBPM-0.5);
+per_frame_init_23=
+per_frame_init_24=// ChatGPT - Dynamically adjust value_delay based on BPM range (MinBPM - MaxBPM)
+per_frame_init_25=value_delay = 60 / (MaxBPM + (MaxBPM - MinBPM) * scale_factor);
+per_frame_init_26=
+per_frame_init_27=//Fully initialize them to 0 after the preset is loaded or reloaded by pressing CTRL + ENTER.
+per_frame_init_28=timepeak = 0;
+per_frame_init_29=beat_init = 0;
+per_frame_1=// BPM Algorithm v3.1b by DJ XcitMosphere/Incubo_/Se7enSlasher
+per_frame_2=// Helped by Nitorami (martin) and ChatGPT.
+per_frame_3=// Follow DJ XcitMosphere on YouTube, Twitter/X and MixCloud!
+per_frame_4=// You can change these values in init code!
+per_frame_5=
+per_frame_6=//START
+per_frame_7=
+per_frame_8=// Time used for beat interval (fps-independent)
+per_frame_9=timepeak += 1/fps;
+per_frame_10=
+per_frame_11=// Declare a boolean integer for one-clip bass.
+per_frame_12=beat_init = timepeak <= value_delay ? 1 : 0;
+per_frame_13=
+per_frame_14=// Resets the time if the bass is triggered, also saving it to interval value.
+per_frame_15=//Se7enSlasher - Added a functionality to prevent saving the interval when the beat was missed.
+per_frame_16=timepeak = if(pow(log_pow_val, (bass*bass_pow_mult)-phase_shift) > bass_thresh && (beat_init == 0),
+per_frame_17=
+per_frame_18=//Saves the delay-controlled value.
+per_frame_19=dc_interval_quick = timepeak;
+per_frame_20=
+per_frame_21=//Saves it to interval
+per_frame_22=//v2.3: Added an intelligent pre-prevention value to prevent saving the interval when it's too early.
+per_frame_23=//v3: Now it uses as a new value interval_dc instead of value_delay and interval_2. When it goes off, it doesn't save the main interval for BPM.
+per_frame_24=if (timepeak <= interval_dc + delay_prevention && timepeak >= interval_dc - pre_delay_prevention,
+per_frame_25=interval = timepeak;
+per_frame_26=,bleh); //Bug fixed.;
+per_frame_27=
+per_frame_28=//Nitorami (martin) - Interval Calculation
+per_frame_29=interval_ = interval_ * (1-dec) + interval * dec;
+per_frame_30=
+per_frame_31=// ChatGPT - Prevent BPM drop while allowing fast updates
+per_frame_32=//interval = if (interval > interval_ * 1.05, interval_ * 0.95 + interval * 0.05, interval); //NEEDED OR NOT NEEDED?
+per_frame_33=
+per_frame_34=; timepeak = 0, timepeak);
+per_frame_35=
+per_frame_36=dec = bpm_change_speed/fps;
+per_frame_37=dc_dec = dc_smooth_speed/fps;
+per_frame_38=
+per_frame_39=//Nitorami (martin) + Se7enSlasher - Another value of real-time smoothing.
+per_frame_40=dec2 = smooth_speed/fps;
+per_frame_41=interval_2 = interval_2 * (1-dec2) + interval_*dec2;
+per_frame_42=interval_dc = interval_dc * (1-dc_dec) + dc_interval_quick*dc_dec;
+per_frame_43=
+per_frame_44=// ChatGPT - Ensure BPM is within a valid range and avoid doubling/halving errors - NEEDED OR NOT NEEDED?
+per_frame_45=//BPM = if (BPM >= MinBPM * 2 && BPM <= MaxBPM && abs(BPM / 2 - intBPM) < 10, BPM / 2, BPM);
+per_frame_46=//BPM = if (BPM >= MinBPM && BPM * 2 <= MaxBPM && abs(BPM * 2 - intBPM) < 10, BPM * 2, BPM);
+per_frame_47=
+per_frame_48=BPM = 60/interval_2;
+per_frame_49=
+per_frame_50=//Convert the BPM value to integer using another value.
+per_frame_51=intBPM = floor(BPM+.5);
+per_frame_52=
+per_frame_53=//Se7enSlasher - Keep the intBPM between BPM limitations.
+per_frame_54=intBPM = if(MinBPM <= intBPM, intBPM, MinBPM);
+per_frame_55=intBPM = if(intBPM <= MaxBPM, intBPM, MaxBPM);
+per_frame_56=
+per_frame_57=//Se7enSlasher - Change the intBPM value to 0 when there is no sound.
+per_frame_58=timeUntilStop = if (bass+mid+treb > 0, 2, timeUntilStop);
+per_frame_59=timeUntilStop -= 1/fps;
+per_frame_60=intBPM = if(timeUntilStop <= 0, 0, intBPM);
+per_frame_61=
+per_frame_62=//Just for testing. Uncomment or comment one of them. Choose one!
+per_frame_63=//monitor = min(pow(log_pow_val, (bass*bass_pow_mult)-phase_shift), bass_thresh); //Test the Logarithmic-Powered Bass algorithm.
+per_frame_64=monitor = intBPM; //Test BPM
+per_frame_65=
+per_frame_66=//Se7enSlasher - Shape for visualized BPM
+per_frame_67=BPMTime = (sin(time * 2 * 3.14159 / (60 / intBPM)) + 1) / 2; //ChatGPT - Code for corrected shape pulse per one beat.
+per_frame_68=q1 = if (BPMTime >= .9, 1, 0);
+per_frame_69=
+per_frame_70=//END

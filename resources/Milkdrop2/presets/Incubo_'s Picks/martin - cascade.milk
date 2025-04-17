@@ -215,7 +215,7 @@ shape_2_per_frame1=speed=.4; dt=1/fps; i=instance; n=12*i;
 shape_2_per_frame2=
 shape_2_per_frame3=z= megabuf(n+2);
 shape_2_per_frame4=x= megabuf(n)/z+.5+.0*cos(z*16)*z;
-shape_2_per_frame5=y = 16*pow(megabuf(n+1),2)/z*reg32+0.48-.01/z*q1; //#
+shape_2_per_frame5=y = 14*pow(megabuf(n+1),2)/z*reg32+0.48-.013/z*q1; //#
 shape_2_per_frame6=
 shape_2_per_frame7=over = (x>1)||(x<0)||(y>1)||(y<0)||(z<0)||(z>1.2);
 shape_2_per_frame8=reg11+=over;
@@ -227,50 +227,49 @@ shape_2_per_frame13=  st=(mid_att>0.8)*i*(q27%4==0);
 shape_2_per_frame14=  sx=sin(time+st+q3*mid_att) *1.5;
 shape_2_per_frame15=  sy=cos(time+st+q4*treb_att)*1.5;
 shape_2_per_frame16=  sz=0;
-shape_2_per_frame17= 
+shape_2_per_frame17=
 shape_2_per_frame18=  dec=q2;
 shape_2_per_frame19=  px0=px0*dec+(1-dec)*sx;
 shape_2_per_frame20=  py0=py0*dec+(1-dec)*sy;
 shape_2_per_frame21=  pz0=pz0*dec+(1-dec)*sz;
 shape_2_per_frame22=
-shape_2_per_frame23=  noia=.005*min(5,pow(treb/2,4));
+shape_2_per_frame23=  noia=.1*min(3,pow(treb_att/2,2));
 shape_2_per_frame24=  px= px0+(rand(1)-.5)*noia;
 shape_2_per_frame25=  py= py0+(rand(1)-.5)*noia;;
-shape_2_per_frame26=  pz= pz0+(rand(1)-.5)*noia;;
-shape_2_per_frame27=
-shape_2_per_frame28=
-shape_2_per_frame29=  megabuf(n)= px/reg10; 
-shape_2_per_frame30=  megabuf(n+1)=py/reg10;
-shape_2_per_frame31=  megabuf(n+2)=max(0.5,min(1,1-q29*sin((px0-py0)*8)));;
-shape_2_per_frame32=
-shape_2_per_frame33=  t=time/7.6;
-shape_2_per_frame34=  megabuf(n+3)=min(1,0.9+0.3*sin(px*2+t));
-shape_2_per_frame35=  megabuf(n+4)=min(1,0.9+0.3*sin(py*2+t*1.2));
-shape_2_per_frame36=  megabuf(n+5)=min(1,0.9+0.3*sin(3*(px-py)+t*1.5));
-shape_2_per_frame37=  megabuf(n+6)=q20;
-shape_2_per_frame38=  megabuf(n+7)=q21;
-shape_2_per_frame39=  megabuf(n+8)=q22;
-shape_2_per_frame40=  megabuf(n+9)= 0.8+.1*rand(1); //size
-shape_2_per_frame41=  megabuf(n+10)= rand(1)-.5; //unused
-shape_2_per_frame42=  rad=0;
-shape_2_per_frame43=,
-shape_2_per_frame44=  megabuf(n+2)-=speed/fps*max(.5,megabuf(n+9)); //wichtig sonst kanns null bleiben
-shape_2_per_frame45=  rad = min(0.1,.003/z*reg32) * megabuf(n+9) * (z>0);
-shape_2_per_frame46=  r=megabuf(n+3);   r2=megabuf(n+6);
-shape_2_per_frame47=  g=megabuf(n+4);   g2=megabuf(n+7);
-shape_2_per_frame48=  b=megabuf(n+5);   b2=megabuf(n+8);
-shape_2_per_frame49=
-shape_2_per_frame50=  dec=1-q6*dt;
-shape_2_per_frame51= if ((i>0),
-shape_2_per_frame52=   m=n-12; o=n+12;
-shape_2_per_frame53=   megabuf(n+1)+=-(sin(megabuf(n)*100*q28+time/4))*.15*z*(1-dec);
-shape_2_per_frame54=// megabuf(n)=megabuf(n)*dec  +megabuf(m)*(1-dec);
-shape_2_per_frame55=   megabuf(n+1)=megabuf(n+1)*dec +megabuf(m+1)*(1-dec)*q5;
-shape_2_per_frame56= ,0);
-shape_2_per_frame57=);
-shape_2_per_frame58=a=0.7;
-shape_2_per_frame59=reg10=reg10*0.99 + 2*sqrt(sqr(megabuf(n))+sqr(megabuf(n+1)));
-shape_2_per_frame60=sides=max(5,min(20,rad*200));
+shape_2_per_frame26=
+shape_2_per_frame27=  megabuf(n)= px/reg10; 
+shape_2_per_frame28=  megabuf(n+1)=py/reg10;
+shape_2_per_frame29=  megabuf(n+2)=max(0.5,min(1,1-q29*sin((px-py)*7)));;
+shape_2_per_frame30=
+shape_2_per_frame31=  t=time/7.6;
+shape_2_per_frame32=  megabuf(n+3)=min(1,0.9+0.3*sin(px*2+t));
+shape_2_per_frame33=  megabuf(n+4)=min(1,0.9+0.3*sin(py*2+t*1.2));
+shape_2_per_frame34=  megabuf(n+5)=min(1,0.9+0.3*sin(3*(px-py)+t*1.5));
+shape_2_per_frame35=  megabuf(n+6)=q20;
+shape_2_per_frame36=  megabuf(n+7)=q21;
+shape_2_per_frame37=  megabuf(n+8)=q22;
+shape_2_per_frame38=  megabuf(n+9)= 0.8+.1*rand(1); //size
+shape_2_per_frame39=  megabuf(n+10)= rand(1)-.5; //unused
+shape_2_per_frame40=  rad=0;
+shape_2_per_frame41=,
+shape_2_per_frame42=  megabuf(n+2)-=speed/fps*max(.5,megabuf(n+9)); //wichtig sonst kanns null bleiben
+shape_2_per_frame43=  rad = min(0.15,.003/z*reg32) * megabuf(n+9) * (z>0);
+shape_2_per_frame44=  r=megabuf(n+3);   r2=megabuf(n+6);
+shape_2_per_frame45=  g=megabuf(n+4);   g2=megabuf(n+7);
+shape_2_per_frame46=  b=megabuf(n+5);   b2=megabuf(n+8);
+shape_2_per_frame47=
+shape_2_per_frame48=  dec=1-q6*dt;
+shape_2_per_frame49= if ((i>0),
+shape_2_per_frame50=   m=n-12; o=n+12;
+shape_2_per_frame51=   megabuf(n+1)+=-(sin(megabuf(n)*100*q28+time/4))*.15*z*(1-dec);
+shape_2_per_frame52=// megabuf(n)=megabuf(n)*dec  +megabuf(m)*(1-dec);
+shape_2_per_frame53=   megabuf(n+1)=megabuf(n+1)*dec +megabuf(m+1)*(1-dec)*q5;
+shape_2_per_frame54= ,0);
+shape_2_per_frame55=);
+shape_2_per_frame56=a=0.7;
+shape_2_per_frame57=reg10=reg10*0.99 + 2*sqrt(sqr(megabuf(n))+sqr(megabuf(n+1)));
+shape_2_per_frame58=sides=max(5,min(20,rad*400));
+shape_2_per_frame59=reg33=noia;
 shapecode_3_enabled=0
 shapecode_3_sides=8
 shapecode_3_additive=1
@@ -298,8 +297,8 @@ shapecode_3_border_a=0.000
 per_frame_init_1=n=0;loop(20000,megabuf(n)=gmegabuf(n)=0;n+=1);
 per_frame_init_2=reg10=1;
 per_frame_1=dt=1/fps;
-per_frame_2=dec_m = 1-5*dt; 
-per_frame_3=dec_f = 1-15*dt; 
+per_frame_2=dec_m = exp (-5*dt);
+per_frame_3=dec_f = exp (-15*dt);
 per_frame_4=
 per_frame_5=beat = (bass + treb + mid)/3;
 per_frame_6=beat_ = beat_*dec_m + (1-dec_m)*beat; 
@@ -344,13 +343,14 @@ per_frame_44=q24=ib;
 per_frame_45=q27=index;
 per_frame_46=dec=0;
 per_frame_47=q28= pow(sin(int(index/6)/2),3)*3;
-per_frame_48=q29=pow(sin(q27),8)/3;
+per_frame_48=q29=pow(sin(q27),8)/2;
 per_frame_49=q30=int(index/4);
 per_frame_50=reg10=max(10.01,reg10); //autoscale
 per_frame_51=reg11=0; //free
 per_frame_52=
-per_frame_53=monitor = q5;
-per_pixel_1=zoom = 1/1.05;
+per_frame_53=
+per_frame_54=
+per_pixel_1=zoom = 1/1.025;
 per_pixel_2=
 warp_1=`#define sat saturate
 warp_2=`float2 uv1,uv2;
@@ -359,10 +359,11 @@ warp_4=`float3 get (float2 uvi)
 warp_5=`{return lerp (GetPixel(uvi),GetBlur1(uvi),0.3);}
 warp_6=` 
 warp_7=`shader_body {
-warp_8=`ret = (get(uv_orig)+ get(uv) + get((uv+uv_orig)/2))/3-0.01;
-warp_9=`float sc = GetBlur1(0.5);
-warp_10=`ret*=0.5;
-warp_11=`}
+warp_8=`ret = max(max(get(uv_orig),get(uv)),get((uv+uv_orig)/2))-0.01;
+warp_9=`ret*=0.3;
+warp_10=`
+warp_11=`
+warp_12=`}
 comp_1=`#define sat saturate
 comp_2=`#define snh sampler_noise_hq
 comp_3=`float2 rs0, uv1, uv2, uv_wat, water;

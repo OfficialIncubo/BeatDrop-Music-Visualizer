@@ -1,5 +1,5 @@
 [preset00]
-fRating=5.000000
+fRating=2.000000
 fGammaAdj=1.000000
 fDecay=0.965000
 fVideoEchoZoom=1.483827
@@ -113,9 +113,9 @@ wave_1_per_point1=pphase=(sample*5671*cos(time*.0001));
 wave_1_per_point2=pheight=((sample*7654)%100)*.005*sin(time*.2);
 wave_1_per_point3=
 wave_1_per_point4=//xspout=.5;
-wave_1_per_point5=xspout=if(below(abs(sin(time*.2)),.005),.3+(rand(40)*.01),xspout);
+wave_1_per_point5=xspout=if(below(abs(sin(time*.2)),.005),.3+(int(rand(40))*.01),xspout);
 wave_1_per_point6=//yspout=.5;
-wave_1_per_point7=yspout=if(below(abs(sin(time*.2)),.005),.3+(rand(40)*.01),yspout);
+wave_1_per_point7=yspout=if(below(abs(sin(time*.2)),.005),.3+(int(rand(40))*.01),yspout);
 wave_1_per_point8=
 wave_1_per_point9=px=xspout+(cos(time+pphase)*pheight);
 wave_1_per_point10=py=yspout+(sin(time+pphase)*pheight);
@@ -271,7 +271,7 @@ wave_3_per_point19=fdy=fdy*invMag;
 wave_3_per_point20=
 wave_3_per_point21=rdx=fdx*cos(1.5707+t2)-fdy*sin(1.5707+t2);
 wave_3_per_point22=rdy=fdx*sin(1.5707+t2)+fdx*cos(1.5707+t2);
-wave_3_per_point23=tt=rand(100)/100;
+wave_3_per_point23=tt=int(rand(100))/100;
 wave_3_per_point24=x=x+rdx*(.15*tt)*(1-sample);
 wave_3_per_point25=y=y+rdy*(.15*tt)*(1-sample);
 wave_3_per_point26=

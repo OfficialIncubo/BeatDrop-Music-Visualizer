@@ -3,7 +3,7 @@ PSVERSION=3
 PSVERSION_WARP=3
 PSVERSION_COMP=2
 [preset00]
-fRating=2.000
+fRating=3.000
 fGammaAdj=1.980
 fDecay=0.500
 fVideoEchoZoom=1.000
@@ -278,39 +278,40 @@ shape_3_per_frame13=r = 0.5 + 0.5*sin(frame*0.5);
 shape_3_per_frame14=b = 0.5 + 0.5*sin(frame*0.5 + 2.094);
 shape_3_per_frame15=g = 0.5 + 0.5*sin(frame*0.5 + 4.188);
 shape_3_per_frame16=
-per_frame_1=dec_med = pow (0.7, 30/fps);
-per_frame_2=dec_slow = pow (0.99, 30/fps);
-per_frame_3=beat = max (max (bass, mid), treb); 
-per_frame_4=avg = avg*dec_slow + beat*(1-dec_slow);
-per_frame_5=is_beat = above(beat, .2+avg+peak) * above (time, t0+.2);
-per_frame_6=t0 = is_beat*time + (1-is_beat)*t0;
-per_frame_7=peak = is_beat * beat + (1-is_beat)*peak*dec_med;
-per_frame_8=index = (index + is_beat) %8;
-per_frame_9=index2 = (index2 + is_beat*bnot(index))%2;
-per_frame_10=
-per_frame_11=q20 = avg;
-per_frame_12=q21 = beat;
-per_frame_13=q22 = peak;
-per_frame_14=
-per_frame_15=ps = .9*ps + .1*q22;
-per_frame_16=q23 = ps;
-per_frame_17=q24 = is_beat;
-per_frame_18=q26 = bass_att + mid_att + treb_att;
-per_frame_19=q27 = index +1;
-per_frame_20=q28 = index2;
-per_frame_21=
+per_frame_1=dec_med = exp (-13/fps);
+per_frame_2=dec_slow = exp (-.3/fps);
+per_frame_3=
+per_frame_4=beat = max (max (bass, mid), treb); 
+per_frame_5=avg = avg*dec_slow + beat*(1-dec_slow);
+per_frame_6=is_beat = above(beat, .2+avg+peak) * above (time, t0+.2);
+per_frame_7=t0 = is_beat*time + (1-is_beat)*t0;
+per_frame_8=peak = is_beat * beat + (1-is_beat)*peak*dec_med;
+per_frame_9=index = (index + is_beat) %8;
+per_frame_10=index2 = (index2 + is_beat*bnot(index))%2;
+per_frame_11=
+per_frame_12=q20 = avg;
+per_frame_13=q21 = beat;
+per_frame_14=q22 = peak;
+per_frame_15=
+per_frame_16=ps = .9*ps + .1*q22;
+per_frame_17=q23 = ps;
+per_frame_18=q24 = is_beat;
+per_frame_19=q26 = bass_att + mid_att + treb_att;
+per_frame_20=q27 = index +1;
+per_frame_21=q28 = index2;
 per_frame_22=
-per_frame_23=k1 =  is_
-per_frame_24=beat*equal(index%2,0);
-per_frame_25=p1 =  k1*(p1+1) + (1-k1)*p1;
-per_frame_26=p2 = dec_med * p2+ (1-dec_med)*p1;
-per_frame_27=rott = p2 * 3.1416/4;
-per_frame_28=
-per_frame_29=q1 = cos(rott);
-per_frame_30=q2 = sin(rott);
-per_frame_31=q3 = -q2;
-per_frame_32=q4 = q1;
-per_frame_33=
+per_frame_23=
+per_frame_24=k1 =  is_
+per_frame_25=beat*equal(index%2,0);
+per_frame_26=p1 =  k1*(p1+1) + (1-k1)*p1;
+per_frame_27=p2 = dec_med * p2+ (1-dec_med)*p1;
+per_frame_28=rott = p2 * 3.1416/4;
+per_frame_29=
+per_frame_30=q1 = cos(rott);
+per_frame_31=q2 = sin(rott);
+per_frame_32=q3 = -q2;
+per_frame_33=q4 = q1;
+per_frame_34=
 per_pixel_1=zoom = 1.05;
 warp_1=`shader_body {
 warp_2=`float corr = texsize.xy*texsize_noise_lq.zw;
@@ -353,13 +354,13 @@ comp_14=`noise *= (noise >= .0);
 comp_15=`ret1 = noise-.6;
 comp_16=`
 comp_17=`uv2 = 1*uv1 * (1-abs(uv1.x)) ;
-comp_18=`float mask = saturate(128*uv1.y);
+comp_18=`float mask = saturate(64*uv1.y);
 comp_19=`uv3 =frac(uv2-.5-ret1*.05* mask);
 comp_20=`
-comp_21=`ret1 = tex2D (sampler_main, uv3) + 
+comp_21=`ret1 = tex2D (sampler_main, uv3) + tex2D (sampler_main, float2(1-uv3.x,uv3.y))+
 comp_22=`.02/(.02+length(uv3.y-.52))*slow_roam_sin;
 comp_23=`
-comp_24=`float2 uv2 = 32*(mul(uv,float2x2(.6,.8,-.8,.6))+ret1*.1+time/64);
+comp_24=`float2 uv2 = 32*(mul(uv,float2x2(.7,.7,-.7,.7))+ret1*.1+time/64)*aspect.xy;
 comp_25=`float3 smask = (tex2D (sampler_pw_noise_lq,uv2/256)).g-.9;
 comp_26=`float stars = saturate(.25/length(abs(frac(uv2)-.5))*smask);
 comp_27=`

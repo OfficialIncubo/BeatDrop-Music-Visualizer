@@ -3,7 +3,7 @@ PSVERSION=3
 PSVERSION_WARP=3
 PSVERSION_COMP=3
 [preset00]
-fRating=5.0000
+fRating=3.000
 fGammaAdj=1.980
 fDecay=0.500
 fVideoEchoZoom=1.000
@@ -524,4 +524,6 @@ comp_61=`uv3 = float2(uvc.x-.5,1)*z*float2(q8,q9)+float2(0,time*0.005);
 comp_62=`uv3.y -= noise3(uv3).r*-0.008;
 comp_63=`uv4 = ((uvc-float2 (q12,0.3))*.4 +0.5+centre/aspect.xy);
 comp_64=`ret += !mask*saturate(1-2*uvc.y)*2*saturate(noise3(uv3).r*GetBlur2(uv4)+float3(0,0.1,0.25));
-comp_65=`}
+comp_65=`
+comp_66=`//ret += lavcol(0.04*bass_att/length(uv1)*!mask);
+comp_67=`}

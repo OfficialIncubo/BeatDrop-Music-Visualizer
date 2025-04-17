@@ -74,14 +74,14 @@ wavecode_0_r=1.000000
 wavecode_0_g=1.000000
 wavecode_0_b=1.000000
 wavecode_0_a=0.100000
-wave_0_init1=t1 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_0_init2=t2 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_0_init3=t3 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_0_init4=t4 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_0_init5=t5 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_0_init6=t6 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_0_init7=t7 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_0_init8=t8 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init1=t1 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init2=t2 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init3=t3 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init4=t4 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init5=t5 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init6=t6 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init7=t7 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init8=t8 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
 wave_0_init9=
 wave_0_per_frame1=tm = time*.1;
 wave_0_per_frame2=t1 = t1*sin(tm*t4) + (1-t1)*sin(tm*t7);
@@ -138,13 +138,13 @@ wave_0_per_point32=mlev = lev*above(sample,0);
 wave_0_per_point33=
 wave_0_per_point34=swi = equal(q4,0)*equal(sample,0);
 wave_0_per_point35=
-wave_0_per_point36=ha = if(swi,1-2*rand(2),ha);
-wave_0_per_point37=hb = if(swi,1-2*rand(2),hb);
-wave_0_per_point38=hc = if(swi,1-2*rand(2),hc);
-wave_0_per_point39=hd = if(swi,1-2*rand(2),hd);
-wave_0_per_point40=he = if(swi,1-2*rand(2),he);
-wave_0_per_point41=hf = if(swi,1-2*rand(2),hf);
-wave_0_per_point42=hg = if(swi,1-2*rand(2),hg);
+wave_0_per_point36=ha = if(swi,1-2*int(rand(2)),ha);
+wave_0_per_point37=hb = if(swi,1-2*int(rand(2)),hb);
+wave_0_per_point38=hc = if(swi,1-2*int(rand(2)),hc);
+wave_0_per_point39=hd = if(swi,1-2*int(rand(2)),hd);
+wave_0_per_point40=he = if(swi,1-2*int(rand(2)),he);
+wave_0_per_point41=hf = if(swi,1-2*int(rand(2)),hf);
+wave_0_per_point42=hg = if(swi,1-2*int(rand(2)),hg);
 wave_0_per_point43=
 wave_0_per_point44=aang = if(above(sample,0),aang,aang + q1*ha*1);
 wave_0_per_point45=bang = if(above(sample,0),bang,bang + q1*hb*1.33);
@@ -214,14 +214,14 @@ wavecode_1_r=1.000000
 wavecode_1_g=1.000000
 wavecode_1_b=1.000000
 wavecode_1_a=0.100000
-wave_1_init1=t1 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_1_init2=t2 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_1_init3=t3 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_1_init4=t4 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_1_init5=t5 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_1_init6=t6 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_1_init7=t7 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_1_init8=t8 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_1_init1=t1 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_1_init2=t2 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_1_init3=t3 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_1_init4=t4 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_1_init5=t5 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_1_init6=t6 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_1_init7=t7 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_1_init8=t8 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
 wave_1_init9=
 wave_1_per_frame1=tm = time*.1;
 wave_1_per_frame2=t1 = t1*sin(tm*t4) + (1-t1)*sin(tm*t7);
@@ -278,13 +278,13 @@ wave_1_per_point32=mlev = lev*above(sample,0);
 wave_1_per_point33=
 wave_1_per_point34=swi = equal(q4,0)*equal(sample,0);
 wave_1_per_point35=
-wave_1_per_point36=ha = if(swi,1-2*rand(2),ha);
-wave_1_per_point37=hb = if(swi,1-2*rand(2),hb);
-wave_1_per_point38=hc = if(swi,1-2*rand(2),hc);
-wave_1_per_point39=hd = if(swi,1-2*rand(2),hd);
-wave_1_per_point40=he = if(swi,1-2*rand(2),he);
-wave_1_per_point41=hf = if(swi,1-2*rand(2),hf);
-wave_1_per_point42=hg = if(swi,1-2*rand(2),hg);
+wave_1_per_point36=ha = if(swi,1-2*int(rand(2)),ha);
+wave_1_per_point37=hb = if(swi,1-2*int(rand(2)),hb);
+wave_1_per_point38=hc = if(swi,1-2*int(rand(2)),hc);
+wave_1_per_point39=hd = if(swi,1-2*int(rand(2)),hd);
+wave_1_per_point40=he = if(swi,1-2*int(rand(2)),he);
+wave_1_per_point41=hf = if(swi,1-2*int(rand(2)),hf);
+wave_1_per_point42=hg = if(swi,1-2*int(rand(2)),hg);
 wave_1_per_point43=
 wave_1_per_point44=aang = if(above(sample,0),aang,aang + q1*ha*1);
 wave_1_per_point45=bang = if(above(sample,0),bang,bang + q1*hb*1.33);
@@ -354,14 +354,14 @@ wavecode_2_r=1.000000
 wavecode_2_g=1.000000
 wavecode_2_b=1.000000
 wavecode_2_a=0.100000
-wave_2_init1=t1 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_2_init2=t2 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_2_init3=t3 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_2_init4=t4 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_2_init5=t5 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_2_init6=t6 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_2_init7=t7 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_2_init8=t8 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_2_init1=t1 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init2=t2 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init3=t3 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init4=t4 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init5=t5 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init6=t6 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init7=t7 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init8=t8 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
 wave_2_init9=
 wave_2_per_frame1=tm = time*.1;
 wave_2_per_frame2=t1 = t1*sin(tm*t4) + (1-t1)*sin(tm*t7);
@@ -418,13 +418,13 @@ wave_2_per_point32=mlev = lev*above(sample,0);
 wave_2_per_point33=
 wave_2_per_point34=swi = equal(q4,0)*equal(sample,0);
 wave_2_per_point35=
-wave_2_per_point36=ha = if(swi,1-2*rand(2),ha);
-wave_2_per_point37=hb = if(swi,1-2*rand(2),hb);
-wave_2_per_point38=hc = if(swi,1-2*rand(2),hc);
-wave_2_per_point39=hd = if(swi,1-2*rand(2),hd);
-wave_2_per_point40=he = if(swi,1-2*rand(2),he);
-wave_2_per_point41=hf = if(swi,1-2*rand(2),hf);
-wave_2_per_point42=hg = if(swi,1-2*rand(2),hg);
+wave_2_per_point36=ha = if(swi,1-2*int(rand(2)),ha);
+wave_2_per_point37=hb = if(swi,1-2*int(rand(2)),hb);
+wave_2_per_point38=hc = if(swi,1-2*int(rand(2)),hc);
+wave_2_per_point39=hd = if(swi,1-2*int(rand(2)),hd);
+wave_2_per_point40=he = if(swi,1-2*int(rand(2)),he);
+wave_2_per_point41=hf = if(swi,1-2*int(rand(2)),hf);
+wave_2_per_point42=hg = if(swi,1-2*int(rand(2)),hg);
 wave_2_per_point43=
 wave_2_per_point44=aang = if(above(sample,0),aang,aang + q1*ha*1);
 wave_2_per_point45=bang = if(above(sample,0),bang,bang + q1*hb*1.33);
@@ -494,14 +494,14 @@ wavecode_3_r=1.000000
 wavecode_3_g=1.000000
 wavecode_3_b=1.000000
 wavecode_3_a=0.100000
-wave_3_init1=t1 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_3_init2=t2 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_3_init3=t3 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_3_init4=t4 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_3_init5=t5 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_3_init6=t6 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_3_init7=t7 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_3_init8=t8 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_3_init1=t1 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_3_init2=t2 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_3_init3=t3 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_3_init4=t4 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_3_init5=t5 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_3_init6=t6 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_3_init7=t7 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_3_init8=t8 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
 wave_3_init9=
 wave_3_per_frame1=tm = time*.1;
 wave_3_per_frame2=t1 = t1*sin(tm*t4) + (1-t1)*sin(tm*t7);
@@ -558,13 +558,13 @@ wave_3_per_point32=mlev = lev*above(sample,0);
 wave_3_per_point33=
 wave_3_per_point34=swi = equal(q4,0)*equal(sample,0);
 wave_3_per_point35=
-wave_3_per_point36=ha = if(swi,1-2*rand(2),ha);
-wave_3_per_point37=hb = if(swi,1-2*rand(2),hb);
-wave_3_per_point38=hc = if(swi,1-2*rand(2),hc);
-wave_3_per_point39=hd = if(swi,1-2*rand(2),hd);
-wave_3_per_point40=he = if(swi,1-2*rand(2),he);
-wave_3_per_point41=hf = if(swi,1-2*rand(2),hf);
-wave_3_per_point42=hg = if(swi,1-2*rand(2),hg);
+wave_3_per_point36=ha = if(swi,1-2*int(rand(2)),ha);
+wave_3_per_point37=hb = if(swi,1-2*int(rand(2)),hb);
+wave_3_per_point38=hc = if(swi,1-2*int(rand(2)),hc);
+wave_3_per_point39=hd = if(swi,1-2*int(rand(2)),hd);
+wave_3_per_point40=he = if(swi,1-2*int(rand(2)),he);
+wave_3_per_point41=hf = if(swi,1-2*int(rand(2)),hf);
+wave_3_per_point42=hg = if(swi,1-2*int(rand(2)),hg);
 wave_3_per_point43=
 wave_3_per_point44=aang = if(above(sample,0),aang,aang + (q1*.8 + q2*.1 + q3*.1)*ha*1);
 wave_3_per_point45=bang = if(above(sample,0),bang,bang + (q1*.57 + q2*.33 + q3*.1)*hb*1.33);
@@ -751,7 +751,7 @@ per_frame_28=swi = above(bd - vm,0);
 per_frame_29=
 per_frame_30=q4 = 1-swi;
 per_frame_31=
-per_frame_32=cm = if(above(iter,30) + equal(time,0),rand(3) + 1,cm);
+per_frame_32=cm = if(above(iter,30) + equal(time,0),int(rand(3)) + 1,cm);
 per_frame_33=iter = (iter + tic)*(1-above(iter,30));
 per_frame_34=q5 = if(equal(cm,0),3,cm);
 per_frame_35=

@@ -730,7 +730,7 @@ per_frame_4=old_mid_flop=mid_flop;
 per_frame_5=
 per_frame_6=chaos=.9+.1*sin(pulse) / treb_att;
 per_frame_7=chaos = 0;
-per_frame_8=entropy=if(bnot(entropy),2,if(equal(pulse,-20),1+rand(3),entropy));
+per_frame_8=entropy=if(bnot(entropy),2,if(equal(pulse,-20),1+int(rand(3)),entropy));
 per_frame_9=entropy =0;
 per_frame_10=bass_thresh = above(bass_att,bass_thresh)*2 + (1-above(bass_att,bass_thresh))*((bass_thresh-1.3)*chaos+1.3);
 per_frame_11=bass_flop=abs(bass_flop-equal(bass_thresh,2));

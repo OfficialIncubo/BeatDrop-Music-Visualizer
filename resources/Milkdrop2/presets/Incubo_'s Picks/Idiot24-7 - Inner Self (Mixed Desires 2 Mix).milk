@@ -98,6 +98,8 @@ per_frame_34=ib_r=ib_coler-ib_r*sin(time)*cos(q2+q3);
 per_frame_35=ib_b=ib_coler+ib_b*sin(time)*cos(q4-q1);
 per_pixel_1=zoom=zoom+.10*sin(ang-.20*rad+.20*rad)*sin(time*0.42*log(2))*sin(time);
 per_pixel_2=zoom=zoom+.10*sin(ang-.20*rad+.20*rad+2)*sin(time*0.53*log(2))*sin(time);
+per_pixel_3=dy += 1;
+per_pixel_4=dx -= 1;
 per_frame_init_1=ob_coler=int(rand(10))*.1;
 per_frame_init_2=ib_coler=int(rand(10))*.1;
 per_frame_init_3=wave_coler=int(rand(10))*.1;

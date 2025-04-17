@@ -1,0 +1,154 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=0.000
+fGammaAdj=1.000
+fDecay=1.000
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=0.261
+fWaveSmoothing=0.774
+fWaveParam=0.000
+fModWaveAlphaStart=0.000
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00001
+dy=0.00001
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.570
+wave_y=0.620
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=1.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=1.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=0.000
+mv_g=0.000
+mv_b=0.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=//          3 SOCS.12 -- Standard Operating Control System
+per_frame_2=//                      By: Stirfriedramen
+per_frame_3=// OUTPUTS:-------------------------------------------------------------
+per_frame_4=//q32 -- volume        Rough signal indicating loudness (0 to 2-ish)
+per_frame_5=//q31 -- volume_att    Attenuated loudness signal       (0 to 2-ish)
+per_frame_6=//q30 -- vol_texture   How rough or smooth is volume (0=leg, 1=stec)
+per_frame_7=//q29 -- bass_beat     boolian (1 or 0) 1 = sudden spike in bass
+per_frame_8=//q28 -- bass_weight   % of total volume that is bass (0 to 1)
+per_frame_9=//q27 -- bass_text     How rough or smooth is bass   (0=leg, 1=stec) 
+per_frame_10=//q26 -- mid_beat      boolian (1 or 0) 1 = sudden spike in mid
+per_frame_11=//q25 -- mid_weight    % of total volume that is mid  (0 to 1)
+per_frame_12=//q24 -- mid_text      How rough or smooth is mid    (0=leg, 1=stec) 
+per_frame_13=//q23 -- treb_beat     boolian (1 or 0) 1 = sudden spike in treb
+per_frame_14=//q22 -- treb_weight   % of total volume that is treb (0 to 1)
+per_frame_15=//q21 -- treb_tex      How rough or smooth is treb   (0=leg, 1=stec) 
+per_frame_16=// CONTROLS:------------------------------------------------------------
+per_frame_17=//   set these variables to taste, or control them with your code!
+per_frame_18=// These increase the senstivity of the beat detectors (0 to 1)
+per_frame_19=b_beat_sens = .5;
+per_frame_20=m_beat_sens = .5;
+per_frame_21=t_beat_sens = .5;
+per_frame_22=// Use these to reduce the sensitivity of the texture signals (0 .. 100)
+per_frame_23=v_tex_sens = 5.00;  b_tex_sens = 5.00;  m_tex_sens = 5.00;  t_tex_sens = 5.00;
+per_frame_24=// Set weights_smooth to 0 if you want to use the rougher signal
+per_frame_25=weights_smooth = 1;
+per_frame_26=// SOCS Code:-----------------------------------------------------------
+per_frame_27=q32 = 1 / min((bass + mid + treb), 33);
+per_frame_28=q31 = 1 / min((bass_att + mid_att + treb_att), 33);
+per_frame_29=q29 = if((floor(max(bass - bass_att, 0) * (20 * b_beat_sens))),1,0);
+per_frame_30=q28 = if((weights_smooth), bass_att * q31, bass * q32);
+per_frame_31=b_tex = (b_tex * (100 - b_tex_sens) + abs(bass - bass_att) * b_tex_sens) * 0.01;
+per_frame_32=q27 = min(b_tex * 1.333, 1);
+per_frame_33=q26 = if((floor(max(mid  -  mid_att, 0) * (20 * m_beat_sens))),1,0);
+per_frame_34=q25 = if((weights_smooth), mid_att * q31, mid * q32);
+per_frame_35=m_tex = (m_tex * (100 - m_tex_sens) + abs(mid  -  mid_att) * m_tex_sens) * 0.01;
+per_frame_36=q24 = min(m_tex * 1.166, 1);
+per_frame_37=q23 = if((floor(max(treb - treb_att, 0) * (20 * t_beat_sens))),1,0);
+per_frame_38=q22 = if((weights_smooth), treb_att * q31, treb * q32);
+per_frame_39=t_tex = (t_tex * (100 - t_tex_sens) + abs(treb - treb_att) * t_tex_sens) * 0.01;
+per_frame_40=q21 = min(t_tex * 1.166, 1);
+per_frame_41=q32 = (bass + mid + treb);
+per_frame_42=q31 = (bass_att + mid_att + treb_att);
+per_frame_43=v_tex = (v_tex * (100 - v_tex_sens) + abs(q32 - q31) * v_tex_sens) * 0.01;
+per_frame_44=q30 = min(v_tex, 1);
+per_frame_45=q31 *= 0.060606;
+per_frame_46=q32 *= 0.060606;
+per_frame_47=//----------------------------------------------------------------------
+per_frame_48=//      You should still have 52 user variables left and q1 to q20 
+per_frame_49=//       VVVVVVVVVVV  Add your beautiful code below  VVVVVVVVVVV
+per_frame_50=//--------------------vvvvvvvvvvvvvvvvvvvvvvvvvvvvv---------------------
+per_frame_51=q1 = q21;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // sample previous frame
+warp_4=`    ret = tex2D( sampler_main, uv ).xyz;
+warp_5=`    
+warp_6=`    // darken (decay) over time
+warp_7=`    ret *= 0.98; //or try: ret -= 0.004;
+warp_8=`}
+comp_1=`sampler sampler_ByteSprite_400x400;
+comp_2=`shader_body
+comp_3=`{
+comp_4=`    float bite = floor(q1 * 255);
+comp_5=`    float channel = floor(bite * 0.015625);
+comp_6=`    float carryA = frac(bite * 0.015625);
+comp_7=`    carryA *= 8;
+comp_8=`    float carryB = frac(carryA) * 8;
+comp_9=`    carryA = floor(carryA);
+comp_10=`    float step = 0.142857142857;
+comp_11=`    float offx = carryB * step;
+comp_12=`    float offy = carryA * step;
+comp_13=`    float2 offset = float2(offx, offy);
+comp_14=`    float4 number = tex2D(sampler_ByteSprite_400x400, (uv - offset)*0.125 + offset).xyzw;
+comp_15=`    float red = number.x;  float green = number.y;  float blue = number.z;  float alpha = number.w;
+comp_16=`    float output = red;
+comp_17=`    if (channel == 1){output = green;}
+comp_18=`    if (channel == 2){output = blue;}
+comp_19=`    if (channel == 3){output = alpha;}
+comp_20=`    ret = output;
+comp_21=`}

@@ -237,7 +237,7 @@ shape_2_per_frame2=angc = angc + bass*.01;
 shape_2_per_frame3=x = .45;
 shape_2_per_frame4=y = .55;
 shape_2_per_frame5=
-shape_2_per_frame6=r2 = (rand100)*.01
+shape_2_per_frame6=r2 = int(rand(10))*.01
 shapecode_3_enabled=1
 shapecode_3_sides=4
 shapecode_3_additive=1

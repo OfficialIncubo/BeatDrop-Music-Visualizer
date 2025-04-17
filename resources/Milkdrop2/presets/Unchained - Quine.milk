@@ -79,7 +79,7 @@ per_frame_15=treb_residual = treb_changed*sin(pulse*3) + bnot(treb_changed)*treb
 per_frame_16=mid_residual = mid_changed*sin(pulse*3) + bnot(mid_changed)*mid_residual;
 per_frame_17=monitor=warp/100;
 per_frame_18=pulse=if(above(abs(pulse),20),-20,pulse+(bass_thresh+mid_thresh+treb_thresh)*(warp/100));
-per_frame_19=entropy=if(bass_changed*mid_changed*treb_changed,bass_flop+treb_flop+mid_flop+rand(rot*10),entropy);
+per_frame_19=entropy=if(bass_changed*mid_changed*treb_changed,bass_flop+treb_flop+mid_flop+int(rand(rot*10)),entropy);
 per_frame_20=q1=mid_residual;
 per_frame_21=q2=bass_residual;
 per_frame_22=q3=treb_residual;

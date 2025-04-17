@@ -85,14 +85,14 @@ wavecode_0_r=0.200
 wavecode_0_g=0.300
 wavecode_0_b=1.000
 wavecode_0_a=0.600
-wave_0_init1=t1 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_0_init2=t2 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_0_init3=t3 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_0_init4=t4 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_0_init5=t5 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_0_init6=t6 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_0_init7=t7 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_0_init8=t8 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init1=t1 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init2=t2 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init3=t3 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init4=t4 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init5=t5 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init6=t6 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init7=t7 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_0_init8=t8 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
 wave_0_init9=
 wave_0_per_frame1=t2 = t2 + bass_att;
 wavecode_1_enabled=0
@@ -108,14 +108,14 @@ wavecode_1_r=1.000
 wavecode_1_g=1.000
 wavecode_1_b=1.000
 wavecode_1_a=0.100
-wave_1_init1=t1 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_1_init2=t2 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_1_init3=t3 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_1_init4=t4 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_1_init5=t5 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_1_init6=t6 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_1_init7=t7 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_1_init8=t8 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_1_init1=t1 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_1_init2=t2 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_1_init3=t3 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_1_init4=t4 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_1_init5=t5 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_1_init6=t6 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_1_init7=t7 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_1_init8=t8 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
 wave_1_init9=
 wave_1_per_frame1=tm = time*.1;
 wave_1_per_frame2=t1 = t1*sin(tm*t4) + (1-t1)*sin(tm*t7);
@@ -149,14 +149,14 @@ wavecode_2_r=0.000
 wavecode_2_g=0.200
 wavecode_2_b=0.000
 wavecode_2_a=1.000
-wave_2_init1=t1 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_2_init2=t2 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_2_init3=t3 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_2_init4=t4 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_2_init5=t5 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_2_init6=t6 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_2_init7=t7 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
-wave_2_init8=t8 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_2_init1=t1 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init2=t2 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init3=t3 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init4=t4 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init5=t5 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init6=t6 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init7=t7 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
+wave_2_init8=t8 = 1 + (int(rand(101))*.01 - int(rand(101))*.01)*.3;
 wave_2_init9=
 wave_2_per_frame1=tm = time*.1;
 wave_2_per_frame2=t1 = t1*sin(tm*t4) + (1-t1)*sin(tm*t7);
@@ -263,7 +263,7 @@ shapecode_2_border_r=0.500
 shapecode_2_border_g=0.500
 shapecode_2_border_b=1.000
 shapecode_2_border_a=0.000
-shape_2_per_frame1=x = rand(50)/50;
+shape_2_per_frame1=x = int(rand(50))/50;
 shape_2_per_frame2=y = .5;
 shape_2_per_frame3=
 shape_2_per_frame4=r = .4;

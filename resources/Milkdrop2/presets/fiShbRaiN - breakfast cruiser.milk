@@ -96,8 +96,8 @@ wave_0_per_point10=
 wave_0_per_point11=r=bass*.6;
 wave_0_per_point12=g=treb*.6;
 wave_0_per_point13=
-wave_0_per_point14=nx=if(equal(sample,1),rand(10)*.1,nx);
-wave_0_per_point15=ny=if(equal(sample,1),rand(10)*.1,ny);
+wave_0_per_point14=nx=if(equal(sample,1),int(rand(10))*.1,nx);
+wave_0_per_point15=ny=if(equal(sample,1),int(rand(10))*.1,ny);
 wavecode_1_enabled=1
 wavecode_1_samples=512
 wavecode_1_sep=0

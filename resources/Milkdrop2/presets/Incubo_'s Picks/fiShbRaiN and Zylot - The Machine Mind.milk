@@ -257,4 +257,6 @@ shapecode_3_border_r=1.000000
 shapecode_3_border_g=1.000000
 shapecode_3_border_b=1.000000
 shapecode_3_border_a=0.100000
-per_pixel_1=zoom = 1
+per_pixel_1=zoom = 1;
+per_pixel_2=dy += 1;
+per_pixel_3=dx -= 1;

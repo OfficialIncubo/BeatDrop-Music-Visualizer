@@ -82,9 +82,9 @@ wavecode_0_g=1.000
 wavecode_0_b=1.000
 wavecode_0_a=1.000
 wave_0_per_point1=y=.3+pow(value1*.01,.2);
-wave_0_per_point2=r=rand(10)*.1;
-wave_0_per_point3=g=rand(10)*.1;
-wave_0_per_point4=b=rand(10)*.1;
+wave_0_per_point2=r=int(rand(10))*.1;
+wave_0_per_point3=g=int(rand(10))*.1;
+wave_0_per_point4=b=int(rand(10))*.1;
 wave_0_per_point5=x = if(equal(frame%2,0),.6 + -sample*.45,.4+sample*.45);
 wave_0_per_point6=x = if(above(sample,.2),x,-1);
 wavecode_1_enabled=1
@@ -102,9 +102,9 @@ wavecode_1_b=1.000
 wavecode_1_a=1.000
 wave_1_per_point1=x = if(equal(frame%2,0),.6 + -sample*.45,.4+sample*.45);
 wave_1_per_point2=y=.5-pow(value2*.01,.2);
-wave_1_per_point3=r=rand(10)*.1;
-wave_1_per_point4=g=rand(10)*.1;
-wave_1_per_point5=b=rand(10)*.1;
+wave_1_per_point3=r=int(rand(10))*.1;
+wave_1_per_point4=g=int(rand(10))*.1;
+wave_1_per_point5=b=int(rand(10))*.1;
 wave_1_per_point6=x = if(above(sample,.2),x,-1);
 wavecode_2_enabled=0
 wavecode_2_samples=512

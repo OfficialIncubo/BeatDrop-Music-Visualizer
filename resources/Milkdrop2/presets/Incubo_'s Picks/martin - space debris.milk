@@ -87,7 +87,7 @@ wavecode_0_b=0.000
 wavecode_0_a=0.000
 wave_0_per_frame1=t1 = 0; t2 = 1000;
 wave_0_per_point1=if (reg05,
-wave_0_per_point2=  sig = log(1+(value1+value2)/reg20) * (1+exp(-16*sample));
+wave_0_per_point2=  sig = log(1+(value1+value2)) * (1+exp(-16*sample));
 wave_0_per_point3=  dec = if (sig > gmegabuf(t1),reg00,reg01);
 wave_0_per_point4=  gmegabuf(t1) *= dec;
 wave_0_per_point5=  gmegabuf(t1) += (1-dec)*sig;
@@ -210,13 +210,13 @@ shapecode_1_border_b=0.400
 shapecode_1_border_a=0.000
 shape_1_per_frame1=x = 1-rad/2;
 shape_1_per_frame2=y = 1-instance/num_inst;
-shape_1_per_frame3=bias = -0.05;
-shape_1_per_frame4=r = max(0,gmegabuf(instance)/4+bias);
+shape_1_per_frame3=bias = -0.03;
+shape_1_per_frame4=r = max(0,gmegabuf(instance)/4+bias)/reg20;
 shape_1_per_frame5=r = 1-exp(-r);
 shape_1_per_frame6=r2 = r;
 shape_1_per_frame7=
 shape_1_per_frame8=dec = 1-2/fps;
-shape_1_per_frame9=g = max(0,gmegabuf (1000+instance)/4+bias);
+shape_1_per_frame9=g = max(0,gmegabuf (1000+instance)/4/reg20+bias);
 shape_1_per_frame10=g=1-exp(-g);
 shape_1_per_frame11=g2=g;
 shape_1_per_frame12=
@@ -308,7 +308,7 @@ shape_3_per_frame16=
 per_frame_init_1=n=0; loop (5000, gmegabuf(n)=0; n+=1);
 per_frame_1=dec_f = pow (0.5, 50/fps);
 per_frame_2=dec_m = pow (0.84,50/fps);
-per_frame_3=dec_s = 1-0.6/fps;
+per_frame_3=dec_s = 1-0.8/fps;
 per_frame_4=
 per_frame_5=vol = (bass+mid+treb)/3; 
 per_frame_6=vol_ = dec_m * vol_ + (1-dec_m)*vol;
@@ -324,8 +324,8 @@ per_frame_15=t1 = t1+trig;
 per_frame_16=reg32 = aspecty;
 per_frame_17=
 per_frame_18=reg19 *= dec_s;
-per_frame_19=reg20= reg20*dec_s + (1-dec_s)*reg19*2;
-per_frame_20=reg20 = min(10,max(0.05,reg20));
+per_frame_19=reg20= reg20*dec_s + (1-dec_s)*reg19;
+per_frame_20=reg20 = min(20,max(0.05,reg20));
 per_frame_21=monitor = reg20;
 per_frame_22=
 per_frame_23=reg00 = dec_f*0;
@@ -334,7 +334,7 @@ per_frame_25=reg02 = dec_s;
 per_frame_26=
 per_frame_27=reg05 = vol_>.1; //!stop
 per_frame_28=
-per_frame_29=monitor = dec_m;
+per_frame_29=monitor = reg20;
 warp_1=`#define sat saturate
 warp_2=`static const float quality = 3;
 warp_3=`static const float cscale = 0.01;
@@ -374,7 +374,7 @@ warp_36=`float l = saturate(-lav_gnd);
 warp_37=`ret.r = (lav_gnd +noise3 (rsl.xy+0.004,cscale))*2*sat(rad*2);
 warp_38=`ret.b = lerp(l,GetBlur1(uv).b,0.3);
 warp_39=`
-warp_40=`ret.r += sat(GetPixel(uv0+.01*(uv1)).g)/4;
+warp_40=`//ret.r += sat(GetPixel(uv0+.01*(uv1)).g)/4;
 warp_41=`
 warp_42=`ret *= uv.x<0.97;
 warp_43=`}
@@ -425,7 +425,7 @@ comp_44=`back = 0.2*cld*float3 (0,0.6,1);
 comp_45=`back *= GP(uvb).b;
 comp_46=`back += GP(uvb).r/2;
 comp_47=`back += GP(uvb).r*(0.5+col)*(sig4*3*uv.y);
-comp_48=`
+comp_48=`back *= 1.25;
 comp_49=`//back *= sat (1-2*GP(uvb).g); //dark stars
 comp_50=`
 comp_51=`back += exp(-12*length (uvb.y-0.5+(GP(uvb).b-0.5)*.6*rand_preset*rad))*col2*0.5*sqrt(mid_att);

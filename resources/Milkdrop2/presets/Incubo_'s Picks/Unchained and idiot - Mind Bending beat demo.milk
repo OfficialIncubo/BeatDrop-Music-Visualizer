@@ -78,7 +78,7 @@ per_frame_14=bass_residual = bass_changed*sin(pulse*3) + bnot(bass_changed)*bass
 per_frame_15=treb_residual = treb_changed*sin(pulse*3) + bnot(treb_changed)*treb_residual;
 per_frame_16=mid_residual = mid_changed*sin(pulse*3) + bnot(mid_changed)*mid_residual;
 per_frame_17=pulse=if(above(abs(pulse),3.14),-3.14,pulse+(bass_thresh+mid_thresh+treb_thresh)*.0035);
-per_frame_18=entropy=if(bass_changed*mid_changed*treb_changed,(1+bass_flop+treb_flop+mid_flop)*(1+rand(3)),entropy);
+per_frame_18=entropy=if(bass_changed*mid_changed*treb_changed,(1+bass_flop+treb_flop+mid_flop)*(1+int(rand(3))),entropy);
 per_frame_19=q1=mid_residual;
 per_frame_20=q2=bass_residual;
 per_frame_21=q3=treb_residual;

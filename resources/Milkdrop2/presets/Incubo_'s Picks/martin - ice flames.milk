@@ -3,7 +3,7 @@ PSVERSION=3
 PSVERSION_WARP=3
 PSVERSION_COMP=2
 [preset00]
-fRating=3.000
+fRating=2.000
 fGammaAdj=1.980
 fDecay=0.500
 fVideoEchoZoom=1.000
@@ -257,9 +257,9 @@ shapecode_3_border_r=1.000
 shapecode_3_border_g=1.000
 shapecode_3_border_b=1.000
 shapecode_3_border_a=0.000
-per_frame_1=dec_med = pow (0.9, 30/fps);
-per_frame_2=dec_slow = pow (0.99, 30/fps);
-per_frame_3=beat = max (max (bass, mid), treb); 
+per_frame_1=dec_med = exp (-3/fps);
+per_frame_2=dec_slow = exp (-.3/fps);
+per_frame_3=beat = bass+mid+treb; 
 per_frame_4=avg = avg*dec_slow + beat*(1-dec_slow);
 per_frame_5=is_beat = above(beat, .1+avg+peak) * above (time, t0+.2);
 per_frame_6=t0 = is_beat*time + (1-is_beat)*t0;
@@ -299,10 +299,8 @@ per_frame_39=q31 = p4;
 per_frame_40=
 per_frame_41=zoom = 1 + .05*q1;
 per_frame_42=rot = -0.007 * index;
-per_frame_43=
-per_frame_44=q32 = pow(0.996, 30/fps); //fade
-per_frame_45=
-per_frame_46=monitor = index2;
+per_frame_43=q32 = exp(-0.12/fps);
+per_frame_44=monitor = index2;
 per_pixel_1=dy = -.005;
 warp_1=`shader_body {
 warp_2=`float corr = texsize.xy*texsize_noise_lq.zw;

@@ -159,7 +159,7 @@ private:
 
     // GENERAL PRIVATE STUFF
     int          m_frame;           // current frame #, starting at zero
-    float        m_time;            // current animation time in seconds; starts at zero.
+    double        m_time;            // current animation time in seconds; starts at zero.
     float        m_fps;             // current estimate of frames per second
     HINSTANCE    m_hInstance;       // handle to application instance
     DXContext*   m_lpDX;            // pointer to DXContext object

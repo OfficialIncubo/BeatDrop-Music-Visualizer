@@ -1,0 +1,539 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.000
+fDecay=0.993
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=1
+nWaveMode=7
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=1
+bInvert=0
+fWaveAlpha=1.113
+fWaveScale=0.090
+fWaveSmoothing=0.000
+fWaveParam=-1.000
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=2.000
+fWarpAnimSpeed=0.079
+fWarpScale=0.563
+fZoomExponent=8.00140
+fShader=0.000
+zoom=0.94017
+rot=0.05200
+cx=0.500
+cy=0.452
+dx=0.00001
+dy=0.00001
+warp=0.52994
+sx=1.01000
+sy=1.03030
+wave_r=1.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.430
+ob_a=0.000
+ib_size=0.061
+ib_r=0.750
+ib_g=0.610
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=32.640
+nMotionVectorsY=32.160
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.100
+mv_r=0.000
+mv_g=0.000
+mv_b=0.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=0
+wavecode_0_samples=2
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.50000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=0.190
+wave_0_per_frame1=a *= q17;
+wave_0_per_frame2=r = min(treb, 1);
+wave_0_per_frame3=b = min(bass, 1);
+wave_0_per_frame4=g = min(mid, 1);
+wave_0_per_point1=x = .5005;
+wave_0_per_point2=y = sample;
+wavecode_1_enabled=1
+wavecode_1_samples=2
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=1
+wavecode_1_bAdditive=0
+wavecode_1_scaling=1.00000
+wavecode_1_smoothing=0.50000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=0.210
+wave_1_per_frame1=
+wave_1_per_frame2=r = min(2 * q22, 1);
+wave_1_per_frame3=g = min(2 * q25, 1);
+wave_1_per_frame4=b = min(2 * q28, 1);
+wave_1_per_frame5=a *= q32 < q31;
+wave_1_per_point1=x = if (sample,1.386,-0.387);
+wave_1_per_point2=y = if (sample,0.00,0.999) ;
+wavecode_2_enabled=0
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.00000
+wavecode_2_smoothing=0.50000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=1.000
+wavecode_2_a=1.000
+wavecode_3_enabled=0
+wavecode_3_samples=512
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=1.000
+shapecode_0_enabled=1
+shapecode_0_sides=3
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=1
+shapecode_0_num_inst=1
+shapecode_0_x=0.310
+shapecode_0_y=0.500
+shapecode_0_rad=0.38316
+shapecode_0_ang=6.28319
+shapecode_0_tex_ang=6.28319
+shapecode_0_tex_zoom=2.81464
+shapecode_0_r=1.000
+shapecode_0_g=1.000
+shapecode_0_b=1.000
+shapecode_0_a=1.000
+shapecode_0_r2=1.000
+shapecode_0_g2=1.000
+shapecode_0_b2=1.000
+shapecode_0_a2=0.250
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=0.000
+shape_0_per_frame1=a = 1 - q26;
+shape_0_per_frame2=x= q18 *.6;
+shape_0_per_frame3=y = 1 - q19 * .64;
+shape_0_per_frame4=ang = q18 * 6.283;
+shape_0_per_frame5=sides = 3 + q31 * 12;
+shape_0_per_frame6=r = if(q26, min(2 * q25, 1), 1);
+shape_0_per_frame7=g = if(q26, min(2 * q28, 1), 1);
+shape_0_per_frame8=b = if(q26, min(2 * q22, 1), 1);
+shapecode_1_enabled=1
+shapecode_1_sides=4
+shapecode_1_additive=1
+shapecode_1_thickOutline=1
+shapecode_1_textured=0
+shapecode_1_num_inst=1
+shapecode_1_x=0.500
+shapecode_1_y=0.500
+shapecode_1_rad=0.84096
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=1.00000
+shapecode_1_r=1.000
+shapecode_1_g=0.000
+shapecode_1_b=0.000
+shapecode_1_a=0.000
+shapecode_1_r2=0.000
+shapecode_1_g2=1.000
+shapecode_1_b2=0.000
+shapecode_1_a2=0.000
+shapecode_1_border_r=1.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=1.000
+shapecode_1_border_a=0.690
+shape_1_per_frame1=
+shape_1_per_frame2=x= q28 *.6;
+shape_1_per_frame3=y = 1 - q22 * .64;
+shape_1_per_frame4=ang = q28 * 3.1415;
+shape_1_per_frame5=rad = 1.25 + q31;
+shape_1_per_frame6=sides = 3 + q32 * 12;
+shape_1_per_frame7=border_r = min(2 * q28, 1);
+shape_1_per_frame8=border_g = min(2 * q22, 1);
+shape_1_per_frame9=border_b = min(2 * q25, 1);
+shape_1_per_frame10=border_a *= q32 < q31;
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_num_inst=1
+shapecode_2_x=0.500
+shapecode_2_y=0.500
+shapecode_2_rad=0.10000
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=1.00000
+shapecode_2_r=1.000
+shapecode_2_g=0.000
+shapecode_2_b=0.000
+shapecode_2_a=1.000
+shapecode_2_r2=0.000
+shapecode_2_g2=1.000
+shapecode_2_b2=0.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=1.000
+shapecode_2_border_a=0.100
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=1
+shapecode_3_x=0.500
+shapecode_3_y=0.500
+shapecode_3_rad=0.10000
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.00000
+shapecode_3_r=1.000
+shapecode_3_g=0.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=1.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=1.000
+shapecode_3_border_b=1.000
+shapecode_3_border_a=0.100
+per_frame_init_1=V1 = 0.001;
+per_frame_init_2=V2 = 0.00327;
+per_frame_init_3=wave_mystery = -1;
+per_frame_1=//           SOCS.12 -- Standard Operating Control System
+per_frame_2=//                      By: Stirfriedramen
+per_frame_3=// OUTPUTS:-------------------------------------------------------------
+per_frame_4=//q32 -- volume        Rough signal indicating loudness (0 to 2-ish)
+per_frame_5=//q31 -- volume_att    Attenuated loudness signal       (0 to 2-ish)
+per_frame_6=//q30 -- vol_texture   How rough or smooth is volume (0=leg, 1=stec)
+per_frame_7=//q29 -- bass_beat     boolian (1 or 0) 1 = sudden spike in bass
+per_frame_8=//q28 -- bass_weight   % of total volume that is bass (0 to 1)
+per_frame_9=//q27 -- bass_text     How rough or smooth is bass   (0=leg, 1=stec) 
+per_frame_10=//q26 -- mid_beat      boolian (1 or 0) 1 = sudden spike in mid
+per_frame_11=//q25 -- mid_weight    % of total volume that is mid  (0 to 1)
+per_frame_12=//q24 -- mid_text      How rough or smooth is mid    (0=leg, 1=stec) 
+per_frame_13=//q23 -- treb_beat     boolian (1 or 0) 1 = sudden spike in treb
+per_frame_14=//q22 -- treb_weight   % of total volume that is treb (0 to 1)
+per_frame_15=//q21 -- treb_tex      How rough or smooth is treb   (0=leg, 1=stec) 
+per_frame_16=
+per_frame_17=
+per_frame_18=// CONTROLS:------------------------------------------------------------
+per_frame_19=//   set these variables to taste, or control them with your code!
+per_frame_20=
+per_frame_21=// These increase the senstivity of the beat detectors (0 to 1)
+per_frame_22=    b_beat_sens = .85;    m_beat_sens = .5;    t_beat_sens = .45;
+per_frame_23=
+per_frame_24=// Use these to set the sensitivity of the texture signals (0 .. 100)
+per_frame_25=    v_tex_sens = 5.00;    b_tex_sens = 5.00;    m_tex_sens = 5.00;    t_tex_sens = 5.00;
+per_frame_26=
+per_frame_27=// Set weights_smooth to 0 if you want to use the rougher signal
+per_frame_28=    weights_smooth = 1;
+per_frame_29=
+per_frame_30=
+per_frame_31=// SOCS Code:-----------------------------------------------------------
+per_frame_32=    q32 = 1 / min((bass + mid + treb), 33);  q31 = 1 / min((bass_att + mid_att + treb_att), 33);
+per_frame_33=    q29 = if((floor(max(bass - bass_att, 0) * (20 * b_beat_sens))),1,0);
+per_frame_34=    q28 = if((weights_smooth), bass_att * q31, bass * q32);
+per_frame_35=    b_tex = (b_tex * (100 - b_tex_sens) + abs(bass - bass_att) * b_tex_sens) * 0.01;
+per_frame_36=    q27 = min(b_tex * 1.333, 1);  q26 = if((floor(max(mid  -  mid_att, 0) * (20 * m_beat_sens))),1,0);
+per_frame_37=    q25 = if((weights_smooth), mid_att * q31, mid * q32);
+per_frame_38=    m_tex = (m_tex * (100 - m_tex_sens) + abs(mid  -  mid_att) * m_tex_sens) * 0.01;
+per_frame_39=    q24 = min(m_tex * 1.166, 1);  q23 = if((floor(max(treb - treb_att, 0) * (20 * t_beat_sens))),1,0);
+per_frame_40=    q22 = if((weights_smooth), treb_att * q31, treb * q32);
+per_frame_41=    t_tex = (t_tex * (100 - t_tex_sens) + abs(treb - treb_att) * t_tex_sens) * 0.01;
+per_frame_42=    q21 = min(t_tex * 1.166, 1);  q32 = (bass + mid + treb);  q31 = (bass_att + mid_att + treb_att);
+per_frame_43=    v_tex = (v_tex * (100 - v_tex_sens) + abs(q32 - q31) * v_tex_sens) * 0.01;
+per_frame_44=    q30 = min(v_tex, 1);  q31 *= 0.060606;  q32 *= 0.060606;
+per_frame_45=
+per_frame_46=
+per_frame_47=//============================================================================
+per_frame_48=//                           Lighting Inputs
+per_frame_49=//============================================================================
+per_frame_50=// q1 = spotlight x (0 ... 1 = left to right)
+per_frame_51=// q2 = spotlight y (0 ... 1 = top to bottom)
+per_frame_52=// q3 = spotlight z (0 ... 1 = in to and out of screen)
+per_frame_53=// q4 = spotlight red
+per_frame_54=// q5 = spotlight green
+per_frame_55=// q6 = spotlight blue
+per_frame_56=// q7 = environmental light angle phi (0 ... 2pi = angle in the x,y plane)
+per_frame_57=// q8 = env light angle theta (-1/2pi ... 0 ... 1/2pi = elevation of q6 angle)
+per_frame_58=// q9 = environmental light red
+per_frame_59=// q10 = environmental light green
+per_frame_60=// q11 = environmental light blue
+per_frame_61=  q12 = pixelsx;// \_______________{\_ Not Actually
+per_frame_62=  q13 = pixelsy;// /               {/   Inputs!!!
+per_frame_63=
+per_frame_64=//============================================================================
+per_frame_65=//                         Lighting Controls
+per_frame_66=//============================================================================
+per_frame_67=q1 = ob_r;                          //spot x
+per_frame_68=q2 = ob_g;                          //spot y
+per_frame_69=q3 = ob_b;                          //spot z
+per_frame_70=q4 = 1;                           //spot red
+per_frame_71=q5 = 1;                           //spot green
+per_frame_72=q6 = 1;                           //spot blue
+per_frame_73=q7  = (ib_r * 6.28318) - 3.14159;   //env phi
+per_frame_74=q8  = (ib_g * 3.14159) - 1.570795;  //env theta
+per_frame_75=q9  = 0.5;                          //env red
+per_frame_76=q10 = 0.5;                          //env green
+per_frame_77=q11 = 0.5;                          //env blue
+per_frame_78=
+per_frame_79=//----------------------------------------------------------------------
+per_frame_80=//      You should still have 20 user variables left and q13 to q20 
+per_frame_81=//       VVVVVVVVVVV  Add your beautiful code below  VVVVVVVVVVV
+per_frame_82=//--------------------vvvvvvvvvvvvvvvvvvvvvvvvvvvvv---------------------
+per_frame_83=    V1 = if((T1 >= 1.0),-0.001,if((T1 <= 0),0.001,V1));
+per_frame_84=    V2 = if((T2 >= 1.0),-0.00327,if((T2 <= 0),0.00327,V2));
+per_frame_85=    T1 += V1;
+per_frame_86=    T2 += V2;
+per_frame_87=    q18 = T1;  
+per_frame_88=    q19 = T2;   
+per_frame_89=    q20 = if ((q20 > 1.0),0,q20 + 0.0005); 
+per_frame_90=    smooth_thresh = q30 > 0.35;
+per_frame_91=    wave_r = if(smooth_thresh,min(q22 * 3, 1) * q23, min(q25 * 3, 1) * q26);
+per_frame_92=    wave_g = if(smooth_thresh,min(q25 * 3, 1) * q26, min(q28 * 3, 1) * q29);
+per_frame_93=    wave_b = if(smooth_thresh,min(q28 * 3, 1) * q29, min(q22 * 3, 1) * q23);
+per_frame_94=    wave_mode -= (!smooth_thresh) * 7;
+per_frame_95=    wave_y += !smooth_thresh * 0.5;
+per_frame_96=    q17 = (q23 + q26 + q29)>0;  
+per_frame_97=    sx -= (q32 - q31);
+per_frame_98=    Flip = !Flip;
+per_frame_99=    wave_mystery = -1 + .5 * Flip;
+per_frame_100=    zoom += (q31 * 0.45);
+per_frame_101=    rot -= q27 * q28;
+per_frame_102=    c_x = .525 - (q24 * .28);
+per_frame_103=    c_y = .575 - (q22 * 0.28);
+per_frame_104=
+per_frame_105=monitor = smooth_thresh;
+per_frame_106=    q14 = ob_size;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // sample previous frame
+warp_4=`    ret = tex2D( sampler_main, uv ).xyz;
+warp_5=`    
+warp_6=`    // darken (decay) over time
+warp_7=`    ret *= 0.99; //or try: ret -= 0.004;
+warp_8=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`
+comp_4=`// This shader is intended to apply an eight way mirror, generate a normal map, create per-pixel material properties 
+comp_5=`//    based on pixel color properties (saturation, brightness, etc.) and then a lighting set up with one point light
+comp_6=`//    and one environmental light.
+comp_7=`
+comp_8=`
+comp_9=` // First we find the average of the x & y for each of our pixels, this lets us test to see which quarter of
+comp_10=` //   the screen we are in when you divide it up from corner to corner.  along the diagonal from 0,0 to 1,1,
+comp_11=` //   x = y, and along the other diagonal, (x + y) / 2 = .5... so we precompute for efficiency:
+comp_12=`    float non_ave = float((uv.x + uv.y)* 0.5);
+comp_13=`    float lat_ave = float((uv.x + texsize.z + uv.y)* 0.5);
+comp_14=`    float vrt_ave = float((uv.x + uv.y + texsize.w)* 0.5);
+comp_15=`
+comp_16=`
+comp_17=` // create 3 uv pairs; non, for the non-shifted pixel, lat, for the pixel shifted in x and vrt for the y-shifted one
+comp_18=`    float2 non_final = uv;
+comp_19=`    float2 lat_final = float2(uv.x + texsize.z, uv.y);
+comp_20=`    float2 vrt_final = float2(uv.x, uv.y + texsize.w);
+comp_21=`
+comp_22=`
+comp_23=` // Now we flip and flop each of our three uvs around to give us a total of 8 possible uvs per pixel
+comp_24=`    float2 non_one = non_final.yx;
+comp_25=`    float2 lat_one = lat_final.yx;
+comp_26=`    float2 vrt_one = vrt_final.yx;
+comp_27=`    float2 non_two = non_one * float2(-1, 1);
+comp_28=`    float2 lat_two = lat_one * float2(-1, 1);
+comp_29=`    float2 vrt_two = vrt_one * float2(-1, 1);
+comp_30=`    float2 non_three = non_two.yx; 
+comp_31=`    float2 lat_three = lat_two.yx; 
+comp_32=`    float2 vrt_three = vrt_two.yx;
+comp_33=`    float2 non_four = non_three * float2(-1, 1);
+comp_34=`    float2 lat_four = lat_three * float2(-1, 1);
+comp_35=`    float2 vrt_four = vrt_three * float2(-1, 1);
+comp_36=`    float2 non_five = non_four.yx;
+comp_37=`    float2 lat_five = lat_four.yx;
+comp_38=`    float2 vrt_five = vrt_four.yx;
+comp_39=`    float2 non_six = non_five * float2(-1, 1);
+comp_40=`    float2 lat_six = lat_five * float2(-1, 1);
+comp_41=`    float2 vrt_six = vrt_five * float2(-1, 1);
+comp_42=`    float2 non_seven = non_six.yx;
+comp_43=`    float2 lat_seven = lat_six.yx;
+comp_44=`    float2 vrt_seven = vrt_six.yx;
+comp_45=`
+comp_46=`
+comp_47=` // Next we decide which of our 24 uvs we should use for each of our 3 pixels
+comp_48=`    if (non_ave < 0.5 && non_final.x < 0.5 && non_final.y < 0.5 && non_final.x < non_final.y){non_final = non_one;}
+comp_49=`    if (lat_ave < 0.5 && lat_final.x < 0.5 && lat_final.y < 0.5 && lat_final.x < lat_final.y){lat_final = lat_one;}
+comp_50=`    if (vrt_ave < 0.5 && vrt_final.x < 0.5 && vrt_final.y < 0.5 && vrt_final.x < vrt_final.y){vrt_final = vrt_one;}
+comp_51=`    if (non_ave < 0.5 && non_final.x < 0.5 && non_final.y > 0.5 && non_final.x < non_final.y){non_final = non_two;}
+comp_52=`    if (lat_ave < 0.5 && lat_final.x < 0.5 && lat_final.y > 0.5 && lat_final.x < lat_final.y){lat_final = lat_two;}
+comp_53=`    if (vrt_ave < 0.5 && vrt_final.x < 0.5 && vrt_final.y > 0.5 && vrt_final.x < vrt_final.y){vrt_final = vrt_two;}
+comp_54=`    if (non_ave > 0.5 && non_final.x < 0.5 && non_final.y > 0.5 && non_final.x < non_final.y){non_final = non_three;}
+comp_55=`    if (lat_ave > 0.5 && lat_final.x < 0.5 && lat_final.y > 0.5 && lat_final.x < lat_final.y){lat_final = lat_three;}
+comp_56=`    if (vrt_ave > 0.5 && vrt_final.x < 0.5 && vrt_final.y > 0.5 && vrt_final.x < vrt_final.y){vrt_final = vrt_three;}
+comp_57=`    if (non_ave > 0.5 && non_final.x > 0.5 && non_final.y > 0.5 && non_final.x < non_final.y){non_final = non_four;}
+comp_58=`    if (lat_ave > 0.5 && lat_final.x > 0.5 && lat_final.y > 0.5 && lat_final.x < lat_final.y){lat_final = lat_four;}
+comp_59=`    if (vrt_ave > 0.5 && vrt_final.x > 0.5 && vrt_final.y > 0.5 && vrt_final.x < vrt_final.y){vrt_final = vrt_four;}
+comp_60=`    if (non_ave > 0.5 && non_final.x > 0.5 && non_final.y > 0.5 && non_final.x > non_final.y){non_final = non_five;}
+comp_61=`    if (lat_ave > 0.5 && lat_final.x > 0.5 && lat_final.y > 0.5 && lat_final.x > lat_final.y){lat_final = lat_five;}
+comp_62=`    if (vrt_ave > 0.5 && vrt_final.x > 0.5 && vrt_final.y > 0.5 && vrt_final.x > vrt_final.y){vrt_final = vrt_five;}
+comp_63=`    if (non_ave > 0.5 && non_final.x > 0.5 && non_final.y < 0.5 && non_final.x > non_final.y){non_final = non_six;}
+comp_64=`    if (lat_ave > 0.5 && lat_final.x > 0.5 && lat_final.y < 0.5 && lat_final.x > lat_final.y){lat_final = lat_six;}
+comp_65=`    if (vrt_ave > 0.5 && vrt_final.x > 0.5 && vrt_final.y < 0.5 && vrt_final.x > vrt_final.y){vrt_final = vrt_six;}
+comp_66=`    if (non_ave < 0.5 && non_final.x > 0.5 && non_final.y < 0.5 && non_final.x > non_final.y){non_final = non_seven;}
+comp_67=`    if (lat_ave < 0.5 && lat_final.x > 0.5 && lat_final.y < 0.5 && lat_final.x > lat_final.y){lat_final = lat_seven;}
+comp_68=`    if (vrt_ave < 0.5 && vrt_final.x > 0.5 && vrt_final.y < 0.5 && vrt_final.x > vrt_final.y){vrt_final = vrt_seven;}
+comp_69=`
+comp_70=`// Then we get our three pixels
+comp_71=`    float3 non = tex2D(sampler_main, non_final).xyz;
+comp_72=`    float3 lat = tex2D(sampler_main, lat_final).xyz;
+comp_73=`    float3 vrt = tex2D(sampler_main, vrt_final).xyz;
+comp_74=`
+comp_75=`// Get the heights of each of the pixels and generate the vector from 0,0 to our main pixel
+comp_76=`    float steepen = 1.50;
+comp_77=`    float nonHeight = float(lum(non)*steepen);
+comp_78=`    float latHeight = float(lum(lat)*steepen);
+comp_79=`    float vrtHeight = float(lum(vrt)*steepen);
+comp_80=`    float3 vecToTex = float3(non_final.x * texsize.x, non_final.y * texsize.y, nonHeight);//derived from uv & luminosity of texel
+comp_81=`
+comp_82=`// Use the 3 pixels heights to generate the surface normal
+comp_83=`    float3 normal = float3((nonHeight - latHeight), nonHeight - vrtHeight, 0.0);
+comp_84=`    float normalLen = length(normal);
+comp_85=`    normal = ((normalLen > 1.0) * (normal * (1.0 / normalLen)) + ((normalLen <= 1.0) * normal));
+comp_86=`    normal.z = sqrt(1 - (pow(normal.x, 2) + pow(normal.y, 2)));
+comp_87=`    normal = ((normalLen > 1.0) * (normal * (1.0 / normalLen)) + ((normalLen <= 1.0) * normal));
+comp_88=`    float3 dspNormal = (normal + 1.0)*0.5;
+comp_89=`
+comp_90=`
+comp_91=`//Pulling the color characteristics of this pixel
+comp_92=`  //Sorting our color chanels by their values
+comp_93=`    float brightest = 0.00;    float middle = 0.00;    float dimmest = 0.00;
+comp_94=`    if(non.x >= non.y && non.y >= non.z){brightest = non.x;    middle = non.y;    dimmest = non.z;}
+comp_95=`    if(non.x >= non.z && non.z >  non.y){brightest = non.x;    middle = non.z;    dimmest = non.y;}
+comp_96=`    if(non.z > non.x  && non.x >  non.y){brightest = non.z;    middle = non.x;    dimmest = non.y;}
+comp_97=`    if(non.z >= non.y && non.y >= non.x){brightest = non.z;    middle = non.y;    dimmest = non.x;}
+comp_98=`    if(non.y > non.z  && non.z >  non.x){brightest = non.y;    middle = non.z;    dimmest = non.x;}
+comp_99=`    if(non.y > non.x  && non.x >= non.z){brightest = non.y;    middle = non.x;    dimmest = non.z;}
+comp_100=`    if(non.x == non.y && non.y == non.z){brightest = non.x;    middle = non.y;    dimmest = non.z;}
+comp_101=`
+comp_102=`  //Determining the characteristics
+comp_103=`    float saturation = brightest - dimmest;  //0.0 = grey-scale ... 1.0 = primary or complimentary color
+comp_104=`    float complimentary = middle - dimmest;  //0.0 = grey-scale or primary ... 1.0 complimentary
+comp_105=`    float primary = saturation - complimentary;
+comp_106=`    float lightness = (brightest + dimmest) * 0.4;
+comp_107=`    float pastelles = (1 - lightness) - saturation;
+comp_108=`  //
+comp_109=`
+comp_110=`    non = ((complimentary * non * q28) + (primary * non * q22) + (pastelles * non * q25)) * 3.0;
+comp_111=`    
+comp_112=`
+comp_113=`  //
+comp_114=`    float hardness = min((saturation * lightness + 0.001),0.85); //how pollished is the surface
+comp_115=`    float opacity = 1.0; //how transparent is this material
+comp_116=`    float3 transColor = float3(1.0, 1.0, 1.0); //color of light that the material lets pass through itself
+comp_117=`
+comp_118=`//  so as to give the aproximate location of the viewers head.
+comp_119=`    float3 vecToCam = float3(0.5 * q10, 0.50 * q11, 1.15 * q10);//Where's your head at in screen coordinate space?
+comp_120=`    vecToCam = vecToCam - vecToTex;//vector fom texel to your head in pixels
+comp_121=`    vecToCam = normalize(vecToCam);
+comp_122=`
+comp_123=`// Point Light--Get the Point Light vector and color data, then use data to get point light color.
+comp_124=`    float3 vecToPtL = float3((q1 * q12), (q2 * q13), (q3 * q12));  //provided in per frame
+comp_125=`    vecToPtL = vecToPtL - vecToTex;  //make vector relative to this texel
+comp_126=`    float vTPLLength = sqrt(pow(vecToPtL.x,2)+pow(vecToPtL.y,2)+pow(vecToPtL.z,2));
+comp_127=`    vecToPtL = normalize(vecToPtL);  //normalize
+comp_128=`    float3 PtLColor = float3(q4, q5, q6);
+comp_129=`
+comp_130=`// Environment Light--Using q7 = phi & q8 = theta to get the vector to the Environmental Light
+comp_131=`    float z = sin(q8);  float n = cos(q8);  float y = sin(q7) * n;  float x = cos(q7) * n;
+comp_132=`    float3 vecToEnL = float3(x,y,z);//calculate from phi & theta
+comp_133=`    float3 EnLColor = float3(q9, q10, q11);//use ColorLUT
+comp_134=`
+comp_135=`
+comp_136=`
+comp_137=`
+comp_138=`//=======================>>>>>>>>>>> Generate Lighting <<<<<<<<<<<<======================
+comp_139=`//---------------------------------------------------------------------------------------
+comp_140=`//***********TODO2: lay in material properties equations on both lights
+comp_141=`
+comp_142=`// Generate the Environmental light contribution
+comp_143=`    float EnLAngularFactor = (nonHeight > 0.0) * min(max(dot(normal,vecToEnL),0.002),1.0);
+comp_144=`    float3 EnLContrib = pow(1.7 * EnLAngularFactor, 2) * EnLColor * non; 
+comp_145=`
+comp_146=`// Generate Environmental light specular highlights
+comp_147=`    float3 EnLSpecVec = float3(250 * vecToEnL.x + vecToCam.x, 250 * vecToEnL.y + vecToCam.y, 250 * vecToEnL.z + vecToCam.z);
+comp_148=`    EnLSpecVec = normalize(EnLSpecVec);
+comp_149=`    float EnLSAngFact = max(0.0, dot(EnLSpecVec, normal));
+comp_150=`    EnLSAngFact = pow((1 - sqrt(1 - pow(EnLSAngFact, 2))) * (nonHeight > 0.0), 1.0 + (hardness * 255));
+comp_151=`    EnLContrib = lerp(EnLContrib, EnLColor, EnLSAngFact);
+comp_152=`
+comp_153=`// Generate point light contribution
+comp_154=`    float PtLAngularFactor = (nonHeight > 0.0) * min(max(dot(normal, vecToPtL),0.00),1.0);
+comp_155=`    float brightness = q5;//***********TODO4: rework point light falloff
+comp_156=`    float factor = (1.0 - brightness) * 0.01805;
+comp_157=`    float falloff = 0.01805 + max(0,(1.0 - (vTPLLength * (0.000075 + factor))));//brightness of 1 = 0.00025 0 = 0.0183 gives a ranging factor of 0.01805
+comp_158=`    float3 PtLContrib = (PtLAngularFactor * falloff) * PtLColor * non;
+comp_159=`
+comp_160=`// Generate point lights specular highlight
+comp_161=`    float3 PtLSpecVec = float3(vecToPtL.x + vecToCam.x, vecToPtL.y + vecToCam.y, vecToPtL.z + vecToCam.z);
+comp_162=`    PtLSpecVec = normalize(PtLSpecVec);
+comp_163=`    float PtLSAngFact = max(0.0, dot(PtLSpecVec, normal));
+comp_164=`    PtLSAngFact = pow((1 - sqrt(1 - pow(PtLSAngFact, 2))) * (nonHeight > 0.0), 1.0 + (hardness * 255));
+comp_165=`    PtLContrib = lerp(PtLContrib, min(PtLColor * q5, 1.0), PtLSAngFact);
+comp_166=`ret = PtLContrib + EnLContrib;//(float3(1,1,1)*(brightest))*Bri;//dspNormal;//PtLAngularFactor * falloff;//non;//EnLContrib;//norm;//EnLAngularFactor;// distToPtL;// float3(uv.x, uv.y, normHeight);//
+comp_167=`//ret = PtLSAngFact; //(1 + PtLSpecVec) * 0.5;
+comp_168=`
+comp_169=`}

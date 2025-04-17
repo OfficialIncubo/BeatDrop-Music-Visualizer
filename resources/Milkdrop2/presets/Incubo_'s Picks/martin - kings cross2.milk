@@ -293,7 +293,7 @@ per_frame_8=loop (num_res,
 per_frame_9=  n = index*8;
 per_frame_10=  w = megabuf(n) * 6.2832/60;
 per_frame_11=  megabuf (n+1) *= 1-0.3*dt; //damping
-per_frame_12=  ec = int (8*w*dt)+1; 
+per_frame_12=  ec = 3; 
 per_frame_13=  loop (ec,
 per_frame_14=    megabuf(n+1) += (exc-sqr(w)*megabuf(n+2)) * dt/ec;
 per_frame_15=    megabuf(n+2) += megabuf(n+1) * dt/ec);
@@ -301,8 +301,8 @@ per_frame_16=  bc = megabuf(n+1);
 per_frame_17=  bs = megabuf(n+2)*w;
 per_frame_18=  megabuf (n+3) = megabuf(n+3) *dec_s + quad* (1-dec_s);
 per_frame_19=  megabuf (n+4) = megabuf(n+3);
-per_frame_20=  gmegabuf (n+5) = bc*.11/(1+omaxq)*sqrt(vol_);
-per_frame_21=  gmegabuf (n+6) = bs*.11/(1+omaxq)*sqrt(vol_);
+per_frame_20=  gmegabuf (n+5) = bc*.1/(1+omaxq)*sqrt(vol_);
+per_frame_21=  gmegabuf (n+6) = bs*.1/(1+omaxq)*sqrt(vol_);
 per_frame_22=  index += 1;
 per_frame_23=);
 per_frame_24=trel += BPM/60*6.2832*dt;

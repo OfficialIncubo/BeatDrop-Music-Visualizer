@@ -311,8 +311,8 @@ shapecode_1_border_r=1.000
 shapecode_1_border_g=1.000
 shapecode_1_border_b=1.000
 shapecode_1_border_a=0.000
-shape_1_init1=t1 = rand(100)*0.01;
-shape_1_init2=t2 = rand(100)*0.01;
+shape_1_init1=t1 = int(rand(100))*0.01;
+shape_1_init2=t2 = int(rand(100))*0.01;
 shape_1_per_frame1=x = x + 0.05*sin(mid_att*0.15+3);
 shape_1_per_frame2=y = y + 0.03*sin(mid_att*0.19+1);
 shape_1_per_frame3=tex_ang = bass_att*(0.1 + 0.1*treb_att);

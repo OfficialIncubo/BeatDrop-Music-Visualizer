@@ -244,4 +244,4 @@ per_frame_1=movement = movement + 0.01*(bass+bass_att) + 0.001*pow(bass+1,3);
 per_frame_2=q1 = movement;
 per_frame_3=monitor =q1;
 per_pixel_1=zoom = 1;
-per_pixel_2=zoom = zoom + 0|pow(rad*6+(bass)*sin(ang*4+time*10)+.5,x*y);
+per_pixel_2=zoom = zoom + -2&pow(rad*6+(bass)*sin(ang*4+time*10)+.5,x*y);

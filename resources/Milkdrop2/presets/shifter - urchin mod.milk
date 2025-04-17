@@ -74,14 +74,14 @@ wavecode_0_r=0.000000
 wavecode_0_g=0.000000
 wavecode_0_b=1.000000
 wavecode_0_a=0.050000
-wave_0_init1=t1 = .2 + .6*rand(1001)*.001;
-wave_0_init2=t2 = .2 + .6*rand(1001)*.001;
-wave_0_init3=t3 = .2 + .6*rand(1001)*.001;
-wave_0_init4=t4 = .2 + .6*rand(1001)*.001;
-wave_0_init5=t5 = .2 + .6*rand(1001)*.001;
-wave_0_init6=t6 = .2 + .6*rand(1001)*.001;
-wave_0_init7=t7 = .2 + .6*rand(1001)*.001;
-wave_0_init8=t8 = .2 + .6*rand(1001)*.001;
+wave_0_init1=t1 = .2 + .6*int(rand(1001))*.001;
+wave_0_init2=t2 = .2 + .6*int(rand(1001))*.001;
+wave_0_init3=t3 = .2 + .6*int(rand(1001))*.001;
+wave_0_init4=t4 = .2 + .6*int(rand(1001))*.001;
+wave_0_init5=t5 = .2 + .6*int(rand(1001))*.001;
+wave_0_init6=t6 = .2 + .6*int(rand(1001))*.001;
+wave_0_init7=t7 = .2 + .6*int(rand(1001))*.001;
+wave_0_init8=t8 = .2 + .6*int(rand(1001))*.001;
 wave_0_per_point1=ti = q1;
 wave_0_per_point2=
 wave_0_per_point3=xa = .25 + .25*sin(ti*t1);
@@ -124,14 +124,14 @@ wavecode_1_r=0.000000
 wavecode_1_g=1.000000
 wavecode_1_b=0.000000
 wavecode_1_a=0.050000
-wave_1_init1=t1 = .2 + .6*rand(1001)*.001;
-wave_1_init2=t2 = .2 + .6*rand(1001)*.001;
-wave_1_init3=t3 = .2 + .6*rand(1001)*.001;
-wave_1_init4=t4 = .2 + .6*rand(1001)*.001;
-wave_1_init5=t5 = .2 + .6*rand(1001)*.001;
-wave_1_init6=t6 = .2 + .6*rand(1001)*.001;
-wave_1_init7=t7 = .2 + .6*rand(1001)*.001;
-wave_1_init8=t8 = .2 + .6*rand(1001)*.001;
+wave_1_init1=t1 = .2 + .6*int(rand(1001))*.001;
+wave_1_init2=t2 = .2 + .6*int(rand(1001))*.001;
+wave_1_init3=t3 = .2 + .6*int(rand(1001))*.001;
+wave_1_init4=t4 = .2 + .6*int(rand(1001))*.001;
+wave_1_init5=t5 = .2 + .6*int(rand(1001))*.001;
+wave_1_init6=t6 = .2 + .6*int(rand(1001))*.001;
+wave_1_init7=t7 = .2 + .6*int(rand(1001))*.001;
+wave_1_init8=t8 = .2 + .6*int(rand(1001))*.001;
 wave_1_per_point1=ti = q2;
 wave_1_per_point2=
 wave_1_per_point3=xa = .25 + .25*sin(ti*t1);
@@ -173,14 +173,14 @@ wavecode_2_r=1.000000
 wavecode_2_g=0.000000
 wavecode_2_b=0.000000
 wavecode_2_a=0.050000
-wave_2_init1=t1 = .2 + .6*rand(1001)*.001;
-wave_2_init2=t2 = .2 + .6*rand(1001)*.001;
-wave_2_init3=t3 = .2 + .6*rand(1001)*.001;
-wave_2_init4=t4 = .2 + .6*rand(1001)*.001;
-wave_2_init5=t5 = .2 + .6*rand(1001)*.001;
-wave_2_init6=t6 = .2 + .6*rand(1001)*.001;
-wave_2_init7=t7 = .2 + .6*rand(1001)*.001;
-wave_2_init8=t8 = .2 + .6*rand(1001)*.001;
+wave_2_init1=t1 = .2 + .6*int(rand(1001))*.001;
+wave_2_init2=t2 = .2 + .6*int(rand(1001))*.001;
+wave_2_init3=t3 = .2 + .6*int(rand(1001))*.001;
+wave_2_init4=t4 = .2 + .6*int(rand(1001))*.001;
+wave_2_init5=t5 = .2 + .6*int(rand(1001))*.001;
+wave_2_init6=t6 = .2 + .6*int(rand(1001))*.001;
+wave_2_init7=t7 = .2 + .6*int(rand(1001))*.001;
+wave_2_init8=t8 = .2 + .6*int(rand(1001))*.001;
 wave_2_per_point1=ti = q3;
 wave_2_per_point2=
 wave_2_per_point3=xa = .25 + .25*sin(ti*t1);
@@ -343,10 +343,10 @@ per_frame_23=q3 = bt*3;
 per_frame_24=
 per_frame_25=q4 = vt; // wave colour cycle
 per_frame_26=
-per_frame_27=rb = if(rb,rb,.2 + rand(1001)*.001*.6);
-per_frame_28=rc = if(rc,rc,.2 + rand(1001)*.001*.6);
-per_frame_29=rd = if(rd,rd,.2 + rand(1001)*.001*.6);
-per_frame_30=re = if(re,re,.2 + rand(1001)*.001*.6);
+per_frame_27=rb = if(rb,rb,.2 + int(rand(1001))*.001*.6);
+per_frame_28=rc = if(rc,rc,.2 + int(rand(1001))*.001*.6);
+per_frame_29=rd = if(rd,rd,.2 + int(rand(1001))*.001*.6);
+per_frame_30=re = if(re,re,.2 + int(rand(1001))*.001*.6);
 per_frame_31=
 per_frame_32=rot = .26;
 per_frame_33=cx = .3 + .1*sin(vt*re) + .1*cos(vt*rc);

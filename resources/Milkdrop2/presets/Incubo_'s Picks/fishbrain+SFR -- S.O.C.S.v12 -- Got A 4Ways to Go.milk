@@ -1,0 +1,472 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=0.000
+fGammaAdj=1.000
+fDecay=1.000
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.770
+fWaveScale=0.096
+fWaveSmoothing=0.000
+fWaveParam=0.020
+fModWaveAlphaStart=0.680
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=0.010
+fWarpScale=9.306
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00100
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00001
+dy=0.00001
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.450
+ob_size=0.009
+ob_r=1.000
+ob_g=0.000
+ob_b=0.000
+ob_a=1.000
+ib_size=0.007
+ib_r=0.000
+ib_g=0.000
+ib_b=1.000
+ib_a=1.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=0.000
+mv_g=0.000
+mv_b=0.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=1
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.00000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wave_0_per_frame1=r = q22;
+wave_0_per_frame2=g = q25;
+wave_0_per_frame3=b = q28;
+wave_0_per_frame4=scale = 0.1;
+wave_0_per_point1=ma=ma+(above(bass,.41)*3.1415*.01*bass); // ma = ma + 0 to .5 ish
+wave_0_per_point2=mb=mb-(above(treb,.3)*3.1415*.01*treb); // ma = ma - 0 to .5 ish
+wave_0_per_point3=
+wave_0_per_point4=mx=mx+(.002*sin(ma)); // mx increments by 0 to .0003
+wave_0_per_point5=my=my+(.003*sin(mb)); // my increments by 0 to .0003
+wave_0_per_point6=
+wave_0_per_point7=mx=if(above(mx,.7),(mx-.8),mx);//
+wave_0_per_point8=my=if(above(my,.7),(my - .8),my);//   these lines keep the wave on
+wave_0_per_point9=mx=if(below(mx,.1),.2,mx);//   the viewable screen
+wave_0_per_point10=my=if(below(my,.1),.2,my);//
+wave_0_per_point11=
+wave_0_per_point12=x=mx; // these put the next point in the wave on the screen
+wave_0_per_point13=y=my; //
+wave_0_per_point14=
+wave_0_per_point15=
+wavecode_1_enabled=1
+wavecode_1_samples=512
+wavecode_1_sep=101
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=1
+wavecode_1_bAdditive=0
+wavecode_1_scaling=17.38730
+wavecode_1_smoothing=0.97000
+wavecode_1_r=0.000
+wavecode_1_g=0.000
+wavecode_1_b=0.000
+wavecode_1_a=1.000
+wave_1_per_frame1=r = q25;
+wave_1_per_frame2=g = q28;
+wave_1_per_frame3=b = q22;
+wavecode_2_enabled=0
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.00000
+wavecode_2_smoothing=0.50000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=1.000
+wavecode_2_a=1.000
+wavecode_3_enabled=0
+wavecode_3_samples=512
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=1.000
+shapecode_0_enabled=0
+shapecode_0_sides=3
+shapecode_0_additive=0
+shapecode_0_thickOutline=1
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.510
+shapecode_0_y=0.750
+shapecode_0_rad=0.84095
+shapecode_0_ang=3.70708
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=1.00000
+shapecode_0_r=1.000
+shapecode_0_g=0.000
+shapecode_0_b=0.000
+shapecode_0_a=0.000
+shapecode_0_r2=0.000
+shapecode_0_g2=1.000
+shapecode_0_b2=0.000
+shapecode_0_a2=0.000
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=1.000
+shapecode_1_enabled=0
+shapecode_1_sides=3
+shapecode_1_additive=0
+shapecode_1_thickOutline=1
+shapecode_1_textured=0
+shapecode_1_num_inst=1
+shapecode_1_x=0.310
+shapecode_1_y=0.830
+shapecode_1_rad=0.92894
+shapecode_1_ang=3.64425
+shapecode_1_tex_ang=3.07876
+shapecode_1_tex_zoom=0.29999
+shapecode_1_r=1.000
+shapecode_1_g=1.000
+shapecode_1_b=1.000
+shapecode_1_a=0.000
+shapecode_1_r2=1.000
+shapecode_1_g2=1.000
+shapecode_1_b2=1.000
+shapecode_1_a2=0.000
+shapecode_1_border_r=1.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=1.000
+shapecode_1_border_a=1.000
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_num_inst=1
+shapecode_2_x=0.500
+shapecode_2_y=0.500
+shapecode_2_rad=0.10000
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=1.00000
+shapecode_2_r=1.000
+shapecode_2_g=0.000
+shapecode_2_b=0.000
+shapecode_2_a=1.000
+shapecode_2_r2=0.000
+shapecode_2_g2=1.000
+shapecode_2_b2=0.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=1.000
+shapecode_2_border_a=0.100
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=1
+shapecode_3_x=0.500
+shapecode_3_y=0.500
+shapecode_3_rad=0.10000
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.00000
+shapecode_3_r=1.000
+shapecode_3_g=0.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=1.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=1.000
+shapecode_3_border_b=1.000
+shapecode_3_border_a=0.100
+per_frame_1=//           SOCS.12 -- Standard Operating Control System
+per_frame_2=//                      By: Stirfriedramen
+per_frame_3=// OUTPUTS:-------------------------------------------------------------
+per_frame_4=//q32 -- volume        Rough signal indicating loudness (0 to 2-ish)
+per_frame_5=//q31 -- volume_att    Attenuated loudness signal       (0 to 2-ish)
+per_frame_6=//q30 -- vol_texture   How rough or smooth is volume (0=leg, 1=stec)
+per_frame_7=//q29 -- bass_beat     boolian (1 or 0) 1 = sudden spike in bass
+per_frame_8=//q28 -- bass_weight   % of total volume that is bass (0 to 1)
+per_frame_9=//q27 -- bass_text     How rough or smooth is bass   (0=leg, 1=stec) 
+per_frame_10=//q26 -- mid_beat      boolian (1 or 0) 1 = sudden spike in mid
+per_frame_11=//q25 -- mid_weight    % of total volume that is mid  (0 to 1)
+per_frame_12=//q24 -- mid_text      How rough or smooth is mid    (0=leg, 1=stec) 
+per_frame_13=//q23 -- treb_beat     boolian (1 or 0) 1 = sudden spike in treb
+per_frame_14=//q22 -- treb_weight   % of total volume that is treb (0 to 1)
+per_frame_15=//q21 -- treb_tex      How rough or smooth is treb   (0=leg, 1=stec) 
+per_frame_16=// CONTROLS:------------------------------------------------------------
+per_frame_17=//   set these variables to taste, or control them with your code!
+per_frame_18=// These increase the senstivity of the beat detectors (0 to 1)
+per_frame_19=b_beat_sens = .85;    m_beat_sens = .5;    t_beat_sens = .45;
+per_frame_20=// Use these to set the sensitivity of the texture signals (0 .. 100)
+per_frame_21=v_tex_sens = 2.50;  b_tex_sens = 2.50;  m_tex_sens = 2.50;  t_tex_sens = 2.50;
+per_frame_22=// Set weights_smooth to 0 if you want to use the rougher signal
+per_frame_23=weights_smooth = 1;
+per_frame_24=// SOCS Code:-----------------------------------------------------------
+per_frame_25=q32 = 1 / min((bass + mid + treb), 33);
+per_frame_26=q31 = 1 / min((bass_att + mid_att + treb_att), 33);
+per_frame_27=q29 = if((floor(max(bass - bass_att, 0) * (20 * b_beat_sens))),1,0);
+per_frame_28=q28 = if((weights_smooth), bass_att * q31, bass * q32);
+per_frame_29=b_tex = (b_tex * (100 - b_tex_sens) + abs(bass - bass_att) * b_tex_sens) * 0.01;
+per_frame_30=q27 = min(b_tex * 1.333, 1);
+per_frame_31=q26 = if((floor(max(mid  -  mid_att, 0) * (20 * m_beat_sens))),1,0);
+per_frame_32=q25 = if((weights_smooth), mid_att * q31, mid * q32);
+per_frame_33=m_tex = (m_tex * (100 - m_tex_sens) + abs(mid  -  mid_att) * m_tex_sens) * 0.01;
+per_frame_34=q24 = min(m_tex * 1.166, 1);
+per_frame_35=q23 = if((floor(max(treb - treb_att, 0) * (20 * t_beat_sens))),1,0);
+per_frame_36=q22 = if((weights_smooth), treb_att * q31, treb * q32);
+per_frame_37=t_tex = (t_tex * (100 - t_tex_sens) + abs(treb - treb_att) * t_tex_sens) * 0.01;
+per_frame_38=q21 = min(t_tex * 1.166, 1);
+per_frame_39=q32 = (bass + mid + treb);
+per_frame_40=q31 = (bass_att + mid_att + treb_att);
+per_frame_41=v_tex = (v_tex * (100 - v_tex_sens) + abs(q32 - q31) * v_tex_sens) * 0.01;
+per_frame_42=q30 = min(v_tex, 1);
+per_frame_43=q31 *= 0.060606;
+per_frame_44=q32 *= 0.060606;
+per_frame_45=//------------------------------------------------------------------------------
+per_frame_46=//                           Mirror Control Variables                             
+per_frame_47=//------------------------------------------------------------------------------
+per_frame_48=//sample mode -- 0.05 = none (unmirrored)
+per_frame_49=//               0.15 = average (averages all 4 pixels)
+per_frame_50=//               0.25 = mirror1 (uses bottom left pixel)
+per_frame_51=//               0.35 = mirror3 (uses top right pixel)
+per_frame_52=//               0.45 = max (uses the brightest pixel)
+per_frame_53=//               0.55 = average (averages all 4 pixels)
+per_frame_54=//               0.65 = min (uses the darkest pixel)
+per_frame_55=//               0.75 = mirror2 (uses the top left pixel)
+per_frame_56=//               0.85 = mirror4 (uses the bottom right pixel)
+per_frame_57=//               0.95 = average (averages all 4 pixels)
+per_frame_58=//blending mode -- 0.05 = multiply
+per_frame_59=//                 0.15 = max
+per_frame_60=//                 0.25 = average
+per_frame_61=//                 0.35 = min
+per_frame_62=//                 0.45 = multiply
+per_frame_63=//                 0.55 = additive (clamped)
+per_frame_64=//                 0.65 = additive (rollover)
+per_frame_65=//                 0.75 = subtractive (clamped)
+per_frame_66=//                 0.85 = subtractive (rollover)
+per_frame_67=//                 0.95 = additive (clamped)
+per_frame_68=//q1 -- first sample  -- 0 to 1 as sample mode above to set mirror type for 1st sample
+per_frame_69=//q2 -- second sample -- 0 to 1 as sample mode above to set mirror type for 2nd sample
+per_frame_70=//q4 --  first blend  -- 0 to 1 as blending mode above to mix 1st & 2nd samples
+per_frame_71=//q5 --    balance    -- 0.0 = first sample  to  1.0 = second sample
+per_frame_72=//q3 -- third sample  -- 0 to 1 as sample mode above
+per_frame_73=//q6 -- second blend  -- 0 to 1 as blending mode above to mix 1st blend from q4 & 3rd sample
+per_frame_74=//q7 --    balance    -- 0.0 = first blend
+per_frame_75=//                       1.0 = third sample
+per_frame_76=//
+per_frame_77=//                            Mirror Controls
+per_frame_78=//------------------------------------------------------------------------------
+per_frame_79=//  Set these according to the notes above to chose up to three mirroring methods
+per_frame_80=// and how to blend them together to get the output you want
+per_frame_81=q1 = 0.25;
+per_frame_82=q2 = 0.75;
+per_frame_83=q4 = 0.76 - (q31 * 0.5);
+per_frame_84=q5 = 0.50;
+per_frame_85=
+per_frame_86=q3 = 0.45;
+per_frame_87=q6 = 0.25;//5750;
+per_frame_88=q7 = 0.550;
+per_frame_89=//
+per_frame_90=//
+per_frame_91=//------------------------------------------------------------------------------
+per_frame_92=//         You should still have 20 user variables left and q8 to q20 
+per_frame_93=//          VVVVVVVVVVV  Add your beautiful code below  VVVVVVVVVVV
+per_frame_94=//-----------------------vvvvvvvvvvvvvvvvvvvvvvvvvvvvv--------------------------
+per_frame_95=rot = rot + 0.085*(.45-(.85*sin(bass)));
+per_frame_96=wave_g = q28;//wave_g - .5*(sin(treb));
+per_frame_97=wave_b = q22;//wave_b - .2*(cos(bass));
+per_frame_98=wave_r = q25;//wave_r - .05*(sin(treb));
+per_frame_99=mv_a = 1-sin(ave_vol_att);
+per_frame_100=zoom = 0.955+(sin(ave_vol_att)*.08);
+per_frame_101=ib_r = q22;
+per_frame_102=ib_g = q25;
+per_frame_103=ib_b = q28;
+per_frame_104=
+per_frame_105=ob_r = q25;
+per_frame_106=ob_g = q28;
+per_frame_107=ob_b = q22;
+per_frame_108=
+per_frame_109=// beat detection 
+per_frame_110=old_vol = mid_vol;                            //ave_vol from 2 frames back
+per_frame_111=mid_vol = ave_vol;                            //ave_vol from 1 frame back
+per_frame_112=ave_vol = (bass_att + mid_att + treb_att)*.25;       //average of all volumes (bass, mid and treb)
+per_frame_113=beat = if (above (ave_vol-.5, old_vol),1,0);  //looks for jump in volume from frame to frame
+per_frame_114=ave_vol_att = (old_vol+mid_vol+ave_vol)*.333;
+per_frame_115=q8 = .45+(1-(sin(ave_vol_att)*.1));//q1
+per_frame_116=q9 = sin(ave_vol);//q6
+per_frame_117=// tone detection  ---> base loudest(7)  mid loudest(6)  treb loudest(4)
+per_frame_118=tone = if (above (bass, mid), if (above (bass, treb),0, 4), if (above (mid, treb),7, 4));
+per_frame_119=
+per_frame_120=// flipflop  --->reverses direction of rotator at both ends of rotators range
+per_frame_121=flipflop = if (above (rotator, .99), -1, if (below (rotator, .01),1, flipflop)); 
+per_frame_122=
+per_frame_123=// rotator  ---> increments from 0 to 1, then back down to 0, steps on each beat
+per_frame_124=rotator = rotator + ((.1*beat)*flipflop);
+per_frame_125=tator = if (equal(tone,7),.99,rotator);
+per_frame_126=wave_mystery = (tator);
+per_frame_127=wave_mode = tone;
+per_frame_128=wave_y = if (below(tone, 7), .52-(.04*sin(ave_vol)), .05-(.05*sin(ave_vol)));
+per_frame_129=wave_x = if (above(tone, 4), .52-(.04*sin(bass)), wave_x);
+per_frame_130=
+per_frame_131=
+per_frame_132=this = q4;
+per_frame_133=maxm = if(above(maxm, this),maxm, this);//0.5//
+per_frame_134=minm = if(below(minm, this),minm, this);//0.5;//
+per_frame_135=monitor = q4;//minm;//maxm;//
+per_frame_136=
+per_frame_137=
+per_frame_138=
+per_pixel_1=new_x = abs(x - 0.5);
+per_pixel_2=edge = ((q8 * (0.5 - abs(y - 0.5)))* (0.2 * q9)) + 0;
+per_pixel_3=sx = if (below(new_x, edge), 1.37 - (new_x * (.25/edge)), .98);
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // sample previous frame
+warp_4=`    ret = tex2D( sampler_main, uv ).xyz;
+warp_5=`    
+warp_6=`    
+warp_7=`    //float3 blurry = GetBlur3(uv);
+warp_8=`    float3 crisp = tex2D(sampler_main, uv).xyz;
+warp_9=`    float3 blurry = GetBlur2(uv);
+warp_10=`    ret = ((abs( crisp - blurry )*(q9+1.0))+((crisp+(blurry*.75))*.75))*(.73*q8);
+warp_11=`    float3 secblr = GetBlur1(uv);
+warp_12=`    ret = (ret+secblr)*.5;
+warp_13=`    // darken (decay) over time
+warp_14=`    ret = (ret - 0.009)*0.78;
+warp_15=`
+warp_16=`}
+comp_1=`sampler sampler_4wayLUT;
+comp_2=`shader_body
+comp_3=`{//pull four samples from the canvas
+comp_4=`    float2 uv1 = float2(uv.x,uv.y);//no flip (bottom left)
+comp_5=`    float2 uv2 = uv1 * float2(1.0, -1.0);//flip y(top left)
+comp_6=`    float2 uv3 = uv2 * float2(-1.0, 1.0);//flip y&x(top right)
+comp_7=`    float2 uv4 = uv3 * float2(1.0, -1.0);//flip x(bottom right)
+comp_8=`    float3 samp1 = tex2D(sampler_main, uv1).xyz;
+comp_9=`    float3 samp2 = tex2D(sampler_main, uv2).xyz;
+comp_10=`    float3 samp3 = tex2D(sampler_main, uv3).xyz;
+comp_11=`    float3 samp4 = tex2D(sampler_main, uv4).xyz;
+comp_12=`
+comp_13=`//choose three mirror modes
+comp_14=`    float2 modeUV = float2(q1,0.125);
+comp_15=`    float4 modePixA = tex2D(sampler_4wayLUT, modeUV).xyzw;
+comp_16=`    modeUV = float2(q1,0.375);
+comp_17=`    float4 modePixB = tex2D(sampler_4wayLUT, modeUV).xyzw;
+comp_18=`    float3 mode1 = (samp1*modePixA.x) + (min(min(samp1,samp2),min(samp3,samp4))*modePixB.y) +
+comp_19=`      ((((uv.x<0.5)*(uv.y<0.5)*samp1)+((uv.x<0.5)*(uv.y>0.5)*samp2)+((uv.x>0.5)*(uv.y>0.5)*samp3)+((uv.x>0.5)*(uv.y<0.5)*samp4))*modePixA.y) +
+comp_20=`      ((((uv.x<0.5)*(uv.y<0.5)*samp3)+((uv.x<0.5)*(uv.y>0.5)*samp4)+((uv.x>0.5)*(uv.y>0.5)*samp1)+((uv.x>0.5)*(uv.y<0.5)*samp2))*modePixA.z) +
+comp_21=`      (max(max(samp1,samp2),max(samp3,samp4))*modePixA.w) + (((samp1+samp2+samp3+samp4)*0.25)*modePixB.x) +
+comp_22=`      ((((uv.x<0.5)*(uv.y<0.5)*samp2)+((uv.x<0.5)*(uv.y>0.5)*samp1)+((uv.x>0.5)*(uv.y>0.5)*samp4)+((uv.x>0.5)*(uv.y<0.5)*samp3))*modePixB.z) +
+comp_23=`      ((((uv.x<0.5)*(uv.y<0.5)*samp4)+((uv.x<0.5)*(uv.y>0.5)*samp3)+((uv.x>0.5)*(uv.y>0.5)*samp2)+((uv.x>0.5)*(uv.y<0.5)*samp1))*modePixB.w); 
+comp_24=`    modeUV = float2(q2,0.125);
+comp_25=`    modePixA = tex2D(sampler_4wayLUT, modeUV).xyzw;
+comp_26=`    modeUV = float2(q2,0.375);
+comp_27=`    modePixB = tex2D(sampler_4wayLUT, modeUV).xyzw;
+comp_28=`    float3 mode2 = (samp1*modePixA.x) + (min(min(samp1,samp2),min(samp3,samp4))*modePixB.y) +
+comp_29=`      ((((uv.x<0.5)*(uv.y<0.5)*samp1)+((uv.x<0.5)*(uv.y>0.5)*samp2)+((uv.x>0.5)*(uv.y>0.5)*samp3)+((uv.x>0.5)*(uv.y<0.5)*samp4))*modePixA.y) +
+comp_30=`      ((((uv.x<0.5)*(uv.y<0.5)*samp3)+((uv.x<0.5)*(uv.y>0.5)*samp4)+((uv.x>0.5)*(uv.y>0.5)*samp1)+((uv.x>0.5)*(uv.y<0.5)*samp2))*modePixA.z) +
+comp_31=`      (max(max(samp1,samp2),max(samp3,samp4))*modePixA.w) + (((samp1+samp2+samp3+samp4)*0.25)*modePixB.x) +
+comp_32=`      ((((uv.x<0.5)*(uv.y<0.5)*samp2)+((uv.x<0.5)*(uv.y>0.5)*samp1)+((uv.x>0.5)*(uv.y>0.5)*samp4)+((uv.x>0.5)*(uv.y<0.5)*samp3))*modePixB.z) +
+comp_33=`      ((((uv.x<0.5)*(uv.y<0.5)*samp4)+((uv.x<0.5)*(uv.y>0.5)*samp3)+((uv.x>0.5)*(uv.y>0.5)*samp2)+((uv.x>0.5)*(uv.y<0.5)*samp1))*modePixB.w); 
+comp_34=`    modeUV = float2(q3,0.125);
+comp_35=`    modePixA = tex2D(sampler_4wayLUT, modeUV).xyzw;
+comp_36=`    modeUV = float2(q3,0.375);
+comp_37=`    modePixB = tex2D(sampler_4wayLUT, modeUV).xyzw;
+comp_38=`    float3 mode3 = (samp1*modePixA.x) + (min(min(samp1,samp2),min(samp3,samp4))*modePixB.y) +
+comp_39=`      ((((uv.x<0.5)*(uv.y<0.5)*samp1)+((uv.x<0.5)*(uv.y>0.5)*samp2)+((uv.x>0.5)*(uv.y>0.5)*samp3)+((uv.x>0.5)*(uv.y<0.5)*samp4))*modePixA.y) +
+comp_40=`      ((((uv.x<0.5)*(uv.y<0.5)*samp3)+((uv.x<0.5)*(uv.y>0.5)*samp4)+((uv.x>0.5)*(uv.y>0.5)*samp1)+((uv.x>0.5)*(uv.y<0.5)*samp2))*modePixA.z) +
+comp_41=`      (max(max(samp1,samp2),max(samp3,samp4))*modePixA.w) + (((samp1+samp2+samp3+samp4)*0.25)*modePixB.x) +
+comp_42=`      ((((uv.x<0.5)*(uv.y<0.5)*samp2)+((uv.x<0.5)*(uv.y>0.5)*samp1)+((uv.x>0.5)*(uv.y>0.5)*samp4)+((uv.x>0.5)*(uv.y<0.5)*samp3))*modePixB.z) +
+comp_43=`      ((((uv.x<0.5)*(uv.y<0.5)*samp4)+((uv.x<0.5)*(uv.y>0.5)*samp3)+((uv.x>0.5)*(uv.y>0.5)*samp2)+((uv.x>0.5)*(uv.y<0.5)*samp1))*modePixB.w); 
+comp_44=`
+comp_45=`//define two blend modes
+comp_46=`    mode1 *= min((2.0 - (q5*2.0)),1);  mode2 *= min((q5*2.0),1);
+comp_47=`    modeUV = float2(q4,0.625);  modePixA = tex2D(sampler_4wayLUT, modeUV).xyzw;
+comp_48=`    modeUV = float2(q4,0.875);  modePixB = tex2D(sampler_4wayLUT, modeUV).xyzw;
+comp_49=`    float x1 = mode1.x + mode2.x;  float y1 = mode1.y + mode2.y;  float z1 = mode1.z + mode2.z;
+comp_50=`    x1 += (x1>1.0)*-1.0;  y1 += (y1>1.0)*-1.0;  z1 += (z1>1.0)*-1.0;
+comp_51=`    float x2 = mode1.x-mode2.x;  float y2 = mode1.y-mode2.y;  float z2 = mode1.z-mode2.z;
+comp_52=`    x2 += (x2<0.0);  y2 += (y2<0.0);  z2 += (z2<0.0);
+comp_53=`    float3 blend1 = ((mode1 * mode2) * modePixA.x) + (max(mode1, mode2) * modePixA.y) +
+comp_54=`      (((mode1 + mode2) * 0.5) * modePixA.z) + (min(mode1, mode2) * modePixA.w) +
+comp_55=`      (min(mode1 + mode2, 1.0) * modePixB.x) + (float3(x1, y1, z1) * modePixB.y) +
+comp_56=`      (max(mode1 - mode2, 0.0) * modePixB.z) + (float3(x2, y2, z2) * modePixB.w);
+comp_57=`    blend1 *= min((2.0 - (q7*2.0)),1);  mode3 *= min((q7*2.0),1);
+comp_58=`    modeUV = float2(q6,0.625);  modePixA = tex2D(sampler_4wayLUT, modeUV).xyzw;
+comp_59=`    modeUV = float2(q6,0.875);  modePixB = tex2D(sampler_4wayLUT, modeUV).xyzw;
+comp_60=`    x1 = blend1.x + mode3.x;  y1 = blend1.y + mode3.y;  z1 = blend1.z + mode3.z;
+comp_61=`    x1 += (x1>1.0)*-1.0;  y1 += (y1>1.0)*-1.0;  z1 += (z1>1.0)*-1.0;
+comp_62=`    x2 = blend1.x - mode3.x;  y2 = blend1.y - mode3.y;  z2 = blend1.z - mode3.z;
+comp_63=`    x2 += (x2<0.0);  y2 += (y2<0.0);  z2 += (z2<0.0);
+comp_64=`    float3 blend2 = ((blend1 * mode3) * modePixA.x) + (max(blend1, mode3) * modePixA.y) +
+comp_65=`      (((blend1 + mode3) * 0.5) * modePixA.z) + (min(blend1, mode3) * modePixA.w) +
+comp_66=`      (min(blend1 + mode3, 1.0) * modePixB.x) + (float3(x1, y1, z1) * modePixB.y) +
+comp_67=`      (max(blend1 - mode3, 0.0) * modePixB.z) + (float3(x2, y2, z2) * modePixB.w);
+comp_68=`
+comp_69=` 
+comp_70=`    ret = blend2;
+comp_71=`}

@@ -100,3 +100,4 @@ per_pixel_8=pre_dy=radical_dy*bnot(q1%3);
 per_pixel_9=dx=if(bnot(q1%13),dx-bnot(q3%17)*grid_shift*sign(q5),sin(pre_dx));
 per_pixel_10=dy=if(bnot(q1%3),dx-bnot(q3%34)*grid_shift*sign(q5),cos(pre_dy));
 per_pixel_11=rot=if(above(abs(zoom-bnot(q1%5)),.08),-.2*asin(min(q2,q5)),rot);
+per_pixel_12=dy -= 1;

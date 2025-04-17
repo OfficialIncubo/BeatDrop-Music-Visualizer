@@ -80,4 +80,4 @@ per_frame_16=wave_size=wave_size+if(equal(abs(state-3),1),wave_size*2,wave_size)
 per_frame_17=q1=state;
 per_pixel_1=rot = rot + if(below(sin(ang), 0), -rot, if(equal(abs(state-3),1),0.05,.1));
 per_pixel_2=zoom=zoom-if(equal(sin(ang),0),0,sin(ang*q1)*rad*.3);
-per_pixel_3=dx=dx+sin(ang*q1*3-abs(rad*4-1))*rad*.05;
+per_pixel_3=dx=dx+sin(ang*q1*3-abs((rad*4)-1))*rad*.05;

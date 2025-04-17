@@ -89,9 +89,9 @@ wave_0_per_point1=sp = sample*10;
 wave_0_per_point2=ti = time;
 wave_0_per_point3=
 wave_0_per_point4=
-wave_0_per_point5=ox = (rand(1001)*.001 + rand(1001)*.001 - rand(1001)*.001 - rand(1001)*.001);
-wave_0_per_point6=oy = (rand(1001)*.001 + rand(1001)*.001 - rand(1001)*.001 - rand(1001)*.001);
-wave_0_per_point7=oz = (rand(1001)*.001 + rand(1001)*.001 - rand(1001)*.001 - rand(1001)*.001);
+wave_0_per_point5=ox = (int(rand(1001))*.001 + int(rand(1001))*.001 - int(rand(1001))*.001 - int(rand(1001))*.001);
+wave_0_per_point6=oy = (int(rand(1001))*.001 + int(rand(1001))*.001 - int(rand(1001))*.001 - int(rand(1001))*.001);
+wave_0_per_point7=oz = (int(rand(1001))*.001 + int(rand(1001))*.001 - int(rand(1001))*.001 - int(rand(1001))*.001);
 wave_0_per_point8=
 wave_0_per_point9=dis = pow(ox*ox + oy*oy + oz*oz,.5);
 wave_0_per_point10=
@@ -154,9 +154,9 @@ wave_1_per_point1=sp = sample*10;
 wave_1_per_point2=ti = time;
 wave_1_per_point3=
 wave_1_per_point4=
-wave_1_per_point5=ox = (rand(1001)*.001 + rand(1001)*.001 - rand(1001)*.001 - rand(1001)*.001);
-wave_1_per_point6=oy = (rand(1001)*.001 + rand(1001)*.001 - rand(1001)*.001 - rand(1001)*.001);
-wave_1_per_point7=oz = (rand(1001)*.001 + rand(1001)*.001 - rand(1001)*.001 - rand(1001)*.001);
+wave_1_per_point5=ox = (int(rand(1001))*.001 + int(rand(1001))*.001 - int(rand(1001))*.001 - int(rand(1001))*.001);
+wave_1_per_point6=oy = (int(rand(1001))*.001 + int(rand(1001))*.001 - int(rand(1001))*.001 - int(rand(1001))*.001);
+wave_1_per_point7=oz = (int(rand(1001))*.001 + int(rand(1001))*.001 - int(rand(1001))*.001 - int(rand(1001))*.001);
 wave_1_per_point8=
 wave_1_per_point9=dis = pow(ox*ox + oy*oy + oz*oz,.5);
 wave_1_per_point10=
@@ -219,9 +219,9 @@ wave_2_per_point1=sp = sample*10;
 wave_2_per_point2=ti = time;
 wave_2_per_point3=
 wave_2_per_point4=
-wave_2_per_point5=ox = (rand(1001)*.001 + rand(1001)*.001 - rand(1001)*.001 - rand(1001)*.001);
-wave_2_per_point6=oy = (rand(1001)*.001 + rand(1001)*.001 - rand(1001)*.001 - rand(1001)*.001);
-wave_2_per_point7=oz = (rand(1001)*.001 + rand(1001)*.001 - rand(1001)*.001 - rand(1001)*.001);
+wave_2_per_point5=ox = (int(rand(1001))*.001 + int(rand(1001))*.001 - int(rand(1001))*.001 - int(rand(1001))*.001);
+wave_2_per_point6=oy = (int(rand(1001))*.001 + int(rand(1001))*.001 - int(rand(1001))*.001 - int(rand(1001))*.001);
+wave_2_per_point7=oz = (int(rand(1001))*.001 + int(rand(1001))*.001 - int(rand(1001))*.001 - int(rand(1001))*.001);
 wave_2_per_point8=
 wave_2_per_point9=dis = pow(ox*ox + oy*oy + oz*oz,.5);
 wave_2_per_point10=
@@ -337,8 +337,8 @@ shapecode_0_border_r=1.000000
 shapecode_0_border_g=1.000000
 shapecode_0_border_b=0.000000
 shapecode_0_border_a=0.000000
-shape_0_init1=t1 = rand(100)*0.01;
-shape_0_init2=t2 = rand(100)*0.01;
+shape_0_init1=t1 = int(rand(100))*0.01;
+shape_0_init2=t2 = int(rand(100))*0.01;
 shape_0_init3=te = 1;
 shape_0_init4=poly = 5;
 shape_0_per_frame1=ang = -q1;
@@ -365,8 +365,8 @@ shapecode_1_border_r=1.000000
 shapecode_1_border_g=1.000000
 shapecode_1_border_b=0.000000
 shapecode_1_border_a=0.000000
-shape_1_init1=t1 = rand(100)*0.01;
-shape_1_init2=t2 = rand(100)*0.01;
+shape_1_init1=t1 = int(rand(100))*0.01;
+shape_1_init2=t2 = int(rand(100))*0.01;
 shape_1_init3=te = 1;
 shape_1_init4=poly = 5;
 shape_1_per_frame1=ang = -q1;
@@ -393,8 +393,8 @@ shapecode_2_border_r=1.000000
 shapecode_2_border_g=1.000000
 shapecode_2_border_b=0.000000
 shapecode_2_border_a=0.000000
-shape_2_init1=t1 = rand(100)*0.01;
-shape_2_init2=t2 = rand(100)*0.01;
+shape_2_init1=t1 = int(rand(100))*0.01;
+shape_2_init2=t2 = int(rand(100))*0.01;
 shape_2_init3=te = 1;
 shape_2_init4=poly = 5;
 shape_2_per_frame1=ang = q1;
@@ -421,8 +421,8 @@ shapecode_3_border_r=1.000000
 shapecode_3_border_g=1.000000
 shapecode_3_border_b=0.000000
 shapecode_3_border_a=0.000000
-shape_3_init1=t1 = rand(100)*0.01;
-shape_3_init2=t2 = rand(100)*0.01;
+shape_3_init1=t1 = int(rand(100))*0.01;
+shape_3_init2=t2 = int(rand(100))*0.01;
 shape_3_init3=te = 1;
 shape_3_init4=poly = 5;
 shape_3_per_frame1=ang = q1;
