@@ -29,7 +29,9 @@ Before compiling the code:
 # BEFORE YOU RUN BEATDROP
 
 Please download and install [DirectX End-User Runtime Web](https://www.microsoft.com/en-us/download/details.aspx?id=35) first.
+
 BeatDrop now has a Spout integration! It now only supported to route the visual to any apps, such as [NestDrop](https://nestimmersion.ca/nestdrop.php), [OBS](https://obsproject.com) ([as plug-in](https://github.com/Off-World-Live/obs-spout2-plugin)) etc.
+
 Download Spout: https://spout.zeal.co
 
 # HOW TO USE BEATDROP
