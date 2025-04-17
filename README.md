@@ -13,7 +13,7 @@ It features:
 - Perfectly adjusted beat detection for better audio reaction (also configurable)
 - New waveforms and transitions
 - 16 custom shapes and waves limit
-- (Spout)[https://spout.zeal.co} Integration
+- [Spout](https://spout.zeal.co) Integration
 - Hard Cut Modes, Transparency Mode, Playback Controls, Startup Preset etc.
 - And so much more!
 
