@@ -247,8 +247,7 @@ namespace MilkwaveRemote {
     }
 
     private void MainForm_Shown(object sender, EventArgs e) {
-      txtMessage.Focus();
-      txtMessage.SelectAll();
+      btnSend.Focus();
 
       pnlColorMessage.BackColor = Color.FromArgb(191, 0, 0); // Color.FromArgb(230, 0, 120);
       colorDialogMessage.Color = pnlColorMessage.BackColor;
@@ -365,6 +364,7 @@ namespace MilkwaveRemote {
         } else if (type == MessageType.Wave) {
           message = "WAVE" +
             "|mode=" + numWavemode.Value +
+            "|alpha=" + numAlpha.Value.ToString(CultureInfo.InvariantCulture) +
             "|colorr=" + pnlColorWave.BackColor.R +
             "|colorg=" + pnlColorWave.BackColor.G +
             "|colorb=" + pnlColorWave.BackColor.B;

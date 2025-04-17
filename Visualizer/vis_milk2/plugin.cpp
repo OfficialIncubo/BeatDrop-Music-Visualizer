@@ -9847,8 +9847,12 @@ void CPlugin::LaunchMessage(wchar_t* sMessage) {
     if (params.find(L"mode") != params.end()) {
       g_plugin.m_pState->m_nWaveMode = std::stoi(params[L"mode"]);
     }
+    if (params.find(L"alpha") != params.end()) {
+      g_plugin.m_pState->m_fWaveAlpha = std::stof(params[L"alpha"]);
+    }
     if (params.find(L"colorr") != params.end()) {
       // g_plugin.m_pState->var_pf_wave_r = g_plugin.m_pState->var_pf_wave_r;
+      
       g_plugin.m_pState->m_fWaveR = std::stoi(params[L"colorr"]);
 
       // g_plugin.m_pState->m_fOuterBorderR = std::stoi(params[L"colorr"]);

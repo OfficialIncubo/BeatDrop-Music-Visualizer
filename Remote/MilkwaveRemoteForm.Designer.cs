@@ -94,6 +94,7 @@ namespace MilkwaveRemote
       numWrap = new NumericUpDown();
       btnSetAudioDevice = new Button();
       cboAudioDevice = new ComboBox();
+      numAlpha = new NumericUpDown();
       colorDialogMessage = new ColorDialog();
       splitContainer1 = new SplitContainer();
       txtStyle = new TextBox();
@@ -130,6 +131,7 @@ namespace MilkwaveRemote
       ((System.ComponentModel.ISupportInitialize)numAmpRight).BeginInit();
       ((System.ComponentModel.ISupportInitialize)numWavemode).BeginInit();
       ((System.ComponentModel.ISupportInitialize)numWrap).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)numAlpha).BeginInit();
       ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
       splitContainer1.Panel1.SuspendLayout();
       splitContainer1.Panel2.SuspendLayout();
@@ -418,6 +420,7 @@ namespace MilkwaveRemote
       cboFonts.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
       cboFonts.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
       cboFonts.AutoCompleteSource = AutoCompleteSource.ListItems;
+      cboFonts.DropDownStyle = ComboBoxStyle.DropDownList;
       cboFonts.FormattingEnabled = true;
       cboFonts.Location = new Point(78, 123);
       cboFonts.Name = "cboFonts";
@@ -665,6 +668,7 @@ namespace MilkwaveRemote
       cboPresets.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
       cboPresets.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
       cboPresets.AutoCompleteSource = AutoCompleteSource.ListItems;
+      cboPresets.DropDownStyle = ComboBoxStyle.DropDownList;
       cboPresets.FormattingEnabled = true;
       cboPresets.Location = new Point(78, 6);
       cboPresets.Name = "cboPresets";
@@ -737,7 +741,7 @@ namespace MilkwaveRemote
       // numWavemode
       // 
       numWavemode.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-      numWavemode.Location = new Point(449, 63);
+      numWavemode.Location = new Point(408, 63);
       numWavemode.Margin = new Padding(3, 2, 3, 2);
       numWavemode.Maximum = new decimal(new int[] { 15, 0, 0, 0 });
       numWavemode.Name = "numWavemode";
@@ -765,7 +769,7 @@ namespace MilkwaveRemote
       // 
       lblWaveColor.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       lblWaveColor.AutoSize = true;
-      lblWaveColor.Location = new Point(496, 67);
+      lblWaveColor.Location = new Point(451, 67);
       lblWaveColor.Name = "lblWaveColor";
       lblWaveColor.Size = new Size(36, 15);
       lblWaveColor.TabIndex = 112;
@@ -777,7 +781,7 @@ namespace MilkwaveRemote
       // 
       lblWavemode.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       lblWavemode.AutoSize = true;
-      lblWavemode.Location = new Point(374, 66);
+      lblWavemode.Location = new Point(333, 66);
       lblWavemode.Name = "lblWavemode";
       lblWavemode.Size = new Size(70, 15);
       lblWavemode.TabIndex = 108;
@@ -788,7 +792,7 @@ namespace MilkwaveRemote
       // 
       pnlColorWave.Anchor = AnchorStyles.Top | AnchorStyles.Right;
       pnlColorWave.BorderStyle = BorderStyle.FixedSingle;
-      pnlColorWave.Location = new Point(537, 63);
+      pnlColorWave.Location = new Point(490, 63);
       pnlColorWave.Name = "pnlColorWave";
       pnlColorWave.Size = new Size(37, 23);
       pnlColorWave.TabIndex = 111;
@@ -878,6 +882,21 @@ namespace MilkwaveRemote
       cboAudioDevice.TabIndex = 114;
       toolTip1.SetToolTip(cboAudioDevice, "Alt+Mousewheel: Set in Visualizer");
       cboAudioDevice.SelectedIndexChanged += cboAudioDevice_SelectedIndexChanged;
+      // 
+      // numAlpha
+      // 
+      numAlpha.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+      numAlpha.DecimalPlaces = 1;
+      numAlpha.Increment = new decimal(new int[] { 1, 0, 0, 65536 });
+      numAlpha.Location = new Point(532, 63);
+      numAlpha.Margin = new Padding(3, 2, 3, 2);
+      numAlpha.Maximum = new decimal(new int[] { 1, 0, 0, 0 });
+      numAlpha.Name = "numAlpha";
+      numAlpha.Size = new Size(43, 23);
+      numAlpha.TabIndex = 117;
+      numAlpha.TextAlign = HorizontalAlignment.Center;
+      toolTip1.SetToolTip(numAlpha, "Alpha (opacity)");
+      numAlpha.Value = new decimal(new int[] { 10, 0, 0, 65536 });
       // 
       // colorDialogMessage
       // 
@@ -974,6 +993,7 @@ namespace MilkwaveRemote
       // 
       // splitContainer2.Panel1
       // 
+      splitContainer2.Panel1.Controls.Add(numAlpha);
       splitContainer2.Panel1.Controls.Add(btnSetAudioDevice);
       splitContainer2.Panel1.Controls.Add(lblAudioDevice);
       splitContainer2.Panel1.Controls.Add(cboAudioDevice);
@@ -1348,6 +1368,7 @@ namespace MilkwaveRemote
       ((System.ComponentModel.ISupportInitialize)numAmpRight).EndInit();
       ((System.ComponentModel.ISupportInitialize)numWavemode).EndInit();
       ((System.ComponentModel.ISupportInitialize)numWrap).EndInit();
+      ((System.ComponentModel.ISupportInitialize)numAlpha).EndInit();
       splitContainer1.Panel1.ResumeLayout(false);
       splitContainer1.Panel1.PerformLayout();
       splitContainer1.Panel2.ResumeLayout(false);
@@ -1463,5 +1484,6 @@ namespace MilkwaveRemote
     private Button btnSetAudioDevice;
     private Label lblAudioDevice;
     private ComboBox cboAudioDevice;
+    private NumericUpDown numAlpha;
   }
 }
