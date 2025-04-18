@@ -290,7 +290,7 @@ per_frame_54=//Just for testing.
 per_frame_55=monitor = intBPM;
 per_frame_56=
 per_frame_57=//Se7enSlasher - Shape for visualized BPM
-per_frame_58=BPMTime = (sin(time * 2 * 3.14159 / (60 / intBPM)) + 1) / 2; //ChatGPT - Code for corrected shape pulse per one beat.
+per_frame_58=BPMTime = (sin(time * 2 * $PI / (60 / intBPM)) + 1) / 2; //ChatGPT - Code for corrected shape pulse per one beat.
 per_frame_59=q1 = if (BPMTime >= .9, 1, 0);
 per_frame_60=
 per_frame_61=//END

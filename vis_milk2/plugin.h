@@ -342,12 +342,12 @@ public:
         int			m_nCustMsgsSpawned;
         bool        m_bEnablePresetStartup;
         bool        m_bAutoLockPresetWhenNoMusic;
-        int         m_nBassStart;
-        int         m_nBassEnd;
-        int         m_nMidStart;
-        int         m_nMidEnd;
-        int         m_nTrebStart;
-        int         m_nTrebEnd;
+        int         m_nBassStart = 0;
+        int         m_nBassEnd = 250;
+        int         m_nMidStart = 250;
+        int         m_nMidEnd = 4000;
+        int         m_nTrebStart = 4000;
+        int         m_nTrebEnd = 20000;
 
         //bool		m_bAlways3D;
         //float       m_fStereoSep;

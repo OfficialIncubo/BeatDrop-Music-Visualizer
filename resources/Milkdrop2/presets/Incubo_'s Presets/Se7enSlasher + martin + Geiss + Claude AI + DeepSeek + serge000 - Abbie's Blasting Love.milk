@@ -326,7 +326,7 @@ per_frame_92=
 per_frame_93=q4 = 1/aspectx;
 per_frame_94=q5 = 1/aspecty+.75;
 per_frame_95=
-per_frame_96=BPMTime = (sin(time * 3.14159 / (60 / intBPM)) + 1) / 2;
+per_frame_96=BPMTime = (sin(time * $PI / (60 / intBPM)) + 1) / 2;
 per_frame_97=q6 = BPMTime;
 per_frame_98=time_delay = if(time_delay >= .35 && bass > 2, 0, time_delay += 1/fps);
 per_frame_99=ripple_form = if(time_delay == 0, 5 + int(rand(20)), ripple_form);

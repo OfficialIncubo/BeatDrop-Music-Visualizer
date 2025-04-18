@@ -312,7 +312,7 @@ per_frame_63=//monitor = min(pow(log_pow_val, (bass*bass_pow_mult)-phase_shift),
 per_frame_64=monitor = intBPM; //Test BPM
 per_frame_65=
 per_frame_66=//Se7enSlasher - Shape for visualized BPM
-per_frame_67=BPMTime = (sin(time * 2 * 3.14159 / (60 / intBPM)) + 1) / 2; //ChatGPT - Code for corrected shape pulse per one beat.
+per_frame_67=BPMTime = (sin(time * 2 * $PI / (60 / intBPM)) + 1) / 2; //ChatGPT - Code for corrected shape pulse per one beat.
 per_frame_68=q1 = if (BPMTime >= .9, 1, 0);
 per_frame_69=
 per_frame_70=//END
