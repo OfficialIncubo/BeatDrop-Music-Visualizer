@@ -968,10 +968,12 @@ bool CState::Export(const wchar_t *szIniFile)
 	fprintf(fOut, "%s=%.3f\n", "b1ed",                m_fBlur1EdgeDarken.eval(-1));
 
     for (int i=0; i<MAX_CUSTOM_WAVES; i++)
-        m_wave[i].Export(fOut, L"dummy_filename", i);
+	    if (m_wave[i].enabled) //Only saves the enabled custom waves
+        	m_wave[i].Export(fOut, L"dummy_filename", i);
 
     for (i=0; i<MAX_CUSTOM_SHAPES; i++)
-        m_shape[i].Export(fOut, L"dummy_filename", i);
+	    if (m_shape[i].enabled) //Only saves the enabled custom shapes
+        	m_shape[i].Export(fOut, L"dummy_filename", i);
 
 	// write out arbitrary expressions, one line at a time
     WriteCode(fOut, i, m_szPerFrameInit, "per_frame_init_");
