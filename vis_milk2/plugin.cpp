@@ -4359,6 +4359,12 @@ void CPlugin::MyRenderFn(int redraw)
         }
     }
     //END
+
+    //Don't show the help message again when the "Press F1 for help" message is finished.
+    //Useful when I press CTRL + T or when it reaches 250000 seconds, it shows the message again, so I did.
+    if (GetTime() >= PRESS_F1_DUR)
+        m_show_press_f1_msg = 0;
+
     m_bHasFocus = false;
     do
     {
