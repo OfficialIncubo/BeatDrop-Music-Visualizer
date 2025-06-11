@@ -10657,31 +10657,39 @@ for (int i=0;i<576;i++)
     }
 
 	// sum spectrum up into 3 bands
-	//DeepSeek - Updated Beat Detection Splitting Algorithm
+    //DeepSeek - Updated Beat Detection Splitting Algorithm
+    
+    // Frequency bin size
+    float bin_size = (SAMPLE_RATE / 2.0f) / MY_FFT_SAMPLES;
+
     for (int i = 0; i < 3; i++)
     {
-        // Calculate which FFT bins correspond to our frequency ranges
-        int start_bin, end_bin;
+        // Process each frequency band
+        float freq_min, freq_max;
 
         switch (i) {
-        case 0: // Bass (0-250Hz)
-            start_bin = (int)(BASS_MIN * MY_FFT_SAMPLES / (SAMPLE_RATE / 2));
-            end_bin = (int)(BASS_MAX * MY_FFT_SAMPLES / (SAMPLE_RATE / 2));
+        case 0: // Bass
+            freq_min = BASS_MIN;
+            freq_max = BASS_MAX;
             break;
-        case 1: // Mid (250-4000Hz)
-            start_bin = (int)(MID_MIN * MY_FFT_SAMPLES / (SAMPLE_RATE / 2));
-            end_bin = (int)(MID_MAX * MY_FFT_SAMPLES / (SAMPLE_RATE / 2));
+        case 1: // Mid
+            freq_min = MID_MIN;
+            freq_max = MID_MAX;
             break;
-        case 2: // Treble (4000-20000Hz)
-            start_bin = (int)(TREBLE_MIN * MY_FFT_SAMPLES / (SAMPLE_RATE / 2));
-            end_bin = (int)(TREBLE_MAX * MY_FFT_SAMPLES / (SAMPLE_RATE / 2));
+        case 2: // Treble
+            freq_min = TREBLE_MIN;
+            freq_max = TREBLE_MAX;
             break;
         }
 
-        // Clamp values to valid range
-        start_bin = max(0, min(start_bin, MY_FFT_SAMPLES - 1));
-        end_bin = max(0, min(end_bin, MY_FFT_SAMPLES - 1));
+        // Calculate exact bin ranges without clamping
+        int start_bin = (int)(freq_min / bin_size);
+        int end_bin = (int)(freq_max / bin_size);
 
+        // Ensure we stay within FFT bounds naturally
+        start_bin = max(0, start_bin);
+        end_bin = min(MY_FFT_SAMPLES - 1, end_bin);
+        
         mysound.imm[i] = 0; //To prevent the waveform's spikyness and performance lag
 
         // Sum the energy in the frequency range
