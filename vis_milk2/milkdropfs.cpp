@@ -548,8 +548,18 @@ void CPlugin::LoadPerFrameEvallibVars(CState* pState)
     *pState->var_pf_meshy         = (double)m_nGridY;
     *pState->var_pf_pixelsx       = (double)GetWidth();
     *pState->var_pf_pixelsy       = (double)GetHeight();
-    *pState->var_pf_aspectx       = (double)m_fInvAspectX;
-    *pState->var_pf_aspecty       = (double)m_fInvAspectY;
+	if (m_bScreenDependentRenderMode)
+	{
+		*pState->var_pf_aspectx = 1;
+		*pState->var_pf_aspecty = 1;
+
+	}
+	else
+	{
+		*pState->var_pf_aspectx = (double)m_fInvAspectX;
+		*pState->var_pf_aspecty = (double)m_fInvAspectY;
+	}
+
     // new in v2.0:
     *pState->var_pf_blur1min      = (double)pState->m_fBlur1Min.eval(GetTime());
     *pState->var_pf_blur2min      = (double)pState->m_fBlur2Min.eval(GetTime());
@@ -658,8 +668,16 @@ void CPlugin::RunPerFrameEquations(int code)
         *pState->var_pv_meshy       = (double)m_nGridY;
         *pState->var_pv_pixelsx     = (double)GetWidth();
         *pState->var_pv_pixelsy     = (double)GetHeight();
-        *pState->var_pv_aspectx     = (double)m_fInvAspectX;
-        *pState->var_pv_aspecty     = (double)m_fInvAspectY;
+		if (m_bScreenDependentRenderMode)
+		{
+			*pState->var_pv_aspectx = 1;
+			*pState->var_pv_aspecty = 1;
+		}
+		else
+		{
+			*pState->var_pv_aspectx = (double)m_fInvAspectX;
+			*pState->var_pv_aspecty = (double)m_fInvAspectY;
+		}
         //*pState->var_pv_monitor     = *pState->var_pf_monitor;
 
 		// execute once-per-frame expressions:
@@ -1852,9 +1870,16 @@ void CPlugin::ComputeGridAlphaValues()
 					// restore all the variables to their original states,
 					//  run the user-defined equations,
 					//  then move the results into local vars for computation as floats
-
-					*pState->var_pv_x		= (double)(m_verts[n].x* 0.5f*m_fAspectX + 0.5f);
-					*pState->var_pv_y		= (double)(m_verts[n].y*-0.5f*m_fAspectY + 0.5f);
+					if (m_bScreenDependentRenderMode)
+					{
+						*pState->var_pv_x = (double)(m_verts[n].x*0.5f+0.5f);
+						*pState->var_pv_y = (double)(m_verts[n].y*-0.5f+0.5f);
+					}
+					else
+					{
+						*pState->var_pv_x = (double)(m_verts[n].x*0.5f*m_fAspectX+0.5f);
+						*pState->var_pv_y = (double)(m_verts[n].y*-0.5f*m_fAspectY+0.5f);
+					}
 					*pState->var_pv_rad		= (double)m_vertinfo[n].rad;
 					*pState->var_pv_ang		= (double)m_vertinfo[n].ang;
 					*pState->var_pv_zoom	= *pState->var_pf_zoom;
@@ -1895,8 +1920,18 @@ void CPlugin::ComputeGridAlphaValues()
 
 				// initial texcoords, w/built-in zoom factor
 				float fZoom2Inv = 1.0f/fZoom2;
-				float u =  m_verts[n].x*m_fAspectX*0.5f*fZoom2Inv + 0.5f;
-				float v = -m_verts[n].y*m_fAspectY*0.5f*fZoom2Inv + 0.5f;
+				float u, v;
+
+				if (m_bScreenDependentRenderMode)
+				{
+					u = m_verts[n].x*0.5f*fZoom2Inv+0.5f;
+					v = -m_verts[n].y*0.5f*fZoom2Inv+0.5f;
+				}
+				else
+				{
+					u = m_verts[n].x*m_fAspectX*0.5f*fZoom2Inv+0.5f;
+					v = -m_verts[n].y*m_fAspectY*0.5f*fZoom2Inv+0.5f;
+				}
                     //float u_orig = u;
                     //float v_orig = v;
                     //m_verts[n].tr = u_orig + texel_offset_x;
@@ -1929,8 +1964,11 @@ void CPlugin::ComputeGridAlphaValues()
 				v -= fDY;
 
                 // undo aspect ratio fix:
-                u = (u-0.5f)*m_fInvAspectX + 0.5f;
-                v = (v-0.5f)*m_fInvAspectY + 0.5f;
+				if (!m_bScreenDependentRenderMode)
+				{
+					u = (u - 0.5f) * m_fInvAspectX + 0.5f;
+					v = (v - 0.5f) * m_fInvAspectY + 0.5f;
+				}
 
 				// final half-texel-offset translation:
 				u += texel_offset_x;
@@ -2415,11 +2453,17 @@ void CPlugin::DrawCustomShapes()
                     for (int j=1; j<sides+1; j++)
                     {
                         float t = (j-1)/(float)sides;
+						if (m_bScreenDependentRenderMode)
+						v[j].x = v[0].x + (float)*pState->m_shape[i].var_pf_rad*cosf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_ang + 3.1415927f*0.25f);
+						else
                         v[j].x = v[0].x + (float)*pState->m_shape[i].var_pf_rad*cosf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_ang + 3.1415927f*0.25f)*m_fAspectY;  // DON'T TOUCH!
-                        v[j].y = v[0].y + (float)*pState->m_shape[i].var_pf_rad*sinf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_ang + 3.1415927f*0.25f);           // DON'T TOUCH!
+                        v[j].y = v[0].y + (float)*pState->m_shape[i].var_pf_rad*sinf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_ang + 3.1415927f*0.25f);  // DON'T TOUCH!
                         v[j].z = 0;
-                        v[j].tu = 0.5f + 0.5f*cosf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_tex_ang + 3.1415927f*0.25f)/((float)*pState->m_shape[i].var_pf_tex_zoom) * m_fAspectY; // DON'T TOUCH!
-                        v[j].tv = 0.5f + 0.5f*sinf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_tex_ang + 3.1415927f*0.25f)/((float)*pState->m_shape[i].var_pf_tex_zoom);     // DON'T TOUCH!
+						if (m_bScreenDependentRenderMode)
+						v[j].tu = 0.5f + 0.5f*cosf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_tex_ang + 3.1415927f*0.25f)/((float)*pState->m_shape[i].var_pf_tex_zoom);
+						else
+                        v[j].tu = 0.5f + 0.5f*cosf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_tex_ang + 3.1415927f*0.25f)/((float)*pState->m_shape[i].var_pf_tex_zoom)*m_fAspectY;  // DON'T TOUCH!
+                        v[j].tv = 0.5f + 0.5f*sinf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_tex_ang + 3.1415927f*0.25f)/((float)*pState->m_shape[i].var_pf_tex_zoom);  // DON'T TOUCH!
                         v[j].Diffuse = v[1].Diffuse;
                     }
                     v[sides+1] = v[1];
@@ -2709,8 +2753,16 @@ void CPlugin::DrawCustomWaves()
                             NSEEL_code_execute(pState->m_wave[i].m_pp_codehandle);
                         #endif
 
-                        v[j].x = (float)(*pState->m_wave[i].var_pp_x* 2-1)*m_fInvAspectX;
-                        v[j].y = (float)(*pState->m_wave[i].var_pp_y*-2+1)*m_fInvAspectY;
+						if (m_bScreenDependentRenderMode)
+						{
+							v[j].x = (float)(*pState->m_wave[i].var_pp_x*2-1);
+							v[j].y = (float)(*pState->m_wave[i].var_pp_y*-2+1);
+						}
+						else
+						{
+							v[j].x = (float)(*pState->m_wave[i].var_pp_x*2-1)*m_fInvAspectX;
+							v[j].y = (float)(*pState->m_wave[i].var_pp_y*-2+1)*m_fInvAspectY;
+						}
                         v[j].z = 0;
                         v[j].Diffuse =
                             ((((int)(*pState->m_wave[i].var_pp_a * 255 * alpha_mult)) & 0xFF) << 24) |
@@ -2926,8 +2978,16 @@ void CPlugin::DrawWave(float *fL, float *fR)
 						float rad_2 = 0.5f + 0.4f*fR[i + nVerts + sample_offset] + fWaveParam2;
 						rad = rad_2*(1.0f-mix) + rad*(mix);
 					}
-					v[i].x = rad*cosf(ang) *m_fAspectY + fWavePosX;		// 0.75 = adj. for aspect ratio
-					v[i].y = rad*sinf(ang) *m_fAspectX + fWavePosY;
+					if (m_bScreenDependentRenderMode)
+					{
+						v[i].x = rad*cosf(ang)+fWavePosX;
+						v[i].y = rad*sinf(ang)+fWavePosY;
+					}
+					else
+					{
+						v[i].x = rad*cosf(ang)*m_fAspectY+fWavePosX;		// 0.75 = adj. for aspect ratio
+						v[i].y = rad*sinf(ang)*m_fAspectX+fWavePosY;
+					}
 					//v[i].Diffuse = color;
 				}
 			}
@@ -2957,8 +3017,16 @@ void CPlugin::DrawWave(float *fL, float *fR)
 			{
 				float rad = 0.53f + 0.43f*fR[i] + fWaveParam2;
 				float ang = fL[i+32] * 1.57f + GetTime()*2.3f;
-				v[i].x = rad*cosf(ang) *m_fAspectY + fWavePosX;		// 0.75 = adj. for aspect ratio
-				v[i].y = rad*sinf(ang) *m_fAspectX + fWavePosY;
+				if (m_bScreenDependentRenderMode)
+				{
+					v[i].x = rad*cosf(ang)+fWavePosX;
+					v[i].y = rad*sinf(ang)+fWavePosY;
+				}
+				else
+				{
+					v[i].x = rad*cosf(ang)*m_fAspectY+fWavePosX;		// 0.75 = adj. for aspect ratio
+					v[i].y = rad*sinf(ang)*m_fAspectX+fWavePosY;
+				}
 				//v[i].Diffuse = color;//(D3DCOLOR_RGBA_01(cr, cg, cb, alpha*min(1, max(0, fL[i])));
 			}
 
@@ -2985,8 +3053,16 @@ void CPlugin::DrawWave(float *fL, float *fR)
 
 			for (i=0; i<nVerts; i++)
 			{
-				v[i].x = fR[i   ] *m_fAspectY + fWavePosX;//((pR[i] ^ 128) - 128)/90.0f * ASPECT; // 0.75 = adj. for aspect ratio
-				v[i].y = fL[i+32] *m_fAspectX + fWavePosY;//((pL[i+32] ^ 128) - 128)/90.0f;
+				if (m_bScreenDependentRenderMode)
+				{
+					v[i].x = fR[i] + fWavePosX;//((pR[i] ^ 128) - 128)/90.0f * ASPECT; // 0.75 = adj. for aspect ratio
+					v[i].y = fL[i + 32] + fWavePosY;//((pL[i+32] ^ 128) - 128)/90.0f;
+				}
+				else
+				{
+					v[i].x = fR[i] * m_fAspectY + fWavePosX;//((pR[i] ^ 128) - 128)/90.0f * ASPECT; // 0.75 = adj. for aspect ratio
+					v[i].y = fL[i + 32] * m_fAspectX + fWavePosY;//((pL[i+32] ^ 128) - 128)/90.0f;
+				}
 				//v[i].Diffuse = color;
 			}
 
@@ -3014,8 +3090,16 @@ void CPlugin::DrawWave(float *fL, float *fR)
 
 			for (i=0; i<nVerts; i++)
 			{
-				v[i].x = fR[i   ] *m_fAspectY + fWavePosX;//((pR[i] ^ 128) - 128)/90.0f * ASPECT; // 0.75 = adj. for aspect ratio
-				v[i].y = fL[i+32] *m_fAspectX + fWavePosY;//((pL[i+32] ^ 128) - 128)/90.0f;
+				if (m_bScreenDependentRenderMode)
+				{
+					v[i].x = fR[i]+fWavePosX;//((pR[i] ^ 128) - 128)/90.0f * ASPECT; // 0.75 = adj. for aspect ratio
+					v[i].y = fL[i + 32]+fWavePosY;//((pL[i+32] ^ 128) - 128)/90.0f;
+				}
+				else
+				{
+					v[i].x = fR[i]*m_fAspectY+fWavePosX;//((pR[i] ^ 128) - 128)/90.0f * ASPECT; // 0.75 = adj. for aspect ratio
+					v[i].y = fL[i + 32]*m_fAspectX+fWavePosY;//((pL[i+32] ^ 128) - 128)/90.0f;
+				}
 				//v[i].Diffuse = color;
 			}
 			break;
@@ -3106,8 +3190,16 @@ void CPlugin::DrawWave(float *fL, float *fR)
 				{
 					float x0 = (fR[i]*fL[i+32] + fL[i]*fR[i+32]);
 					float y0 = (fR[i]*fR[i] - fL[i+32]*fL[i+32]);
-					v[i].x = (x0*cos_rot - y0*sin_rot)*m_fAspectY + fWavePosX;
-					v[i].y = (x0*sin_rot + y0*cos_rot)*m_fAspectX + fWavePosY;
+					if (m_bScreenDependentRenderMode)
+					{
+						v[i].x = (x0*cos_rot - y0*sin_rot) + fWavePosX;
+						v[i].y = (x0*sin_rot + y0*cos_rot) + fWavePosY;
+					}
+					else
+					{
+						v[i].x = (x0*cos_rot - y0*sin_rot)*m_fAspectY + fWavePosX;
+						v[i].y = (x0*sin_rot + y0*cos_rot)*m_fAspectX + fWavePosY;
+					}
 					//v[i].Diffuse = color;
 				}
 			}
@@ -3758,8 +3850,16 @@ void CPlugin::DrawWave(float *fL, float *fR)
 						//v[i].Diffuse = color;//(D3DCOLOR_RGBA_01(cr, cg, cb, alpha*min(1, max(0, fL[i])));
 						float rad = 0.63f + 0.23f * fR[i] + fWaveParam2;
 						float ang = fL[i + 32] * 0.9f + GetTime() * 3.3f;
-						v[i].x = rad * cosf(ang + alpha) * m_fAspectY + fWavePosX;		// 0.75 = adj. for aspect ratio
-						v[i].y = rad * sinf(ang) * m_fAspectX + fWavePosY;
+						if (m_bScreenDependentRenderMode)
+						{
+							v[i].x = rad * cosf(ang + alpha) + fWavePosX;
+							v[i].y = rad * sinf(ang) + fWavePosY;
+						}
+						else
+						{
+							v[i].x = rad * cosf(ang + alpha) * m_fAspectY + fWavePosX;		// 0.75 = adj. for aspect ratio
+							v[i].y = rad * sinf(ang) * m_fAspectX + fWavePosY;
+						}
 					}
 
 
@@ -3791,8 +3891,16 @@ void CPlugin::DrawWave(float *fL, float *fR)
 								float rad_2 = 0.5f + 0.4f * fR[i + nVerts + sample_offset] + fWaveParam2;
 								rad = rad_2 * (1.0f - mix) + rad * (mix);
 							}
-							v[i].x = rad * cosf(ang) * m_fAspectY + fWavePosX;// 0.75 = adj. for aspect ratio
-							v[i].y = rad * sinf(ang) * m_fAspectX + fWavePosY;
+							if (m_bScreenDependentRenderMode)
+							{
+								v[i].x = rad * cosf(ang) + fWavePosX;
+								v[i].y = rad * sinf(ang) + fWavePosY;
+							}
+							else
+							{
+								v[i].x = rad * cosf(ang) * m_fAspectY + fWavePosX;// 0.75 = adj. for aspect ratio
+								v[i].y = rad * sinf(ang) * m_fAspectX + fWavePosY;
+							}
 							//v[i].Diffuse = color;
 						}
 					}
@@ -3843,8 +3951,16 @@ void CPlugin::DrawWave(float *fL, float *fR)
 							//v[i].y = rad * sinf(GetTime()*ang) * m_fAspectX + fWavePosY;
 							//v[i].Diffuse = color;
 							//v[i].x = rad * cosf(ang* 2) * m_fAspectY + fWavePosX;//
-							v[i].x = rad * cosf(ang * 3.1416f) * m_fAspectY / 1.5 + fWavePosX * cosf(3.1416f);// 0.75 = adj. for aspect ratio
-							v[i].y = rad * sinf(ang - GetTime() / 3) * m_fAspectX / 1.5 + fWavePosY * cosf(3.1416f);
+							if (m_bScreenDependentRenderMode)
+							{
+								v[i].x = rad * cosf(ang * 3.1416f) / 1.5 + fWavePosX * cosf(3.1416f);
+								v[i].y = rad * sinf(ang - GetTime() / 3) / 1.5 + fWavePosY * cosf(3.1416f);
+							}
+							else
+							{
+								v[i].x = rad * cosf(ang * 3.1416f) * m_fAspectY / 1.5 + fWavePosX * cosf(3.1416f);// 0.75 = adj. for aspect ratio
+								v[i].y = rad * sinf(ang - GetTime() / 3) * m_fAspectX / 1.5 + fWavePosY * cosf(3.1416f);
+							}
 						}
 					}
 
@@ -3979,8 +4095,16 @@ void CPlugin::DrawWave(float *fL, float *fR)
 							float y_rot = x * sin_rot + y * cos_rot;
 
 							// Apply position and aspect ratio
-							v[i].x = x_rot * m_fAspectY + fWavePosX;
-							v[i].y = y_rot * m_fAspectX + fWavePosY;
+							if (m_bScreenDependentRenderMode)
+							{
+								v[i].x = x_rot + fWavePosX;
+								v[i].y = y_rot + fWavePosY;
+							}
+							else
+							{
+								v[i].x = x_rot * m_fAspectY + fWavePosX;
+								v[i].y = y_rot * m_fAspectX + fWavePosY;
+							}
 						}
 					}
 
@@ -4159,8 +4283,14 @@ void CPlugin::DrawSprites()
 		// positioning:
 		float fHalfSize = 0.05f;
 		v3[0].x = 0.0f;
+		if (m_bScreenDependentRenderMode)
+		v3[1].x = 0.0f - fHalfSize;
+		else
 		v3[1].x = 0.0f - fHalfSize*m_fAspectY;
 		v3[2].x = 0.0f;
+		if (m_bScreenDependentRenderMode)
+		v3[3].x = 0.0f + fHalfSize;
+		else
 		v3[3].x = 0.0f + fHalfSize*m_fAspectY;
 		v3[4].x = 0.0f;
 		v3[5].x = v3[1].x;
@@ -4441,6 +4571,8 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 			if (bKillSprite && bBurnIn)	// final render-to-VS1
 			{
 				float aspect = GetWidth()/(float)(GetHeight()*4.0f/3.0f);
+
+				if (!m_bScreenDependentRenderMode)
 				if (aspect < 1.0f)
 					for (k=0; k<4; k++) v3[k].x *= aspect;
 				else
@@ -4574,14 +4706,16 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 				 //lpDevice->SetDepthStencilSurface( pZBuffer );
 			    lpDevice->SetTexture(0, m_texmgr.m_tex[iSlot].pSurface);
 
-				// undo aspect ratio changes (that were used to fit it to VS1):
-				//{
-				//	float aspect = GetWidth()/(float)(GetHeight()*4.0f/3.0f);
-				//	if (aspect < 1.0f)
-				//		for (k=0; k<4; k++) v3[k].x /= aspect;
-				//	else
-				//		for (k=0; k<4; k++) v3[k].y *= aspect; //disabled due to aspect-ratio issue - didn't work
-				//}
+				//undo aspect ratio changes (that were used to fit it to VS1):
+				{
+					float aspect = GetWidth()/(float)(GetHeight()*4.0f/3.0f);
+
+					if (!m_bScreenDependentRenderMode)
+					if (aspect < 1.0f)
+						for (k=0; k<4; k++) v3[k].x /= aspect;
+					else
+						for (k=0; k<4; k++) v3[k].y *= aspect;
+				}
 
 			    lpDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, (LPVOID)v3, sizeof(SPRITEVERTEX));
 			}
@@ -4621,10 +4755,21 @@ void CPlugin::UvToMathSpace(float u, float v, float* rad, float* ang)
     //      bottom right = [1,1]
     //      rad == 1 at corners of screen
     //      ang == 0 at three o'clock, and increases counter-clockwise (to 6.28).
-    float px = (u*2-1) * m_fAspectX;  // probably 1.0
-    float py = (v*2-1) * m_fAspectY;  // probably <1
+	float px, py;
+	if (m_bScreenDependentRenderMode)
+	{
+		px = (u*2-1);  // probably 1.0
+		py = (v*2-1);  // probably <1
 
-    *rad = sqrtf(px*px + py*py) / sqrtf(m_fAspectX*m_fAspectX + m_fAspectY*m_fAspectY);
+		*rad = sqrtf(px*px+py*py);
+	}
+	else
+	{
+		px = (u*2-1)*m_fAspectX;  // probably 1.0
+		py = (v*2-1)*m_fAspectY;  // probably <1
+
+		*rad = sqrtf(px*px+py*py) / sqrtf(m_fAspectX*m_fAspectX+m_fAspectY*m_fAspectY);
+	}
     *ang = atan2f(py, px);
     if (*ang < 0)
         *ang += 6.2831853071796f;
@@ -4705,10 +4850,11 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
     float mip_avg = 0.5f*(mip_x + mip_y);
     float aspect_x = 1;
     float aspect_y = 1;
-    if (GetWidth() > GetHeight())
-        aspect_y = GetHeight()/(float)GetWidth();
-    else
-        aspect_x = GetWidth()/(float)GetHeight();
+	if (!m_bScreenDependentRenderMode)
+		if (GetWidth() > GetHeight())
+			aspect_y = GetHeight()/(float)GetWidth();
+		else
+			aspect_x = GetWidth()/(float)GetHeight();
 
     float blur_min[3], blur_max[3];
     GetSafeBlurMinMax(pState, blur_min, blur_max);
@@ -4855,10 +5001,11 @@ void CPlugin::ShowToUser_NoShaders()//int bRedraw, int nPassOverride)
     float x_aspect_mult = 1.0f;
     float y_aspect_mult = 1.0f;
 
-    if (aspect>1)
-        y_aspect_mult = aspect;
-    else
-        x_aspect_mult = 1.0f/aspect;
+	if (!m_bScreenDependentRenderMode)
+		if (aspect>1)
+		    y_aspect_mult = aspect;
+		else
+		    x_aspect_mult = 1.0f/aspect;
 
 	for (int n=0; n<4; n++)
     {
@@ -5139,10 +5286,11 @@ void CPlugin::ShowToUser_Shaders(int nPass, bool bAlphaBlend, bool bFlipAlpha, b
     float x_aspect_mult = 1.0f;
     float y_aspect_mult = 1.0f;
 
-    if (aspect>1)
-        y_aspect_mult = aspect;
-    else
-        x_aspect_mult = 1.0f/aspect;
+	if (!m_bScreenDependentRenderMode)
+		if (aspect>1)
+		    y_aspect_mult = aspect;
+		else
+		    x_aspect_mult = 1.0f/aspect;
 
     // hue shader
 	float shade[4][3] = {

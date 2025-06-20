@@ -77,10 +77,10 @@ wavecode_0_a=1.000000
 wave_0_per_point1=it = (it + 1)*above(sample,0)*below(it,53);
 wave_0_per_point2=ita = (ita + equal(it,0))*above(sample,0);
 wave_0_per_point3=
-wave_0_per_point4=sw = if(equal(it,0),rand(4),1);
-wave_0_per_point5=xv = if(sw,xv,rand(1001)*.001*.8);
+wave_0_per_point4=sw = if(equal(it,0),int(rand(4)),1);
+wave_0_per_point5=xv = if(sw,xv,int(rand(1001))*.001*.8);
 wave_0_per_point6=mx = xv + ita*.025;
-wave_0_per_point7=my = if(sw,my,rand(1001)*.001*.975);
+wave_0_per_point7=my = if(sw,my,int(rand(1001))*.001*.975);
 wave_0_per_point8=
 wave_0_per_point9=sz = .01;
 wave_0_per_point10=vx = above(it,1)*below(it,39) + above(it,12)*below(it,28) - equal(it,20) + equal(it,46) + equal(it,51) + equal(it,41) - equal(it,15) - equal(it,25) + equal(it,10) + equal(it,30) - equal(it,4) - equal(it,36);
@@ -89,9 +89,9 @@ wave_0_per_point12=
 wave_0_per_point13=cvc = if(equal(it,0),cvb,cvc);
 wave_0_per_point14=cvb = if(equal(it,0),cva,cvb);
 wave_0_per_point15=cva = if(equal(it,0),cv,cva);
-wave_0_per_point16=cv = if(equal(it,0),if(equal(cva,cvb),1-cva,if(cva,above(rand(1001)*.001,.69),above(rand(1001)*.001,.14))),cv);
+wave_0_per_point16=cv = if(equal(it,0),if(equal(cva,cvb),1-cva,if(cva,above(int(rand(1001))*.001,.69),above(int(rand(1001))*.001,.14))),cv);
 wave_0_per_point17=
-wave_0_per_point18=lr = if(equal(it,0),if(cv,rand(10001)*.0001*316.02,rand(10001)*.0001*193.66),lr);
+wave_0_per_point18=lr = if(equal(it,0),if(cv,int(rand(10001))*.0001*316.02,int(rand(10001))*.0001*193.66),lr);
 wave_0_per_point19=
 wave_0_per_point20=let = (1-cv)*(1 + above(lr,43.31)*4 + above(lr,100.19)*4 + above(lr,138.64)*6 + above(lr,175.51)*6) + cv*(2 + above(lr,10.56) + above(lr,33.69) + above(lr,50.94)*2 + above(lr,60.18) + above(lr,72.77) + above(lr,88.08)*2 + above(lr,89.08) + above(lr,94.69) + above(lr,122.67) + above(lr,138.03) + above(lr,171.95)*2 + above(lr,188.09) + above(lr,189.09) + above(lr,227.73) + above(lr,256.96) + above(lr,292.39)*2 + above(lr,297.52) + above(lr,304.09) + above(lr,305.57) + above(lr,314.63));
 wave_0_per_point21=
@@ -138,10 +138,10 @@ wavecode_1_a=1.000000
 wave_1_per_point1=it = (it + 1)*above(sample,0)*below(it,53);
 wave_1_per_point2=ita = (ita + equal(it,0))*above(sample,0);
 wave_1_per_point3=
-wave_1_per_point4=sw = if(equal(it,0),rand(4),1);
-wave_1_per_point5=xv = if(sw,xv,rand(1001)*.001*.8);
+wave_1_per_point4=sw = if(equal(it,0),int(rand(4)),1);
+wave_1_per_point5=xv = if(sw,xv,int(rand(1001))*.001*.8);
 wave_1_per_point6=mx = xv + ita*.025;
-wave_1_per_point7=my = if(sw,my,rand(1001)*.001*.975);
+wave_1_per_point7=my = if(sw,my,int(rand(1001))*.001*.975);
 wave_1_per_point8=
 wave_1_per_point9=sz = .01;
 wave_1_per_point10=vx = above(it,1)*below(it,39) + above(it,12)*below(it,28) - equal(it,20) + equal(it,46) + equal(it,51) + equal(it,41) - equal(it,15) - equal(it,25) + equal(it,10) + equal(it,30) - equal(it,4) - equal(it,36);
@@ -150,9 +150,9 @@ wave_1_per_point12=
 wave_1_per_point13=cvc = if(equal(it,0),cvb,cvc);
 wave_1_per_point14=cvb = if(equal(it,0),cva,cvb);
 wave_1_per_point15=cva = if(equal(it,0),cv,cva);
-wave_1_per_point16=cv = if(equal(it,0),if(equal(cva,cvb),1-cva,if(cva,above(rand(1001)*.001,.69),above(rand(1001)*.001,.14))),cv);
+wave_1_per_point16=cv = if(equal(it,0),if(equal(cva,cvb),1-cva,if(cva,above(int(rand(1001))*.001,.69),above(int(rand(1001))*.001,.14))),cv);
 wave_1_per_point17=
-wave_1_per_point18=lr = if(equal(it,0),if(cv,rand(10001)*.0001*316.02,rand(10001)*.0001*193.66),lr);
+wave_1_per_point18=lr = if(equal(it,0),if(cv,int(rand(10001))*.0001*316.02,int(rand(10001))*.0001*193.66),lr);
 wave_1_per_point19=
 wave_1_per_point20=let = (1-cv)*(1 + above(lr,43.31)*4 + above(lr,100.19)*4 + above(lr,138.64)*6 + above(lr,175.51)*6) + cv*(2 + above(lr,10.56) + above(lr,33.69) + above(lr,50.94)*2 + above(lr,60.18) + above(lr,72.77) + above(lr,88.08)*2 + above(lr,89.08) + above(lr,94.69) + above(lr,122.67) + above(lr,138.03) + above(lr,171.95)*2 + above(lr,188.09) + above(lr,189.09) + above(lr,227.73) + above(lr,256.96) + above(lr,292.39)*2 + above(lr,297.52) + above(lr,304.09) + above(lr,305.57) + above(lr,314.63));
 wave_1_per_point21=
@@ -199,10 +199,10 @@ wavecode_2_a=1.000000
 wave_2_per_point1=it = (it + 1)*above(sample,0)*below(it,53);
 wave_2_per_point2=ita = (ita + equal(it,0))*above(sample,0);
 wave_2_per_point3=
-wave_2_per_point4=sw = if(equal(it,0),rand(4),1);
-wave_2_per_point5=xv = if(sw,xv,rand(1001)*.001*.8);
+wave_2_per_point4=sw = if(equal(it,0),int(rand(4)),1);
+wave_2_per_point5=xv = if(sw,xv,int(rand(1001))*.001*.8);
 wave_2_per_point6=mx = xv + ita*.025;
-wave_2_per_point7=my = if(sw,my,rand(1001)*.001*.975);
+wave_2_per_point7=my = if(sw,my,int(rand(1001))*.001*.975);
 wave_2_per_point8=
 wave_2_per_point9=sz = .01;
 wave_2_per_point10=vx = above(it,1)*below(it,39) + above(it,12)*below(it,28) - equal(it,20) + equal(it,46) + equal(it,51) + equal(it,41) - equal(it,15) - equal(it,25) + equal(it,10) + equal(it,30) - equal(it,4) - equal(it,36);
@@ -211,9 +211,9 @@ wave_2_per_point12=
 wave_2_per_point13=cvc = if(equal(it,0),cvb,cvc);
 wave_2_per_point14=cvb = if(equal(it,0),cva,cvb);
 wave_2_per_point15=cva = if(equal(it,0),cv,cva);
-wave_2_per_point16=cv = if(equal(it,0),if(equal(cva,cvb),1-cva,if(cva,above(rand(1001)*.001,.69),above(rand(1001)*.001,.14))),cv);
+wave_2_per_point16=cv = if(equal(it,0),if(equal(cva,cvb),1-cva,if(cva,above(int(rand(1001))*.001,.69),above(int(rand(1001))*.001,.14))),cv);
 wave_2_per_point17=
-wave_2_per_point18=lr = if(equal(it,0),if(cv,rand(10001)*.0001*316.02,rand(10001)*.0001*193.66),lr);
+wave_2_per_point18=lr = if(equal(it,0),if(cv,int(rand(10001))*.0001*316.02,int(rand(10001))*.0001*193.66),lr);
 wave_2_per_point19=
 wave_2_per_point20=let = (1-cv)*(1 + above(lr,43.31)*4 + above(lr,100.19)*4 + above(lr,138.64)*6 + above(lr,175.51)*6) + cv*(2 + above(lr,10.56) + above(lr,33.69) + above(lr,50.94)*2 + above(lr,60.18) + above(lr,72.77) + above(lr,88.08)*2 + above(lr,89.08) + above(lr,94.69) + above(lr,122.67) + above(lr,138.03) + above(lr,171.95)*2 + above(lr,188.09) + above(lr,189.09) + above(lr,227.73) + above(lr,256.96) + above(lr,292.39)*2 + above(lr,297.52) + above(lr,304.09) + above(lr,305.57) + above(lr,314.63));
 wave_2_per_point21=
@@ -262,9 +262,9 @@ wave_3_per_point2=ita = (ita + equal(it,0))*above(sample,0);
 wave_3_per_point3=
 wave_3_per_point4=sw = 1-equal(it,0)*equal(ita,0);
 wave_3_per_point5=swi = (equal(lr,9) + equal(lr,5))*equal(it,0)*equal(ita,4);
-wave_3_per_point6=xv = if(sw - swi,xv,rand(1001)*.001*.8);
+wave_3_per_point6=xv = if(sw - swi,xv,int(rand(1001))*.001*.8);
 wave_3_per_point7=mx = xv + ita*.025;
-wave_3_per_point8=my = if(sw - swi,my,rand(1001)*.001*.975);
+wave_3_per_point8=my = if(sw - swi,my,int(rand(1001))*.001*.975);
 wave_3_per_point9=
 wave_3_per_point10=sz = .01;
 wave_3_per_point11=vx = above(it,1)*below(it,39) + above(it,12)*below(it,28) - equal(it,20) + equal(it,46) + equal(it,51) + equal(it,41) - equal(it,15) - equal(it,25) + equal(it,10) + equal(it,30) - equal(it,4) - equal(it,36);
@@ -281,7 +281,7 @@ wave_3_per_point21=sh = equal(ita,0)*19 + equal(ita,1)*21 + equal(ita,2)*18 + eq
 wave_3_per_point22=si = equal(ita,0)*8 + equal(ita,1)*1 + equal(ita,2)*16 + equal(ita,3)*16 + equal(ita,4)*25;
 wave_3_per_point23=sj = equal(ita,0)*25 + equal(ita,1)*5 + equal(ita,2)*19 + equal(ita,6)*14 + equal(ita,7)*15;
 wave_3_per_point24=
-wave_3_per_point25=lr = if(sw,lr,rand(10));
+wave_3_per_point25=lr = if(sw,lr,int(rand(10)));
 wave_3_per_point26=let = equal(lr,0)*sa + equal(lr,1)*sb + equal(lr,2)*sc + equal(lr,3)*sd + equal(lr,4)*se + equal(lr,5)*sf + equal(lr,6)*sg + equal(lr,7)*sh + equal(lr,8)*si + equal(lr,9)*sj;
 wave_3_per_point27=
 wave_3_per_point28=va = equal(let,23) + equal(let,24) + equal(let,26);
@@ -334,8 +334,8 @@ shapecode_0_border_r=1.000000
 shapecode_0_border_g=1.000000
 shapecode_0_border_b=0.000000
 shapecode_0_border_a=0.000000
-shape_0_init1=t1 = rand(100)*0.01;
-shape_0_init2=t2 = rand(100)*0.01;
+shape_0_init1=t1 = int(rand(100))*0.01;
+shape_0_init2=t2 = int(rand(100))*0.01;
 shape_0_init3=te = 1;
 shape_0_init4=poly = 5;
 shape_0_per_frame1=tm = time*.05;
@@ -352,8 +352,8 @@ shape_0_per_frame11=y = .5003;
 shape_0_per_frame12=
 shape_0_per_frame13=
 shape_0_per_frame14=
-shape_0_per_frame15=ang = (rand(1001)*.001 - rand(1001)*.001)*q1*.5;
-shape_0_per_frame16=rad = rad - (rand(1001)*.001 + rand(1001)*.001)*1.5*q1;
+shape_0_per_frame15=ang = (int(rand(1001))*.001 - int(rand(1001))*.001)*q1*.5;
+shape_0_per_frame16=rad = rad - (int(rand(1001))*.001 + int(rand(1001))*.001)*1.5*q1;
 shape_0_per_frame17=
 shape_0_per_frame18=a=above(treb,.8);
 shape_0_per_frame19=a2=above(treb,.8);

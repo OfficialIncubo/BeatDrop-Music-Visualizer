@@ -58,7 +58,7 @@ per_frame_1=warp = 0;
 per_frame_2=zoom = 1;
 per_frame_3=zoomexp = 1;
 per_frame_4=warp = 0;
-per_frame_5=rot = ((bass + bass_att)*0.5 - 1) * (rand(4) - 2);
+per_frame_5=rot = ((bass + bass_att)*0.5 - 1) * (int(rand(4)) - 2);
 per_frame_6=dx = 0;
 per_frame_7=dy = 0;
 per_frame_8=wave_b = treb - 1;

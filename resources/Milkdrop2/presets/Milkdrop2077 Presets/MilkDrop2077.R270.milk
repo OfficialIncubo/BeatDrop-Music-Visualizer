@@ -377,7 +377,7 @@ per_frame_29=wave_b=wave_b+(0.6*sin(treb*2.500)+0.4*sin(time*0.89));
 per_frame_30=wave_g=wave_g+(0.6*sin(mid*2.500)+0.4*sin(time*0.74));
 per_frame_31=q1=rot+0.005*sin(time*0.5);
 per_frame_32=q30=(bass+treb+mid)*2;
-per_pixel_1=rot=q1*2*rad*pow(0|(4+2*sin(rad*20+time))+.5*.1,6);
+per_pixel_1=rot=q1*2*rad*pow(-2&(4+2*sin(rad*20+time))+.5*.1,6);
 warp_1=`shader_body
 warp_2=`{
 warp_3=`    float2 scale = float2(1280,1024)*texsize.zw; // 1280x1024 : the resolution i modelled this shader with

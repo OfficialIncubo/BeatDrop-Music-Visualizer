@@ -1,0 +1,104 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+[preset00]
+fRating=3.000
+fGammaAdj=1.500
+fDecay=0.980
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.800
+fWaveScale=1.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.000
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=wave_r = 0.5 + 0.5*sin(time*0.5);
+per_frame_2=wave_g = 0.5 + 0.5*sin(time*0.7);
+per_frame_3=wave_b = 0.5 + 0.5*sin(time*0.9);
+per_frame_4=wave_x = 0.5 + 0.3*sin(time*0.3);
+per_frame_5=wave_y = 0.5 + 0.2*cos(time*0.4);
+per_frame_6=rot = if(time % 2 == 0, 0.1, -0.1);
+per_pixel_1=//x = x*0.5 + 0.5;
+per_pixel_2=//y = y*0.5 + 0.5;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // sample previous frame
+warp_4=`    ret = tex2D( sampler_main, uv ).xyz;
+warp_5=`    
+warp_6=`    // darken (decay) over time
+warp_7=`    ret -= 0.004;
+warp_8=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    uv = uv * 2.0 - 1.0;
+comp_4=`    float d = length(uv)*1.25;
+comp_5=`    float wave = sin(d * 20.0 - time * 5.0) * 0.35;
+comp_6=`    uv.y = abs(uv.y + wave); // Vertical mirroring with wave distortion
+comp_7=`    uv = (uv * 0.5) + 0.5;
+comp_8=`    
+comp_9=`    float3 col = 0.5 + 0.5*cos(time + uv.xyx + float3(0,2,4));
+comp_10=`    ret = tex2d(sampler_main, uv);
+comp_11=`    col *= smoothstep(0.2, 0.8, d);
+comp_12=`    
+comp_13=`    ret += float4(col, 1.0);
+comp_14=`}

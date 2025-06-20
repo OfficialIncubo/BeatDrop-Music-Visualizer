@@ -484,7 +484,7 @@ per_frame_24=wave_r=wave_r+(0.6*sin(bass*2.500)+0.4*sin(time*0.70));
 per_frame_25=wave_b=wave_b+(0.6*sin(treb*2.500)+0.4*sin(time*0.89));
 per_frame_26=wave_g=wave_g+(0.6*sin(mid*2.500)+0.4*sin(time*0.74));
 per_frame_27=q1=rot+0.005*sin(time*0.5);
-per_pixel_1=rot=q1*2*rad*pow(0|(4+2*sin(rad*20+time))+.5*.1,6);
+per_pixel_1=rot=q1*2*rad*pow(-2&(4+2*sin(rad*20+time))+.5*.1,6);
 warp_1=`sampler sampler_pw_noise_lq;
 warp_2=`float3 color, mus, neu, ret1, noise, noise2;
 warp_3=`float2 uv1, rs0, rs, uv2, uv3, dz, hor, ver;

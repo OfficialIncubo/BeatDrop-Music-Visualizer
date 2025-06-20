@@ -1,0 +1,184 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=2
+PSVERSION_COMP=4
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.005
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99990
+rot=-0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=0.99990
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=forms = int(rand(9));
+per_frame_init_2=bass_trigger_lim = 1.85;
+per_frame_init_3=smooth_vol_atten = 0.935;
+per_frame_init_4=smooth_vol_mult = 0.575;
+per_frame_init_5=smooth_vol_clip_prevention = 2;
+per_frame_1=time_new += 1/fps;
+per_frame_2=time_new = if(time_new >= .25 && bass > bass_trigger_lim, 0, time_new);
+per_frame_3=trigger = if(time_new == 0, 1, 0);
+per_frame_4=
+per_frame_5=//FOR COMPOSITE
+per_frame_6=forms = if(trigger, int(rand(9)), forms);
+per_frame_7=vol = (bass+mid+treb)/3;
+per_frame_8=smooth_vol = if(vol > smooth_vol, vol, smooth_vol *= smooth_vol_atten);
+per_frame_9=smooth_vol_comp = min(smooth_vol * smooth_vol_mult, smooth_vol_clip_prevention);
+per_frame_10=color_phasing = if(trigger, rand(2), color_phasing);
+per_frame_11=modes = if(trigger, int(rand(2)), modes);
+per_frame_12=color_phasing2 = if(modes == 0, color_phasing, -color_phasing);
+per_frame_13=
+per_frame_14=
+per_frame_15=q1 = forms;
+per_frame_16=q2 = smooth_vol_comp;
+per_frame_17=q3 = color_phasing2;
+warp_1=`shader_body {
+warp_2=`//ret = 1;
+warp_3=`}
+comp_1=`//Original ShaderToy code: https://www.shadertoy.com/view/tct3Rf
+comp_2=`//by Xor (XorDev)
+comp_3=`//Converted to MilkDrop (HLSL) and Music-Reactive edited by DJ XcitMosphere/Incubo_/Se7enSlasher.
+comp_4=`
+comp_5=`shader_body
+comp_6=`{
+comp_7=`    //Raymarch iterator, step distance, depth
+comp_8=`    float i, d, z;
+comp_9=`    float4 O;    
+comp_10=`
+comp_11=`    uv = (uv-.5)*aspect.xy; // CENTER + ASPECT FIX
+comp_12=`    uv.y = -uv.y; // Y FLIPPING ISSUE FIX
+comp_13=`
+comp_14=`    for(i = 0; i < 1e2; i++)
+comp_15=`    {
+comp_16=`        //Raymarch sample point
+comp_17=`        float3 p = z * normalize(float3(uv,-.25)) + .8;
+comp_18=`        //Reflection distance
+comp_19=`        d = max(-p.y, 0.);
+comp_20=`        //Reflect y-axis
+comp_21=`        p.y += d+d - 1.;
+comp_22=`        //Step forward slowly with a bias for soft reflections
+comp_23=`        if (q1 == 0)
+comp_24=`        {
+comp_25=`        z += d = .3 * (.01 + .1*d + 
+comp_26=`        //Lazer distance field
+comp_27=`        length(min( p = cos(p + time) + cos(p / .6).yzx, p.zxy)) 
+comp_28=`        / (q2+d+d+d*d));    
+comp_29=`        }
+comp_30=`        if (q1 == 1)
+comp_31=`        {
+comp_32=`        z += d = .3 * (.01 + .1*d + 
+comp_33=`        length(min( p = cos(sin(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_34=`        / (q2+d+d+d*d));    
+comp_35=`        }
+comp_36=`        if (q1 == 2)
+comp_37=`        {
+comp_38=`        z += d = .3 * (.01 + .1*d + 
+comp_39=`        length(min( p = cos(cos(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_40=`        / (q2+d+d+d*d));    
+comp_41=`        }
+comp_42=`        if (q1 == 3)
+comp_43=`        {
+comp_44=`        z += d = .3 * (.01 + .1*d + 
+comp_45=`        length(min( p = cos(tan(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_46=`        / (q2+d+d+d*d));    
+comp_47=`        }
+comp_48=`        if (q1 == 4)
+comp_49=`        {
+comp_50=`        z += d = .3 * (.01 + .1*d + 
+comp_51=`        length(min( p = cos(atan(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_52=`        / (q2+d+d+d*d));    
+comp_53=`        }
+comp_54=`        if (q1 == 5)
+comp_55=`        {
+comp_56=`        z += d = .3 * (.01 + .1*d + 
+comp_57=`        length(min( p = sin(cos(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_58=`        / (q2+d+d+d*d));    
+comp_59=`        }
+comp_60=`        if (q1 == 6)
+comp_61=`        {
+comp_62=`        z += d = .3 * (.01 + .1*d + 
+comp_63=`        length(min( p = cos(sin(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_64=`        / (q2+d+d+d*d));    
+comp_65=`        }
+comp_66=`        if (q1 == 7)
+comp_67=`        {
+comp_68=`        z += d = .3 * (.01 + .1*d + 
+comp_69=`        length(min( p = cos(atan(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_70=`        / (q2+d+d+d*d));    
+comp_71=`        }
+comp_72=`        if (q1 == 8)
+comp_73=`        {
+comp_74=`        z += d = .3 * (.01 + .1*d + 
+comp_75=`        length(min( p = sin(atan(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_76=`        / (q2+d+d+d*d));    
+comp_77=`        }
+comp_78=`
+comp_79=`        //Pick colors and attenuate
+comp_80=`        O += (cos((z+q3) + float4(0,2,3,0)) + 1.5) / d / z;
+comp_81=`    }
+comp_82=`    //Tanh tonemapping
+comp_83=`    O = tanh(O / 7e2);
+comp_84=`    ret = O;
+comp_85=`}

@@ -234,7 +234,7 @@ per_frame_9=ob_a = 0.5 + 0.1*sin(my_volume);
 per_frame_10=
 per_frame_11=
 per_frame_12=ib_r = (wave_g+wave_b)/2;
-per_frame_13=ib_g = (wave_r_wave_b)/2;
+per_frame_13=ib_g = (wave_r+wave_b)/2;
 per_frame_14=ib_b = (wave_r+wave_g)/2;
 per_frame_15=
 per_frame_16=cx = 0.5;

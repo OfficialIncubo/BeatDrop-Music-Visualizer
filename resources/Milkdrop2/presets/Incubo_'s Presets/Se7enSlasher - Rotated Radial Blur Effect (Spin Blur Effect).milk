@@ -1,0 +1,108 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=4.000
+fGammaAdj=1.000
+fDecay=1.000
+fVideoEchoZoom=2.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=1
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=1.013
+fWaveSmoothing=0.900
+fWaveParam=-0.400
+fModWaveAlphaStart=1.050
+fModWaveAlphaEnd=1.650
+fWarpAnimSpeed=2.678
+fWarpScale=0.864
+fZoomExponent=1.00732
+fShader=1.000
+zoom=1.02500
+rot=0.00000
+cx=-0.500
+cy=-1.000
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=q1 = sin(time / 2)/50;
+warp_1=`sampler sampler_rand00;
+warp_2=`shader_body
+warp_3=`{
+warp_4=`    ret = tex2D(sampler_rand00, uv).xyz;
+warp_5=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`
+comp_4=`float2 center = float2(.5, .5);
+comp_5=`int iter = 20;
+comp_6=`float z_factor = .9825;
+comp_7=`
+comp_8=`uv -= center; //Keep it center!
+comp_9=`
+comp_10=`// Se7enSlasher - Create rotation matrix
+comp_11=`float2x2 rotmat = float2x2(
+comp_12=`         cos(q1), -sin(q1),
+comp_13=`         sin(q1), cos(q1)
+comp_14=`);
+comp_15=`
+comp_16=`//Do iteration steps
+comp_17=`for (int i = 0; i < iter; i++)
+comp_18=`{
+comp_19=`      //Apply rotation matrix calculations and multiply by zoom factor every step.
+comp_20=`      uv = mul(rotmat, uv) * z_factor;
+comp_21=`      //And apply the main sampler
+comp_22=`      ret += tex2D(sampler_main, uv + center);
+comp_23=`}
+comp_24=`
+comp_25=`//Don't overbright the addition layers. Divide the output by sample iterations. - Avoid overbrighting
+comp_26=`ret /= iter;
+comp_27=`
+comp_28=`}
