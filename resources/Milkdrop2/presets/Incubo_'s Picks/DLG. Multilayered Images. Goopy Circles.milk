@@ -431,7 +431,7 @@ per_frame_6=dy=0;
 per_frame_7=sx=1;
 per_frame_8=sy=1;
 per_frame_9=//mm=mm+pow(mid,3);
-per_frame_10=mm=5/mid;
+per_frame_10=mm=mm+(5/mid);
 per_frame_11=mt=mt+pow(treb,3);
 per_frame_12=//q1=sin(mm*.1)*.002+1;
 per_frame_13=q1=mm;
