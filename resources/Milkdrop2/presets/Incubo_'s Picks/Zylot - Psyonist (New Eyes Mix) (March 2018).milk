@@ -235,7 +235,7 @@ shapecode_3_border_g=1.000
 shapecode_3_border_b=1.000
 shapecode_3_border_a=0.100
 per_frame_1=warp = 0;
-per_pixel_1=rot = atan(sin(0|(10*abs(x-.5)*rad*10)/0|(10*abs(y-.5)*rad*10)-time*10))*bass*.05;
+per_pixel_1=rot = atan(sin(0|(10*abs(x-.5)*rad*10)+.5/0|(10*abs(y-.5)*rad*10)+.5-time*10))*bass*.05;
 per_pixel_2=zoom = 1+rot;
 warp_1=`shader_body
 warp_2=`{

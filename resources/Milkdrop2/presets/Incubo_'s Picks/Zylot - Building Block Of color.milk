@@ -152,7 +152,7 @@ wave_1_per_point2=
 wave_1_per_point3=//Sphere
 wave_1_per_point4=fvar = sample*512;
 wave_1_per_point5=svar = fvar/32;
-wave_1_per_point6=tvar = 0&svar;
+wave_1_per_point6=tvar = 0|svar;
 wave_1_per_point7=nsample = tvar*3.5;
 wave_1_per_point8=x1 = (1)*sin(nsample+value1*5);
 wave_1_per_point9=y1 = (4)*cos(sample*t8*2);

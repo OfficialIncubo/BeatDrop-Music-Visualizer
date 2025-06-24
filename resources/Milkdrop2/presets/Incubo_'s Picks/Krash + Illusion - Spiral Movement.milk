@@ -57,8 +57,8 @@ mv_r=1
 mv_g=1
 mv_b=1
 mv_a=0
-per_frame_1=dx=-0.0005;
-per_frame_2=dy=-0.0005;
+per_frame_1=//dx=-0.0005;
+per_frame_2=//dy=-0.0005;
 per_frame_3=vol = (bass+mid+att)/6;
 per_frame_4=xamptarg = if(equal(frame%15,0),min(0.5*vol*bass_att,0.5),xamptarg);
 per_frame_5=xamp = xamp + 0.5*(xamptarg-xamp);

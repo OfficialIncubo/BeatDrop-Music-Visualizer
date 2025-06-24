@@ -46,11 +46,11 @@ wave_g=0.490
 wave_b=1.000
 wave_x=0.500
 wave_y=0.500
-ob_size=0.000
+ob_size=0.010
 ob_r=0.000
-ob_g=0.000
+ob_g=1.000
 ob_b=1.000
-ob_a=0.100
+ob_a=1.000
 ib_size=0.260
 ib_r=0.250
 ib_g=0.250
@@ -309,114 +309,116 @@ shape_3_per_frame1=//x = .5 + .2*cos(q27);
 shape_3_per_frame2=//y = .5 + .2*sin(q27);
 shape_3_per_frame3=tex_ang = 0;
 shape_3_per_frame4=x = sin(time*.1)*.2+.5
-per_frame_init_1=movx = int(rand(10));
-per_frame_init_2=movy = int(rand(10));
+per_frame_init_1=movx = rand(10);
+per_frame_init_2=movy = rand(10);
 per_frame_init_3=sw3 = 0;
 per_frame_init_4=sw4 = -.7;
 per_frame_init_5=speed = .1;
-per_frame_1=dec_m = pow (0.85, 30/fps); dec_s = pow (0.9, 30/fps); 
-per_frame_2=
-per_frame_3=beat = bass+mid+treb; 
-per_frame_4=avg = avg*dec_s + beat*(1-dec_s);
-per_frame_5=is_beat = above(beat, .4+avg+peak) * above (time, t0+.2);
-per_frame_6=t0a = if(bnot(is_beat),t0a,t0);
-per_frame_7=t0 = is_beat*time + (1-is_beat)*t0;
-per_frame_8=peak = is_beat * beat + (1-is_beat)*peak*dec_m;
-per_frame_9=index = (index + is_beat) %32;
-per_frame_10=index2 = (index2 + is_beat*bnot(index))%8;
-per_frame_11=
-per_frame_12=q20 = avg;
-per_frame_13=q22 = peak;
-per_frame_14=q24 = is_beat;
-per_frame_15=q27 = index +1;
-per_frame_16=q28 = index2;
-per_frame_17=ZDist =  .3 + .5*pow(sin(zang_/2),2) ; //zoom ;
-per_frame_18=q29 = .12/ZDist ;
-per_frame_19=
-per_frame_20=q30 = int(time*8) * .000*  (index2%2); //lower zones shift
-per_frame_21=
-per_frame_22=trig = q24 * bnot(index%4);
-per_frame_23=sw1 = if (bnot(trig), sw1, int(rand(5)-2)*3.14/2); 
-per_frame_24=sw2 = if (bnot(trig), sw2, int(rand(8))-4); 
-per_frame_25=
-per_frame_26=trig = q24 * above (abs(beat-avg), 2);
-per_frame_27=monitor = trig;
-per_frame_28=//speed = .2 * sw2 * ZDist * pow(xang,2) + .1;
-per_frame_29=fps_ = fps_ * dec_s + (1-dec_s) * min(fps/30,2);
-per_frame_30=speed = if (bnot(trig),speed,avg*.06*sqrt(fps_));
-per_frame_31=dir = dir + min(max(sw1-dir,-.5),.5)/fps*16;
-per_frame_32=
-per_frame_33=movx = movx + cos(dir)/fps*speed ;
-per_frame_34=movy = movy + sin(dir)/fps*speed ;
-per_frame_35=q5 = movx; q6 = movy;; 
-per_frame_36=
-per_frame_37=trig = q24 * bnot((index+8)%20);
-per_frame_38=sw4 = if (bnot(trig), sw4, sin(int(rand(100)))*.6); 
-per_frame_39=xang = xang + min(max(sw4-xang,-.2),.2)/fps*4;
-per_frame_40=
-per_frame_41=trig = q24 * bnot(index%15);
-per_frame_42=sw3 = if (bnot(trig), sw3, sw3+int(rand(4)-2)*3.14/2); 
-per_frame_43=pulse = q27 * bnot((2+index2)%4)*3.14/2*0;
-per_frame_44=zang_ = zang_ + max(min(sw3-zang_,.1),-.1)/fps*8*avg;
-per_frame_45=zang = zang_; 
-per_frame_46=
-per_frame_47=ox = -0; oy = .0; oz = ZDist;
-per_frame_48=mx = ox*cos(zang) - oy*sin(zang);
-per_frame_49=my = ox*sin(zang) + oy*cos(zang);
-per_frame_50=ox = mx;oy = my;
-per_frame_51=mx = ox*cos(yang) + oz*sin(yang);
-per_frame_52=mz = - ox*sin(yang) + oz*cos(yang);
-per_frame_53=ox = mx;oz = mz;
-per_frame_54=my = oy*cos(xang) - oz*sin(xang);
-per_frame_55=mz = oy*sin(xang) + oz*cos(xang);
-per_frame_56=oy = my;oz = mz;
-per_frame_57=q11=ox; q12 = oy; q13 = oz; //Position
-per_frame_58=
-per_frame_59=//Vektor x nach rechts
-per_frame_60=ox = 1; oy = 0; oz = 0;
-per_frame_61=mx = ox*cos(zang) - oy*sin(zang);
-per_frame_62=my = ox*sin(zang) + oy*cos(zang);
-per_frame_63=ox = mx;oy = my;
-per_frame_64=mx = ox*cos(yang) + oz*sin(yang);
-per_frame_65=mz = - ox*sin(yang) + oz*cos(yang);
-per_frame_66=ox = mx;oz = mz;
-per_frame_67=my = oy*cos(xang) - oz*sin(xang);
-per_frame_68=mz = oy*sin(xang) + oz*cos(xang);
-per_frame_69=oy = my;oz = mz;
-per_frame_70=q14=ox; q15 = oy; q16 = oz;
-per_frame_71=
+per_frame_1=dec_med = exp (-5/fps);
+per_frame_2=dec_slow = exp (-3/fps);
+per_frame_3=
+per_frame_4=beat = bass+mid+treb; 
+per_frame_5=avg = avg*dec_s + beat*(1-dec_s);
+per_frame_6=is_beat = above(beat, .4+avg+peak) * above (time, t0+.2);
+per_frame_7=t0a = if(bnot(is_beat),t0a,t0);
+per_frame_8=t0 = is_beat*time + (1-is_beat)*t0;
+per_frame_9=peak = is_beat * beat + (1-is_beat)*peak*dec_m;
+per_frame_10=index = (index + is_beat) %32;
+per_frame_11=index2 = (index2 + is_beat*bnot(index))%8;
+per_frame_12=
+per_frame_13=q20 = avg;
+per_frame_14=q22 = peak;
+per_frame_15=q24 = is_beat;
+per_frame_16=q27 = index +1;
+per_frame_17=q28 = index2;
+per_frame_18=ZDist =  .3 + .5*pow(sin(zang_/2),2) ; //zoom ;
+per_frame_19=q29 = .12/ZDist ;
+per_frame_20=//index3 = index3 + above(bass,bass_att*(1+.1*index2));
+per_frame_21=index3 = index3 + above(bass,bass_att*(1+.2/avg));
+per_frame_22=q30 = index3;
+per_frame_23=monitor = avg;
+per_frame_24=trig = q24 * bnot(index%4);
+per_frame_25=sw1 = if (bnot(trig), sw1, int(rand(5)-2)*3.1416/2); 
+per_frame_26=sw2 = if (bnot(trig), sw2, rand(8)-4); 
+per_frame_27=
+per_frame_28=trig = q24 * above (abs(beat-avg), 2) * bnot(index%4);
+per_frame_29=//speed = .2 * sw2 * ZDist * pow(xang,2) + .1;
+per_frame_30=fps_ = fps_ * dec_s + (1-dec_s) * min(fps/30,2);
+per_frame_31=speed = if (bnot(trig),speed,avg*.04*sqrt(fps_));
+per_frame_32=dir = dir + min(max(sw1-dir,-.5),.5)/fps*16;
+per_frame_33=
+per_frame_34=movx = movx + cos(dir)/fps*speed ;
+per_frame_35=movy = movy + sin(dir)/fps*speed ;
+per_frame_36=q5 = movx; q6 = movy;; 
+per_frame_37=
+per_frame_38=trig = q24 * bnot((index+8)%20);
+per_frame_39=sw4 = if (bnot(trig), sw4, sin(rand(100))*.6); 
+per_frame_40=xang = xang + min(max(sw4-xang,-.2),.2)/fps*4;
+per_frame_41=
+per_frame_42=trig = q24 * bnot(index%15);
+per_frame_43=sw3 = if (bnot(trig), sw3, sw3+int(rand(4)-2)*3.1416/2); 
+per_frame_44=pulse = q27 * bnot((2+index2)%4)*3.1416/2*0;
+per_frame_45=zang_ = zang_ + max(min(sw3-zang_,.1),-.1)/fps*16;
+per_frame_46=zang = zang_; 
+per_frame_47=
+per_frame_48=ox = -0; oy = .0; oz = ZDist;
+per_frame_49=mx = ox*cos(zang) - oy*sin(zang);
+per_frame_50=my = ox*sin(zang) + oy*cos(zang);
+per_frame_51=ox = mx;oy = my;
+per_frame_52=mx = ox*cos(yang) + oz*sin(yang);
+per_frame_53=mz = - ox*sin(yang) + oz*cos(yang);
+per_frame_54=ox = mx;oz = mz;
+per_frame_55=my = oy*cos(xang) - oz*sin(xang);
+per_frame_56=mz = oy*sin(xang) + oz*cos(xang);
+per_frame_57=oy = my;oz = mz;
+per_frame_58=q11=ox; q12 = oy; q13 = oz; //Position
+per_frame_59=
+per_frame_60=//Vektor x nach rechts
+per_frame_61=ox = 1; oy = 0; oz = 0;
+per_frame_62=mx = ox*cos(zang) - oy*sin(zang);
+per_frame_63=my = ox*sin(zang) + oy*cos(zang);
+per_frame_64=ox = mx;oy = my;
+per_frame_65=mx = ox*cos(yang) + oz*sin(yang);
+per_frame_66=mz = - ox*sin(yang) + oz*cos(yang);
+per_frame_67=ox = mx;oz = mz;
+per_frame_68=my = oy*cos(xang) - oz*sin(xang);
+per_frame_69=mz = oy*sin(xang) + oz*cos(xang);
+per_frame_70=oy = my;oz = mz;
+per_frame_71=q14=ox; q15 = oy; q16 = oz;
 per_frame_72=
-per_frame_73=//Vektor z nach hinten
-per_frame_74=ox = 0; oy = 0; oz = 1;;
-per_frame_75=
-per_frame_76=mx = ox*cos(zang) - oy*sin(zang);
-per_frame_77=my = ox*sin(zang) + oy*cos(zang);
-per_frame_78=ox = mx;oy = my;
-per_frame_79=mx = ox*cos(yang) + oz*sin(yang);
-per_frame_80=mz = - ox*sin(yang) + oz*cos(yang);
-per_frame_81=ox = mx;oz = mz;
-per_frame_82=my = oy*cos(xang) - oz*sin(xang);
-per_frame_83=mz = oy*sin(xang) + oz*cos(xang);
-per_frame_84=oy = my;
-per_frame_85=oz = mz;
-per_frame_86=q17=ox; q18 = oy; q19 = oz;
+per_frame_73=
+per_frame_74=//Vektor z nach hinten
+per_frame_75=ox = 0; oy = 0; oz = 1;;
+per_frame_76=
+per_frame_77=mx = ox*cos(zang) - oy*sin(zang);
+per_frame_78=my = ox*sin(zang) + oy*cos(zang);
+per_frame_79=ox = mx;oy = my;
+per_frame_80=mx = ox*cos(yang) + oz*sin(yang);
+per_frame_81=mz = - ox*sin(yang) + oz*cos(yang);
+per_frame_82=ox = mx;oz = mz;
+per_frame_83=my = oy*cos(xang) - oz*sin(xang);
+per_frame_84=mz = oy*sin(xang) + oz*cos(xang);
+per_frame_85=oy = my;
+per_frame_86=oz = mz;
+per_frame_87=q17=ox; q18 = oy; q19 = oz;
+per_frame_88=ob_a = (time*12)%2*above(q20,3) * bnot(index2%2);;
 warp_1=`sampler sampler_pw_noise_lq;
 warp_2=`float dx,dy;
 warp_3=`shader_body {
 warp_4=`
 warp_5=`
-warp_6=`float2 uv1 = (uv-.5);// * aspect.xy;
+warp_6=`float2 uv1 = (uv-.5+.1*q30);// * aspect.xy;
 warp_7=`float2 uv2 = float2(abs(frac(uv1.x)-.5),abs(frac(uv1.y)-.5))*2;
 warp_8=`
 warp_9=`
-warp_10=`float3 stars = (.1/length(sin(uv2*6.28)));
+warp_10=`float3 stars = (.06/length(sin(uv2*6.28)));
 warp_11=`stars *= 4*pow(tex2D (sampler_noise_hq,uv2/16),2);
 warp_12=`ret = pow(stars,1+rad*.3);
 warp_13=`}
 comp_1=`sampler sampler_pw_noise_lq;
 comp_2=`sampler sampler_pw_noise_hq;
 comp_3=`static const float quality = 5;
-comp_4=`static float depth = q29*8;
+comp_4=`static float depth = q29*4;
 comp_5=`float3 rsl, rsl2, rsl3, ret1, screen3, back, neu2;
 comp_6=`float2 dz, uv0, uv1, uv2, uv4, rsk, dz1,tmp2, Kugel1;
 comp_7=`float  lprof, gmask, tile,dist, tower;
@@ -443,14 +445,14 @@ comp_27=`  lprof =  (tex2D (sampler_pw_noise_lq,rsl.xy*.1).r <=.7);
 comp_28=`  uv2 = rsl.xy*.4*64;
 comp_29=`  tile = saturate(2-3*max(abs(frac(uv2.x)-.5),abs(frac(uv2.y)-.5)))*.25+.75;
 comp_30=`  lprof = 1-saturate(1-lprof)*tile;
-comp_31=`  lprof *= tex2D (sampler_pw_noise_lq,rsl.xy*.1/16+tower+q30).r;
+comp_31=`  lprof *= tex2D (sampler_pw_noise_lq,rsl.xy*.1/16+tower).r;
 comp_32=`  lav_gnd -= lprof/quality*depth/rsl.z* (1+tex2D (sampler_pw_noise_lq,rsl.xy*.02).g*.2); 
 comp_33=`  tower -= lprof/quality/2 ; 
 comp_34=`} 
 comp_35=`rsl = project (dist)+float3 (mov,0); 
 comp_36=`float step = int(time*8)%14+q24;
 comp_37=`float mask =         tex2D(sampler_pw_noise_lq,rsl.xy+step/128).r >= .8;
-comp_38=`mask *=              tex2D(sampler_pw_noise_lq,rsl.xy + 1.0/8*int(tower*8)).r >= .8;
+comp_38=`mask *=              tex2D(sampler_pw_noise_lq,rsl.xy + 1.0/8*int(tower*8)).r >= .89;
 comp_39=`float3 windows = pow(tex2D(sampler_pw_noise_lq,rsl.xy),2).r * !mask ;
 comp_40=`
 comp_41=`

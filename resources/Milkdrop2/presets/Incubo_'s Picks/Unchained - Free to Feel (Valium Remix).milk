@@ -59,8 +59,8 @@ mv_g=1
 mv_b=1
 mv_a=0
 per_frame_1=warp=0;
-per_frame_2=dx=-0.0005;
-per_frame_3=dy=-0.0005;
+per_frame_2=//dx=-0.0005;
+per_frame_3=//dy=-0.0005;
 per_frame_4=old_bass_flop=bass_flop;
 per_frame_5=old_treb_flop=treb_flop;
 per_frame_6=old_mid_flop=mid_flop;

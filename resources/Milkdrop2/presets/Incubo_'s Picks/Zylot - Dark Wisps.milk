@@ -155,11 +155,11 @@ wave_1_per_point2=
 wave_1_per_point3=//Sphere
 wave_1_per_point4=fvar = sample*512;
 wave_1_per_point5=svar = fvar/32;
-wave_1_per_point6=tvar = 0&svar;
+wave_1_per_point6=tvar = 0|svar;
 wave_1_per_point7=nsample = tvar*3.5;
 wave_1_per_point8=x1 = (1*sin(t8*nsample));
 wave_1_per_point9=y1 = (1*cos(t8*nsample));
-wave_1_per_point10=z1 = 1.5*sin((0&sample));
+wave_1_per_point10=z1 = 1.5*sin((0|sample));
 wave_1_per_point11=
 wave_1_per_point12=//modulate values to adjust for rotation on multiple axes, convert to world co-ordinates
 wave_1_per_point13=y2 = y1*cos(t1)-z1*sin(t1);

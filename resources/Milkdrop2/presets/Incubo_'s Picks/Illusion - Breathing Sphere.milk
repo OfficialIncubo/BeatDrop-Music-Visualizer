@@ -58,8 +58,8 @@ mv_r=0.000000
 mv_g=0.000000
 mv_b=0.000000
 mv_a=0.000000
-per_frame_1=dx = dx - .001;
-per_frame_2=dy = dy - .001;
+per_frame_1=//dx = dx - .001;
+per_frame_2=//dy = dy - .001;
 per_frame_3=warp = 0;
 per_frame_4=wave_r = wave_r + .5*sin(time*.666);
 per_frame_5=wave_g = wave_g + .5*sin(time*.777);

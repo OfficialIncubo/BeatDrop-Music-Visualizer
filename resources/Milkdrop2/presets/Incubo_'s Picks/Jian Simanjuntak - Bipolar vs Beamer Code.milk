@@ -153,7 +153,7 @@ shape_0_per_frame2=a = trans;
 shape_0_per_frame3=a2 = trans;
 shape_0_per_frame4=border_a = 0;
 shape_0_per_frame5=
-shape_0_per_frame6=instance_counter = 3.14*instance*(2/(num_instance));
+shape_0_per_frame6=instance_counter = 3.14*instance*(2/(num_inst));
 shape_0_per_frame7=x = q1 + (.1+0.1*treb_att) * (1/q5) * sin(instance_counter);
 shape_0_per_frame8=y = q2 + (.1+0.1*treb_att) * (1/q4) * cos(instance_counter);
 shapecode_1_enabled=1

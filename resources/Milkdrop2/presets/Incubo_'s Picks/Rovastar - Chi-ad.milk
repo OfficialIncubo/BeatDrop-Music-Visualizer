@@ -59,8 +59,8 @@ mv_g=0.500000
 mv_b=0.500000
 mv_a=0.040000
 per_frame_1=warp = 0;
-per_frame_2=xdx = dx - .001;
-per_frame_3=xdy = dy - .001;
+per_frame_2=//xdx = dx - .001;
+per_frame_3=//xdy = dy - .001;
 per_frame_4=wave_mystery = 0.2*time;
 per_frame_5=volume = 0.3*(bass+mid+att);
 per_frame_6=beatrate = if(equal(beatrate,0),1,if(below(volume,0.01),1,beatrate));

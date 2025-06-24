@@ -387,7 +387,7 @@ per_frame_90=));
 per_frame_91=  size += pow (megabuf(n),2)+pow (megabuf(n+1),2);
 per_frame_92=  dec = if (bvol2 > bvol,dec_m, dec_m);
 per_frame_93=  bvol2 = dec*bvol2 + (1-dec)*bvol;
-per_frame_94=  megabuf(n+2) = 0.04/sqrt(pow(megabuf(n),2) + pow (megabuf(n+1),2));
+per_frame_94=  megabuf(n+2) = 0.03/sqrt(pow(megabuf(n),2) + pow (megabuf(n+1),2));
 per_frame_95=  m = m + step; n = n+8; k= k+1;
 per_frame_96=);
 per_frame_97=
@@ -424,7 +424,7 @@ per_frame_127=slow = if (certain<1.7,1,if(certain>2.5,0,slow));
 per_frame_128=
 per_frame_129=dir_ = dir_*dec_f+dir*(1-dec_f);
 per_frame_130=q4 = ndir;
-per_frame_131=movarg = (2+certain*2)*dt/4*dir_;
+per_frame_131=movarg = (1+certain*2)*dt/4*dir_;
 per_frame_132=tmove += movarg;
 per_frame_133=q19=tmove;
 per_frame_134=
@@ -463,8 +463,6 @@ per_frame_166=q8 = 0.3 + 0.2*sin(tmove*0.07); //w lev
 per_frame_167=monitor = certain;
 per_frame_168=
 per_frame_169=rot = 0.0; zoom = 1+movarg; warp = 0; dx = 0; dy = 0;
-per_frame_170=
-per_frame_171=q18 += 0.01*sin(trel1/4*3.1416)*certain;
 warp_1=`float2 dz;
 warp_2=`static const float2 hor = float2 (texsize.z,0);
 warp_3=`static const float2 ver = float2 (0,texsize.w);
@@ -473,7 +471,7 @@ warp_5=`
 warp_6=`dz.x = lum(GetPixel(uv+hor)-GetPixel(uv-hor));
 warp_7=`dz.y = lum(GetPixel(uv+ver)-GetPixel(uv-ver));
 warp_8=`
-warp_9=`ret += GetPixel (uv+dz*0.02*(rad>0.01))*0.8 * (1-rad/2);
+warp_9=`ret += GetPixel (uv+dz*0.03*(rad>0.01))*0.8 * (1-rad/2);
 warp_10=`
 warp_11=`ret *= 1-0.15*lum(GetBlur1(uv));
 warp_12=`ret -= 0.004;

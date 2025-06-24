@@ -74,4 +74,4 @@ per_frame_10=mv_g = int(rand(100))/100;
 per_frame_11=rot = 0.025;
 per_frame_12=monitor = myeff;
 per_frame_13=
-per_pixel_1=zoom =(.7+x-.7)|(.7+y+.5)
+per_pixel_1=zoom =(.7+x-.7)|(.8+y+.5)

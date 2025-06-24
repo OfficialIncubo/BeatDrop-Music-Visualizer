@@ -524,7 +524,7 @@ per_pixel_1=zoom = zoom + .1*sin((ang)*(q2+2)-time);
 per_pixel_2=zoomexp = 100*(sqrt(2)-sin(rad*3.14*q2));
 per_pixel_3=cx=cx*zoom;
 per_pixel_4=cy=cy*zoom;
-per_pixel_5=rot = rot + sin(ang*10+0&(time*10));
+per_pixel_5=rot = rot + sin(ang*10+0|(time*10));
 per_pixel_6=zoom = zoom + abs(rot-rad);
 warp_1=`shader_body
 warp_2=`{

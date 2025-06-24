@@ -54,8 +54,8 @@ ib_r=0.250000
 ib_g=0.250000 
 ib_b=0.250000 
 ib_a=0.000000 
-per_frame_1=dx = dx - .001; 
-per_frame_2=dy = dy - .001; 
+per_frame_1=//dx = dx - .001; 
+per_frame_2=//dy = dy - .001; 
 per_frame_3=warp = 0; 
 per_frame_4=wave_r = wave_r + .25*sin(time*.555); 
 per_frame_5=wave_g = wave_g + .25*cos(time*.888); 

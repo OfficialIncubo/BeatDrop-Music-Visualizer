@@ -149,7 +149,7 @@ shapecode_0_border_g=1.000
 shapecode_0_border_b=1.000
 shapecode_0_border_a=0.000
 shape_0_per_frame1=t=instance;
-shape_0_per_frame2=n=num_instance;
+shape_0_per_frame2=n=num_inst;
 shape_0_per_frame3=
 shape_0_per_frame4=
 shape_0_per_frame5=r+=sin(time+1.12);

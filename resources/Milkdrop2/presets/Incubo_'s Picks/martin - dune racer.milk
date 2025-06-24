@@ -3,7 +3,7 @@ PSVERSION=3
 PSVERSION_WARP=3
 PSVERSION_COMP=3
 [preset00]
-fRating=5.000000
+fRating=3.000000
 fGammaAdj=1.980
 fDecay=0.500
 fVideoEchoZoom=1.000
@@ -261,8 +261,8 @@ per_frame_init_5=index = rand(16);
 per_frame_init_6=
 per_frame_init_7=dir = (rand(100)/100-.5)*1.5;
 per_frame_init_8=dir_s = sir;
-per_frame_1=dec_m = pow (0.85, 30/fps); dec_s = pow (0.96, 30/fps); 
-per_frame_2=
+per_frame_1=dec_m = exp (-7/fps);
+per_frame_2=dec_s = exp (-1/fps);
 per_frame_3=beat = bass+mid+treb; 
 per_frame_4=avg = avg*dec_s + beat*(1-dec_s);
 per_frame_5=is_beat = above(beat, 1+avg+peak) * above (time, t0+.5);
