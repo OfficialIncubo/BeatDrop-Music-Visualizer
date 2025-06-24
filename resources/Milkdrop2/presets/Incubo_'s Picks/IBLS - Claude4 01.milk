@@ -1,0 +1,205 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=3.000
+fGammaAdj=1.000
+fDecay=0.950
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=7
+bAdditiveWaves=1
+bWaveDots=1
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=1.000
+fWaveScale=1.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=1.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=bass_att = bass_att*0.9 + bass*0.1;
+per_frame_2=mid_att = mid_att*0.9 + mid*0.1;
+per_frame_3=treb_att = treb_att*0.9 + treb*0.1;
+per_frame_4=
+per_frame_5=laser_time = laser_time + 0.02;
+per_frame_6=beat_strength = (bass + mid + treb) * 0.33;
+per_frame_7=
+per_frame_8=// Schwarzer Hintergrund für Lasershow-Effekt
+per_frame_9=decay = 0.98 - beat_strength*0.02;
+per_frame_10=
+per_frame_11=// Dynamische Rotation basierend auf Bass
+per_frame_12=rot = rot + bass_att*0.05;
+per_frame_13=
+per_frame_14=// Zoom-Pulsation
+per_frame_15=zoom = 1 + bass_att*0.1 + sin(time*2)*0.05;
+per_frame_16=q1 = beat_strength;
+per_pixel_1=// Schwarzer Hintergrund
+per_pixel_2=r = 0;
+per_pixel_3=g = 0;
+per_pixel_4=b = 0;
+per_pixel_5=a = 1;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    uv = uv_orig;
+warp_4=`    
+warp_5=`    // Laser-Strahlen von verschiedenen Punkten
+warp_6=`    float laser_intensity = 0;
+warp_7=`    
+warp_8=`    // Zentrale Laserpunkte
+warp_9=`    float2 laser_center1 = float2(0.2 + sin(time*1.3)*0.1, 0.3 + cos(time*0.9)*0.1);
+warp_10=`    float2 laser_center2 = float2(0.8 + sin(time*1.7)*0.1, 0.7 + cos(time*1.1)*0.1);
+warp_11=`    float2 laser_center3 = float2(0.5 + sin(time*2.1)*0.15, 0.2 + cos(time*1.5)*0.1);
+warp_12=`    
+warp_13=`    // Strahleffekte zu verschiedenen Punkten
+warp_14=`    for(int i = 0; i < 8; i++)
+warp_15=`    {
+warp_16=`        float angle = (float)i * 0.785 + time * 0.5 + bass_att * 2.0;
+warp_17=`        float2 direction = float2(cos(angle), sin(angle));
+warp_18=`        
+warp_19=`        // Strahl von Zentrum 1
+warp_20=`        float beam_dist1 = abs(dot(uv - laser_center1, float2(-direction.y, direction.x)));
+warp_21=`        float beam_length1 = dot(uv - laser_center1, direction);
+warp_22=`        if(beam_length1 > 0 && beam_length1 < 1.5)
+warp_23=`        {
+warp_24=`            laser_intensity += (1.0 / (beam_dist1 * 100 + 1)) * (1 - beam_length1/1.5);
+warp_25=`        }
+warp_26=`        
+warp_27=`        // Strahl von Zentrum 2
+warp_28=`        float beam_dist2 = abs(dot(uv - laser_center2, float2(-direction.y, direction.x)));
+warp_29=`        float beam_length2 = dot(uv - laser_center2, direction);
+warp_30=`        if(beam_length2 > 0 && beam_length2 < 1.2)
+warp_31=`        {
+warp_32=`            laser_intensity += (1.0 / (beam_dist2 * 80 + 1)) * (1 - beam_length2/1.2);
+warp_33=`        }
+warp_34=`    }
+warp_35=`    
+warp_36=`    // Rotierende Fächer
+warp_37=`    float fan_angle = time * 1.5 + treb_att * 3.0;
+warp_38=`    float2 fan_center = float2(0.5, 0.8);
+warp_39=`    float2 fan_dir = uv - fan_center;
+warp_40=`    float fan_dist = length(fan_dir);
+warp_41=`    float fan_angle_pos = atan2(fan_dir.y, fan_dir.x);
+warp_42=`    
+warp_43=`    // Mehrere Fächerstrahlen
+warp_44=`    for(int j = 0; j < 5; j++)
+warp_45=`    {
+warp_46=`        float sector_angle = fan_angle + (float)j * 1.256;
+warp_47=`        float angle_diff = abs(fan_angle_pos - sector_angle);
+warp_48=`        angle_diff = min(angle_diff, 6.283 - angle_diff);
+warp_49=`        
+warp_50=`        if(angle_diff < 0.1 && fan_dist < 0.8)
+warp_51=`        {
+warp_52=`            laser_intensity += (1.0 / (angle_diff * 50 + 1)) * (1 - fan_dist/0.8);
+warp_53=`        }
+warp_54=`    }
+warp_55=`    
+warp_56=`    // Kreisförmige Laserpunkte
+warp_57=`    float2 circle_center1 = float2(0.3 + sin(time*2.3)*0.2, 0.6 + cos(time*1.8)*0.15);
+warp_58=`    float2 circle_center2 = float2(0.7 + sin(time*1.9)*0.15, 0.4 + cos(time*2.2)*0.2);
+warp_59=`    
+warp_60=`    float circle_dist1 = length(uv - circle_center1);
+warp_61=`    float circle_dist2 = length(uv - circle_center2);
+warp_62=`    
+warp_63=`    // Pulsende Kreise
+warp_64=`    float circle_pulse = 0.02 + bass_att * 0.01;
+warp_65=`    if(abs(circle_dist1 - 0.1) < circle_pulse)
+warp_66=`        laser_intensity += 2.0 / (abs(circle_dist1 - 0.1) * 200 + 1);
+warp_67=`    if(abs(circle_dist2 - 0.08) < circle_pulse)
+warp_68=`        laser_intensity += 2.0 / (abs(circle_dist2 - 0.08) * 200 + 1);
+warp_69=`    
+warp_70=`    // Scanning-Linien
+warp_71=`    float scan_y = 0.5 + sin(time * 3.0 + mid_att * 2.0) * 0.4;
+warp_72=`    float scan_dist = abs(uv.y - scan_y);
+warp_73=`    if(scan_dist < 0.002)
+warp_74=`        laser_intensity += 1.5;
+warp_75=`    
+warp_76=`    // Farbgebung für verschiedene Laser-Typen
+warp_77=`    ret.r = laser_intensity * (0.8 + sin(time*3.0)*0.2);  // Rot
+warp_78=`    ret.g = laser_intensity * 0.3 * (0.5 + cos(time*2.5)*0.5);  // Wenig Grün
+warp_79=`    ret.b = laser_intensity * (0.6 + sin(time*4.0)*0.4);  // Blau
+warp_80=`    
+warp_81=`    // Intensitätsverstärkung basierend auf Musik
+warp_82=`    ret.rgb *= (1.0 + q1 * 2.0);
+warp_83=`   
+warp_84=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    // Nachbearbeitung für Glow-Effekt
+comp_4=`    float3 color = tex2D(sampler_main, uv).rgb;
+comp_5=`    
+comp_6=`    // Bloom-Effekt für Laser-Glow
+comp_7=`    float3 bloom = 0;
+comp_8=`    for(int i = -2; i <= 2; i++)
+comp_9=`    {
+comp_10=`        for(int j = -2; j <= 2; j++)
+comp_11=`        {
+comp_12=`            float2 offset = float2(i, j) * texsize.zw * 2.0;
+comp_13=`            bloom += tex2D(sampler_main, uv + offset).rgb;
+comp_14=`        }
+comp_15=`    }
+comp_16=`    bloom /= 25.0;
+comp_17=`    
+comp_18=`    // Glow hinzufügen
+comp_19=`    color += bloom * 0.5;
+comp_20=`    
+comp_21=`    // Kontrast erhöhen für schärfere Laser
+comp_22=`    color = pow(color, 0.8);
+comp_23=`    
+comp_24=`    ret = float4(color, 1);
+comp_25=`    
+comp_26=`}

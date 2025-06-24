@@ -82,7 +82,7 @@ wavecode_0_g=1.000
 wavecode_0_b=1.000
 wavecode_0_a=0.000
 wave_0_init1=t1 = 1
-wave_0_per_point1=y=rand(10000)*(.0001)+.5;
+wave_0_per_point1=y=int(rand(10000))*(.0001)+.5;
 wave_0_per_point2=x=.5+.85*sin(time)*(.48-y);
 wave_0_per_point3=
 wave_0_per_point4=vol=(bass+mid+treb)*.333;
@@ -106,7 +106,7 @@ wavecode_1_g=1.000
 wavecode_1_b=1.000
 wavecode_1_a=1.000
 wave_1_init1=t1 = 1
-wave_1_per_point1=y=rand(10000)*(.0001)+.5;
+wave_1_per_point1=y=int(rand(10000))*(.0001)+.5;
 wave_1_per_point2=x=.5+.5*sin(time)*(.48-y);
 wave_1_per_point3=
 wave_1_per_point4=vol=(bass+mid+treb)*.333;
@@ -130,7 +130,7 @@ wavecode_2_g=1.000
 wavecode_2_b=1.000
 wavecode_2_a=1.000
 wave_2_init1=t1 = 1
-wave_2_per_point1=y=rand(10000)*(.0001)+.5;
+wave_2_per_point1=y=int(rand(10000))*(.0001)+.5;
 wave_2_per_point2=x=.5+.25*sin(time)*(.48-y);
 wave_2_per_point3=
 wave_2_per_point4=vol=(bass+mid+treb)*.333;
@@ -154,7 +154,7 @@ wavecode_3_g=1.000
 wavecode_3_b=1.000
 wavecode_3_a=0.050
 wave_3_init1=t1 = 1
-wave_3_per_point1=y=rand(10000)*(.0001)+.5;
+wave_3_per_point1=y=int(rand(10000))*(.0001)+.5;
 wave_3_per_point2=x=.5-(pow(sin(time),y)+(.55-y));
 wave_3_per_point3=x=if(above(x,y),y+sin(time)+(1-y),x);
 wave_3_per_point4=

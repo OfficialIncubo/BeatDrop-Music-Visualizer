@@ -243,5 +243,5 @@ per_pixel_1=newx = x - q1;
 per_pixel_2=newy = y - q2;
 per_pixel_3=newrad = sqrt((newx)*(newx)+0.5625*(newy)*(newy))*2;
 per_pixel_4=newzoom = pow(1.05 + below(newrad,0.39+q3)*(0.6-newrad), pow(1 + 0.5*cos(newrad+2*q3+0.28), newrad*2-1));
-per_pixel_5=dx = -0.0005 + (newx)*newzoom - newx;
-per_pixel_6=dy = -0.0005 + (newy)*newzoom - newy;
+per_pixel_5=dx = (newx)*newzoom - newx;
+per_pixel_6=dy = (newy)*newzoom - newy;

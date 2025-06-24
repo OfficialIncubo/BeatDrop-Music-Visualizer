@@ -132,7 +132,7 @@ wave_3_per_point5=
 wave_3_per_point6=//upwards flight
 wave_3_per_point7=yval = if(equal(state,0),0, yval);
 wave_3_per_point8=yval = yval + 0.00004*equal(state,1);
-wave_3_per_point9=ymax = if(equal(state,0),rand(100)*0.004,ymax);
+wave_3_per_point9=ymax = if(equal(state,0),int(rand(100))*0.004,ymax);
 wave_3_per_point10=
 wave_3_per_point11=//hit apogee
 wave_3_per_point12=state = if(above(yval,0.5+ymax),2,state);
@@ -143,8 +143,8 @@ wave_3_per_point16=burst = if(equal(state,0),0.001,burst);
 wave_3_per_point17=alphax = if(equal(state,0),1,alphax);
 wave_3_per_point18=xdriftinc = if(equal(state,0),0,xdriftinc);
 wave_3_per_point19=
-wave_3_per_point20=burstspeed = if(equal(state,0),rand(10),burstspeed);
-wave_3_per_point21=xdrift = if(equal(state,0),rand(20),xdrift);
+wave_3_per_point20=burstspeed = if(equal(state,0),int(rand(10)),burstspeed);
+wave_3_per_point21=xdrift = if(equal(state,0),int(rand(20)),xdrift);
 wave_3_per_point22=//to get the numbers small enough have to use constants
 wave_3_per_point23=xdriftinc = xdriftinc
 wave_3_per_point24=+ equal(xdrift,0)*equal(state,1)*0.00002

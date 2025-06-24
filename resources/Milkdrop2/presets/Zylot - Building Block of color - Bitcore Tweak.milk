@@ -152,7 +152,7 @@ wave_1_per_point2=
 wave_1_per_point3=//Sphere
 wave_1_per_point4=fvar = sample*512;
 wave_1_per_point5=svar = fvar/32;
-wave_1_per_point6=tvar = 0&svar;
+wave_1_per_point6=tvar = 0|svar;
 wave_1_per_point7=nsample = tvar*3.5;
 wave_1_per_point8=x1 = (1)*sin(nsample+value1*5);
 wave_1_per_point9=y1 = (4)*cos(sample*t8*2);
@@ -357,7 +357,7 @@ per_pixel_2=dx = if(above(x,.3),if(below(x,.7),if(below(y,.7),if(above(y,.3),0,.
 per_pixel_3=dy = if(above(x,.3),if(below(x,.7),if(below(y,.7),if(above(y,.3),0,.5),.5),.5),.5);
 per_pixel_4=zoom = if(below(zoom,1),zoom + ((x)*-.4)+.02*sin(time+(bass*2)),zoom);
 per_pixel_5=zoom = zoom + if(below(zoom,1),zoom + (y-.5+.5*sin(time*.66))*.2*sin(time*.5),0);
-per_pixel_6=dx = if(above(dx,0),((rand(50)-25)*bass*.0045),dx);
+per_pixel_6=dx = if(above(dx,0),((int(rand(50))-25)*bass*.0045),dx);
 per_pixel_7=
 per_pixel_8=zoom = zoom + (.1+.1*sin(time*.3))*below(zoom,1)+0.025;
 per_pixel_9=zoom = zoom*above(zoom,0);

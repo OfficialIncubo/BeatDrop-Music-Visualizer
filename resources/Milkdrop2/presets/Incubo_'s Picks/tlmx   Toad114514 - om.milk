@@ -55,8 +55,8 @@ ib_g=0.0
 ib_b=0.0
 ib_a=0.0
 per_frame_1=warp=0;
-per_frame_2=dx=-0.0005;
-per_frame_3=dy=-0.0005;
+per_frame_2=//dx=-0.0005;
+per_frame_3=//dy=-0.0005;
 per_frame_4=wave_x = 0.5+0.3*sin(bass+treb+mid);
 per_frame_5=wave_r = 1 + sin(-wave_x*6.0678);
 per_frame_6=wave_g = abs(sin(0.67*wave_x*6.08));
