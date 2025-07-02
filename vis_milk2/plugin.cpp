@@ -625,12 +625,14 @@ SPOUT :
 #include <strsafe.h>
 #include <Windows.h>
 #include "AutoCharFn.h"
+#include "songtitlegetter.h"
 
 #include <dwmapi.h>  // Link with Dwmapi.lib
 #pragma comment(lib, "dwmapi.lib")
 #define FRAND ((rand() % 7381)/7380.0f)
 #define clamp(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
 
+SongTitleGetter songtitlegetter;
 static bool m_bAlwaysOnTop = false;
 int ToggleFPSNumPressed = 7;			// Default is Unlimited FPS.
 int HardcutMode = 0;
@@ -1352,6 +1354,8 @@ void CPlugin::MyReadConfig()
 	m_bSongTitleAnims   = GetPrivateProfileBoolW(L"settings",L"bSongTitleAnims",m_bSongTitleAnims,pIni);
     m_bEnablePresetStartup = GetPrivateProfileBoolW(L"settings", L"bEnablePresetStartup", m_bEnablePresetStartup, pIni);
     m_bAutoLockPresetWhenNoMusic = GetPrivateProfileBoolW(L"settings", L"bAutoLockPresetWhenNoMusic", m_bAutoLockPresetWhenNoMusic, pIni);
+    m_bEnableSongTitlePoll = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePoll", m_bEnableSongTitlePoll, pIni);
+    m_bEnableSongTitlePollExplicit = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePollExplicit", m_bEnableSongTitlePollExplicit, pIni);
     m_bScreenDependentRenderMode = GetPrivateProfileBoolW(L"settings", L"bScreenDependentRenderMode", m_bScreenDependentRenderMode, pIni);
 
 	m_bShowFPS			= GetPrivateProfileBoolW(L"settings",L"bShowFPS",       m_bShowFPS			,pIni);
@@ -10918,13 +10922,70 @@ void CPlugin::GenCompPShaderText(char *szShaderText, float brightness, float ve_
 
 void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
 {
-    //if (playbackService &&
-    //    playbackService->GetPlaybackState() == musik::core::sdk::PlaybackStopped)
-    //{
-    //    emulatedWinampSongTitle = "Playback Stopped";
-    //}
-    emulatedWinampSongTitle = "";
-    lstrcpynW(szSongTitle, AutoWide(emulatedWinampSongTitle.c_str(), CP_UTF8), nSize);
+    szSongTitle[0] = 0;
+
+    if (m_bEnableSongTitlePoll || m_bEnableSongTitlePollExplicit)
+    {
+        // Static variables maintain state between calls
+        static std::wstring cachedTitle;
+        static double lastPollTime = -1.0;
+        constexpr double POLL_INTERVAL = 0.5; // Poll twice per second
+
+        // Initialize on first run or when time resets
+        double currentTime = GetTime();
+        if (currentTime <= 0.1 || lastPollTime < 0)
+        {
+            songtitlegetter.Init();
+            lastPollTime = currentTime;
+        }
+
+        // Always ensure null-terminated output
+        if (nSize > 0) szSongTitle[0] = L'\0';
+
+        // Throttled polling logic
+        if (currentTime - lastPollTime >= POLL_INTERVAL)
+        {
+            songtitlegetter.PollMediaInfo();
+
+            if (songtitlegetter.updated)
+            {
+                //Ensure clearing the song title cache before updating. (saves memory)
+                cachedTitle.clear();
+
+                // Direct string access without buffers
+                const auto& artist = songtitlegetter.currentArtist;
+                const auto& title = songtitlegetter.currentTitle;
+
+                if (artist.empty() && title.empty())
+                {
+                    cachedTitle.clear();
+                }
+                else if (artist.empty())
+                {
+                    cachedTitle = title;
+                }
+                else if (title.empty())
+                {
+                    cachedTitle = artist;
+                }
+                else
+                {
+                    cachedTitle = artist + L" - " + title;
+                }
+
+                songtitlegetter.updated = false;
+            }
+
+            lastPollTime = currentTime;
+        }
+
+        // Copy to output buffer if we have content
+        if (!cachedTitle.empty() && nSize > 0)
+        {
+            lstrcpynW(szSongTitle, cachedTitle.c_str(), nSize - 1);
+            szSongTitle[nSize - 1] = L'\0';
+        }
+    }
 }
 
 // =========================================================

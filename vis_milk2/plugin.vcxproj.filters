@@ -118,6 +118,9 @@
     <ClCompile Include="..\spoutDX9\SpoutUtils.cpp">
       <Filter>spoutDX9</Filter>
     </ClCompile>
+    <ClCompile Include="songtitlegetter.cpp">
+      <Filter>library\sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="plugin_icon.ico">
@@ -202,6 +205,9 @@
     </ClInclude>
     <ClInclude Include="..\spoutDX9\SpoutUtils.h">
       <Filter>spoutDX9</Filter>
+    </ClInclude>
+    <ClInclude Include="songtitlegetter.h">
+      <Filter>library\headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

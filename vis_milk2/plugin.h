@@ -342,7 +342,9 @@ public:
         int			m_nCustMsgsSpawned;
         bool        m_bEnablePresetStartup;
         bool        m_bAutoLockPresetWhenNoMusic;
-		bool        m_bScreenDependentRenderMode;
+        bool        m_bEnableSongTitlePoll;
+        bool        m_bEnableSongTitlePollExplicit;
+        bool        m_bScreenDependentRenderMode;
         int         m_nBassStart = 0;
         int         m_nBassEnd = 250;
         int         m_nMidStart = 250;
