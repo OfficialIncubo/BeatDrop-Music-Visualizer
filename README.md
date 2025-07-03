@@ -21,7 +21,7 @@ It features:
 Before compiling the code:
 * Workloads required before compiling:
 ![Workloads required to use with Visual Studio 2022](https://github.com/user-attachments/assets/7bc967d5-3683-4180-a1ad-8a99a855d5fc)
-* CMake is now obligatory to install! Look at the name from Desktop development with C++ category below check this box. [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library is now integrated in.
+* CMake is now obligatory to install! Look at the name from Desktop development with C++ category below and check this box. [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library is now integrated in.
 
 ![CMake optional library checked](https://github.com/user-attachments/assets/219d03a0-3c16-42ef-a05d-1374ae7ee3a8)
 
@@ -81,8 +81,8 @@ You can use BeatDrop for parties, karaoke, music videos, DJ mixes and so on, but
 
 # Follow me on any social networks:
 
-[<img src="https://static.vecteezy.com/system/resources/previews/042/148/611/non_2x/new-twitter-x-logo-twitter-icon-x-social-media-icon-free-png.png" alt="X" style="width:7%; height:auto;">](https://x.com/BeatDropVis)
-[<img src="https://static.vecteezy.com/system/resources/previews/018/930/718/non_2x/discord-logo-discord-icon-transparent-free-png.png" alt="Discord (Join server)" style="width:7%; height:auto;">](https://discord.gg/rp5cBDtGuM)
+[<img src="https://static.vecteezy.com/system/resources/previews/042/148/611/non_2x/new-twitter-x-logo-twitter-icon-x-social-media-icon-free-png.png" alt="X" style="width:7%; height:50%;">](https://x.com/BeatDropVis)
+[<img src="https://static.vecteezy.com/system/resources/previews/018/930/718/non_2x/discord-logo-discord-icon-transparent-free-png.png" alt="Discord (Join server)" style="width:7%; height:50%;">](https://discord.gg/rp5cBDtGuM)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -112,7 +112,7 @@ Use BeatDrop with your favourite
   ...
 
 ## System Requirements
-* Windows 11, Windows 10, Windows 8.1, Windows 8, Windows 7, Windows Vista
+* Windows 11, Windows 10
 
 * Minimum 2GB of RAM required
 
