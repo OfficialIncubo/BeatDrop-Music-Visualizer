@@ -226,8 +226,8 @@ per_frame_init_1=
 per_frame_init_2=c_x = 0.5;
 per_frame_init_3=c_y = 0.5;
 per_frame_1=
-per_frame_2=sx=1+.01*(8*bass%8)*equal(time%(int(24-2*bass)),0);
-per_frame_3=sy=1+.01*(8*mid%8) *equal(time%(12+int(24-2*bass)),0);
+per_frame_2=sx=1+.01*((8*bass)%8)*equal(time%(int(24-2*bass)),0);
+per_frame_3=sy=1+.01*((8*mid)%8) *equal(time%(12+int(24-2*bass)),0);
 per_frame_4=
 per_frame_5=q1 = aspectx;
 per_frame_6=q2 = aspecty;
@@ -292,7 +292,7 @@ per_frame_64=q11 = aspectx;
 per_frame_65=q12 = aspecty;
 per_frame_66=q13 = sqrt(vx4*vx4 + vy4*vy4)*0.8;
 per_frame_67=q14 = atan2(vx4,vy4);
-per_pixel_1=d = (pow(sqrt(sqr(x-q3)+sqr(y-q4)),2)-0);
+per_pixel_1=d = (pow(sqrt(sqr(x-q3)+sqr(y-q4)),2)-0.);
 per_pixel_2=v = 0.03;
 per_pixel_3=dx = v*(x-q23)*d;
 per_pixel_4=dy = v*(y-q24)*d;
@@ -336,7 +336,7 @@ warp_9=`
 warp_10=`   d = texsize.zw*4;
 warp_11=`   dx = GetBlur1(uv_orig + float2(1,0)*d) - GetBlur1(uv_orig - float2(1,0)*d);
 warp_12=`   dy = GetBlur1(uv_orig + float2(0,1)*d) - GetBlur1(uv_orig - float2(0,1)*d);
-warp_13=`
+warp_13=`   
 warp_14=`   d = lerp(uv_orig,uv,1);
 warp_15=`   uv_y = d - float2(dx.y,dy.y)*texsize.zw*6;
 warp_16=`   uv_z = d - float2(dx.z,dy.z)*texsize.zw*6;

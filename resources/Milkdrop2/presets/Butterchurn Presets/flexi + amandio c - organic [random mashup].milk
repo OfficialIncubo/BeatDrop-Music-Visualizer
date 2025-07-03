@@ -149,7 +149,7 @@ shapecode_0_border_g=1.000
 shapecode_0_border_b=1.000
 shapecode_0_border_a=0.000
 shape_0_per_frame1=x=.11+.22*int(rand(5));
-shape_0_per_frame2=y=.1+.16*(2*time%6);
+shape_0_per_frame2=y=.1+.16*((2*time)%6);
 shape_0_per_frame3=
 shape_0_per_frame4=b=.6+.3*q3;
 shape_0_per_frame5=g=.7+.2*q3;
@@ -183,7 +183,7 @@ shapecode_1_border_g=0.000
 shapecode_1_border_b=0.000
 shapecode_1_border_a=0.000
 shape_1_per_frame1=x=.11+.22*int(rand(5));
-shape_1_per_frame2=y=.1+.16*(2*time%6);
+shape_1_per_frame2=y=.1+.16*((2*time)%6);
 shape_1_per_frame3=
 shape_1_per_frame4=b=.6+.3*q3;
 shape_1_per_frame5=g=.7+.2*q3;
@@ -217,7 +217,7 @@ shapecode_2_border_g=0.000
 shapecode_2_border_b=0.000
 shapecode_2_border_a=0.200
 shape_2_per_frame1=x=.22*int(rand(6));
-shape_2_per_frame2=y=.18+.16*(2*time%5);
+shape_2_per_frame2=y=.18+.16*((2*time)%5);
 shape_2_per_frame3=
 shape_2_per_frame4=g=1.5*q3;
 shape_2_per_frame5=r=1.3*q4;
@@ -250,7 +250,7 @@ shapecode_3_border_g=0.000
 shapecode_3_border_b=0.000
 shapecode_3_border_a=0.200
 shape_3_per_frame1=x=.11+.22*int(rand(5));
-shape_3_per_frame2=y=.1+.16*(2*time%6);
+shape_3_per_frame2=y=.1+.16*((2*time)%6);
 shape_3_per_frame3=
 shape_3_per_frame4=r=.3*q3;
 shape_3_per_frame5=b=.2*q2;
@@ -281,8 +281,8 @@ per_frame_init_20=
 per_frame_init_21=vx1 = 0.000;
 per_frame_init_22=vx2 = 0.000;
 per_frame_1=
-per_frame_2=sx=1+.01*(8*bass%8)*equal(time%(int(24-2*bass)),0);
-per_frame_3=sy=1+.01*(8*mid%8) *equal(time%(12+int(24-2*bass)),0);
+per_frame_2=sx=1+.01*((8*bass)%8)*equal(time%(int(24-2*bass)),0);
+per_frame_3=sy=1+.01*((8*mid)%8) *equal(time%(12+int(24-2*bass)),0);
 per_frame_4=
 per_frame_5=zoom = 0.99;
 per_frame_6=//warp = 0;
