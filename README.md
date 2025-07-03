@@ -27,7 +27,7 @@ Before compiling the code:
 
 * Anyone who uses Visual Studio 2022, please change from debug to release and build it.
 
-# HOW TO COMPILE THE CODE AND UPDATE PROJECTM-EVAL LIBRARY CORRECTLY
+# HOW TO COMPILE THE CODE AND UPDATE/INTEGRATE PROJECTM-EVAL LIBRARY CORRECTLY
 
 BeatDrop now uses [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library, a drop-in replacement of Nullsoft Expression Evaluation Library, which it's assembly-free and it uses much faster instructions than i386 instructions that achieves preset compilation performance optimization. [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) also performs a few compile-time optimizations like replacing larger constant expressions with a simple value.
 
