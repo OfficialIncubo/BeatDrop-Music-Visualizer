@@ -76,6 +76,7 @@ public:
     wchar_t*  GetPluginsDirPath(); // usually returns 'c:\\program files\\winamp\\plugins\\'
     wchar_t*  GetConfigIniFile();  // usually returns 'c:\\program files\\winamp\\plugins\\something.ini' - filename is determined from identifiers in 'defines.h'
 	char*     GetConfigIniFileA();
+    double    m_dTimeVariableResetDelay;
 
 protected:
 

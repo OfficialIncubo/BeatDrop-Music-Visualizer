@@ -612,6 +612,7 @@ SPOUT :
 */
 
 #include "plugin.h"
+#include "pluginshell.h"
 #include "utility.h"
 #include "support.h"
 #include "resource.h"

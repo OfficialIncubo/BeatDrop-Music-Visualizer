@@ -142,6 +142,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <multimon.h>
 #include "AutoCharFn.h"
 #include <mmsystem.h>
+#include "plugin.h"
 #pragma comment(lib,"winmm.lib")    // for timeGetTime
 
 // STATE VALUES & VERTEX FORMATS FOR HELP SCREEN TEXTURE:
@@ -1677,7 +1678,7 @@ void CPluginShell::DoTime()
 	int slots_to_look_back = (m_high_perf_timer_freq.QuadPart==0) ? TIME_HIST_SLOTS : TIME_HIST_SLOTS/2;
 
 	m_time += 1.0f/m_fps;
-	if (m_time >= 250000)
+	if (m_time >= m_dTimeVariableResetDelay)
 		m_time = 0; // Reset the time variable after 250000 seconds.
 
 	if ((GetAsyncKeyState(VK_CONTROL) & 0x8000) && (GetAsyncKeyState('T') & 0x8000))
