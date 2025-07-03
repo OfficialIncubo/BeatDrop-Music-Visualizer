@@ -38,7 +38,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <d3dx9math.h> // for D3DXVECTOR3
 
 //#include "evallib/eval.h"
-#include "../ns-eel2/ns-eel.h"
+#include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 #include "md_defines.h"
 
 // flags for CState::RecompileExpressions():

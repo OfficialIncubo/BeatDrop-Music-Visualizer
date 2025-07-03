@@ -36,7 +36,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     #define D3D_DEBUG_INFO  // declare this before including d3d9.h
 #endif
 #include <d3d9.h>
-#include "../ns-eel2/ns-eel.h"
+#include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 #include "md_defines.h"
 
 #define TEXMGR_ERROR_MASK                 0x0F

@@ -17,35 +17,20 @@
       <UniqueIdentifier>{a80939e4-d079-498f-bb43-482a4708d7d5}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
     </Filter>
-    <Filter Include="library\ns-eel">
-      <UniqueIdentifier>{ad60581f-f132-4b9d-86c6-2c543b5c59da}</UniqueIdentifier>
-    </Filter>
     <Filter Include="spoutDX9">
       <UniqueIdentifier>{f96a24de-a941-4632-b3b9-924e81a488d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="library\CMake">
+      <UniqueIdentifier>{ec3847cb-7670-446e-81bc-16ee389cc5e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="library\lib">
+      <UniqueIdentifier>{b3867a39-0307-4c5d-96ce-fd39d8427e96}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="library\ns-eel2-shim">
+      <UniqueIdentifier>{add1dcaa-f5e1-4311-86fb-d739360085a5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\ns-eel2\nseel-caltab.c">
-      <Filter>library\ns-eel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ns-eel2\nseel-cfunc.c">
-      <Filter>library\ns-eel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ns-eel2\nseel-compiler.c">
-      <Filter>library\ns-eel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ns-eel2\nseel-eval.c">
-      <Filter>library\ns-eel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ns-eel2\nseel-lextab.c">
-      <Filter>library\ns-eel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ns-eel2\nseel-ram.c">
-      <Filter>library\ns-eel</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ns-eel2\nseel-yylex.c">
-      <Filter>library\ns-eel</Filter>
-    </ClCompile>
     <ClCompile Include="Milkdrop2PcmVisualizer.cpp">
       <Filter>musikcube</Filter>
     </ClCompile>
@@ -209,15 +194,37 @@
     <ClInclude Include="songtitlegetter.h">
       <Filter>library\headers</Filter>
     </ClInclude>
+    <ClInclude Include="..\ns-eel2-shim\ns-eel.h">
+      <Filter>library\ns-eel2-shim</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="text1.bin">
       <Filter>library\resources</Filter>
+    </None>
+    <None Include="..\ns-eel2-shim\ReadMe.md">
+      <Filter>library\ns-eel2-shim</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="plugin.rc">
       <Filter>library\resources</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\CMakeLists.txt">
+      <Filter>library\CMake</Filter>
+    </Text>
+    <Text Include="CMakeLists.txt">
+      <Filter>library\CMake</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\lib\projectM_eval.lib">
+      <Filter>library\lib</Filter>
+    </Library>
+    <Library Include="..\lib\projectM_ns-eel2.lib">
+      <Filter>library\lib</Filter>
+    </Library>
   </ItemGroup>
 </Project>

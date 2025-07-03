@@ -6,25 +6,39 @@
 
 # BeatDrop Music Visualizer
 
-BeatDrop Music Visualizer is an improved standalone version of the [original inactive repository fork](https://github.com/mvsoft74/BeatDrop) based of the [Original MilkDrop2 Plug-in](https://www.geisswerks.com/milkdrop/) for [Winamp](https://winamp.com) that aims to add better features and bug fixes/optimizations for versatility and interesting. This also aims as MilkDrop improvement.
+BeatDrop Music Visualizer is an improved standalone version of the [original inactive repository fork](https://github.com/mvsoft74/BeatDrop) based of the [Original MilkDrop2 Plug-in](https://www.geisswerks.com/milkdrop/) for [Winamp](https://winamp.com) that aims to add better features and bug fixes/optimizations for versatility, usability and amazing. This is also considered as MilkDrop improvement.
 
 It features:
 - Based of the [Original MilkDrop Plug-in](https://www.geisswerks.com/milkdrop/).
 - Perfectly adjusted beat detection for better audio reaction (also configurable)
 - New waveforms and transitions
 - 16 custom shapes and waves limit
-- [Spout](https://spout.zeal.co) Integration
+- [Spout](https://spout.zeal.co) integration
+- [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library integration
 - Hard Cut Modes, Transparency Mode, Playback Controls, Startup Preset etc.
 - And so much more!
 
 Before compiling the code:
 * Workloads required before compiling:
 ![Workloads required to use with Visual Studio 2022](https://github.com/user-attachments/assets/7bc967d5-3683-4180-a1ad-8a99a855d5fc)
-* If you want to use CMake, look at the name from Desktop development with C++ category below check this box. This will be obligatory after integrating it with [projectM-Eval](https://github.com/projectM-visualizer/projectm-eval) instead of ns-eel2 library (if possible) (VS2022 only)
+* CMake is now obligatory to install! Look at the name from Desktop development with C++ category below check this box. [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library is now integrated in.
 
 ![CMake optional library checked](https://github.com/user-attachments/assets/219d03a0-3c16-42ef-a05d-1374ae7ee3a8)
 
-* Anyone who uses Visual Studio 2019 or higher, please change from debug to release and build it.
+* Anyone who uses Visual Studio 2022, please change from debug to release and build it.
+
+# HOW TO COMPILE THE CODE AND UPDATE PROJECTM-EVAL LIBRARY CORRECTLY
+
+BeatDrop now uses [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library, a drop-in replacement of Nullsoft Expression Evaluation Library, which it's assembly-free and it uses much faster instructions than i386 instructions that achieves preset compilation performance optimization. [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) also performs a few compile-time optimizations like replacing larger constant expressions with a simple value.
+
+Steps on how to compile BeatDrop with [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library:
+
+1. First update your baseline by clicking View -> Terminal, then type vcpkg x-update-baseline.
+2. Compile your code. Vcpkg automatically generates the projectM-eval library using CMake.
+3. The generated files are in vcpkg_installed folder. Copy both libraries from vcpkg_installed -> x86-windows-static -> x86-windows-static -> lib, then paste them to lib folder from the main source code folder.
+4. (If needed) Copy the ns-eel header from the same step from 3., but in include -> projectm-eval -> ns-eel2, then paste it to ns-eel-shim folder, still from the main source code folder.
+5. Now compile the code and you are ready to go. If you see that your output gives "1 up to date", just delete BeatDrop.exe from vis_milk2 -> Release folder. Compile it again.
+6. If you have problems, ask me on Discord, Twitter or Instagram.
 
 # BEFORE YOU RUN BEATDROP
 

@@ -29,7 +29,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "state.h"
 #include "support.h"
-#include "../ns-eel2/ns-eel.h"
+#include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 #include "plugin.h"
 #include "utility.h"
 #include <windows.h>

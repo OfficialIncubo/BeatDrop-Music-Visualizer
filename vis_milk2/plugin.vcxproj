@@ -19,13 +19,13 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <TargetExt>.exe</TargetExt>
     <CharacterSet>MultiByte</CharacterSet>
@@ -60,6 +60,12 @@
     <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnableManifest>true</VcpkgEnableManifest>
+  </PropertyGroup>
+  <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <VcpkgUseStatic>true</VcpkgUseStatic>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -90,16 +96,16 @@
       <CompileAs>Default</CompileAs>
       <DisableSpecificWarnings>4996;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>windowsapp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>windowsapp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <AdditionalLibraryDirectories>..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>
@@ -112,6 +118,7 @@
       <DataExecutionPrevention />
       <ImportLibrary>.\Release/vis_milk2.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
     <PostBuildEvent>
       <Command>copy /y /v "..\vis_milk2\Release\BeatDrop.exe" "..\BeatDrop\BeatDrop.exe"
@@ -122,6 +129,10 @@
     <Manifest>
       <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
     </Manifest>
+    <ProjectReference />
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -182,13 +193,6 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClCompile Include="..\audio\log.cpp" />
     <ClCompile Include="..\audio\loopback-capture.cpp" />
     <ClCompile Include="..\audio\prefs.cpp" />
-    <ClCompile Include="..\ns-eel2\nseel-caltab.c" />
-    <ClCompile Include="..\ns-eel2\nseel-cfunc.c" />
-    <ClCompile Include="..\ns-eel2\nseel-compiler.c" />
-    <ClCompile Include="..\ns-eel2\nseel-eval.c" />
-    <ClCompile Include="..\ns-eel2\nseel-lextab.c" />
-    <ClCompile Include="..\ns-eel2\nseel-ram.c" />
-    <ClCompile Include="..\ns-eel2\nseel-yylex.c" />
     <ClCompile Include="..\spoutDX9\SpoutCopy.cpp" />
     <ClCompile Include="..\spoutDX9\SpoutDX9.cpp" />
     <ClCompile Include="..\spoutDX9\SpoutFrameCount.cpp" />
@@ -220,6 +224,7 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClInclude Include="..\audio\log.h" />
     <ClInclude Include="..\audio\loopback-capture.h" />
     <ClInclude Include="..\audio\prefs.h" />
+    <ClInclude Include="..\ns-eel2-shim\ns-eel.h" />
     <ClInclude Include="..\spoutDX9\SpoutCommon.h" />
     <ClInclude Include="..\spoutDX9\SpoutCopy.h" />
     <ClInclude Include="..\spoutDX9\SpoutDX9.h" />
@@ -250,7 +255,16 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ResourceCompile Include="plugin.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\ns-eel2-shim\ReadMe.md" />
     <None Include="text1.bin" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\CMakeLists.txt" />
+    <Text Include="CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\lib\projectM_eval.lib" />
+    <Library Include="..\lib\projectM_ns-eel2.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

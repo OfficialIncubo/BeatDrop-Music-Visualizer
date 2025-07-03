@@ -97,7 +97,7 @@ BEGIN
             VALUE "LegalCopyright", "Copyright © BeatDrop development team"
             VALUE "OriginalFilename", "BeatDrop.exe"
             VALUE "ProductName", "BeatDrop"
-            VALUE "ProductVersion", "1.3.2.2 RC1"
+            VALUE "ProductVersion", "1.3.2.2"
         END
     END
     BLOCK "VarFileInfo"
