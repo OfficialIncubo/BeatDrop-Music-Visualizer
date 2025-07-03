@@ -1,0 +1,94 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.005
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99990
+rot=-0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=0.99990
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_1=vol = (bass_att+mid_att+treb_att)*0.015;
+per_frame_2=q1 = vol;
+warp_1=`shader_body {
+warp_2=`//ret = 1;
+warp_3=`}
+comp_1=`//Original ShaderToy code: https://www.shadertoy.com/view/WfGSRD
+comp_2=`//by Xor (XorDev)
+comp_3=`//Converted to MilkDrop (HLSL) by DJ XcitMosphere/Incubo_/Se7enSlasher & DeepSeek
+comp_4=`//This shader is licensed under MIT. Credit is appreciated, but not required!
+comp_5=`
+comp_6=`shader_body
+comp_7=`{
+comp_8=`    //Horizontally centered and scaled coordinates
+comp_9=`    float2 p = (uv * texsize.xy * 2.0 - float2(texsize.x, 0.0)) / texsize.y;
+comp_10=`    //Centered version:
+comp_11=`    //float2 p = (uv * texsize.xy * 2.0 - texsize.xy) / texsize.y;
+comp_12=`
+comp_13=`    float l = 1. - length(p);
+comp_14=`    ret = tanh((1.2 + sin(p.x+time+float4(0,2,4,0))) * min(q1, .1) / max(l/.1,-l));
+comp_15=`}
