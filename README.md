@@ -112,7 +112,7 @@ Use BeatDrop with your favourite
   ...
 
 ## System Requirements
-* Windows 11, Windows 10, Windows 8.1, Windows 8, Windows 7, Windows Vista
+* Windows 11, Windows 10
 
 * Minimum 2GB of RAM required
 
