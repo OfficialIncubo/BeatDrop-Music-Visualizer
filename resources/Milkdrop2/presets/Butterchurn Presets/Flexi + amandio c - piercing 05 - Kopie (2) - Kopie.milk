@@ -292,7 +292,7 @@ per_frame_64=q11 = aspectx;
 per_frame_65=q12 = aspecty;
 per_frame_66=q13 = sqrt(vx4*vx4 + vy4*vy4)*0.8;
 per_frame_67=q14 = atan2(vx4,vy4);
-per_pixel_1=d = (pow(sqrt(sqr(x-q3)+sqr(y-q4)),2)-0.);
+per_pixel_1=d = (pow(sqrt(sqr(x-q3)+sqr(y-q4)),2)-0);
 per_pixel_2=v = 0.03;
 per_pixel_3=dx = v*(x-q23)*d;
 per_pixel_4=dy = v*(y-q24)*d;
