@@ -1643,7 +1643,7 @@ int CPlugin::AllocateMyNonDx9Stuff()
 
 	BuildMenus();
 
-	m_bMMX = CheckForMMX();
+	//m_bMMX = CheckForMMX();
 	//m_bSSE = CheckForSSE();
 
 	m_pState->Default();
