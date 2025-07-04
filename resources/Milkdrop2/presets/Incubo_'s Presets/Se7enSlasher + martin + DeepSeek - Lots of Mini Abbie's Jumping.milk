@@ -1,7 +1,7 @@
 MILKDROP_PRESET_VERSION=201
-PSVERSION=4
+PSVERSION=3
 PSVERSION_WARP=2
-PSVERSION_COMP=4
+PSVERSION_COMP=3
 [preset00]
 fRating=3.000
 fGammaAdj=2.000
@@ -9,7 +9,7 @@ fDecay=0.925
 fVideoEchoZoom=1.007
 fVideoEchoAlpha=0.000
 nVideoEchoOrientation=3
-nWaveMode=7
+nWaveMode=8
 bAdditiveWaves=1
 bWaveDots=0
 bWaveThick=0
@@ -232,7 +232,7 @@ comp_36=`  }
 comp_37=`
 comp_38=`  for (int row=1; row<=row_count; row++) {
 comp_39=`    j = q31;
-comp_40=`    uvi = uv+float2((q5*(row*2.5))/5 + q6*(row*q8), j+.85 - row*row_spacing);
+comp_40=`    uvi = uv+float2((q5*(row*2.5))/5 + q6*(row*q8), j+1 - row*row_spacing);
 comp_41=`    ry = (uvi.y);
 comp_42=`    tmp = lerp(tex2D(Abbie_Normal,uvi), tex2D(Abbie_YAY,uvi), j>0.0001)*(ry<1)*(ry>0);
 comp_43=`    ret = lerp(ret, tmp, lum(tmp)>0);

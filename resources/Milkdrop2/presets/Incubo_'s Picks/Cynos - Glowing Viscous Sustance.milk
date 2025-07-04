@@ -110,9 +110,9 @@ wave_0_per_point15=
 wave_0_per_point16=// YUV-based gray scale
 wave_0_per_point17=bw=r*0.299+g*0.587+b*0.114;
 wave_0_per_point18=
-wave_0_per_point19=r=r*t1+bw*(1-t1);
-wave_0_per_point20=g=g*t2+bw*(1-t2);
-wave_0_per_point21=b=b*t3+bw*(1-t3);
+wave_0_per_point19=//r=r*t1+bw*(1-t1);
+wave_0_per_point20=//g=g*t2+bw*(1-t2);
+wave_0_per_point21=//b=b*t3+bw*(1-t3);
 wavecode_1_enabled=0
 wavecode_1_samples=512
 wavecode_1_sep=0
