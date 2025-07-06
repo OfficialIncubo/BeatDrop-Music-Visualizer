@@ -35,10 +35,12 @@ Steps on how to compile BeatDrop with [projectM-eval](https://github.com/project
 
 1. First update your baseline by clicking View -> Terminal, then type vcpkg x-update-baseline.
 2. Compile your code. Vcpkg automatically generates the projectM-eval library using CMake.
-3. The generated files are in vcpkg_installed folder. Copy both libraries from vcpkg_installed -> x86-windows-static -> x86-windows-static -> lib, then paste them to lib folder from the main source code folder.
-4. (If needed) Copy the ns-eel header from the same step from 3., but in include -> projectm-eval -> ns-eel2, then paste it to ns-eel-shim folder, still from the main source code folder.
-5. Now compile the code and you are ready to go. If you see that your output gives "1 up to date", just delete BeatDrop.exe from vis_milk2 -> Release folder. Compile it again.
-6. If you have problems, ask me on Discord, Twitter or Instagram.
+3. It will receive an error about one of the libraries: `Invalid or corrupt file: cannot read at 0x536E` (projectM_ns-eel2.lib).
+4. The generated files are in vcpkg_installed folder. Copy both libraries from vcpkg_installed\x86-windows-static\x86-windows-static\lib, then paste them to lib folder from the main source code folder.
+5. (If needed) Copy the ns-eel header from the same step from 3., but in include\projectm-eval\ns-eel2, then paste it to ns-eel-shim folder, still from the main source code folder.
+6. Now compile the code and you are ready to go. If you see that your output gives "1 up to date", just delete BeatDrop.exe from vis_milk2 -> Release folder. Compile it again.
+7. It will receive `The command "copy /y /v "..\vis_milk2\Release\BeatDrop.exe" "..\BeatDrop\BeatDrop.exe"`, but it built succesfully. It tries to copy the generated .exe file to BeatDrop folder, which it doesn't exist. Ignore it. Please check your generated .exe file in vis_milk2/Release/BeatDrop.exe, then copy it in your BeatDrop folder.
+8. If you have problems, ask me on Discord, Twitter or Instagram.
 
 # BEFORE YOU RUN BEATDROP
 
