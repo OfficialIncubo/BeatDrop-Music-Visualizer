@@ -89,7 +89,7 @@ wave_0_init1=ma=.5;
 wave_0_init2=my=.5;
 wave_0_init3=md=0; //direction 0 1 2 3
 wave_0_per_point1=oldmd=md;
-wave_0_per_point2=md=(md+rand(4))%4;
+wave_0_per_point2=md=(md+int(rand(4)))%4;
 wave_0_per_point3=md=if(equal(md,oldmd),(md+1)%4,md);
 wave_0_per_point4=
 wave_0_per_point5=mx=mx+(equal(md,0)*.002*bass);
@@ -124,7 +124,7 @@ wave_1_init1=mx=.5;
 wave_1_init2=my=.5;
 wave_1_init3=md=1;
 wave_1_per_point1=oldmd=md;
-wave_1_per_point2=md=(md+rand(4))%4;
+wave_1_per_point2=md=(md+int(rand(4)))%4;
 wave_1_per_point3=md=if(equal(md,oldmd),(md+1)%4,md);
 wave_1_per_point4=
 wave_1_per_point5=mx=mx+(equal(md,0)*.002*bass);
@@ -159,7 +159,7 @@ wave_2_init1=mx=0.47;
 wave_2_init2=my=.5;
 wave_2_init3=md=2;
 wave_2_per_point1=oldmd=md;
-wave_2_per_point2=md=(md+rand(4))%4;
+wave_2_per_point2=md=(md+int(rand(4)))%4;
 wave_2_per_point3=md=if(equal(md,oldmd),(md+1)%4,md);
 wave_2_per_point4=
 wave_2_per_point5=mx=mx+(equal(md,0)*.002*bass);
@@ -192,7 +192,7 @@ wave_3_init1=mx=0.48;
 wave_3_init2=my=0.39;
 wave_3_init3=md=3;
 wave_3_per_point1=oldmd=md;
-wave_3_per_point2=md=(md+rand(4))%4;
+wave_3_per_point2=md=(md+int(rand(4)))%4;
 wave_3_per_point3=md=if(equal(md,oldmd),(md+1)%4,md);
 wave_3_per_point4=
 wave_3_per_point5=mx=mx+(equal(md,0)*.002*bass);

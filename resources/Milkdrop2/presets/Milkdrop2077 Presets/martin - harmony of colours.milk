@@ -107,9 +107,9 @@ wave_0_per_point17=y= y1+.48;
 wave_0_per_point18=
 wave_0_per_point19=if (t1%4==0,
 wave_0_per_point20=  k = q3%8+2;
-wave_0_per_point21=  s=if(sin(k*x1+32*y1)<0,2,0)+0.11*time;
-wave_0_per_point22=  reg70= 0.6 + 0.4*cos(s);
-wave_0_per_point23=  reg71= 0.6 + 0.4*cos(s+time*.31);
+wave_0_per_point21=  s=if(sin(k*x1+32*y1)<0,0.8,0);
+wave_0_per_point22=  reg70= 0.6 + 0.4*cos(s+time*.13);
+wave_0_per_point23=  reg71= 0.6 + 0.4*cos(s+time*.17);
 wave_0_per_point24=  reg72= 0.6 + 0.4*cos(s+time*.23);
 wave_0_per_point25=,0);
 wave_0_per_point26=r=reg70; g= reg71; b=reg72;
@@ -337,7 +337,7 @@ warp_12=`uv.x += (f2-.5)*texsize.z;
 warp_13=`ret1a = tex2D (sampler_fw_main, uv);
 warp_14=`ret1a -= 0.01 * f2;
 warp_15=`
-warp_16=`uv = lerp (uv, uv_orig,.7);
+warp_16=`uv = lerp (uv, uv_orig,.6);
 warp_17=`dz.x = 2*lum(GB(uv+hor) - GB(uv-hor));
 warp_18=`dz.y = 2*lum(GB(uv+ver) - GB(uv-ver));
 warp_19=`
