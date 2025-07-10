@@ -123,9 +123,10 @@ Special thanks to:
 * [oO-MrC-Oo](https://github.com/oO-MrC-Oo) - [XBMC Plug-in](https://github.com/oO-MrC-Oo/Milkdrop2-XBMC)
 * Casey Langen ([@clangen](https://github.com/clangen)) - [milkdrop2-musikcube](https://github.com/clangen/milkdrop2-musikcube)
 * Matthew van Eerde ([@mvaneerde](https://github.com/mvaneerde)) - [loopback-capture](https://github.com/mvaneerde/blog)
-* projectM Team ([Kai Blaschke](https://github.com/kblaschke)) - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval)
-* Lynn Jarvis ([@leadedge](https://github.com/leadedge)) - [BeatDrop for Spout](https://github.com/leadedge/BeatDrop), [Spout](https://spout.zeal.co)
-* Patrick Pomerleau @ Nest Immersion ([@nestdome](https://www.instagram.com/nestdome)) - help, support, feature integrations to NestDrop
+* projectM Team ([Kai Blaschke](https://github.com/kblaschke)) - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval), contributor
+* Lynn Jarvis ([@leadedge](https://github.com/leadedge)) - [BeatDrop for Spout](https://github.com/leadedge/BeatDrop), [Spout](https://spout.zeal.co), contributor
+* Patrick Pomerleau @ Nest Immersion ([@nestdome](https://www.instagram.com/nestdome)) - help, contributor, feature integrations to NestDrop
+* IkeC - contributor, [Milkwave](https://github.com/IkeC/Milkwave) Developer
 * ...and all the preset authors and contributors!
 
 ## License
