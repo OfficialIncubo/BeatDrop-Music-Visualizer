@@ -126,7 +126,7 @@ Special thanks to:
 * projectM Team ([Kai Blaschke](https://github.com/kblaschke)) - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval), contributor
 * Lynn Jarvis ([@leadedge](https://github.com/leadedge)) - [BeatDrop for Spout](https://github.com/leadedge/BeatDrop), [Spout](https://spout.zeal.co), contributor
 * Patrick Pomerleau @ Nest Immersion ([@nestdome](https://www.instagram.com/nestdome)) - help, contributor, feature integrations to NestDrop
-* IkeC - contributor, [Milkwave](https://github.com/IkeC/Milkwave) Developer
+* [IkeC](https://github.com/IkeC) - contributor, [Milkwave](https://github.com/IkeC/Milkwave) Developer
 * ...and all the preset authors and contributors!
 
 ## License
