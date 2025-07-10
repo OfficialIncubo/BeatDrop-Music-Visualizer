@@ -30,7 +30,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef GEISS_TEXTURE_MANAGER
 #define GEISS_TEXTURE_MANAGER 1
 
-#define NUM_TEX 16
+#define NUM_TEX 64
 
 #ifdef _DEBUG
     #define D3D_DEBUG_INFO  // declare this before including d3d9.h
