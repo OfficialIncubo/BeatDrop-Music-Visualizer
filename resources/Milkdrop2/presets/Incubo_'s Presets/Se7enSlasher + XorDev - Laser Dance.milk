@@ -78,36 +78,35 @@ warp_3=`}
 comp_1=`//Original ShaderToy code: https://www.shadertoy.com/view/tct3Rf
 comp_2=`//by Xor (XorDev)
 comp_3=`//Converted to MilkDrop (HLSL) by Incubo_.
-comp_4=`//This shader is licensed under MIT. Credit is appreciated, but not required!
-comp_5=`
-comp_6=`shader_body
-comp_7=`{
-comp_8=`    //Raymarch iterator, step distance, depth
-comp_9=`    float i, d, z;
-comp_10=`    float4 O;    
-comp_11=`
-comp_12=`    uv = (uv-.5)*aspect.xy; // CENTER + ASPECT FIX
-comp_13=`    uv.y = -uv.y; // Y FLIPPING ISSUE FIX
-comp_14=`
-comp_15=`    for(i = 0; i < 1e2; i++)
-comp_16=`    {
-comp_17=`        //Raymarch sample point
-comp_18=`        float3 p = z * normalize(float3(uv,-.25)) + .8;
-comp_19=`        //Reflection distance
-comp_20=`        d = max(-p.y, 0.);
-comp_21=`        //Reflect y-axis
-comp_22=`        p.y += d+d - 1.;
-comp_23=`        //Step forward slowly with a bias for soft reflections
-comp_24=`        z += d = .3 * (.01 + .1*d + 
-comp_25=`        //Lazer distance field
-comp_26=`        length(min( p = cos(p + time) + cos(p / .6).yzx, p.zxy)) 
-comp_27=`        / (1.+d+d+d*d));
-comp_28=`    
-comp_29=`
-comp_30=`    //Pick colors and attenuate
-comp_31=`    O += (cos(z + float4(0,2,3,0)) + 1.5) / d / z;
-comp_32=`    }
-comp_33=`    //Tanh tonemapping
-comp_34=`    O = tanh(O / 7e2);
-comp_35=`    ret = O;
-comp_36=`}
+comp_4=`
+comp_5=`shader_body
+comp_6=`{
+comp_7=`    //Raymarch iterator, step distance, depth
+comp_8=`    float i, d, z;
+comp_9=`    float4 O;    
+comp_10=`
+comp_11=`    uv = (uv-.5)*aspect.xy; // CENTER + ASPECT FIX
+comp_12=`    uv.y = -uv.y; // Y FLIPPING ISSUE FIX
+comp_13=`
+comp_14=`    for(i = 0; i < 1e2; i++)
+comp_15=`    {
+comp_16=`        //Raymarch sample point
+comp_17=`        float3 p = z * normalize(float3(uv,-.25)) + .8;
+comp_18=`        //Reflection distance
+comp_19=`        d = max(-p.y, 0.);
+comp_20=`        //Reflect y-axis
+comp_21=`        p.y += d+d - 1.;
+comp_22=`        //Step forward slowly with a bias for soft reflections
+comp_23=`        z += d = .3 * (.01 + .1*d + 
+comp_24=`        //Lazer distance field
+comp_25=`        length(min( p = cos(p + time) + cos(p / .6).yzx, p.zxy)) 
+comp_26=`        / (1.+d+d+d*d));
+comp_27=`    
+comp_28=`
+comp_29=`    //Pick colors and attenuate
+comp_30=`    O += (cos(z + float4(0,2,3,0)) + 1.5) / d / z;
+comp_31=`    }
+comp_32=`    //Tanh tonemapping
+comp_33=`    O = tanh(O / 7e2);
+comp_34=`    ret = O;
+comp_35=`}

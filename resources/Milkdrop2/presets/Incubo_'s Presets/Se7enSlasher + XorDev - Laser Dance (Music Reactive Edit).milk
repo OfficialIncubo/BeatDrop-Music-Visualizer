@@ -100,86 +100,85 @@ warp_3=`}
 comp_1=`//Original ShaderToy code: https://www.shadertoy.com/view/tct3Rf
 comp_2=`//by Xor (XorDev)
 comp_3=`//Converted to MilkDrop (HLSL) and Music-Reactive edited by DJ XcitMosphere/Incubo_/Se7enSlasher.
-comp_4=`//This shader is licensed under MIT. Credit is appreciated, but not required!
-comp_5=`
-comp_6=`shader_body
-comp_7=`{
-comp_8=`    //Raymarch iterator, step distance, depth
-comp_9=`    float i, d, z;
-comp_10=`    float4 O;    
-comp_11=`
-comp_12=`    uv = (uv-.5)*aspect.xy; // CENTER + ASPECT FIX
-comp_13=`    uv.y = -uv.y; // Y FLIPPING ISSUE FIX
-comp_14=`
-comp_15=`    for(i = 0; i < 1e2; i++)
-comp_16=`    {
-comp_17=`        //Raymarch sample point
-comp_18=`        float3 p = z * normalize(float3(uv,-.25)) + .8;
-comp_19=`        //Reflection distance
-comp_20=`        d = max(-p.y, 0.);
-comp_21=`        //Reflect y-axis
-comp_22=`        p.y += d+d - 1.;
-comp_23=`        //Step forward slowly with a bias for soft reflections
-comp_24=`        if (q1 == 0)
-comp_25=`        {
-comp_26=`        z += d = .3 * (.01 + .1*d + 
-comp_27=`        //Lazer distance field
-comp_28=`        length(min( p = cos(p + time) + cos(p / .6).yzx, p.zxy)) 
-comp_29=`        / (q2+d+d+d*d));    
-comp_30=`        }
-comp_31=`        if (q1 == 1)
-comp_32=`        {
-comp_33=`        z += d = .3 * (.01 + .1*d + 
-comp_34=`        length(min( p = cos(sin(p) + time) + cos(p / .6).yzx, p.zxy)) 
-comp_35=`        / (q2+d+d+d*d));    
-comp_36=`        }
-comp_37=`        if (q1 == 2)
-comp_38=`        {
-comp_39=`        z += d = .3 * (.01 + .1*d + 
-comp_40=`        length(min( p = cos(cos(p) + time) + cos(p / .6).yzx, p.zxy)) 
-comp_41=`        / (q2+d+d+d*d));    
-comp_42=`        }
-comp_43=`        if (q1 == 3)
-comp_44=`        {
-comp_45=`        z += d = .3 * (.01 + .1*d + 
-comp_46=`        length(min( p = cos(tan(p) + time) + cos(p / .6).yzx, p.zxy)) 
-comp_47=`        / (q2+d+d+d*d));    
-comp_48=`        }
-comp_49=`        if (q1 == 4)
-comp_50=`        {
-comp_51=`        z += d = .3 * (.01 + .1*d + 
-comp_52=`        length(min( p = cos(atan(p) + time) + cos(p / .6).yzx, p.zxy)) 
-comp_53=`        / (q2+d+d+d*d));    
-comp_54=`        }
-comp_55=`        if (q1 == 5)
-comp_56=`        {
-comp_57=`        z += d = .3 * (.01 + .1*d + 
-comp_58=`        length(min( p = sin(cos(p) + time) + cos(p / .6).yzx, p.zxy)) 
-comp_59=`        / (q2+d+d+d*d));    
-comp_60=`        }
-comp_61=`        if (q1 == 6)
-comp_62=`        {
-comp_63=`        z += d = .3 * (.01 + .1*d + 
-comp_64=`        length(min( p = cos(sin(p) + time) + cos(p / .6).yzx, p.zxy)) 
-comp_65=`        / (q2+d+d+d*d));    
-comp_66=`        }
-comp_67=`        if (q1 == 7)
-comp_68=`        {
-comp_69=`        z += d = .3 * (.01 + .1*d + 
-comp_70=`        length(min( p = cos(atan(p) + time) + cos(p / .6).yzx, p.zxy)) 
-comp_71=`        / (q2+d+d+d*d));    
-comp_72=`        }
-comp_73=`        if (q1 == 8)
-comp_74=`        {
-comp_75=`        z += d = .3 * (.01 + .1*d + 
-comp_76=`        length(min( p = sin(atan(p) + time) + cos(p / .6).yzx, p.zxy)) 
-comp_77=`        / (q2+d+d+d*d));    
-comp_78=`        }
-comp_79=`
-comp_80=`        //Pick colors and attenuate
-comp_81=`        O += (cos((z+q3) + float4(0,2,3,0)) + 1.5) / d / z;
-comp_82=`    }
-comp_83=`    //Tanh tonemapping
-comp_84=`    O = tanh(O / 7e2);
-comp_85=`    ret = O;
-comp_86=`}
+comp_4=`
+comp_5=`shader_body
+comp_6=`{
+comp_7=`    //Raymarch iterator, step distance, depth
+comp_8=`    float i, d, z;
+comp_9=`    float4 O;    
+comp_10=`
+comp_11=`    uv = (uv-.5)*aspect.xy; // CENTER + ASPECT FIX
+comp_12=`    uv.y = -uv.y; // Y FLIPPING ISSUE FIX
+comp_13=`
+comp_14=`    for(i = 0; i < 1e2; i++)
+comp_15=`    {
+comp_16=`        //Raymarch sample point
+comp_17=`        float3 p = z * normalize(float3(uv,-.25)) + .8;
+comp_18=`        //Reflection distance
+comp_19=`        d = max(-p.y, 0.);
+comp_20=`        //Reflect y-axis
+comp_21=`        p.y += d+d - 1.;
+comp_22=`        //Step forward slowly with a bias for soft reflections
+comp_23=`        if (q1 == 0)
+comp_24=`        {
+comp_25=`        z += d = .3 * (.01 + .1*d + 
+comp_26=`        //Lazer distance field
+comp_27=`        length(min( p = cos(p + time) + cos(p / .6).yzx, p.zxy)) 
+comp_28=`        / (q2+d+d+d*d));    
+comp_29=`        }
+comp_30=`        if (q1 == 1)
+comp_31=`        {
+comp_32=`        z += d = .3 * (.01 + .1*d + 
+comp_33=`        length(min( p = cos(sin(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_34=`        / (q2+d+d+d*d));    
+comp_35=`        }
+comp_36=`        if (q1 == 2)
+comp_37=`        {
+comp_38=`        z += d = .3 * (.01 + .1*d + 
+comp_39=`        length(min( p = cos(cos(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_40=`        / (q2+d+d+d*d));    
+comp_41=`        }
+comp_42=`        if (q1 == 3)
+comp_43=`        {
+comp_44=`        z += d = .3 * (.01 + .1*d + 
+comp_45=`        length(min( p = cos(tan(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_46=`        / (q2+d+d+d*d));    
+comp_47=`        }
+comp_48=`        if (q1 == 4)
+comp_49=`        {
+comp_50=`        z += d = .3 * (.01 + .1*d + 
+comp_51=`        length(min( p = cos(atan(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_52=`        / (q2+d+d+d*d));    
+comp_53=`        }
+comp_54=`        if (q1 == 5)
+comp_55=`        {
+comp_56=`        z += d = .3 * (.01 + .1*d + 
+comp_57=`        length(min( p = sin(cos(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_58=`        / (q2+d+d+d*d));    
+comp_59=`        }
+comp_60=`        if (q1 == 6)
+comp_61=`        {
+comp_62=`        z += d = .3 * (.01 + .1*d + 
+comp_63=`        length(min( p = cos(sin(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_64=`        / (q2+d+d+d*d));    
+comp_65=`        }
+comp_66=`        if (q1 == 7)
+comp_67=`        {
+comp_68=`        z += d = .3 * (.01 + .1*d + 
+comp_69=`        length(min( p = cos(atan(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_70=`        / (q2+d+d+d*d));    
+comp_71=`        }
+comp_72=`        if (q1 == 8)
+comp_73=`        {
+comp_74=`        z += d = .3 * (.01 + .1*d + 
+comp_75=`        length(min( p = sin(atan(p) + time) + cos(p / .6).yzx, p.zxy)) 
+comp_76=`        / (q2+d+d+d*d));    
+comp_77=`        }
+comp_78=`
+comp_79=`        //Pick colors and attenuate
+comp_80=`        O += (cos((z+q3) + float4(0,2,3,0)) + 1.5) / d / z;
+comp_81=`    }
+comp_82=`    //Tanh tonemapping
+comp_83=`    O = tanh(O / 7e2);
+comp_84=`    ret = O;
+comp_85=`}

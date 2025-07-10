@@ -78,35 +78,34 @@ warp_3=`}
 comp_1=`//Original ShaderToy code: https://www.shadertoy.com/view/csjfWc
 comp_2=`//by Xor (XorDev)
 comp_3=`//Converted to MilkDrop (HLSL) by DeepSeek: https://www.deepseek.com
-comp_4=`//This shader is licensed under MIT. Credit is appreciated, but not required!
-comp_5=`
-comp_6=`shader_body
-comp_7=`{
-comp_8=`    uv = (uv-0.5)*float2(1, texsize.y/texsize.x)+0.5; // martin (Nitorami) + Se7enSlasher - Effective Aspect Correction
-comp_9=`    //uv = 1 - uv; //Se7enSlasher - Fix UV Flipping. Not needed?
-comp_10=`
-comp_11=`    // Center coordinates and normalize
-comp_12=`    float2 p = (uv - 0.5) * 2.0; // [-1, 1] range
-comp_13=`    
-comp_14=`    // --- martin (Nitorami) - Matrix Multiplication ---
-comp_15=`    float2x2 mat = float2x2(1, 1, -1, 1);
-comp_16=`    float2 transformed_p = mul (p,mat);
-comp_17=`    // -------------------------------------------------
-comp_18=`    
-comp_19=`    // Absolute transformed coordinates
-comp_20=`    float2 a = abs(transformed_p);
-comp_21=`    
-comp_22=`    // Noise sampling coordinate
-comp_23=`    float2 noise_coord = (-transformed_p + time * 0.2) / 30.0;
-comp_24=`    float X = tex2D(sampler_noise_lq, noise_coord).r;
-comp_25=`    
-comp_26=`    // Geometric calculations
-comp_27=`    float pattern = 
-comp_28=`        0.1 / abs(max(a.x - 0.03, abs(p.y) - 0.1)) +
-comp_29=`        0.1 / max(a.y, abs(a.x - 0.12) - 0.08);
-comp_30=`    
-comp_31=`    // Final color with tanh tonemapping
-comp_32=`    float4 O = tanh(float4(1.0, 2.0, 3.0, 1.0) / 50.0 * pattern * 6.0 * X);
-comp_33=`    
-comp_34=`    ret = O;
-comp_35=`}
+comp_4=`
+comp_5=`shader_body
+comp_6=`{
+comp_7=`    uv = (uv-0.5)*float2(1, texsize.y/texsize.x)+0.5; // martin (Nitorami) + Se7enSlasher - Effective Aspect Correction
+comp_8=`    //uv = 1 - uv; //Se7enSlasher - Fix UV Flipping. Not needed?
+comp_9=`
+comp_10=`    // Center coordinates and normalize
+comp_11=`    float2 p = (uv - 0.5) * 2.0; // [-1, 1] range
+comp_12=`    
+comp_13=`    // --- martin (Nitorami) - Matrix Multiplication ---
+comp_14=`    float2x2 mat = float2x2(1, 1, -1, 1);
+comp_15=`    float2 transformed_p = mul (p,mat);
+comp_16=`    // -------------------------------------------------
+comp_17=`    
+comp_18=`    // Absolute transformed coordinates
+comp_19=`    float2 a = abs(transformed_p);
+comp_20=`    
+comp_21=`    // Noise sampling coordinate
+comp_22=`    float2 noise_coord = (-transformed_p + time * 0.2) / 30.0;
+comp_23=`    float X = tex2D(sampler_noise_lq, noise_coord).r;
+comp_24=`    
+comp_25=`    // Geometric calculations
+comp_26=`    float pattern = 
+comp_27=`        0.1 / abs(max(a.x - 0.03, abs(p.y) - 0.1)) +
+comp_28=`        0.1 / max(a.y, abs(a.x - 0.12) - 0.08);
+comp_29=`    
+comp_30=`    // Final color with tanh tonemapping
+comp_31=`    float4 O = tanh(float4(1.0, 2.0, 3.0, 1.0) / 50.0 * pattern * 6.0 * X);
+comp_32=`    
+comp_33=`    ret = O;
+comp_34=`}
