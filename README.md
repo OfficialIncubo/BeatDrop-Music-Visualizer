@@ -89,10 +89,8 @@ You can use BeatDrop for parties, karaoke, music videos, DJ mixes and so on, but
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
 BeatDrop is a stand-alone implementation of the amazing Milkdrop2 Winamp plug-in.
-
 It lets you experience the stunning visual 2D effects with your music player of choice. No additional configuration steps needed! Just start BeatDrop and play your music.
-
-Use BeatDrop with your favourite
+Use BeatDrop with your favourite:
 
 * Music player:
   [foobar2000](https://www.foobar2000.org/),
@@ -100,13 +98,11 @@ Use BeatDrop with your favourite
   [Clementine](https://www.clementine-player.org/),
   [AIMP](https://www.aimp.ru/),
   ...
-
 * Web-based player:
   [SoundCloud](https://soundcloud.com/),
   [YouTube](https://www.youtube.com/),
   [Vimeo](https://vimeo.com/),
   ...
-
 * Internet Radio station:
   [SomaFM](https://somafm.com/),
   [DI.FM](https://www.di.fm/),
@@ -115,27 +111,22 @@ Use BeatDrop with your favourite
 
 ## System Requirements
 * Windows 11, Windows 10
-
 * Minimum 2GB of RAM required
-
-* WASAPI-compatible sound card
-
+* WASAPI - compatible sound card
 * DirectX 9 or higher - compatible GPU
-
 * DirectX End-User [Runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=8109) (also included in the installer) contains the required 32-bit helper libraries d3dx9_43.dll and d3dx9_31.dll
 
 ## Acknowledgements
 Special thanks to:
 
-* Ryan Geiss and Rovastar (John Baker) [official Milkdrop2 source code](https://sourceforge.net/projects/milkdrop2/)
-
-* oO-MrC-Oo [XBMC plugin](https://github.com/oO-MrC-Oo/Milkdrop2-XBMC)
-
-* Casey Langen [milkdrop2-musikcube](https://github.com/clangen/milkdrop2-musikcube)
-
-* Matthew van Eerde [loopback-capture](https://github.com/mvaneerde/blog)
-
-* and all the preset authors!
+* Ryan Geiss & Rovastar (John Baker) - [Official Milkdrop2 Source Code](https://sourceforge.net/projects/milkdrop2/)
+* [oO-MrC-Oo](https://github.com/oO-MrC-Oo) - [XBMC Plug-in](https://github.com/oO-MrC-Oo/Milkdrop2-XBMC)
+* Casey Langen ([@clangen](https://github.com/clangen)) - [milkdrop2-musikcube](https://github.com/clangen/milkdrop2-musikcube)
+* Matthew van Eerde ([@mvaneerde](https://github.com/mvaneerde)) - [loopback-capture](https://github.com/mvaneerde/blog)
+* projectM Team ([Kai Blaschke](https://github.com/kblaschke)) - [projectm-eval](https://github.com/projectM-visualizer/projectm-eval)
+* Lynn Jarvis ([@leadedge](https://github.com/leadedge)) - [BeatDrop for Spout](https://github.com/leadedge/BeatDrop), [Spout](https://spout.zeal.co)
+* Patrick Pomerleau @ Nest Immersion ([@nestdome](https://www.instagram.com/nestdome)) - help, support, feature integrations to NestDrop
+* ...and all the preset authors and contributors!
 
 ## License
 
