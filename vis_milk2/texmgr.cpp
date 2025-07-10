@@ -47,7 +47,8 @@ void texmgr::Finish()
 	for (int i=0; i<NUM_TEX; i++)
 	{
 		KillTex(i);
-		NSEEL_VM_free(m_tex[i].tex_eel_ctx);
+		if (m_tex[i].pSurface)
+			NSEEL_VM_free(m_tex[i].tex_eel_ctx);
 	}
 
 	// DO NOT RELEASE OR DELETE m_lpDD; CLIENT SHOULD DO THIS!
