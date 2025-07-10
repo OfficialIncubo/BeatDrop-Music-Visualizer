@@ -1,0 +1,302 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=1.000
+fGammaAdj=1.000
+fDecay=1.000
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=6
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.400
+fWaveScale=1.235
+fWaveSmoothing=0.207
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99990
+rot=-0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=0.99990
+sy=1.00000
+wave_r=0.500
+wave_g=0.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=1
+wavecode_0_scaling=0.89152
+wavecode_0_smoothing=0.82000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wave_0_init1=t1 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init2=t2 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init3=t3 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init4=t4 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init5=t5 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init6=t6 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init7=t7 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init8=t8 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_0_init9=
+wave_0_per_frame1=t2 = t2 + bass_att;
+wave_0_per_point1=
+wave_0_per_point2=
+wave_0_per_point3=k1 = cos(time/3);
+wave_0_per_point4=k2 = sin(time/2);
+wave_0_per_point5=
+wave_0_per_point6=t_abs = sample;
+wave_0_per_point7=t_rel = sample-time/2.12;
+wave_0_per_point8=ampl =  cos(t_rel)*5; 
+wave_0_per_point9=//ampl = 3;
+wave_0_per_point10=
+wave_0_per_point11=ox = sin (t_rel*8) + ampl*sin (t_rel*12) ;
+wave_0_per_point12=oy = cos (t_rel*13) + ampl*cos (t_rel*11);
+wave_0_per_point13=oz =  ampl/3;
+wave_0_per_point14=
+wave_0_per_point15=
+wave_0_per_point16=
+wave_0_per_point17=
+wave_0_per_point18=//r = sqr(sin(t_rel*3.4));
+wave_0_per_point19=//g = sqr(sin(t_rel*2.3));
+wave_0_per_point20=//b = sqr (cos(t_rel*1.9));
+wave_0_per_point21=
+wave_0_per_point22=r = q1;
+wave_0_per_point23=g = q2;
+wave_0_per_point24=b = q3;
+wave_0_per_point25=
+wave_0_per_point26=a=0.25*(cos(t_abs*3.14/2)) + 0.2 *below (abs(1-t_abs- t1),0.0);
+wave_0_per_point27=//a=0.25*(sin(t_abs*3.14)) + 0.4 *below (abs(1-t_abs-t1), bass_att/1);
+wave_0_per_point28=a=0.25*(cos(t_abs*1.5)) + 0.7 *below (abs(t_abs),0.0);
+wave_0_per_point29=
+wave_0_per_point30=xang = k1*3;
+wave_0_per_point31=yang = 1;
+wave_0_per_point32=zang = 3*k1;
+wave_0_per_point33=fov = 0.22;
+wave_0_per_point34=
+wave_0_per_point35=monitor = t2;
+wave_0_per_point36=
+wave_0_per_point37=// Rotation um x,y,z
+wave_0_per_point38=
+wave_0_per_point39=mx = ox*cos(zang) - oy*sin(zang);
+wave_0_per_point40=my = ox*sin(zang) + oy*cos(zang);
+wave_0_per_point41=
+wave_0_per_point42=ox = mx;
+wave_0_per_point43=oy = my;
+wave_0_per_point44=mx = ox*cos(yang) + oz*sin(yang);
+wave_0_per_point45=mz = - ox*sin(yang) + oz*cos(yang);
+wave_0_per_point46=ox = mx;
+wave_0_per_point47=oz = mz;
+wave_0_per_point48=my = oy*cos(xang) - oz*sin(xang);
+wave_0_per_point49=mz = oy*sin(xang) + oz*cos(xang);
+wave_0_per_point50=oy = my;
+wave_0_per_point51=oz = mz;
+wave_0_per_point52=
+wave_0_per_point53=oz = oz - 6;
+wave_0_per_point54=x = ox*fov/oz +0.5;
+wave_0_per_point55=//x = (x-.5)*0.75 + 0.5;
+wave_0_per_point56=y = oy*fov/oz + 0.5;
+wave_0_per_point57=
+wavecode_1_enabled=1
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=1
+wavecode_1_bAdditive=1
+wavecode_1_scaling=0.89152
+wavecode_1_smoothing=0.82000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=1.000
+wave_1_init1=t1 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_1_init2=t2 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_1_init3=t3 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_1_init4=t4 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_1_init5=t5 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_1_init6=t6 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_1_init7=t7 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_1_init8=t8 = 1 + (rand(101)*.01 - rand(101)*.01)*.3;
+wave_1_per_frame1=t2 = t2 + bass_att;
+wave_1_per_point1=
+wave_1_per_point2=
+wave_1_per_point3=k1 = cos(time/3);
+wave_1_per_point4=k2 = sin(time/2);
+wave_1_per_point5=
+wave_1_per_point6=t_abs = sample;
+wave_1_per_point7=t_rel = sample-time/2.12;
+wave_1_per_point8=ampl =  cos(t_rel)*5; 
+wave_1_per_point9=//ampl = 3;
+wave_1_per_point10=
+wave_1_per_point11=ox = sin(t_rel*8 + time*0.5) + ampl*sin(t_rel*12 + bass_att*0.3);
+wave_1_per_point12=oy = cos(t_rel*13 - time*0.3) + ampl*cos(t_rel*11 - mid_att*0.2);
+wave_1_per_point13=oz = ampl/3 + treb_att*0.1;
+wave_1_per_point14=
+wave_1_per_point15=
+wave_1_per_point16=
+wave_1_per_point17=
+wave_1_per_point18=//r = sqr(sin(t_rel*3.4));
+wave_1_per_point19=//g = sqr(sin(t_rel*2.3));
+wave_1_per_point20=//b = sqr (cos(t_rel*1.9));
+wave_1_per_point21=
+wave_1_per_point22=r = q1;
+wave_1_per_point23=g = q2;
+wave_1_per_point24=b = q3;
+wave_1_per_point25=
+wave_1_per_point26=a=0.25*(cos(t_abs*3.14/2)) + 0.2 *below(abs(1-t_abs- t1),0.0);
+wave_1_per_point27=//a=0.25*(sin(t_abs*3.14)) + 0.4 *below(abs(1-t_abs-t1), bass_att/1);
+wave_1_per_point28=a=0.25*(cos(t_abs*1.5)) + 0.7 *below(abs(t_abs),0.0);
+wave_1_per_point29=
+wave_1_per_point30=xang = k1*3 + sin(time*0.7)*0.5;
+wave_1_per_point31=yang = 1 + cos(time*0.4)*0.3;
+wave_1_per_point32=zang = 3*k1 + bass_att*0.2;
+wave_1_per_point33=fov = 0.22 + treb_att*0.01;
+wave_1_per_point34=
+wave_1_per_point35=monitor = t2;
+wave_1_per_point36=
+wave_1_per_point37=
+wave_1_per_point38=mx = ox*cos(zang) - oy*sin(zang);
+wave_1_per_point39=my = ox*sin(zang) + oy*cos(zang);
+wave_1_per_point40=
+wave_1_per_point41=ox = mx;
+wave_1_per_point42=oy = my;
+wave_1_per_point43=mx = ox*cos(yang) + oz*sin(yang);
+wave_1_per_point44=mz = -ox*sin(yang) + oz*cos(yang);
+wave_1_per_point45=ox = mx;
+wave_1_per_point46=oz = mz;
+wave_1_per_point47=my = oy*cos(xang) - oz*sin(xang);
+wave_1_per_point48=mz = oy*sin(xang) + oz*cos(xang);
+wave_1_per_point49=oy = my;
+wave_1_per_point50=oz = mz;
+wave_1_per_point51=
+wave_1_per_point52=oz = oz - 6 + sin(time)*0.5;
+wave_1_per_point53=x = (ox*fov/oz + 0.5) * (0.9 + bass_att*0.05);
+wave_1_per_point54=//x = (x-.5)*0.75 + 0.5;
+wave_1_per_point55=y = (oy*fov/oz + 0.5) * (0.9 + treb_att*0.05);
+wave_1_per_point56=
+per_frame_1=// Warna acak
+per_frame_2=q1 = 0.5 + 0.5*sin(time*2);
+per_frame_3=q2 = 0.5 + 0.5*sin(time*5);
+per_frame_4=q3 = 0.5 + 0.5*sin(time*9);
+per_frame_5=
+per_frame_6=// Kecepatan waktu bintang 
+per_frame_7=time_star = time_star + .01*60/fps;
+per_frame_8=q4 = time_star;
+per_frame_9=
+per_frame_10=// Setelan efek kontras
+per_frame_11=q5 = 1.8; q6 = 0; q7 = 0; 
+per_frame_12=q8 = 0; // Kontras kecerahan
+per_frame_13=
+per_frame_14=wave_a = 1; // Spektrum 
+per_frame_15=
+per_frame_16=zoom = 1.05;
+per_frame_17=warp = 0.5;
+warp_1=`#define sat saturate
+warp_2=`
+warp_3=`shader_body
+warp_4=`{
+warp_5=`
+warp_6=`uv = 0.5 + (1.0 - abs( frac( uv * 0.5 ) * 2 - 1.0 )-.5); // Eo.S. mirror code
+warp_7=`float2 noise = (tex2D(sampler_noise_lq,uv*8+rand_frame.xy)-0.5);
+warp_8=`uv += 0.005*noise;
+warp_9=`ret = lerp(GetPixel(uv), GetBlur1(uv),0);
+warp_10=`uv = (uv+uv_orig)/2;
+warp_11=`ret += lerp(GetPixel(uv), GetBlur1(uv),0);
+warp_12=`
+warp_13=`float3 scale = slow_roam_cos;
+warp_14=`scale = scale / max (max(scale.x,scale.y), scale.z);
+warp_15=`scale = lerp (scale,1,0.7) ;
+warp_16=`ret = ret * 0.48 * scale  - 0.004 ;
+warp_17=`
+warp_18=`}
+warp_19=`
+comp_1=`sampler sampler_starfield_dots;
+comp_2=`
+comp_3=`float3 stars, glow;
+comp_4=`float2 uv1, uv2, mirrorized;
+comp_5=`float rad1, rad2;
+comp_6=`
+comp_7=`shader_body
+comp_8=`{
+comp_9=`
+comp_10=`// Bintang
+comp_11=`uv2 = (uv-.5)*aspect.xy;
+comp_12=`rad2 = 5*length(uv2);
+comp_13=`rad1 = 1/(rad2+.1);
+comp_14=`
+comp_15=`    uv1 = float2(ang*0.375, rad1*2);
+comp_16=`    uv1.y = uv1.y + q4;
+comp_17=`
+comp_18=`    stars = tex2D(sampler_starfield_dots, uv1).xyz;
+comp_19=`
+comp_20=`// Sinar
+comp_21=`mirrorized = uv;
+comp_22=`if(mirrorized.x >= 0.5) {mirrorized.x = 1-mirrorized.x;}
+comp_23=`if(mirrorized.y >= 0.5) {mirrorized.y = 1-mirrorized.y;}
+comp_24=`
+comp_25=`     uv = mirrorized;
+comp_26=`     glow = tex2D(sampler_main, uv).xyz*1 +
+comp_27=`              GetBlur1(uv)*q5 +
+comp_28=`              GetBlur2(uv)*q6 +
+comp_29=`              GetBlur3(uv)*q7 +
+comp_30=`              q8;
+comp_31=`    glow += GetBlur2( (uv-0.5)*0.333);
+comp_32=`    glow *= 1;
+comp_33=`    ret = stars + glow;
+comp_34=`}
