@@ -223,7 +223,7 @@ shape_0_per_frame58=
 shape_0_per_frame59=c=equal(instance,0);
 shape_0_per_frame60=
 shape_0_per_frame61=x=if(c,.5,x);
-shape_0_per_frame62=y=if(c,.-.4,y);
+shape_0_per_frame62=y=if(c,-.4,y);
 shape_0_per_frame63=rad=if(c,4,rad);
 shape_0_per_frame64=r=if(c,r,0);
 shape_0_per_frame65=g=if(c,g,1);

@@ -3,45 +3,46 @@ PSVERSION=2
 PSVERSION_WARP=2
 PSVERSION_COMP=2
 [preset00]
-fGammaAdj=1.980
-fDecay=0.500
+fRating=5.000000
+fGammaAdj=2.500
+fDecay=0.300
 fVideoEchoZoom=1.000
-fVideoEchoAlpha=0.500
+fVideoEchoAlpha=0.200
 nVideoEchoOrientation=3
 nWaveMode=0
 bAdditiveWaves=1
 bWaveDots=0
-bWaveThick=1
+bWaveThick=0
 bModWaveAlphaByVolume=1
 bMaximizeWaveColor=1
 bTexWrap=1
-bDarkenCenter=0
+bDarkenCenter=1
 bRedBlueStereo=0
 bBrighten=0
 bDarken=1
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.005
-fWaveScale=0.118
-fWaveSmoothing=0.900
-fWaveParam=-0.480
-fModWaveAlphaStart=0.400
-fModWaveAlphaEnd=1.600
+fWaveAlpha=0.001
+fWaveScale=0.050
+fWaveSmoothing=0.950
+fWaveParam=-0.600
+fModWaveAlphaStart=0.200
+fModWaveAlphaEnd=2.000
 fWarpAnimSpeed=1.459
 fWarpScale=2.007
 fZoomExponent=1.00000
 fShader=0.000
-zoom=0.99990
+zoom=0.99995
 rot=0.00000
 cx=0.500
 cy=0.500
 dx=0.00000
 dy=0.00000
-warp=0.01000
-sx=0.99990
+warp=0.00500
+sx=0.99995
 sy=1.00000
-wave_r=0.800
-wave_g=0.490
+wave_r=1.000
+wave_g=1.000
 wave_b=1.000
 wave_x=0.500
 wave_y=0.500
@@ -50,10 +51,10 @@ ob_r=0.000
 ob_g=0.000
 ob_b=0.000
 ob_a=1.000
-ib_size=0.260
-ib_r=0.250
-ib_g=0.250
-ib_b=0.250
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
 ib_a=0.000
 nMotionVectorsX=64.000
 nMotionVectorsY=48.000
@@ -76,10 +77,10 @@ wavecode_0_samples=64
 wavecode_0_sep=0
 wavecode_0_bSpectrum=1
 wavecode_0_bUseDots=0
-wavecode_0_bDrawThick=1
+wavecode_0_bDrawThick=0
 wavecode_0_bAdditive=1
-wavecode_0_scaling=17.41885
-wavecode_0_smoothing=0.20000
+wavecode_0_scaling=25.00000
+wavecode_0_smoothing=0.10000
 wavecode_0_r=1.000
 wavecode_0_g=1.000
 wavecode_0_b=1.000
@@ -129,12 +130,12 @@ wavecode_3_a=1.000
 shapecode_0_enabled=1
 shapecode_0_sides=8
 shapecode_0_additive=1
-shapecode_0_thickOutline=1
+shapecode_0_thickOutline=0
 shapecode_0_textured=0
-shapecode_0_num_inst=600
+shapecode_0_num_inst=800
 shapecode_0_x=0.500
 shapecode_0_y=0.500
-shapecode_0_rad=0.06598
+shapecode_0_rad=0.002
 shapecode_0_ang=0.00000
 shapecode_0_tex_ang=1.00531
 shapecode_0_tex_zoom=0.12726
@@ -145,7 +146,7 @@ shapecode_0_a=1.000
 shapecode_0_r2=1.000
 shapecode_0_g2=1.000
 shapecode_0_b2=1.000
-shapecode_0_a2=0.500
+shapecode_0_a2=1.000
 shapecode_0_border_r=1.000
 shapecode_0_border_g=1.000
 shapecode_0_border_b=1.000
@@ -165,7 +166,7 @@ shape_0_per_frame12=  megabuf (n+1) = gmegabuf (n+1);
 shape_0_per_frame13=,0);
 shape_0_per_frame14=
 shape_0_per_frame15=
-shape_0_per_frame16=rad = gmegabuf (n+3)*1.4;
+shape_0_per_frame16=rad = gmegabuf (n+3)*0.3;
 shape_0_per_frame17=a = gmegabuf(n+4) * q4;
 shape_0_per_frame18=a2 = a;
 shapecode_1_enabled=0
@@ -253,7 +254,7 @@ per_frame_init_8=  megabuf(n) = BPM;
 per_frame_init_9=  index += 1;
 per_frame_init_10=);
 per_frame_init_11=
-per_frame_init_12=num_shapes = 200; reg00 = num_shapes;
+per_frame_init_12=num_shapes = 250; reg00 = num_shapes;
 per_frame_init_13=recsize    = 8;   reg01 = recsize;
 per_frame_init_14=
 per_frame_init_15=//structure of resonator data, starting at megabuf (0)
@@ -396,7 +397,7 @@ per_frame_119=    sa = sin (ang); ca = cos (ang);
 per_frame_120=    x = x0*ca  + y0*sa;
 per_frame_121=    y = x0*-sa + y0*ca;
 per_frame_122=    if (ran6 > 0.6, x *=  ((m%2==0)-0.5)*2+(0*q15), 0);    
-per_frame_123=     gmegabuf (n+3) = 0.015 * q32 ;;
+per_frame_123=     gmegabuf (n+3) = 0.008 * q32 ;;
 per_frame_124=    gmegabuf (n+4) = bnot(schange);
 per_frame_125=  ,0); //end if scheme ==0
 per_frame_126=
@@ -415,7 +416,7 @@ per_frame_138=    ca = sign (ca) * pow (abs(ca),ran1*4);
 per_frame_139=    x = x0*ca  + y0*sa;
 per_frame_140=    y = x0*-sa + y0*ca;
 per_frame_141=    if (ran6 > 0.7, y *=  ((m%2==0)-0.5)*(2+q15),0);    
-per_frame_142=    gmegabuf (n+3) = 0.015 * q32;;
+per_frame_142=    gmegabuf (n+3) = 0.008 * q32;;
 per_frame_143=    gmegabuf (n+4) = bnot(schange);;
 per_frame_144=  ,0); //end if scheme ==1
 per_frame_145=
@@ -429,7 +430,7 @@ per_frame_152=    ang = 0;
 per_frame_153=    sa = sin (ang); ca = cos (ang*3); 
 per_frame_154=    x = x0*ca  + y0*sa;
 per_frame_155=    y = x0*-sa + y0*ca;
-per_frame_156=    gmegabuf (n+3) = 0.015 * q32;
+per_frame_156=    gmegabuf (n+3) = 0.008 * q32;
 per_frame_157=    gmegabuf (n+4) = bnot(schange) //* blank * (fastpace)
 per_frame_158=  ,0); //end if scheme ==2
 per_frame_159=
@@ -442,7 +443,7 @@ per_frame_165=
 per_frame_166=monitor = q10;
 per_frame_167=start = 0;
 per_frame_168=//n = 0; loop (2000, gmegabuf(n+5000) = megabuf(n); n += 1);
-per_pixel_1=zoom = .99; rot = 0; warp = 0; dy = -0.00;  dx = 0.00;
+per_pixel_1=zoom = .999; rot = 0; warp = 0; dy = -0.00;  dx = 0.00;
 per_pixel_2=
 per_pixel_3=zoom = 1; dx = 0; dy = 0; 
 warp_1=`#define sat saturate
@@ -459,9 +460,9 @@ warp_11=`
 warp_12=`
 warp_13=`shader_body {
 warp_14=`
-warp_15=`ret = GetPixel (uv_orig)*.1;
+warp_15=`ret = GetPixel (uv_orig)*0.02;
 warp_16=`}
-comp_1=`float3 Get1 (float2 uvi) {return lerp (GetPixel (uvi), GetBlur1(uvi), 0.5);}
+comp_1=`float3 Get1 (float2 uvi) {return lerp (GetPixel (uvi), GetBlur1(uvi), 0.1);}
 comp_2=`
 comp_3=`
 comp_4=`shader_body {
@@ -469,9 +470,9 @@ comp_5=`
 comp_6=`uv = lerp (uv, float2 (abs(uv.x-0.5), uv.y), q10 > 0.6);
 comp_7=`//uv = float2 (uv.x, abs(uv.y-0.5)*2);
 comp_8=`
-comp_9=`ret = saturate(2*Get1 (uv));
+comp_9=`ret = saturate(5*Get1 (uv));
 comp_10=`
-comp_11=`ret *= 2*normalize ((tex2D (sampler_noise_hq,(uv+q14/8)/16)) + 0);
+comp_11=`ret *= 3*normalize ((tex2D (sampler_noise_hq,(uv+q14/8)/16)) + 0);
 comp_12=`
 comp_13=`
 comp_14=`//ret *= (hue_shader *5 -4)*2;
