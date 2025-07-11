@@ -58,8 +58,8 @@ mv_r=1.000000
 mv_g=1.000000
 mv_b=1.000000
 mv_a=0.000000
-per_frame_1=dx = dx - .0005;
-per_frame_2=dy = dy -.0005;
+per_frame_1=//dx = dx - .0005;
+per_frame_2=//dy = dy -.0005;
 per_frame_3=wave_mystery = if(above((time*4)%2,0),1,0);
 per_frame_4=zoom = .997;
 per_frame_5=wave_r = bass*.5;
