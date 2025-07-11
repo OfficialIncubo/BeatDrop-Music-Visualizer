@@ -82,9 +82,12 @@ int texmgr::LoadTex(wchar_t *szFilename, int iSlot, char *szInitCode, char *szCo
 		for (int x=0; x<NUM_TEX; x++)
 			if (m_tex[x].pSurface && _wcsicmp(m_tex[x].szFileName, szFilename)==0)
 			{
-				memcpy(&m_tex[iSlot], &m_tex[x], sizeof(td_tex));
+				//Kai Blaschke - Sprite Slots Code Conflict fix
+				m_tex[iSlot].pSurface = m_tex[x].pSurface;
+				m_tex[iSlot].img_w = m_tex[x].img_w;
+				m_tex[iSlot].img_h = m_tex[x].img_h;
+				wcscpy(m_tex[iSlot].szFileName, szFilename);
 				m_tex[iSlot].m_szExpr[0] = 0;
-				m_tex[iSlot].m_codehandle  = 0;
 
 				bTextureInstanced = true;
 				break;
