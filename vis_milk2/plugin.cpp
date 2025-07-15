@@ -1403,6 +1403,7 @@ void CPlugin::MyReadConfig()
     m_nMidEnd = GetPrivateProfileIntW(L"settings", L"MidEnd", m_nMidEnd, pIni);
     m_nTrebStart = GetPrivateProfileIntW(L"settings", L"TrebStart", m_nTrebStart, pIni);
     m_nTrebEnd = GetPrivateProfileIntW(L"settings", L"TrebEnd", m_nTrebEnd, pIni);
+	m_dTimeVariableResetDelay = GetPrivateProfileIntW(L"settings", L"dTimeVariableResetDelay", m_dTimeVariableResetDelay, pIni);
 
 	m_fBlendTimeUser			= GetPrivateProfileFloatW(L"settings",L"fBlendTimeUser"         ,m_fBlendTimeUser         ,pIni);
 	m_fBlendTimeAuto			= GetPrivateProfileFloatW(L"settings",L"fBlendTimeAuto"         ,m_fBlendTimeAuto         ,pIni);
@@ -1512,6 +1513,7 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_nMidEnd, L"MidEnd", pIni, L"settings");
     WritePrivateProfileIntW(m_nTrebStart, L"TrebStart", pIni, L"settings");
     WritePrivateProfileIntW(m_nTrebEnd, L"TrebEnd", pIni, L"settings");
+	WritePrivateProfileIntW(m_dTimeVariableResetDelay, L"dTimeVariableResetDelay", pIni, L"settings");
 
 	WritePrivateProfileFloatW(m_fBlendTimeAuto,          L"fBlendTimeAuto",           pIni, L"settings");
 	WritePrivateProfileFloatW(m_fBlendTimeUser,          L"fBlendTimeUser",           pIni, L"settings");
