@@ -1,0 +1,335 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=0
+PSVERSION_COMP=3
+[preset00]
+fRating=3.000000
+fGammaAdj=1.000000
+fDecay=1.000000
+fVideoEchoZoom=0.999800
+fVideoEchoAlpha=0.499900
+nVideoEchoOrientation=2
+nWaveMode=6
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=1
+fWaveAlpha=0.001000
+fWaveScale=2.232543
+fWaveSmoothing=0.810000
+fWaveParam=0.280000
+fModWaveAlphaStart=0.470000
+fModWaveAlphaEnd=1.320000
+fWarpAnimSpeed=1.000000
+fWarpScale=1.000000
+fZoomExponent=0.999900
+fShader=0.000000
+zoom=0.999999
+rot=0.000000
+cx=0.500000
+cy=0.500000
+dx=0.000010
+dy=0.000010
+warp=0.010000
+sx=1.000000
+sy=1.000000
+wave_r=0.500000
+wave_g=0.500000
+wave_b=0.500000
+wave_x=0.500000
+wave_y=0.500000
+ob_size=0.000000
+ob_r=1.000000
+ob_g=0.000000
+ob_b=0.000000
+ob_a=1.000000
+ib_size=0.000000
+ib_r=0.000000
+ib_g=0.000000
+ib_b=0.000000
+ib_a=0.900000
+nMotionVectorsX=0.000000
+nMotionVectorsY=0.000000
+mv_dx=0.000000
+mv_dy=0.000000
+mv_l=0.850000
+mv_r=0.499900
+mv_g=0.499900
+mv_b=0.499900
+mv_a=0.000000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+wavecode_0_enabled=0
+wavecode_0_samples=120
+wavecode_0_sep=38
+wavecode_0_bSpectrum=1
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=2.15542
+wavecode_0_smoothing=0.10000
+wavecode_0_r=1.000
+wavecode_0_g=0.000
+wavecode_0_b=0.000
+wavecode_0_a=0.500
+wavecode_1_enabled=0
+wavecode_1_samples=120
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=0
+wavecode_1_scaling=0.89152
+wavecode_1_smoothing=0.82000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=0.000
+wavecode_1_a=0.500
+wavecode_2_enabled=0
+wavecode_2_samples=120
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=5.34537
+wavecode_2_smoothing=0.82000
+wavecode_2_r=0.000
+wavecode_2_g=0.600
+wavecode_2_b=1.000
+wavecode_2_a=0.500
+wavecode_3_enabled=0
+wavecode_3_samples=40
+wavecode_3_sep=0
+wavecode_3_bSpectrum=1
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=1
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=0.600
+shapecode_0_enabled=0
+shapecode_0_sides=50
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.270000
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=1.00531
+shapecode_0_tex_zoom=1.53110
+shapecode_0_r=1.000
+shapecode_0_g=1.000
+shapecode_0_b=1.000
+shapecode_0_a=1.000
+shapecode_0_r2=0.000
+shapecode_0_g2=0.000
+shapecode_0_b2=0.000
+shapecode_0_a2=0.000
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=0.000
+shapecode_1_enabled=0
+shapecode_1_sides=50
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_num_inst=1
+shapecode_1_x=0.000
+shapecode_1_y=1.000
+shapecode_1_rad=0.900000
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=0.93550
+shapecode_1_r=1.000
+shapecode_1_g=1.000
+shapecode_1_b=1.000
+shapecode_1_a=1.000
+shapecode_1_r2=1.000
+shapecode_1_g2=1.000
+shapecode_1_b2=1.000
+shapecode_1_a2=0.000
+shapecode_1_border_r=0.000
+shapecode_1_border_g=0.000
+shapecode_1_border_b=0.000
+shapecode_1_border_a=0.000
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=1
+shapecode_2_thickOutline=1
+shapecode_2_textured=0
+shapecode_2_num_inst=21
+shapecode_2_x=0.950
+shapecode_2_y=0.900
+shapecode_2_rad=0.06386
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=0.73678
+shapecode_2_r=1.000
+shapecode_2_g=0.600
+shapecode_2_b=1.000
+shapecode_2_a=1.000
+shapecode_2_r2=0.000
+shapecode_2_g2=0.700
+shapecode_2_b2=1.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=0.000
+shapecode_2_border_a=0.000
+shapecode_3_enabled=1
+shapecode_3_sides=50
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=4
+shapecode_3_x=0.503
+shapecode_3_y=0.500
+shapecode_3_rad=0.15
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.11234
+shapecode_3_r=1.000
+shapecode_3_g=1.000
+shapecode_3_b=1.000
+shapecode_3_a=1.000
+shapecode_3_r2=1.000
+shapecode_3_g2=1.000
+shapecode_3_b2=1.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=0.000
+shapecode_3_border_g=0.000
+shapecode_3_border_b=0.000
+shapecode_3_border_a=0.000
+shape_3_per_frame1=// Jian Simanjuntak MilkDrop MOD code edit
+shape_3_per_frame2=// A real edit is willing to work
+shape_3_per_frame3=// One perfect line of code or visual effect
+shape_3_per_frame4=// Happy to be simple, a good edited never leaves you
+shape_3_per_frame5=// If editing could talk, would they definitely say it?
+shape_3_per_frame6=
+shape_3_per_frame7=
+shape_3_per_frame8=x = (rand(2) > 1) ? rand(0.5) : 0.5+rand(0.5);  
+shape_3_per_frame9=y = (rand(2) > 1) ? rand(0.5) : 0.5+rand(0.5);  
+shape_3_per_frame10=
+shape_3_per_frame11=r = 1.0;
+shape_3_per_frame12=g = 1.0;
+shape_3_per_frame13=b = 1.0;
+shape_3_per_frame14=r2 = 1.0;
+shape_3_per_frame15=g2 = 1.0;
+shape_3_per_frame16=b2 = 1.0;
+per_frame_1=// Jian Simanjuntak MilkDrop MOD code edit
+per_frame_2=// A real edit is willing to work
+per_frame_3=// One perfect line of code or visual effect
+per_frame_4=// Happy to be simple, a good edited never leaves you
+per_frame_5=// If editing could talk, would they definitely say it?
+per_frame_6=
+per_frame_7=// Follow Instagram: https://www.instagram.com/jian_simanjuntak_milkdrop?igsh=N29nYXR5ZzA2NXo=
+per_frame_8=
+per_frame_9=// Add friends on Facebook : https://www.facebook.com/profile.php?id=100094654873762
+per_frame_10=
+per_frame_11=// Subscribe in YouTube : https://www.youtube.com/@jiansimanjuntakmilkdrop2203
+per_frame_12=
+per_frame_13=warp = 0;
+per_frame_14=ib_size = 0.0125;
+per_frame_15=ib_r = 0.45;
+per_frame_16=ib_g = 0.45;
+per_frame_17=ib_b = 1.0;
+per_frame_18=ib_a = 1.0;
+per_frame_19=
+per_frame_20=// AREA HILLS 1
+per_frame_21=time_area_hills1 = time_area_hills1 + .004*25/fps;
+per_frame_22=q3 = time_area_hills1;
+per_frame_23=
+per_frame_24=// AREA HILLS 2
+per_frame_25=time_area_hills2 = time_area_hills2 + .003*25/fps;
+per_frame_26=q4 = time_area_hills2;
+per_frame_27=
+per_frame_28=// AREA HILLS 3
+per_frame_29=time_area_hills3 = time_area_hills3 + .002*25/fps;
+per_frame_30=q5 = time_area_hills3;
+per_pixel_1=// Jian Simanjuntak MilkDrop MOD code edit
+per_pixel_2=// A real edit is willing to work
+per_pixel_3=// One perfect line of code or visual effect
+per_pixel_4=// Happy to be simple, a good edited never leaves you
+per_pixel_5=// If editing could talk, would they definitely say it?
+per_pixel_6=
+per_pixel_7=thresh = above(bass_att,thresh)*2+(1-above(bass_att,thresh))*((thresh-1.3)*0.96+1.3);
+per_pixel_8=dx_r = equal(thresh,2)*0.015*sin(5*time)+(1-equal(thresh,2))*dx_r;
+per_pixel_9=dy_r = equal(thresh,2)*0.015*sin(6*time)+(1-equal(thresh,2))*dy_r;
+per_pixel_10=
+per_pixel_11=zoom = zoom - 0.2*(1.5-rad)*sin(bass/2*treb_att)*(rad*2*(rad*abs(sin(9*ang))));
+per_pixel_12=rot = rot + dy_r*(2-zoom)*0.3*cos(bass)*20;
+per_pixel_13=rot = rot - 0.4*(rad*cos(abs(12*ang)))*below(rad,0.3+ 0.4*sin(bass));
+per_pixel_14=dx = dx + 0.5*abs(rad+x-0.5*(bass/y*0.2))*dx_r;
+per_pixel_15=dy = dy + 0.5*abs(rad+y-0.5*(treb/x*0.2))*dy_r;
+comp_1=`// Jian Simanjuntak MilkDrop MOD code edit
+comp_2=`// A real edit is willing to work
+comp_3=`// One perfect line of code or visual effect
+comp_4=`// Happy to be simple, a good edited never leaves you
+comp_5=`// If editing could talk, would they definitely say it?
+comp_6=`
+comp_7=`sampler sampler_NightForestHillMask01;
+comp_8=`sampler sampler_NightForestHillMask02;
+comp_9=`sampler sampler_NightForestHillMask03;
+comp_10=`
+comp_11=`float2 uv1, uv2, uv3, uv_hills1, uv_hills2, uv_hills3;
+comp_12=`
+comp_13=`shader_body {
+comp_14=`    float3 diff = abs(GetBlur1(uv) - GetBlur3(uv));
+comp_15=`    float3 base = GetBlur2(uv) * 1.5;
+comp_16=`    ret = base * (1.0 + diff * 2.0);
+comp_17=`    ret = saturate(ret);
+comp_18=`
+comp_19=`    // AREA HILLS 3
+comp_20=`    uv3.y = uv.y;
+comp_21=`    uv3.x = uv.x;
+comp_22=`    uv3 = 1.0*(uv3);
+comp_23=`
+comp_24=`    uv_hills3 = frac(uv3+q5*float2(1,0.0)) ;
+comp_25=`
+comp_26=`    float uv_black3 = 1-lum(tex2D( sampler_NightForestHillMask03, uv_hills3));
+comp_27=`    if (uv_black3 > .35)
+comp_28=`       { ret = tex2D( sampler_NightForestHillMask03, uv_hills3).zzz; }
+comp_29=`
+comp_30=`    // AREA HILLS 2
+comp_31=`    uv2.y = uv.y;
+comp_32=`    uv2.x = uv.x;
+comp_33=`    uv2 = 1.0*(uv2);
+comp_34=`
+comp_35=`    uv_hills2 = frac(uv2+q4*float2(1,0.0)) ;
+comp_36=`
+comp_37=`    float uv_black2 = 1-lum(tex2D( sampler_NightForestHillMask02, uv_hills2));
+comp_38=`    if (uv_black2 > .35)
+comp_39=`       { ret = tex2D( sampler_NightForestHillMask02, uv_hills2).zzz; }
+comp_40=`
+comp_41=`    // AREA HILLS 1
+comp_42=`    uv1.y = uv.y;
+comp_43=`    uv1.x = uv.x;
+comp_44=`    uv1 = 1.0*(uv1);
+comp_45=`
+comp_46=`    uv_hills1 = frac(uv1+q3*float2(1,0.0)) ;
+comp_47=`
+comp_48=`    float uv_black1 = 1-lum(tex2D( sampler_NightForestHillMask01, uv_hills1));
+comp_49=`    if (uv_black1 > .35)
+comp_50=`       { ret = tex2D( sampler_NightForestHillMask01, uv_hills1).zzz; }
+comp_51=`
+comp_52=`}

@@ -66,7 +66,7 @@ per_frame_2=q2=bass_att-2&time*.63;
 per_frame_3=q3=treb-2&time*.76;
 per_frame_4=q4=treb_att-2&time*.61;
 per_frame_5=q5=mid-2&time*.27;
-per_frame_6=q6=mid_Att-2&time*.23;
+per_frame_6=q6=mid_att-2&time*.23;
 per_frame_7=q7=if(Above(below(q1,q3),below(q3,q1)),q3-q2*sin(Q1),q2-q1*sin(q3));
 per_frame_8=q8=if(Above(below(q2,q3),below(q2,q1)),q2-q1*sin(Q5),q5-q6*sin(q7));
 per_frame_9=wave_r=wave_r+.6*sin(q1);
