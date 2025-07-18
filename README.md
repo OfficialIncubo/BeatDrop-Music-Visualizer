@@ -85,6 +85,8 @@ If you want to have all the MilkDrop presets in your own, just download [this Me
 
 [Opensource-DVD](https://www.opensource-dvd.de/programme/beatdrop.htm)
 
+[Never Complete Only Abandoned](https://publish.obsidian.md/xybre/permalink/73b8a0f5-2464-4404-929b-42a5d3c451fd)
+
 # Follow me on any social networks:
 
 [<img src="https://static.vecteezy.com/system/resources/previews/042/148/611/non_2x/new-twitter-x-logo-twitter-icon-x-social-media-icon-free-png.png" alt="X" style="width:7%; height:50%;">](https://x.com/BeatDropVis)
