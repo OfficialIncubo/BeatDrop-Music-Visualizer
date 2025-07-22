@@ -36,13 +36,14 @@ Steps on how to compile BeatDrop with [projectM-eval](https://github.com/project
 
 ## First method: Using [vcpkg](https://vcpkg.io)
 
-1. First update your baseline by clicking View -> Terminal, then type vcpkg x-update-baseline.
-2. Compile your code. Vcpkg automatically generates the projectM-eval library using CMake.
-3. It will receive an error about one of the libraries: `Invalid or corrupt file: cannot read at 0x536E` (projectM_ns-eel2.lib).
-4. The generated files are in vcpkg_installed folder. Copy both libraries from vcpkg_installed\x86-windows-static\x86-windows-static\lib, then paste them to lib folder from the main source code folder.
-5. (If needed) Copy the ns-eel header from the same step from 3., but in include\projectm-eval\ns-eel2, then paste it to ns-eel-shim folder, still from the main source code folder.
-6. Now compile the code and you are ready to go. If you see that your output gives "1 up to date", just delete BeatDrop.exe from vis_milk2 -> Release folder. Compile it again.
-7. It will receive `The command "copy /y /v "..\vis_milk2\Release\BeatDrop.exe" "..\BeatDrop\BeatDrop.exe"`, but it built succesfully. It tries to copy the generated .exe file to BeatDrop folder, which it doesn't exist. Ignore it. Please check your generated .exe file in vis_milk2/Release/BeatDrop.exe, then copy it in your BeatDrop folder.
+1. Vcpkg options from the project configuration are enabled by default. If you want to disable them for building as local files, look at the second method.
+2. First update your baseline by clicking View -> Terminal, then type vcpkg x-update-baseline.
+3. Compile your code. Vcpkg automatically generates the projectM-eval library using CMake.
+4. It will receive an error about one of the libraries: `Invalid or corrupt file: cannot read at 0x536E` (projectM_ns-eel2.lib).
+5. The generated files are in vcpkg_installed folder. Copy both libraries from vcpkg_installed\x86-windows-static\x86-windows-static\lib, then paste them to lib folder from the main source code folder.
+6. (If needed) Copy the ns-eel header from the same step from 3., but in include\projectm-eval\ns-eel2, then paste it to ns-eel-shim folder, still from the main source code folder.
+7. Now compile the code and you are ready to go. If you see that your output gives "1 up to date", just delete BeatDrop.exe from vis_milk2 -> Release folder. Compile it again.
+8. It will receive `The command "copy /y /v "..\vis_milk2\Release\BeatDrop.exe" "..\BeatDrop\BeatDrop.exe"`, but it built succesfully. It tries to copy the generated .exe file to BeatDrop folder, which it doesn't exist. Ignore it. Please check your generated .exe file in vis_milk2/Release/BeatDrop.exe, then copy it in your BeatDrop folder.
 
 ## Second method: Using [CMake](https://cmake.org) (for latest version build)
 
@@ -61,7 +62,7 @@ git fetch --all
 git checkout more-fixes-and-tests
 git status
 ```
-3. Go to your main code -> projectm-eval -> CMakeLists.txt, look at BUILD_NS_EEL_SHIM option, then turn it on.
+3. Go to your main code folder -> projectm-eval -> CMakeLists.txt, look at BUILD_NS_EEL_SHIM option, then turn it on.
 Example: `option(BUILD_NS_EEL_SHIM "Build and install the ns-eel2 compatibility API shim." OFF)`
 4. Build the projectM-eval library using CMake.
 ```
@@ -71,7 +72,7 @@ cmake -A Win32 ..
 cmake --build . --config "Release" --parallel
 cmake --install . --prefix projectm-eval.
 ```
-5. Now do the same steps as step 4 and 5, but look at Go to your main code -> projectm-eval -> your build folder -> projectm-eval, then there are include and lib installed.
+5. Now do the same steps as step 4 and 5, but look at Go to your main code folder -> projectm-eval -> your build folder -> projectm-eval, then there are include and lib installed.
 6. Now compile and it should be working.
 
 If you have problems, ask me on Discord, Twitter or Instagram.
