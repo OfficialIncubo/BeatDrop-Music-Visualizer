@@ -1,0 +1,110 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=1.000
+zoom=0.99990
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=0.99990
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=1.000
+ob_g=0.000
+ob_b=1.000
+ob_a=1.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`shader_body{
+warp_2=`
+warp_3=`//Shader By XorDev (x.com/XorDev), ported to MilkDrop by MilkDrop2077
+warp_4=`
+warp_5=`    float aspect = aspect.x / aspect.y;
+warp_6=`    float2 centered_uv = (uv - 0.5) * float2(aspect, 1.0);
+warp_7=`    float4 o = float4(0, 0, 0, 0);
+warp_8=`    float t = time;
+warp_9=`    float z = 0.0;
+warp_10=`    float d;
+warp_11=`    float3 p;
+warp_12=`
+warp_13=`    for (float i = 0.0; i < 20.0; i += 1.0) {
+warp_14=`        float3 dir = normalize(float3(centered_uv * 2.0, 1.0));
+warp_15=`        p = z * dir;
+warp_16=`        p.x -= t;
+warp_17=`        p.xy *= 0.4;
+warp_18=`
+warp_19=`        float3 cos_part = cos(p / 0.6);
+warp_20=`        float3 sin_part = sin(p + sin(p * 7.0) / 4.0);
+warp_21=`        d = dot(cos_part, sin_part.zyx) * 0.4 + p.y / 0.7 + 0.7;
+warp_22=`        z += d;
+warp_23=`
+warp_24=`        float4 color = cos(p.y / (0.1 + 0.05 * z) + float4(6.0, 5.0, 4.0, 0.0)) + 1.0;
+warp_25=`        o += (color * d) / z / 7.0;
+warp_26=`    }
+warp_27=`
+warp_28=`    o = tanh(o * o);
+warp_29=`    ret = float4(o.rgb, 1.0);
+warp_30=`}
+comp_1=`shader_body
+comp_2=`{//MilkDrop3 Flip Mode:
+comp_3=`uv = 1-uv;
+comp_4=`
+comp_5=`    ret = GetPixel(uv);
+comp_6=`}
