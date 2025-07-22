@@ -186,7 +186,7 @@ warp_10=`float z = q10*24*length(((uv1.x)*(uv1.y)));
 warp_11=`float2 d = normalize(uv1);
 warp_12=`float2 rs = clamp(tan(z)*d,-2,2);
 warp_13=`uv += .001*lum(GetBlur1(uv))*float2(0,0);
-warp_14=`uv -= rs/200;
+warp_14=`//uv -= rs/200;
 warp_15=`
 warp_16=`uv6 = .4*sin(uv*5+rand_frame*8);
 warp_17=`mus = .095/(length(uv6));  // sensit  orig:  .078
