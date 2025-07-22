@@ -7280,6 +7280,11 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 				}
 				return 0;
 			}
+            else if (m_UI_mode == UI_REGULAR)
+            {
+                keybd_event(VK_MEDIA_PREV_TRACK, 0, 0, 0);
+                keybd_event(VK_MEDIA_PREV_TRACK, 0, KEYEVENTF_KEYUP, 0);
+            }
 		break;
 		
 		case 'T':
