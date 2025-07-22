@@ -254,18 +254,18 @@ per_frame_14=zoom1=zoom+0.15-0.3*(normalframez%2);
 per_frame_15=zoom=if(shift,zoom1,1);
 per_frame_16=rot=rot-0.1+rshift*0.1;
 per_pixel_1=dy=-below(y,0.4)*0.007+above(y,0.6)*0.007;
-warp_1=shader_body {
-warp_2=ret=GetPixel(uv);
-warp_3=float2 mo=uv-uv_orig;
-warp_4=ret=GetPixel(uv_orig+mo*lum(ret));
-warp_5=ret=ret*0.99-0.002;
-warp_6=}
-comp_1=shader_body {
-comp_2=
-comp_3=ret=GetPixel(uv);
-comp_4=ret*=2;
-comp_5=ret*=1-ret;
-comp_6=ret=saturate(ret);
-comp_7=ret=pow(ret,0.5);
-comp_8=ret=(1-ret)*1.5-0.75;
-comp_9=}
+warp_1=`shader_body
+warp_2=`{ret=GetPixel(uv);
+warp_3=`float2 mo=uv-uv_orig;
+warp_4=`ret=GetPixel(uv_orig+mo*lum(ret));
+warp_5=`ret=ret*0.99-0.002;
+warp_6=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`ret=GetPixel(uv);
+comp_4=`ret*=2;
+comp_5=`ret*=1-ret;
+comp_6=`ret=saturate(ret);
+comp_7=`ret=pow(ret,0.5);
+comp_8=`ret=(1-ret)*1.5-0.75;
+comp_9=`}

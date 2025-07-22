@@ -189,8 +189,8 @@ shapecode_1_border_r=1.000
 shapecode_1_border_g=1.000
 shapecode_1_border_b=1.000
 shapecode_1_border_a=0.000
-shape_1_per_frame1=x=rand(10)*.1;
-shape_1_per_frame2=y=rand(10)*.1;
+shape_1_per_frame1=x=int(rand(10))*.1;
+shape_1_per_frame2=y=int(rand(10))*.1;
 shape_1_per_frame3=
 shape_1_per_frame4=vol=(bass+mid+treb)*.3333;
 shape_1_per_frame5=

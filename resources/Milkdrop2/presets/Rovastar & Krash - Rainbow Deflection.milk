@@ -55,9 +55,9 @@ ib_g=0
 ib_b=0
 ib_a=0
 per_frame_1=warp=0;
-per_frame_2=dx=-0.0005;
-per_frame_3=dy=-0.0005;
-per_frame_4=wave_x = rand(100)/100;
+per_frame_2=//dx=-0.0005;
+per_frame_3=//dy=-0.0005;
+per_frame_4=wave_x = int(rand(100))/100;
 per_frame_5=wave_r = 1 + sin(-wave_x*3.1415);
 per_frame_6=wave_g = abs(sin(2*wave_x*3.1415));
 per_frame_7=wave_b = sin(wave_x*3.1415);
