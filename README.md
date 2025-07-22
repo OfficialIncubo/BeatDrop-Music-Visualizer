@@ -63,7 +63,8 @@ git checkout more-fixes-and-tests
 git status
 ```
 3. Go to your main code folder -> projectm-eval -> CMakeLists.txt, look at BUILD_NS_EEL_SHIM option, then turn it on.
-Example: `option(BUILD_NS_EEL_SHIM "Build and install the ns-eel2 compatibility API shim." OFF)`
+
+For example: `option(BUILD_NS_EEL_SHIM "Build and install the ns-eel2 compatibility API shim." ON)`
 4. Build the projectM-eval library using CMake.
 ```
 mkdir your_build_folder
