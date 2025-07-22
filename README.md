@@ -19,19 +19,22 @@ It features:
 - And so much more!
 
 Before compiling the code:
+* First of all, [Visual Studio 2022](https://visualstudio.microsoft.com/vs) is now required.
 * Workloads required before compiling:
 ![Workloads required to use with Visual Studio 2022](https://github.com/user-attachments/assets/7bc967d5-3683-4180-a1ad-8a99a855d5fc)
 * CMake is now obligatory to install! Look at the name from Desktop development with C++ category below and check this box. [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library is now integrated in.
 
 ![CMake optional library checked](https://github.com/user-attachments/assets/219d03a0-3c16-42ef-a05d-1374ae7ee3a8)
 
-* Anyone who uses Visual Studio 2022, please change from debug to release and build it.
+* After that, please change from debug to release and build it.
 
 # HOW TO COMPILE THE CODE AND UPDATE/INTEGRATE PROJECTM-EVAL LIBRARY CORRECTLY
 
 BeatDrop now uses [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library, a drop-in replacement of Nullsoft Expression Evaluation Library, which it's assembly-free and it uses much faster instructions than i386 instructions that achieves preset compilation performance optimization. [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) also performs a few compile-time optimizations like replacing larger constant expressions with a simple value.
 
 Steps on how to compile BeatDrop with [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library:
+
+## First method: Using [vcpkg](https://vcpkg.io)
 
 1. First update your baseline by clicking View -> Terminal, then type vcpkg x-update-baseline.
 2. Compile your code. Vcpkg automatically generates the projectM-eval library using CMake.
@@ -40,7 +43,38 @@ Steps on how to compile BeatDrop with [projectM-eval](https://github.com/project
 5. (If needed) Copy the ns-eel header from the same step from 3., but in include\projectm-eval\ns-eel2, then paste it to ns-eel-shim folder, still from the main source code folder.
 6. Now compile the code and you are ready to go. If you see that your output gives "1 up to date", just delete BeatDrop.exe from vis_milk2 -> Release folder. Compile it again.
 7. It will receive `The command "copy /y /v "..\vis_milk2\Release\BeatDrop.exe" "..\BeatDrop\BeatDrop.exe"`, but it built succesfully. It tries to copy the generated .exe file to BeatDrop folder, which it doesn't exist. Ignore it. Please check your generated .exe file in vis_milk2/Release/BeatDrop.exe, then copy it in your BeatDrop folder.
-8. If you have problems, ask me on Discord, Twitter or Instagram.
+
+## Second method: Using [CMake](https://cmake.org) (for latest version build)
+
+1. Make sure you have disabled the vcpkg feature (if you want). First go to Project from toolbar, click properties, then go to Configuration Properties -> vcpkg, then turn the first two options off. It should look like this:
+<img width="786" height="544" alt="image" src="https://github.com/user-attachments/assets/f1351a8b-e03c-4379-a13b-ae3804fd9c3b" />
+
+If you want to turn back on, do the same step, then change them to "Yes".
+
+2. Use [VS2022](https://visualstudio.microsoft.com/vs)'s terminal or PowerShell. Clone the repository and check the status
+```
+git clone -b more-fixes-and-tests https://github.com/kblaschke/projectm-eval.git
+or using my latest build:
+git clone -b more-fixes-and-tests https://github.com/OfficialIncubo/projectm-eval.git
+cd projectm-eval
+git fetch --all
+git checkout more-fixes-and-tests
+git status
+```
+3. Go to your main code -> projectm-eval -> CMakeLists.txt, look at BUILD_NS_EEL_SHIM option, then turn it on.
+Example: `option(BUILD_NS_EEL_SHIM "Build and install the ns-eel2 compatibility API shim." OFF)`
+4. Build the projectM-eval library using CMake.
+```
+mkdir your_build_folder
+cd your_build_folder
+cmake -A Win32 ..
+cmake --build . --config "Release" --parallel
+cmake --install . --prefix projectm-eval.
+```
+5. Now do the same steps as step 4 and 5, but look at Go to your main code -> projectm-eval -> your build folder -> projectm-eval, then there are include and lib installed.
+6. Now compile and it should be working.
+
+If you have problems, ask me on Discord, Twitter or Instagram.
 
 # BEFORE YOU RUN BEATDROP
 
