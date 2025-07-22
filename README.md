@@ -73,7 +73,7 @@ cmake --build . --config "Release" --parallel
 cmake --install . --prefix projectm-eval.
 ```
 5. Now do the same steps as step 4 and 5, but look at Go to your main code folder -> projectm-eval -> your build folder -> projectm-eval, then there are include and lib installed.
-6. Now compile and it should be working. The same problem happens about the copy command, please look at the step 8 from the first method.
+6. Now compile and it should be working. If the same problem happens about the copy command, please look at the step 8 from the first method.
 
 If you have problems, ask me on Discord, Twitter or Instagram.
 
