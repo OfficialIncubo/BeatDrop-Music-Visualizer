@@ -28,6 +28,7 @@
    F4                   show/hide preset info
    F5                   show/hide fps
    F6                   show/hide rating
+   F8                   show/hide song title
    
  HOTKEYS:
 
@@ -36,7 +37,7 @@
    F7                   always on top
    F11                  hardcut mode: normal/based of music
    F12                  transparency mode (removes the black background)
-   N                    show per-frame monitor
+   N                    show/hide per-frame monitor
 
  PLAYBACK:
 
