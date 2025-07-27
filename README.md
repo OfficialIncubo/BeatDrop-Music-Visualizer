@@ -152,14 +152,14 @@ Use BeatDrop with your favourite:
   [RauteMusik.FM](https://www.rm.fm/),
   ...
 
-## System Requirements
+# System Requirements
 * Windows 11, Windows 10
 * Minimum 2GB of RAM required
 * WASAPI - compatible sound card
 * DirectX 9 or higher - compatible GPU
 * DirectX End-User [Runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=8109) (also included in the installer) contains the required 32-bit helper libraries d3dx9_43.dll and d3dx9_31.dll
 
-## Acknowledgements
+# Acknowledgements
 Special thanks to:
 
 * Ryan Geiss & Rovastar (John Baker) - [Official Milkdrop2 Source Code](https://sourceforge.net/projects/milkdrop2/)
@@ -172,7 +172,7 @@ Special thanks to:
 * [IkeC](https://github.com/IkeC) - contributor, [Milkwave](https://github.com/IkeC/Milkwave) Developer
 * ...and all the preset authors and contributors!
 
-## License
+# License
 
 [license]: #license
 
@@ -181,14 +181,14 @@ This repository is licensed under the 3-Clause BSD License ([LICENSE](LICENSE) o
 Although the original Matthew van Eerde's [loopback-capture](https://github.com/mvaneerde/blog) project didn't explicitly state the license, the author has been kind enough to provide the [license clarification](
 https://blogs.msdn.microsoft.com/matthew_van_eerde/2014/11/05/draining-the-wasapi-capture-buffer-fully/)
 
-> ### Sunny March 29, 2015 at 11:06 pm
+> ## Sunny March 29, 2015 at 11:06 pm
 > Hi. Just wondering is this open source? I'm looking for something like this for my school project.
 >
-> ### Maurits [MSFT] March 30, 2015 at 8:35 am
+> ## Maurits [MSFT] March 30, 2015 at 8:35 am
 > @Sunny do with the source as you like.
 
 All changes in this repository to the original Matthew's code are published either under the terms of BSD license or the license provided by original author.
 
-## Contributions
+# Contributions
 
 Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, shall be licensed as above.
