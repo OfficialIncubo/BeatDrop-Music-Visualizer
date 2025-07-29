@@ -289,7 +289,7 @@ per_frame_7=tbss = if(above(bass_att,tbss),bass-att,tbss+((bass_att-tbss)*.25)-(
 per_frame_8=
 per_frame_9=q4 = tbss;
 per_pixel_1=zoom = zoom + (.01*(bass_att*1.2*bass_att))*(pow(rad,2)*3);
-per_pixel_2=rot = rot + rad*(-2.5|(cos(time)*5))*.015;
+per_pixel_2=rot = rot + rad*(-2.5&(cos(time)*5))*.015;
 warp_1=`sampler sampler_worms;
 warp_2=`float3 color, mus;
 warp_3=`float dx,dy;

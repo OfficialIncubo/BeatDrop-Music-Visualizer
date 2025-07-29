@@ -574,6 +574,6 @@ per_frame_29=invert=above(flash,0.5);
 per_frame_30=invert=0;
 per_frame_31=//q3=invert;
 per_frame_32=
-per_pixel_1=q2=below(rad,.-53);
+per_pixel_1=q2=below(rad,-.53);
 per_pixel_2=rot=rot+if(q2,0,sin(time*.7243)*.5);
 per_pixel_3=zoom=zoom+if(q2,0,rad*sin(time*.734)*.5);
