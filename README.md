@@ -102,9 +102,9 @@ Download Spout: https://spout.zeal.co
 
 You can use BeatDrop for parties, karaoke, music videos, DJ mixes and so on, but you must credit this repo if you used this! I am not even angry anymore if you didn't credit this, but use #beatdrop, #beatdropmusicvisualizer or BeatDrop as tags, then I'll look at them.
 
-# GET ALL THE MILKDROP PRESETS
+# MILKDROP MEGAPACK - GET ALL THE MILKDROP PRESETS
 
-If you want to have all the MilkDrop presets in your own, just download [this MegaPack](https://drive.google.com/file/d/10c-QCPFgBwRKflCGXJE5fhE88dvs68M5/view?usp=drive_link), then extract them to your BeatDrop folder.
+If you want to have all the MilkDrop presets in your own, just download [this MegaPack](https://drive.google.com/file/d/1DlszoqMG-pc5v1Bo9x4NhemGPiwT-0pv/view?usp=drive_link), then extract them to your BeatDrop folder (ex: to BeatDrop Resources folder).
 
 # Featured Websites:
 
