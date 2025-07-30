@@ -104,7 +104,7 @@ You can use BeatDrop for parties, karaoke, music videos, DJ mixes and so on, but
 
 # MILKDROP MEGAPACK - GET ALL THE MILKDROP PRESETS
 
-If you want to have all the MilkDrop presets in your own, just download [this MegaPack](https://drive.google.com/file/d/1DlszoqMG-pc5v1Bo9x4NhemGPiwT-0pv/view?usp=drive_link), then extract them to your BeatDrop folder (ex: to BeatDrop Resources folder).
+If you want to have all the MilkDrop presets in your own, just download [this MegaPack](https://drive.google.com/file/d/1DlszoqMG-pc5v1Bo9x4NhemGPiwT-0pv/view), then extract them to your BeatDrop folder (ex: to BeatDrop Resources folder).
 
 # Featured Websites:
 
