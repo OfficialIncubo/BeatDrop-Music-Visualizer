@@ -58,9 +58,7 @@ git clone -b more-fixes-and-tests https://github.com/kblaschke/projectm-eval.git
 or using my latest build:
 git clone -b more-fixes-and-tests https://github.com/OfficialIncubo/projectm-eval.git
 cd projectm-eval
-git fetch --all
-git checkout more-fixes-and-tests
-git status
+git fetch --all (if needed)
 ```
 3. Go to your main code folder -> projectm-eval -> CMakeLists.txt, look at BUILD_NS_EEL_SHIM option, then turn it on.
 
