@@ -54,6 +54,8 @@ If you want to turn back on, do the same step, then change them to "Yes".
 
 2. Use [VS2022](https://visualstudio.microsoft.com/vs)'s terminal or PowerShell. Clone the repository and check the status
 ```
+git clone https://github.com/projectM-visualizer/projectm-eval.git
+or
 git clone -b more-fixes-and-tests https://github.com/kblaschke/projectm-eval.git
 or using my latest build:
 git clone -b more-fixes-and-tests https://github.com/OfficialIncubo/projectm-eval.git
