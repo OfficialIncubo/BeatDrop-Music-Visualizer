@@ -158,6 +158,7 @@ Use BeatDrop with your favourite:
 * WASAPI - compatible sound card
 * DirectX 9 or higher - compatible GPU
 * DirectX End-User [Runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=8109) (also included in the installer) contains the required 32-bit helper libraries d3dx9_43.dll and d3dx9_31.dll
+* [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=52685) or [Microsoft Visual C++ Redistributable All-in-One](https://www-techpowerup-com.cdn.ampproject.org/v/s/www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/?amp=&amp_gsa=1&amp_js_v=a9&usqp=mq331AQIUAKwASCAAgM%3D#amp_tf=De%20la%20%251%24s&aoh=17542342520002&referrer=https%3A%2F%2Fwww.google.com&ampshare=https%3A%2F%2Fwww.techpowerup.com%2Fdownload%2Fvisual-c-redistributable-runtime-package-all-in-one%2F)
 
 # Acknowledgements
 Special thanks to:
