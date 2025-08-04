@@ -52,7 +52,7 @@ Steps on how to compile BeatDrop with [projectM-eval](https://github.com/project
 
 If you want to turn back on, do the same step, then change them to "Yes".
 
-2. Use [VS2022](https://visualstudio.microsoft.com/vs)'s terminal or PowerShell. Clone the repository and check the status
+2. Use [VS2022](https://visualstudio.microsoft.com/vs)'s terminal (View from toolbar -> Terminal) or PowerShell. Clone the repository and check the status
 ```
 git clone https://github.com/projectM-visualizer/projectm-eval.git
 cd projectm-eval
