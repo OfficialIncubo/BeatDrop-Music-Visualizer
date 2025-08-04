@@ -55,6 +55,7 @@ If you want to turn back on, do the same step, then change them to "Yes".
 2. Use [VS2022](https://visualstudio.microsoft.com/vs)'s terminal or PowerShell. Clone the repository and check the status
 ```
 git clone https://github.com/projectM-visualizer/projectm-eval.git
+cd projectm-eval
 git fetch --all (if needed)
 ```
 3. Go to your main code folder -> projectm-eval -> CMakeLists.txt, look at BUILD_NS_EEL_SHIM option, then turn it on.
