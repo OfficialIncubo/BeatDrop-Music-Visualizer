@@ -167,6 +167,7 @@ Special thanks to:
 * Lynn Jarvis ([@leadedge](https://github.com/leadedge)) - [BeatDrop for Spout](https://github.com/leadedge/BeatDrop), [Spout](https://spout.zeal.co), contributor
 * Patrick Pomerleau @ Nest Immersion ([@nestdome](https://www.instagram.com/nestdome)) - help, contributor, feature integrations to NestDrop
 * [IkeC](https://github.com/IkeC) - contributor, [Milkwave](https://github.com/IkeC/Milkwave) Developer
+* Me, [u/Decent-Tangerine4998](https://www.reddit.com/user/Decent-Tangerine4998) - Tester
 * ...and all the preset authors and contributors!
 
 # License
