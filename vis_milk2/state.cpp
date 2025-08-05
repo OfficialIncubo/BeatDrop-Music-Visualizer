@@ -1320,12 +1320,24 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
         nCompPSVersionInFile = 0;
     }
     else if (nMilkdropPresetVersion == 200) {
-        nWarpPSVersionInFile = GetFastInt("PSVERSION", 2, f);
+		if (is_amd_ati())
+			nWarpPSVersionInFile = g_plugin.m_nMaxPSVersion_DX9;
+		else
+			nWarpPSVersionInFile = GetFastInt("PSVERSION", 2, f);
+
         nCompPSVersionInFile = nWarpPSVersionInFile;
     }
     else {
-        nWarpPSVersionInFile = GetFastInt("PSVERSION_WARP", 2, f);
-        nCompPSVersionInFile = GetFastInt("PSVERSION_COMP", 2, f);
+		if (is_amd_ati())
+		{
+			nWarpPSVersionInFile = g_plugin.m_nMaxPSVersion_DX9;
+			nCompPSVersionInFile = g_plugin.m_nMaxPSVersion_DX9;
+		}
+		else
+		{
+			nWarpPSVersionInFile = GetFastInt("PSVERSION_WARP", 2, f);
+			nCompPSVersionInFile = GetFastInt("PSVERSION_COMP", 2, f);
+		}
     }
 
     // general:

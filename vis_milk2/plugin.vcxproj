@@ -199,6 +199,7 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClCompile Include="..\spoutDX9\SpoutSenderNames.cpp" />
     <ClCompile Include="..\spoutDX9\SpoutSharedMemory.cpp" />
     <ClCompile Include="..\spoutDX9\SpoutUtils.cpp" />
+    <ClCompile Include="AMDDetection.cpp" />
     <ClCompile Include="dxcontext.cpp" />
     <ClCompile Include="fft.cpp" />
     <ClCompile Include="menu.cpp" />
@@ -232,6 +233,7 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClInclude Include="..\spoutDX9\SpoutSenderNames.h" />
     <ClInclude Include="..\spoutDX9\SpoutSharedMemory.h" />
     <ClInclude Include="..\spoutDX9\SpoutUtils.h" />
+    <ClInclude Include="AMDDetection.h" />
     <ClInclude Include="AutoCharFn.h" />
     <ClInclude Include="AutoWide.h" />
     <ClInclude Include="defines.h" />

@@ -627,6 +627,7 @@ SPOUT :
 #include <Windows.h>
 #include "AutoCharFn.h"
 #include "songtitlegetter.h"
+#include "AMDDetection.h"
 
 #include <dwmapi.h>  // Link with Dwmapi.lib
 #pragma comment(lib, "dwmapi.lib")
@@ -1990,28 +1991,51 @@ int CPlugin::AllocateMyDX9Stuff()
 				}
 
 				// Load the FALLBACK shaders...
-				if (!RecompilePShader(m_szDefaultWarpPShaderText, &m_fallbackShaders_ps.warp, SHADER_WARP, true, 2))
-				{
-					wchar_t szSM[64];
-					switch(m_nMaxPSVersion_DX9)
-					{
-					case MD2_PS_2_0:
-					case MD2_PS_2_X:
-						wasabiApiLangString(IDS_SHADER_MODEL_2,szSM,64); break;
-					case MD2_PS_3_0: wasabiApiLangString(IDS_SHADER_MODEL_3,szSM,64); break;
-					case MD2_PS_4_0: wasabiApiLangString(IDS_SHADER_MODEL_4,szSM,64); break;
-					default:
-						swprintf(szSM, wasabiApiLangString(IDS_UKNOWN_CASE_X), m_nMaxPSVersion_DX9);
-						break;
-					}
-					if (m_nMaxPSVersion_ConfigPanel >= MD2_PS_NONE && m_nMaxPSVersion_DX9 < m_nMaxPSVersion_ConfigPanel)
-						swprintf(buf, wasabiApiLangString(IDS_FAILED_TO_COMPILE_PIXEL_SHADERS_USING_X),szSM,PSVersion);
-					else
-						swprintf(buf, wasabiApiLangString(IDS_FAILED_TO_COMPILE_PIXEL_SHADERS_HARDWARE_MIS_REPORT),szSM,PSVersion);
-					dumpmsg(buf);
-					MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
-					return false;
-				}
+                if (is_amd_ati())
+				    if (!RecompilePShader(m_szDefaultWarpPShaderText, &m_fallbackShaders_ps.warp, SHADER_WARP, true, m_nMaxPSVersion_DX9))
+				    {
+					    wchar_t szSM[64];
+					    switch(m_nMaxPSVersion_DX9)
+					    {
+					    case MD2_PS_2_0:
+					    case MD2_PS_2_X:
+						    wasabiApiLangString(IDS_SHADER_MODEL_2,szSM,64); break;
+					    case MD2_PS_3_0: wasabiApiLangString(IDS_SHADER_MODEL_3,szSM,64); break;
+					    case MD2_PS_4_0: wasabiApiLangString(IDS_SHADER_MODEL_4,szSM,64); break;
+					    default:
+						    swprintf(szSM, wasabiApiLangString(IDS_UKNOWN_CASE_X), m_nMaxPSVersion_DX9);
+						    break;
+					    }
+					    if (m_nMaxPSVersion_ConfigPanel >= MD2_PS_NONE && m_nMaxPSVersion_DX9 < m_nMaxPSVersion_ConfigPanel)
+						    swprintf(buf, wasabiApiLangString(IDS_FAILED_TO_COMPILE_PIXEL_SHADERS_USING_X),szSM,PSVersion);
+					    else
+						    swprintf(buf, wasabiApiLangString(IDS_FAILED_TO_COMPILE_PIXEL_SHADERS_HARDWARE_MIS_REPORT),szSM,PSVersion);
+					    dumpmsg(buf);
+					    MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
+					    return false;
+				    }
+                    else if (!RecompilePShader(m_szDefaultWarpPShaderText, &m_fallbackShaders_ps.warp, SHADER_WARP, true, 2))
+                    {
+                        wchar_t szSM[64];
+                        switch (m_nMaxPSVersion_DX9)
+                        {
+                        case MD2_PS_2_0:
+                        case MD2_PS_2_X:
+                            wasabiApiLangString(IDS_SHADER_MODEL_2, szSM, 64); break;
+                        case MD2_PS_3_0: wasabiApiLangString(IDS_SHADER_MODEL_3, szSM, 64); break;
+                        case MD2_PS_4_0: wasabiApiLangString(IDS_SHADER_MODEL_4, szSM, 64); break;
+                        default:
+                            swprintf(szSM, wasabiApiLangString(IDS_UKNOWN_CASE_X), m_nMaxPSVersion_DX9);
+                            break;
+                        }
+                        if (m_nMaxPSVersion_ConfigPanel >= MD2_PS_NONE && m_nMaxPSVersion_DX9 < m_nMaxPSVersion_ConfigPanel)
+                            swprintf(buf, wasabiApiLangString(IDS_FAILED_TO_COMPILE_PIXEL_SHADERS_USING_X), szSM, PSVersion);
+                        else
+                            swprintf(buf, wasabiApiLangString(IDS_FAILED_TO_COMPILE_PIXEL_SHADERS_HARDWARE_MIS_REPORT), szSM, PSVersion);
+                        dumpmsg(buf);
+                        MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR, title, 64), MB_OK | MB_SETFOREGROUND | MB_TOPMOST);
+                        return false;
+                    }
 				if (!RecompileVShader(m_szDefaultWarpVShaderText, &m_fallbackShaders_vs.warp, SHADER_WARP, true))
 				{
 			wasabiApiLangString(IDS_COULD_NOT_COMPILE_FALLBACK_WV_SHADER,buf,sizeof(buf));
@@ -2026,12 +2050,25 @@ int CPlugin::AllocateMyDX9Stuff()
 		    MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
 		    return false;
         }
-        if (!RecompilePShader(m_szDefaultCompPShaderText, &m_fallbackShaders_ps.comp, SHADER_COMP, true, 2))
+        if (is_amd_ati())
         {
-			wasabiApiLangString(IDS_COULD_NOT_COMPILE_FALLBACK_CP_SHADER,buf,sizeof(buf));
-		    dumpmsg(buf);
-		    MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
-		    return false;
+            if (!RecompilePShader(m_szDefaultCompPShaderText, &m_fallbackShaders_ps.comp, SHADER_COMP, true, m_nMaxPSVersion_DX9))
+            {
+                wasabiApiLangString(IDS_COULD_NOT_COMPILE_FALLBACK_CP_SHADER, buf, sizeof(buf));
+                dumpmsg(buf);
+                MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR, title, 64), MB_OK | MB_SETFOREGROUND | MB_TOPMOST);
+                return false;
+            }
+        }
+            else
+        {
+            if (!RecompilePShader(m_szDefaultCompPShaderText, &m_fallbackShaders_ps.comp, SHADER_COMP, true, 2))
+            {
+                wasabiApiLangString(IDS_COULD_NOT_COMPILE_FALLBACK_CP_SHADER, buf, sizeof(buf));
+                dumpmsg(buf);
+                MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR, title, 64), MB_OK | MB_SETFOREGROUND | MB_TOPMOST);
+                return false;
+            }
         }
 
         // Load the BLUR shaders...
@@ -2042,12 +2079,25 @@ int CPlugin::AllocateMyDX9Stuff()
 		    MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
 		    return false;
         }
-        if (!RecompilePShader(m_szBlurPSX, &m_BlurShaders[0].ps, SHADER_BLUR, true, 2))
+        if (is_amd_ati())
         {
-		    wasabiApiLangString(IDS_COULD_NOT_COMPILE_BLUR1_PIXEL_SHADER,buf,sizeof(buf));
-		    dumpmsg(buf);
-		    MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
-		    return false;
+            if (!RecompilePShader(m_szBlurPSX, &m_BlurShaders[0].ps, SHADER_BLUR, true, m_nMaxPSVersion_DX9))
+            {
+		        wasabiApiLangString(IDS_COULD_NOT_COMPILE_BLUR1_PIXEL_SHADER,buf,sizeof(buf));
+		        dumpmsg(buf);
+		        MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
+		        return false;
+            }
+        }
+            else
+        {
+            if (!RecompilePShader(m_szBlurPSX, &m_BlurShaders[0].ps, SHADER_BLUR, true, 2))
+            {
+		        wasabiApiLangString(IDS_COULD_NOT_COMPILE_BLUR1_PIXEL_SHADER,buf,sizeof(buf));
+		        dumpmsg(buf);
+		        MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
+		        return false;
+            }
         }
         if (!RecompileVShader(m_szBlurVS, &m_BlurShaders[1].vs, SHADER_BLUR, true))
         {
@@ -2056,12 +2106,25 @@ int CPlugin::AllocateMyDX9Stuff()
 		    MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
 		    return false;
         }
-        if (!RecompilePShader(m_szBlurPSY, &m_BlurShaders[1].ps, SHADER_BLUR, true, 2))
+        if (is_amd_ati())
         {
-			wasabiApiLangString(IDS_COULD_NOT_COMPILE_BLUR2_PIXEL_SHADER,buf,sizeof(buf));
-		    dumpmsg(buf);
-		    MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
-		    return false;
+            if (!RecompilePShader(m_szBlurPSY, &m_BlurShaders[1].ps, SHADER_BLUR, true, m_nMaxPSVersion_DX9))
+            {
+                wasabiApiLangString(IDS_COULD_NOT_COMPILE_BLUR2_PIXEL_SHADER, buf, sizeof(buf));
+                dumpmsg(buf);
+                MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR, title, 64), MB_OK | MB_SETFOREGROUND | MB_TOPMOST);
+                return false;
+            }
+        }
+        else
+        {
+            if (!RecompilePShader(m_szBlurPSY, &m_BlurShaders[1].ps, SHADER_BLUR, true, 2))
+            {
+                wasabiApiLangString(IDS_COULD_NOT_COMPILE_BLUR2_PIXEL_SHADER, buf, sizeof(buf));
+                dumpmsg(buf);
+                MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR, title, 64), MB_OK | MB_SETFOREGROUND | MB_TOPMOST);
+                return false;
+            }
         }
     }
 
@@ -3581,8 +3644,14 @@ bool CPlugin::RecompileVShader(const char* szShadersText, VShaderInfo *si, int s
     SafeRelease(si->ptr);
     ZeroMemory(si, sizeof(VShaderInfo));
 
+    char ver[16];
+    if (is_amd_ati())
+        lstrcpy(ver, "vs_3_0");
+    else
+        lstrcpy(ver, "vs_1_1");
+        
     // LOAD SHADER
-    if (!LoadShaderFromMemory( szShadersText, "VS", "vs_1_1", &si->CT, (void**)&si->ptr, shaderType, bHardErrors))
+    if (!LoadShaderFromMemory( szShadersText, "VS", ver, &si->CT, (void**)&si->ptr, shaderType, bHardErrors))
         return false;
 
     // Track down texture & float4 param bindings for this shader.
