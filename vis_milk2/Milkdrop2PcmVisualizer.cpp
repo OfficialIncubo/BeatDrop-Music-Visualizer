@@ -657,11 +657,29 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 	// Enumerate other instances of BeatDrop to increment the title
 	WCHAR beatdroptitle[256]; 
 	lstrcpyW(beatdroptitle, L"BeatDrop Music Visualizer"); // default render window title
-	EnumWindows((WNDENUMPROC)&GetWindowNames, NULL);
 	// printf("Number of existing beatdrops (%d)\n", nBeatDrops);
-	if (nBeatDrops > 0) {
-		swprintf_s(beatdroptitle, L"BeatDrop Music Visualizer %2.2d", nBeatDrops);
-		// printf("New title [%S]\n", beatdroptitle);
+    bool freeTitleFound = false;
+    nBeatDrops = 0;
+
+    while (!freeTitleFound && nBeatDrops < 100) {
+        if (nBeatDrops == 0) {
+            lstrcpyW(beatdroptitle, L"BeatDrop Music Visualizer");
+        }
+        else {
+            swprintf_s(beatdroptitle, L"BeatDrop Music Visualizer (%d)", nBeatDrops + 1);
+        }
+
+        // Check if a window with this title already exists
+        HWND existing = FindWindowW(L"Direct3DWindowClass", beatdroptitle);
+        if (existing != NULL) {
+            nBeatDrops++;
+            // Try next title
+        }
+        else {
+            // No window with this title, so we can use it
+            printf("New title [%S]\n", beatdroptitle);
+            freeTitleFound = true;
+        }
 	}
 	// ===============================================
 
@@ -704,8 +722,8 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 
 	// SPOUT - defaults if no GUI
     // Change the values here to set the fixed sender size
-	unsigned int SpoutWidth = 720;
-	unsigned int SpoutHeight = 720;
+	unsigned int SpoutWidth = windowWidth;
+	unsigned int SpoutHeight = windowHeight;
 
     // Set to windowWidth/windowHeight for a variable sender size
     // See milkDropfs.cpp RenderFrame - change to SendDX9surface(back_buffer, true); 
