@@ -38,6 +38,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <assert.h>
 #include "wasabi.h"
+#include "AMDDetection.h"
 
 extern CPlugin g_plugin;		// declared in main.cpp
 
@@ -1320,7 +1321,7 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
         nCompPSVersionInFile = 0;
     }
     else if (nMilkdropPresetVersion == 200) {
-		if (is_amd_ati())
+		if (g_plugin.m_IsAMD)
 			nWarpPSVersionInFile = g_plugin.m_nMaxPSVersion_DX9;
 		else
 			nWarpPSVersionInFile = GetFastInt("PSVERSION", 2, f);
@@ -1328,7 +1329,7 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
         nCompPSVersionInFile = nWarpPSVersionInFile;
     }
     else {
-		if (is_amd_ati())
+		if (g_plugin.m_IsAMD)
 		{
 			nWarpPSVersionInFile = g_plugin.m_nMaxPSVersion_DX9;
 			nCompPSVersionInFile = g_plugin.m_nMaxPSVersion_DX9;

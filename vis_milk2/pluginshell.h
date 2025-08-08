@@ -76,7 +76,7 @@ public:
     wchar_t*  GetPluginsDirPath(); // usually returns 'c:\\program files\\winamp\\plugins\\'
     wchar_t*  GetConfigIniFile();  // usually returns 'c:\\program files\\winamp\\plugins\\something.ini' - filename is determined from identifiers in 'defines.h'
 	char*     GetConfigIniFileA();
-    double    m_dTimeVariableResetDelay;
+    double    m_dTimeVariableResetDelay = 250000;
 
 protected:
 
@@ -152,6 +152,7 @@ protected:
     virtual void MyRenderUI(int *upper_left_corner_y, int *upper_right_corner_y, int *lower_left_corner_y, int *lower_right_corner_y, int xL, int xR) = 0;
     virtual LRESULT MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lParam) = 0;
     virtual void OnAltK() { }; // doesn't *have* to be implemented
+    virtual void SetAMDFlag() = 0;
 
     int m_show_help;
 

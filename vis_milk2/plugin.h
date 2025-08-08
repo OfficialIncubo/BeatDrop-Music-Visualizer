@@ -286,6 +286,7 @@ public:
 	char WinampSenderName[256]; // The sender name
 	bool bInitialized; // did it work ?
 	bool OpenSender(unsigned int width, unsigned int height);
+    void SetAMDFlag();
 	bool bSpoutChanged; // set to write config on exit
 	bool bSpoutOut; // Spout output on or off
     bool bEnablePresetStartup;
@@ -345,12 +346,14 @@ public:
         bool        m_bEnableSongTitlePoll;
         bool        m_bEnableSongTitlePollExplicit;
         bool        m_bScreenDependentRenderMode;
+        int         m_nAMDMode = 0; // 0 - Auto, 1 - Force AMD Mode, 2 - Force Non-AMD Mode (if you are using Intel)
         int         m_nBassStart = 0;
         int         m_nBassEnd = 250;
         int         m_nMidStart = 250;
         int         m_nMidEnd = 4000;
         int         m_nTrebStart = 4000;
         int         m_nTrebEnd = 20000;
+        bool        m_IsAMD = false;
 
         //bool		m_bAlways3D;
         //float       m_fStereoSep;

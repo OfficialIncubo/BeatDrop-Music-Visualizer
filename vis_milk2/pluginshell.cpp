@@ -1094,6 +1094,7 @@ int CPluginShell::PluginPreInitialize(HWND hWinampWnd, HINSTANCE hWinampInstance
 	ReadConfig();
 	MyPreInitialize();
 	MyReadConfig();
+	SetAMDFlag();
 
 	//-----
 
@@ -1681,7 +1682,7 @@ void CPluginShell::DoTime()
 	if (m_time >= m_dTimeVariableResetDelay)
 		m_time = 0; // Reset the time variable after 250000 seconds.
 
-	if ((GetAsyncKeyState(VK_CONTROL) & 0x8000) && (GetAsyncKeyState('T') & 0x8000))
+	if ((GetKeyState(VK_CONTROL) & 0x8000) && (GetKeyState('T') & 0x8000))
 		m_time = 0;
 
 	// timekeeping goals:
