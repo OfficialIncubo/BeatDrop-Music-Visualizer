@@ -10830,7 +10830,7 @@ for (int i=0;i<576;i++)
         // Sum the energy in the frequency range
         for (int j = start_bin; j <= end_bin; j++)
         {
-            mysound.imm[i] += (mysound.fSpecLeft[j] + mysound.fSpecRight[j]);
+            mysound.imm[i] += (mysound.fSpecLeft[j] + mysound.fSpecRight[j])/2;
         }
     }
 
