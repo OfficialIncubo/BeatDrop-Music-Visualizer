@@ -78,38 +78,40 @@ warp_2=`// Email:countfrolic@gmail.com Twitter:@The_ArtOfCode
 warp_3=`// License Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License.
 warp_4=`// Original idea from:
 warp_5=`// https://boingboing.net/2018/12/20/bend-your-spacetime-continuum.html
-warp_6=`//
+warp_6=`
 warp_7=`// To see how this was done, check out this tutorial:
 warp_8=`// https://youtu.be/cQXAbndD5CQ
-warp_9=`//
-warp_10=`
-warp_11=`shader_body
-warp_12=`{
-warp_13=`    //aspect corr and global scaling
-warp_14=`    float2 aspect_texsize = float2(1, texsize.y/texsize.x);
-warp_15=`    uv = (uv-float2(.478, .5))*aspect_texsize*2;
-warp_16=`
-warp_17=`    uv = mul(uv, float2x2(.707, .707, -.707, .707));
-warp_18=`    uv *= 15;
-warp_19=`
-warp_20=`    float2 gv = frac(uv)-.5; 
-warp_21=`    	float2 id = floor(uv);
-warp_22=`    
-warp_23=`	float m = 0.;
-warp_24=`    float t;
-warp_25=`    for(float y=-1.; y<=1.; y++) {
-warp_26=`    	for(float x=-1.; x<=1.; x++) {
-warp_27=`            float2 offs = float2(x, y);
-warp_28=`            
-warp_29=`            t = -time+length(id-offs)*.2;
-warp_30=`            float r = lerp(.4, 1.5, sin(t)*.5+.5);
-warp_31=`    		float c = smoothstep(r, r*.9, length(gv+offs));
-warp_32=`    		m = m*(1.-c) + c*(1.-m);
-warp_33=`        }
-warp_34=`    }
-warp_35=`
-warp_36=`    ret = m; 
-warp_37=`}
+warp_9=`
+warp_10=`//Ported to MilkDrop by DJ XcitMosphere/Incubo_/Se7enSlasher
+warp_11=`//Original ShaderToy link: https://www.shadertoy.com/view/wdlGRM
+warp_12=`
+warp_13=`shader_body
+warp_14=`{
+warp_15=`    //aspect corr and global scaling
+warp_16=`    float2 aspect_texsize = float2(1, texsize.y/texsize.x);
+warp_17=`    uv = (uv - 0.5) * aspect_texsize * 2.0;
+warp_18=`
+warp_19=`    uv = mul(uv, float2x2(.707, .707, -.707, .707));
+warp_20=`    uv *= 15;
+warp_21=`
+warp_22=`    float2 gv = frac(uv)-.5; 
+warp_23=`    	float2 id = floor(uv);
+warp_24=`    
+warp_25=`	float m = 0.;
+warp_26=`    float t;
+warp_27=`    for(float y=-1.; y<=1.; y++) {
+warp_28=`    	for(float x=-1.; x<=1.; x++) {
+warp_29=`            float2 offs = float2(x, y);
+warp_30=`            
+warp_31=`            t = -time+length(id-offs)*.2;
+warp_32=`            float r = lerp(.4, 1.5, sin(t)*.5+.5);
+warp_33=`    		float c = smoothstep(r, r*.9, length(gv+offs));
+warp_34=`    		m = m*(1.-c) + c*(1.-m);
+warp_35=`        }
+warp_36=`    }
+warp_37=`
+warp_38=`    ret = m; 
+warp_39=`}
 comp_1=`shader_body
 comp_2=`{
 comp_3=`    ret = tex2D(sampler_main, uv).xyz;
