@@ -4115,6 +4115,84 @@ void CPlugin::DrawWave(float *fL, float *fR)
 						memcpy(&v[nVerts - 1], &v[0], sizeof(WFVERTEX));
 					}
 					break;
+
+				case 17:
+					// DeepSeek - Fireworks Waveform
+					nVerts = 256; // Use fewer vertices for better performance with particles
+
+					if (m_pState->m_bModWaveAlphaByVolume)
+						alpha *= ((mysound.imm_rel[0] + mysound.imm_rel[1] + mysound.imm_rel[2]) * 0.333f - m_pState->m_fModWaveAlphaStart.eval(GetTime())) / (m_pState->m_fModWaveAlphaEnd.eval(GetTime()) - m_pState->m_fModWaveAlphaStart.eval(GetTime()));
+					if (alpha < 0) alpha = 0;
+					if (alpha > 1) alpha = 1;
+
+					{
+						float time = GetTime();
+						float burst_frequency = 1.5f; // How often new bursts occur
+						float burst_phase = fmodf(time, burst_frequency) / burst_frequency;
+
+						// Random seed based on which burst we're on
+						int burst_num = (int)(time / burst_frequency);
+						float rand_seed = (burst_num * 10.0f);
+
+						// Base position for this firework
+						float base_x = (rand_seed * 0.1345f - floor(rand_seed * 0.1345f)) * 2.0f - 1.0f;
+						float base_y = (rand_seed * 0.2783f - floor(rand_seed * 0.2783f)) * 2.0f - 1.0f;
+
+						// Make bursts start from random positions but stay centered more often
+						if (fmodf(rand_seed, 1.0f) > 0.3f) {
+							base_x *= 0.3f;
+							base_y *= 0.3f;
+						}
+
+						// Size and fade of current burst
+						float burst_size = min(1.0f, burst_phase * 4.0f); // Quick expansion
+						float burst_fade = 1.0f - powf(burst_phase, 3.0f); // Slow fade
+
+						// Audio reactivity
+						float audio_boost = 1.0f + 2.0f * (mysound.imm_rel[0] + mysound.imm_rel[1]) * 0.5f;
+
+						for (i = 0; i < nVerts; i++)
+						{
+							// Particle angle
+							float ang = (i / (float)nVerts) * 6.283185f;
+
+							// Particle distance from center (with some randomness)
+							float dist_var = 0.7f + 0.3f * (fmodf(rand_seed + i * 0.1f, 1.0f));
+							float dist = burst_size * dist_var * (0.5f + 0.5f * fR[(i * 3) % NUM_WAVEFORM_SAMPLES]) * audio_boost;
+
+							// Calculate position
+							float x = base_x + cosf(ang) * dist;
+							float y = base_y + sinf(ang) * dist;
+
+							// Add some secondary motion
+							float swirl = time * 3.0f + ang;
+							x += cosf(swirl) * burst_size * 0.1f;
+							y += sinf(swirl) * burst_size * 0.1f;
+
+							// Apply aspect ratio
+							if (m_bScreenDependentRenderMode)
+							{
+								v[i].x = x + fWavePosX;
+								v[i].y = y + fWavePosY;
+							}
+							else
+							{
+								v[i].x = x * m_fAspectY + fWavePosX;
+								v[i].y = y * m_fAspectX + fWavePosY;
+							}
+
+							// Fade particles as burst ages
+							alpha *= burst_fade;
+						}
+					}
+
+					// For point rendering mode (recommended for this waveform)
+					if (!m_pState->m_bBlending)
+					{
+						nVerts++;
+						memcpy(&v[nVerts - 1], &v[0], sizeof(WFVERTEX));
+					}
+					break;
 		}
 
 		if (it==0)

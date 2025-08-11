@@ -51,7 +51,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define MAX_GRID_X 192//128
 #define MAX_GRID_Y 144//96
-#define NUM_WAVES  17
+#define NUM_WAVES  18
 #define NUM_MODES  7
 #define LINEFEED_CONTROL_CHAR 1		// note: this char should be outside the ascii range from SPACE (32) to lowercase 'z' (122)
 #define MAX_CUSTOM_MESSAGE_FONTS 16		// 0-15

@@ -8180,7 +8180,7 @@ void CPlugin::RandomizeBlendPattern()
 
     // note: we now avoid constant uniform blend b/c it's half-speed for shader blending.
     //       (both old & new shaders would have to run on every pixel...)           reenabled due to further notice
-    int mixtype = 0 + (rand()%17);//rand()%4;
+    int mixtype = 0 + (rand()%19);//rand()%4;
 
     if (mixtype==0)
     {
@@ -9115,6 +9115,179 @@ void CPlugin::RandomizeBlendPattern()
                 // Apply band blending
                 m_vertinfo[nVert].a = inv_band * (1.0f + band);
                 m_vertinfo[nVert].c = -inv_band + inv_band * t;
+                nVert++;
+            }
+        }
+    }
+    else if (mixtype == 17)
+    {
+        // DeepSeek - Drain Swirl Transition, modified by Incubo_
+        float band = 0.05f + 0.15f * FRAND;  // transition edge width
+        float inv_band = 1.0f / band;
+
+        // Drain parameters
+        float swirl_intensity = 2.0f + FRAND * 3.0f; // 2-5 - controls how tight the swirl is
+        float drain_speed = 0.5f + FRAND * 1.5f;    // 0.5-2.0 - speed of the drain effect
+        bool clockwise = (rand() % 2) == 0;         // random swirl direction
+        float center_pull = 0.7f + FRAND * 0.6f;    // 0.7-1.3 - how strongly it pulls to center
+        bool invert = (rand() % 2) == 0;           // random inversion
+
+        // Get current time for animation
+        static float drain_time = 0.0f;
+        drain_time += 1 / GetFps();
+        float time = drain_time * drain_speed;
+
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy;
+            if (m_bScreenDependentRenderMode)
+                fy = (y / (float)m_nGridY - 0.5f);
+            else
+                fy = (y / (float)m_nGridY - 0.5f) * m_fAspectY;
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx;
+                if (m_bScreenDependentRenderMode)
+                    fx = (x / (float)m_nGridX - 0.5f);
+                else
+                    fx = (x / (float)m_nGridX - 0.5f) * m_fAspectX;
+
+                // Calculate polar coordinates
+                float radius = sqrtf(fx * fx + fy * fy) * 1.41421356f; // normalized distance
+                float angle = atan2f(fy, fx); // range: -PI to PI
+
+                // Apply swirl effect - angle changes more as you get closer to center
+                float swirl_factor = (1.0f - radius) * swirl_intensity;
+                if (clockwise) swirl_factor = -swirl_factor;
+
+                // Combine with time-based animation
+                float swirled_angle = angle + swirl_factor + time * 2.0f;
+
+                // Create the drain effect - combines radial and angular motion
+                float t = radius * center_pull + (1.0f - center_pull) *
+                    (0.5f + 0.5f * sinf(swirled_angle * 2.0f + radius * 5.0f));
+
+                // Invert the drain if needed.
+                if (invert)
+                    t = 1.0f - t;
+
+                // Apply band blending
+                m_vertinfo[nVert].a = inv_band * (1.0f + band);
+                m_vertinfo[nVert].c = -inv_band + inv_band * t;
+                nVert++;
+            }
+        }
+    }
+    else if (mixtype == 18)
+    {
+        // DeepSeek - Smooth Julia Set Fractal Transition
+        float band = 0.08f + 0.12f * FRAND;  // Wider band for smoother transitions
+        float inv_band = 1.0f / band;
+
+        // Julia set parameters with constrained ranges for better blending
+        float julia_real = -0.8f + FRAND * 1.6f;    // (-0.8 to 0.8)
+        float julia_imag = -0.8f + FRAND * 1.6f;    // (-0.8 to 0.8)
+        int max_iterations = 20 + (rand() % 20);     // 20-40 iterations (good balance)
+        float zoom = 0.7f + FRAND * 1.6f;           // 0.7-2.3 zoom level
+        float rotation = FRAND * 6.2831853f;         // random rotation
+
+        // Always use smooth coloring for this version
+        const bool smooth_coloring = true;
+
+        // Additional smoothing parameters
+        float edge_softness = 0.3f + FRAND * 0.5f;  // 0.3-0.8 edge softness
+        float contrast = 0.7f + FRAND * 0.6f;       // 0.7-1.3 contrast adjustment
+
+        // Precompute rotation values
+        float cos_rot = cosf(rotation);
+        float sin_rot = sinf(rotation);
+
+        // Find min/max for normalization
+        float min_val = FLT_MAX;
+        float max_val = -FLT_MAX;
+        std::vector<float> values((m_nGridY + 1) * (m_nGridX + 1));
+
+        // First pass: compute all values and find range
+        int nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            float fy;
+            if (m_bScreenDependentRenderMode)
+                fy = (y / (float)m_nGridY - 0.5f);
+            else
+                fy = (y / (float)m_nGridY - 0.5f) * m_fAspectY;
+
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                float fx;
+                if (m_bScreenDependentRenderMode)
+                    fx = (x / (float)m_nGridX - 0.5f);
+                else
+                    fx = (x / (float)m_nGridX - 0.5f) * m_fAspectX;
+
+                // Apply rotation and zoom
+                float zx = (fx * cos_rot - fy * sin_rot) * zoom;
+                float zy = (fx * sin_rot + fy * cos_rot) * zoom;
+
+                // Julia set iteration
+                float cx = julia_real;
+                float cy = julia_imag;
+                int i;
+                for (i = 0; i < max_iterations; i++)
+                {
+                    float tmp = zx * zx - zy * zy + cx;
+                    zy = 2 * zx * zy + cy;
+                    zx = tmp;
+
+                    if (zx * zx + zy * zy > 4.0f)
+                        break;
+                }
+
+                // Calculate smooth value
+                float t;
+                if (i < max_iterations)
+                {
+                    float log_zn = logf(zx * zx + zy * zy) / 2.0f;
+                    float nu = logf(log_zn / logf(2.0f)) / logf(2.0f);
+                    t = (i + 1 - nu) / max_iterations;
+                }
+                else
+                {
+                    t = 1.0f;  // Interior points
+                }
+
+                // Apply contrast adjustment
+                t = powf(t, contrast);
+
+                values[nVert] = t;
+                if (t < min_val) min_val = t;
+                if (t > max_val) max_val = t;
+                nVert++;
+            }
+        }
+
+        // Normalize and apply blending
+        float range = max_val - min_val;
+        if (range < 0.0001f) range = 1.0f; // Prevent division by zero
+
+        nVert = 0;
+        for (int y = 0; y <= m_nGridY; y++)
+        {
+            for (int x = 0; x <= m_nGridX; x++)
+            {
+                // Normalize value to 0-1 range
+                float t = (values[nVert] - min_val) / range;
+
+                // Apply edge softness using smoothstep function
+                t = t * t * (3.0f - 2.0f * t) * (1.0f - edge_softness) + t * edge_softness;
+
+                // Final blending calculation with smoother transition
+                m_vertinfo[nVert].a = inv_band * (1.0f + band * 1.5f);  // Increased blend area
+                m_vertinfo[nVert].c = -inv_band + inv_band * t * 1.1f;  // Slightly extended range
+
+                // Ensure values stay within reasonable bounds
+                m_vertinfo[nVert].c = max(-10.0f, min(10.0f, m_vertinfo[nVert].c));
                 nVert++;
             }
         }
