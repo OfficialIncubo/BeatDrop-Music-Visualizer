@@ -4127,7 +4127,7 @@ void CPlugin::DrawWave(float *fL, float *fR)
 
 					{
 						float time = GetTime();
-						float burst_frequency = 1.5f; // How often new bursts occur
+						float burst_frequency = 1.0f - fWaveParam2 + .001; // How often new bursts occur
 						float burst_phase = fmodf(time, burst_frequency) / burst_frequency;
 
 						// Random seed based on which burst we're on
