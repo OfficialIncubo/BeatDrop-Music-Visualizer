@@ -1359,6 +1359,7 @@ void CPlugin::MyReadConfig()
     m_bEnableSongTitlePoll = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePoll", m_bEnableSongTitlePoll, pIni);
     m_bEnableSongTitlePollExplicit = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePollExplicit", m_bEnableSongTitlePollExplicit, pIni);
     m_bScreenDependentRenderMode = GetPrivateProfileBoolW(L"settings", L"bScreenDependentRenderMode", m_bScreenDependentRenderMode, pIni);
+    m_bManualBeatSensitivityMode = GetPrivateProfileBoolW(L"settings", L"bManualBeatSensitivityMode", m_bManualBeatSensitivityMode, pIni);
 
 	m_bShowFPS			= GetPrivateProfileBoolW(L"settings",L"bShowFPS",       m_bShowFPS			,pIni);
 	m_bShowRating		= GetPrivateProfileBoolW(L"settings",L"bShowRating",    m_bShowRating		,pIni);
@@ -1411,6 +1412,7 @@ void CPlugin::MyReadConfig()
 	m_fBlendTimeAuto			= GetPrivateProfileFloatW(L"settings",L"fBlendTimeAuto"         ,m_fBlendTimeAuto         ,pIni);
 	m_fTimeBetweenPresets		= GetPrivateProfileFloatW(L"settings",L"fTimeBetweenPresets"    ,m_fTimeBetweenPresets    ,pIni);
 	m_fTimeBetweenPresetsRand	= GetPrivateProfileFloatW(L"settings",L"fTimeBetweenPresetsRand",m_fTimeBetweenPresetsRand,pIni);
+    m_nBeatSensitivity          = GetPrivateProfileFloatW(L"settings",L"nBeatSensitivity"       ,m_nBeatSensitivity       ,pIni);
 
 	m_fHardCutLoudnessThresh	= GetPrivateProfileFloatW(L"settings",L"fHardCutLoudnessThresh" ,m_fHardCutLoudnessThresh ,pIni);
 	m_fHardCutHalflife			= GetPrivateProfileFloatW(L"settings",L"fHardCutHalflife"       ,m_fHardCutHalflife       ,pIni);
@@ -1517,6 +1519,7 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_nTrebEnd, L"TrebEnd", pIni, L"settings");
     WritePrivateProfileIntW(m_dTimeVariableResetDelay, L"dTimeVariableResetDelay", pIni, L"settings");
     WritePrivateProfileIntW(m_nAMDMode, L"nAMDMode", pIni, L"settings");
+    WritePrivateProfileIntW(m_bManualBeatSensitivityMode, L"bManualBeatSensitivityMode", pIni, L"settings");
 
 	WritePrivateProfileFloatW(m_fBlendTimeAuto,          L"fBlendTimeAuto",           pIni, L"settings");
 	WritePrivateProfileFloatW(m_fBlendTimeUser,          L"fBlendTimeUser",           pIni, L"settings");
@@ -1527,6 +1530,7 @@ void CPlugin::MyWriteConfig()
 	WritePrivateProfileFloatW(m_fSongTitleAnimDuration,  L"fSongTitleAnimDuration",   pIni, L"settings");
 	WritePrivateProfileFloatW(m_fTimeBetweenRandomSongTitles,L"fTimeBetweenRandomSongTitles",pIni, L"settings");
 	WritePrivateProfileFloatW(m_fTimeBetweenRandomCustomMsgs,L"fTimeBetweenRandomCustomMsgs",pIni, L"settings");
+    WritePrivateProfileFloatW(m_nBeatSensitivity, L"nBeatSensitivity", pIni, L"settings");
 
     WritePrivateProfileIntW(m_adapterId, L"nVideoAdapterIndex", pIni, L"settings");
 
@@ -6923,6 +6927,14 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 }
                 ToggleWindowOpacity(hWnd);
             }
+            else if (m_bManualBeatSensitivityMode)
+            {
+                m_nBeatSensitivity += 0.1f;
+                if (m_nBeatSensitivity > 5.0f) m_nBeatSensitivity = 5.0f;
+                wchar_t buf[1024], tmp[64];
+                swprintf(buf, L"Beat Sensitivity: %.1f", (float)m_nBeatSensitivity, tmp, 64);
+                AddError(buf, 3.0f, ERR_NOTIFY, false);
+            }
 			break;
 
 		case VK_DOWN:
@@ -7008,6 +7020,15 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 }
                 ToggleWindowOpacity(hWnd);
             }
+            else
+                if (m_bManualBeatSensitivityMode)
+                {
+                    m_nBeatSensitivity -= 0.1f;
+                    if (m_nBeatSensitivity < 0.1f) m_nBeatSensitivity = 0.1f;
+                    wchar_t buf[1024], tmp[64];
+                    swprintf(buf, L"Beat Sensitivity: %.1f", (float)m_nBeatSensitivity, tmp, 64);
+                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                }
 			break;
 			
 		case 'X':
@@ -7296,15 +7317,31 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 keybd_event(VK_MEDIA_PREV_TRACK, 0, KEYEVENTF_KEYUP, 0);
             }
 		break;
-		
-		case 'T':
-            if (bCtrlHeldDown)
+
+        case 'Q':
+            m_bManualBeatSensitivityMode = !m_bManualBeatSensitivityMode;
+            if (m_bManualBeatSensitivityMode)
             {
-    			// stop display of custom message or song title.
-			    m_supertext.fStartTime = -1.0f;
-                return 0;
+                wchar_t buf[1024], tmp[64];
+                swprintf(buf, L"Manual Beat Sensitivity Mode", tmp, 64);
+                AddError(buf, 3.0f, ERR_NOTIFY, false);
             }
-            break;
+            else
+            {
+                wchar_t buf[1024], tmp[64];
+                swprintf(buf, L"Automatic Beat Sensitivity Mode", tmp, 64);
+                AddError(buf, 3.0f, ERR_NOTIFY, false);
+            }
+        break;
+
+		//case 'T':
+  //          if (bCtrlHeldDown)
+  //          {
+  //  			// stop display of custom message or song title.
+  //	   	      m_supertext.fStartTime = -1.0f;
+  //              return 0;
+  //          }
+  //          break;
 
         case 'K':
             if (bCtrlHeldDown)      // kill all sprites
@@ -11012,6 +11049,9 @@ for (int i=0;i<576;i++)
 	{
         float rate;
 
+        if (m_bManualBeatSensitivityMode)
+            mysound.imm[i] *= m_nBeatSensitivity;
+
 		if (mysound.imm[i] > mysound.avg[i])
 			rate = 0.2f;
 		else
@@ -11022,22 +11062,32 @@ for (int i=0;i<576;i++)
 		if (GetFrame() < 50)
 			rate = 0.9f;
 		else
-			rate = 0.992f;
+			rate = 0.995f;
         rate = AdjustRateToFPS(rate, 30.0f, GetFps());
         mysound.long_avg[i] = mysound.long_avg[i]*rate + mysound.imm[i]*(1-rate);
 
-
-		// also get bass/mid/treble levels *relative to the past*
-		//changed all the values to 0 instead of 1 when it's no music
-		if (fabsf(mysound.long_avg[i]) < 0.001f)
-			mysound.imm_rel[i] = 0.0f;
-		else
-			mysound.imm_rel[i]  = mysound.imm[i] / mysound.long_avg[i];
-
-		if (fabsf(mysound.long_avg[i]) < 0.001f)
-			mysound.avg_rel[i]  = 0.0f;
-		else
-			mysound.avg_rel[i]  = mysound.avg[i] / mysound.long_avg[i];
+        // DeepSeek - Calculate relative levels with protection against division by zero and automatic gain control interference
+        if (fabsf(mysound.long_avg[i]) < 0.001f)
+        {
+            mysound.imm_rel[i] = 0.0f;
+            mysound.avg_rel[i] = 0.0f;
+        }
+        else
+        {
+            // For manual mode, we'll use the original scale (1.0 = normal sensitivity)
+            // rather than letting the automatic system rescale everything
+            if (m_bManualBeatSensitivityMode)
+            {
+                mysound.imm_rel[i] = mysound.imm[i] / (mysound.long_avg[i] / m_nBeatSensitivity);
+                mysound.avg_rel[i] = mysound.avg[i] / (mysound.long_avg[i] / m_nBeatSensitivity);
+            }
+            else
+            {
+                // Automatic mode - original behavior
+                mysound.imm_rel[i] = mysound.imm[i] / mysound.long_avg[i];
+                mysound.avg_rel[i] = mysound.avg[i] / mysound.long_avg[i];
+            }
+        }
 	}
 }
 

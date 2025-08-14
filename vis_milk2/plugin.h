@@ -346,6 +346,8 @@ public:
         bool        m_bEnableSongTitlePoll;
         bool        m_bEnableSongTitlePollExplicit;
         bool        m_bScreenDependentRenderMode;
+        bool        m_bManualBeatSensitivityMode = false;
+        float       m_nBeatSensitivity = 1;
         int         m_nAMDMode = 0; // 0 - Auto, 1 - Force AMD Mode, 2 - Force Non-AMD Mode (if you are using Intel)
         int         m_nBassStart = 0;
         int         m_nBassEnd = 250;
