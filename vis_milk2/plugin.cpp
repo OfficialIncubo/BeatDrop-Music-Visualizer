@@ -11302,7 +11302,7 @@ void CPlugin::SaveShaderBytecodeToFile(ID3DXBuffer* pShaderByteCode, uint32_t ch
     if (!pShaderByteCode || !checksum) return;
 
     // Ensure the "cache" directory exists
-    const char* cacheDir = "cache";
+    const char* cacheDir = SUBDIR2 "shadercache";
     if (_mkdir(cacheDir) != 0 && errno != EEXIST) {
         std::cerr << "Failed to create or access cache directory: " << cacheDir << std::endl;
         return;
@@ -11325,7 +11325,7 @@ ID3DXBuffer* CPlugin::LoadShaderBytecodeFromFile(uint32_t checksum, char* prefix
     ID3DXBuffer* pBuffer = nullptr;
 
     std::ostringstream filePath;
-    filePath << "cache\\" << prefix << "-" << std::hex << std::uppercase << checksum << ".shader";
+    filePath << SUBDIR2 "shadercache\\" << prefix << "-" << std::hex << std::uppercase << checksum << ".shader";
 
     std::ifstream inFile(filePath.str(), std::ios::binary | std::ios::ate);
     if (!inFile.is_open()) return nullptr;
