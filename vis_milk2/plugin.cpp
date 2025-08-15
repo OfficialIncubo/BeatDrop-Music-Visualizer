@@ -1360,6 +1360,7 @@ void CPlugin::MyReadConfig()
     m_bEnableSongTitlePollExplicit = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePollExplicit", m_bEnableSongTitlePollExplicit, pIni);
     m_bScreenDependentRenderMode = GetPrivateProfileBoolW(L"settings", L"bScreenDependentRenderMode", m_bScreenDependentRenderMode, pIni);
     m_bManualBeatSensitivityMode = GetPrivateProfileBoolW(L"settings", L"bManualBeatSensitivityMode", m_bManualBeatSensitivityMode, pIni);
+    m_bShaderCaching = GetPrivateProfileBoolW(L"settings", L"bShaderCaching", m_bShaderCaching, pIni);
 
 	m_bShowFPS			= GetPrivateProfileBoolW(L"settings",L"bShowFPS",       m_bShowFPS			,pIni);
 	m_bShowRating		= GetPrivateProfileBoolW(L"settings",L"bShowRating",    m_bShowRating		,pIni);
@@ -1520,6 +1521,7 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_dTimeVariableResetDelay, L"dTimeVariableResetDelay", pIni, L"settings");
     WritePrivateProfileIntW(m_nAMDMode, L"nAMDMode", pIni, L"settings");
     WritePrivateProfileIntW(m_bManualBeatSensitivityMode, L"bManualBeatSensitivityMode", pIni, L"settings");
+    WritePrivateProfileIntW(m_bShaderCaching, L"bShaderCaching", pIni, L"settings");
 
 	WritePrivateProfileFloatW(m_fBlendTimeAuto,          L"fBlendTimeAuto",           pIni, L"settings");
 	WritePrivateProfileFloatW(m_fBlendTimeUser,          L"fBlendTimeUser",           pIni, L"settings");
@@ -3763,7 +3765,7 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
     default:           lstrcpy(szWhichShader, "(unknown)"); break;
     }
 
-    LPD3DXBUFFER pShaderByteCode;
+    LPD3DXBUFFER pShaderByteCode = NULL;
     wchar_t title[64];
 
     *ppShader = NULL;
@@ -3906,32 +3908,48 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
 	bool failed=false;
     int len = lstrlen(szShaderText);
 
-    HRESULT hresult = D3DXCompileShader(
-        szShaderText,
-        len,
-        NULL,//CONST D3DXMACRO* pDefines,
-        NULL,//LPD3DXINCLUDE pInclude,
-        szFn,
-        szProfile,
-        m_dwShaderFlags,
-        &pShaderByteCode,
-        &m_pShaderCompileErrors,
-        ppConstTable);
+    uint32_t checksum = crc32(szShaderText, len);
+    if (m_bShaderCaching && !strcmp(szProfile, "ps_3_0"))
+    {
+        pShaderByteCode = LoadShaderBytecodeFromFile(checksum, &szProfile[0]);
+    }
 
-    if (D3D_OK != hresult)
-		{
-			failed=true;
-		}
-		// before we totally fail, let's try using ps_2_b instead of ps_2_a
-		if (failed && !strcmp(szProfile, "ps_2_a"))
-		{
-			SafeRelease(m_pShaderCompileErrors);
-			if (D3D_OK == D3DXCompileShader(szShaderText, len, NULL, NULL, szFn,
-				"ps_2_b", m_dwShaderFlags, &pShaderByteCode, &m_pShaderCompileErrors, ppConstTable))
-			{
-				failed=false;
-			}
-		}
+    if (pShaderByteCode) {
+        // restore ConstTabe from bytecode
+        HRESULT hr = D3DXGetShaderConstantTable(
+            (DWORD*)pShaderByteCode->GetBufferPointer(),
+            ppConstTable // pass the pointer to pointer
+        );
+    }
+    else
+    {
+        HRESULT hresult = D3DXCompileShader(
+            szShaderText,
+            len,
+            NULL,//CONST D3DXMACRO* pDefines,
+            NULL,//LPD3DXINCLUDE pInclude,
+            szFn,
+            szProfile,
+            m_dwShaderFlags,
+            &pShaderByteCode,
+            &m_pShaderCompileErrors,
+            ppConstTable);
+
+        if (D3D_OK != hresult)
+        {
+            failed = true;
+        }
+        // before we totally fail, let's try using ps_2_b instead of ps_2_a
+        if (failed && !strcmp(szProfile, "ps_2_a"))
+        {
+            SafeRelease(m_pShaderCompileErrors);
+            if (D3D_OK == D3DXCompileShader(szShaderText, len, NULL, NULL, szFn,
+                "ps_2_b", m_dwShaderFlags, &pShaderByteCode, &m_pShaderCompileErrors, ppConstTable))
+            {
+                failed = false;
+            }
+        }
+    }
 
 		if (failed)
 		{
@@ -3952,6 +3970,10 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
 			return false;
 		}
 
+    if (m_bShaderCaching && !strcmp(szProfile, "ps_3_0"))
+        SaveShaderBytecodeToFile(pShaderByteCode, checksum, &szProfile[0]);
+
+    // load ok, create the shader
     HRESULT hr = 1;
     if (szProfile[0] == 'v')
     {
@@ -3976,6 +3998,7 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
     }
 
     pShaderByteCode->Release();
+    pShaderByteCode = nullptr;
 
     return true;
 }
@@ -11271,6 +11294,70 @@ void CPlugin::SetAMDFlag()
     else {
         m_IsAMD = false;
     }
+}
+
+#include <fstream>
+
+void CPlugin::SaveShaderBytecodeToFile(ID3DXBuffer* pShaderByteCode, uint32_t checksum, char* prefix) {
+    if (!pShaderByteCode || !checksum) return;
+
+    // Ensure the "cache" directory exists
+    const char* cacheDir = "cache";
+    if (_mkdir(cacheDir) != 0 && errno != EEXIST) {
+        std::cerr << "Failed to create or access cache directory: " << cacheDir << std::endl;
+        return;
+    }
+    std::ostringstream filePath;
+    filePath << cacheDir << "\\" << prefix << "-" << std::hex << std::uppercase << checksum << ".shader";
+
+    std::ofstream outFile(filePath.str(), std::ios::binary);
+    if (outFile.is_open()) {
+        outFile.write(
+            static_cast<const char*>(pShaderByteCode->GetBufferPointer()),
+            pShaderByteCode->GetBufferSize()
+        );
+        outFile.flush();
+        outFile.close();
+    }
+}
+
+ID3DXBuffer* CPlugin::LoadShaderBytecodeFromFile(uint32_t checksum, char* prefix) {
+    ID3DXBuffer* pBuffer = nullptr;
+
+    std::ostringstream filePath;
+    filePath << "cache\\" << prefix << "-" << std::hex << std::uppercase << checksum << ".shader";
+
+    std::ifstream inFile(filePath.str(), std::ios::binary | std::ios::ate);
+    if (!inFile.is_open()) return nullptr;
+
+    std::streamsize size = inFile.tellg();
+    inFile.seekg(0, std::ios::beg);
+
+    if (SUCCEEDED(D3DXCreateBuffer((UINT)size, &pBuffer))) {
+        char* dest = static_cast<char*>(pBuffer->GetBufferPointer());
+        if (!inFile.read(dest, size)) {
+            pBuffer->Release();
+            return nullptr;
+        }
+    }
+
+    return pBuffer;
+}
+
+#include <cstdint>
+
+uint32_t CPlugin::crc32(const char* data, size_t length) {
+    uint32_t crc = 0xFFFFFFFF;
+    for (size_t i = 0; i < length; ++i) {
+        crc ^= static_cast<uint8_t>(data[i]);
+        for (int j = 0; j < 8; ++j) {
+            if (crc & 1)
+                crc = (crc >> 1) ^ 0xEDB88320;
+            else
+                crc >>= 1;
+        }
+    }
+    return ~crc;
 }
 
 // =========================================================

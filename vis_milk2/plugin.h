@@ -347,6 +347,7 @@ public:
         bool        m_bEnableSongTitlePollExplicit;
         bool        m_bScreenDependentRenderMode;
         bool        m_bManualBeatSensitivityMode = false;
+        bool        m_bShaderCaching = true;
         float       m_nBeatSensitivity = 1;
         int         m_nAMDMode = 0; // 0 - Auto, 1 - Force AMD Mode, 2 - Force Non-AMD Mode (if you are using Intel)
         int         m_nBassStart = 0;
@@ -654,6 +655,9 @@ public:
         void        UvToMathSpace(float u, float v, float* rad, float* ang);
         void        ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CState* pState);
         void        RestoreShaderParams();
+        void SaveShaderBytecodeToFile(ID3DXBuffer* pShaderByteCode, uint32_t checksum, char* prefix);
+        ID3DXBuffer* LoadShaderBytecodeFromFile(uint32_t checksum, char* prefix);
+        uint32_t crc32(const char* data, size_t length);
         bool        AddNoiseTex(const wchar_t* szTexName, int size, int zoom_factor);
         bool        AddNoiseVol(const wchar_t* szTexName, int size, int zoom_factor);
 
