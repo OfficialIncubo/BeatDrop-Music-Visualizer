@@ -90,13 +90,13 @@ wave_0_per_frame2=tin = if(ps,time,tin);
 wave_0_per_frame3=
 wave_0_per_frame4=sz = 3.5;
 wave_0_per_frame5=
-wave_0_per_frame6=xr = if(ps,rand(sz*10*2 + 1)*.1 - sz,xr);
-wave_0_per_frame7=yr = if(ps,rand(sz*10*2*.75 + 1)*.1 - sz*.75,yr);
-wave_0_per_frame8=tr = if(ps,rand(11)*.1*.1,tr);
+wave_0_per_frame6=xr = if(ps,int(rand(sz*10*2 + 1))*.1 - sz,xr);
+wave_0_per_frame7=yr = if(ps,int(rand(sz*10*2*.75 + 1))*.1 - sz*.75,yr);
+wave_0_per_frame8=tr = if(ps,int(rand(11))*.1*.1,tr);
 wave_0_per_frame9=
-wave_0_per_frame10=sr = if(ps,(rand(8)+3)*.1*.6,sr);
+wave_0_per_frame10=sr = if(ps,(int(rand(8))+3)*.1*.6,sr);
 wave_0_per_frame11=
-wave_0_per_frame12=bob = if(ps,rand(q5)*100,bob);
+wave_0_per_frame12=bob = if(ps,int(rand(q5))*100,bob);
 wave_0_per_frame13=
 wave_0_per_frame14=t1 = xr + bob;
 wave_0_per_frame15=t2 = yr + bob;
@@ -174,13 +174,13 @@ wave_1_per_frame2=tin = if(ps,time,tin);
 wave_1_per_frame3=
 wave_1_per_frame4=sz = 3.5;
 wave_1_per_frame5=
-wave_1_per_frame6=xr = if(ps,rand(sz*10*2 + 1)*.1 - sz,xr);
-wave_1_per_frame7=yr = if(ps,rand(sz*10*2*.75 + 1)*.1 - sz*.75,yr);
-wave_1_per_frame8=tr = if(ps,rand(11)*.1*.1,tr);
+wave_1_per_frame6=xr = if(ps,int(rand(sz*10*2 + 1))*.1 - sz,xr);
+wave_1_per_frame7=yr = if(ps,int(rand(sz*10*2*.75 + 1))*.1 - sz*.75,yr);
+wave_1_per_frame8=tr = if(ps,int(rand(11))*.1*.1,tr);
 wave_1_per_frame9=
-wave_1_per_frame10=sr = if(ps,(rand(8)+3)*.1*.6,sr);
+wave_1_per_frame10=sr = if(ps,(int(rand(8))+3)*.1*.6,sr);
 wave_1_per_frame11=
-wave_1_per_frame12=bob = if(ps,rand(q5)*100,bob);
+wave_1_per_frame12=bob = if(ps,int(rand(q5))*100,bob);
 wave_1_per_frame13=
 wave_1_per_frame14=t1 = xr + bob;
 wave_1_per_frame15=t2 = yr + bob;
@@ -232,13 +232,13 @@ wave_2_per_frame2=tin = if(ps,time,tin);
 wave_2_per_frame3=
 wave_2_per_frame4=sz = 3.5;
 wave_2_per_frame5=
-wave_2_per_frame6=xr = if(ps,rand(sz*10*2 + 1)*.1 - sz,xr);
-wave_2_per_frame7=yr = if(ps,rand(sz*10*2*.75 + 1)*.1 - sz*.75,yr);
-wave_2_per_frame8=tr = if(ps,rand(11)*.1*.1,tr);
+wave_2_per_frame6=xr = if(ps,int(rand(sz*10*2 + 1))*.1 - sz,xr);
+wave_2_per_frame7=yr = if(ps,int(rand(sz*10*2*.75 + 1))*.1 - sz*.75,yr);
+wave_2_per_frame8=tr = if(ps,int(rand(11))*.1*.1,tr);
 wave_2_per_frame9=
-wave_2_per_frame10=sr = if(ps,(rand(8)+3)*.1*.6,sr);
+wave_2_per_frame10=sr = if(ps,(int(rand(8))+3)*.1*.6,sr);
 wave_2_per_frame11=
-wave_2_per_frame12=bob = if(ps,rand(q5)*100,bob);
+wave_2_per_frame12=bob = if(ps,int(rand(q5))*100,bob);
 wave_2_per_frame13=
 wave_2_per_frame14=t1 = xr + bob;
 wave_2_per_frame15=t2 = yr + bob;
@@ -290,13 +290,13 @@ wave_3_per_frame2=tin = if(ps,time,tin);
 wave_3_per_frame3=
 wave_3_per_frame4=sz = 3.5;
 wave_3_per_frame5=
-wave_3_per_frame6=xr = if(ps,rand(sz*10*2 + 1)*.1 - sz,xr);
-wave_3_per_frame7=yr = if(ps,rand(sz*10*2*.75 + 1)*.1 - sz*.75,yr);
-wave_3_per_frame8=tr = if(ps,rand(11)*.1*.1,tr);
+wave_3_per_frame6=xr = if(ps,int(rand(sz*10*2 + 1))*.1 - sz,xr);
+wave_3_per_frame7=yr = if(ps,int(rand(sz*10*2*.75 + 1))*.1 - sz*.75,yr);
+wave_3_per_frame8=tr = if(ps,int(rand(11))*.1*.1,tr);
 wave_3_per_frame9=
-wave_3_per_frame10=sr = if(ps,(rand(8)+3)*.1*.6,sr);
+wave_3_per_frame10=sr = if(ps,(int(rand(8))+3)*.1*.6,sr);
 wave_3_per_frame11=
-wave_3_per_frame12=bob = if(ps,rand(q5)*100,bob);
+wave_3_per_frame12=bob = if(ps,int(rand(q5))*100,bob);
 wave_3_per_frame13=
 wave_3_per_frame14=t1 = xr + bob;
 wave_3_per_frame15=t2 = yr + bob;
