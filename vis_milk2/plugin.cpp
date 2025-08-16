@@ -4560,6 +4560,15 @@ void CPlugin::OnAltK()
     AddError(wasabiApiLangString(IDS_PLEASE_EXIT_VIS_BEFORE_RUNNING_CONFIG_PANEL), 3.0f, ERR_NOTIFY, true);
 }
 
+void CPlugin::AddNotif(wchar_t* szMsg)
+{
+    AddError(szMsg, 3.0f, ERR_NOTIFY, false);
+}
+
+void CPlugin::AddErrorNotif(wchar_t* szMsg)
+{
+    AddError(szMsg, 5.0f, ERR_NOTIFY, true);
+}
 void CPlugin::AddError(wchar_t* szMsg, float fDuration, int category, bool bBold)
 {
     if (category == ERR_NOTIFY)
@@ -5791,7 +5800,7 @@ void LoadPresetFilesViaDragAndDrop(WPARAM wParam)
     {
         wchar_t buf[1024], tmp[128];
         swprintf(buf, L"Error: Failed to load dropped preset file: %s", convertedFileName, tmp, 128);
-        g_plugin.AddError(buf, 5.0f, ERR_NOTIFY, true);
+        g_plugin.AddErrorNotif(buf);
     }
     DragFinish(hDrop);
 }
@@ -6117,7 +6126,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_max_fps_w = 60;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"60 fps", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             else if (ToggleFPSNumPressed == 2)
             {
@@ -6126,7 +6135,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_max_fps_w = 90;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"90 fps", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             else if (ToggleFPSNumPressed == 3)
             {
@@ -6135,7 +6144,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_max_fps_w = 120;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"120 fps", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             else if (ToggleFPSNumPressed == 4)
             {
@@ -6144,7 +6153,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_max_fps_w = 144;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"144 fps", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             else if (ToggleFPSNumPressed == 5)
             {
@@ -6153,7 +6162,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_max_fps_w = 240;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"240 fps", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             else if (ToggleFPSNumPressed == 6)
             {
@@ -6162,7 +6171,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_max_fps_w = 360;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"360 fps", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             else if (ToggleFPSNumPressed == 7)
             {
@@ -6171,7 +6180,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_max_fps_w = 0;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Unlimited fps!", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             else if (ToggleFPSNumPressed == 8)
             {
@@ -6181,7 +6190,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_max_fps_w = 30;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"30 fps", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
         }
             return 0; // we processed (or absorbed) the key
@@ -6194,13 +6203,13 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 				ToggleAlwaysOnTop(hWnd);
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Always On Top ON", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
 			}
 			else { 
 				ToggleAlwaysOnTop(hWnd);
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Always On Top OFF", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
 			}
 			 return 0; // we processed (or absorbed) the key
         case VK_F8:
@@ -6213,14 +6222,14 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 ToggleTransparency(hWnd);
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Transparency Mode ON", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
         else
             {
                 ToggleTransparency(hWnd);
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Transparency Mode OFF", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
         return 0; // we processed (or absorbed) the key
         //case VK_F2:
@@ -6253,14 +6262,14 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_bHardCutsDisabled = false;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Hard cut Mode: Normal", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             if (HardcutMode == 2)
             {
                 m_bHardCutsDisabled = true;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Hard cut Mode: Bass Blend", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
 
             if (HardcutMode == 3)
@@ -6268,56 +6277,56 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_bHardCutsDisabled = true;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Hard cut Mode: Bass", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             if (HardcutMode == 4)
             {
                 m_bHardCutsDisabled = true;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Hard cut Mode: Middle", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             if (HardcutMode == 5)
             {
                 m_bHardCutsDisabled = true;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Hard cut Mode: Treble", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             if (HardcutMode == 6)
             {
                 m_bHardCutsDisabled = true;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Hard cut Mode: Bass Fast Blend", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             if (HardcutMode == 7)
             {
                 m_bHardCutsDisabled = true;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Hard cut Mode: Treble Fast Blend", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             if (HardcutMode == 8)
             {
                 m_bHardCutsDisabled = true;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Hard cut Mode: Bass Blend and Hardcut Treble", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             if (HardcutMode == 9)
             {
                 m_bHardCutsDisabled = true;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Hard cut Mode: Rhythmic Hardcut", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             if (HardcutMode == 10)
             {
                 m_bHardCutsDisabled = true;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Hard cut Mode: 2 beats", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
                 beatcount = -1;
             }
             if (HardcutMode == 11)
@@ -6325,7 +6334,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_bHardCutsDisabled = true;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Hard cut Mode: 4 beats", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
                 beatcount = -1;
             }
             if (HardcutMode == 12)
@@ -6333,7 +6342,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_bHardCutsDisabled = true;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Hard cut Mode: Kinetronix (Vizikord)", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
                 beatcount = -1;
             }
             if (HardcutMode == 13)
@@ -6342,7 +6351,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_bHardCutsDisabled = true;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Hard cut Mode: OFF", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
         }
         return 0; // we processed (or absorbed) the key
@@ -6892,61 +6901,61 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 100%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 9)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 90%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 8)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 80%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 7)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 70%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 6)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 60%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 5)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 50%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 4)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 40%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 3)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 30%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 2)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 20%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 1)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 10%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 ToggleWindowOpacity(hWnd);
             }
@@ -6956,7 +6965,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 if (m_nBeatSensitivity > 5.0f) m_nBeatSensitivity = 5.0f;
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Beat Sensitivity: %.1f", (float)m_nBeatSensitivity, tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
 			break;
 
@@ -6985,61 +6994,61 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 100%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 9)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 90%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 8)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 80%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 7)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 70%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 6)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 60%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 5)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 50%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 4)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 40%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 3)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 30%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 2)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 20%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 else if (OpacityControl == 1)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 10%%", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
                 ToggleWindowOpacity(hWnd);
             }
@@ -7050,7 +7059,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                     if (m_nBeatSensitivity < 0.1f) m_nBeatSensitivity = 0.1f;
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Beat Sensitivity: %.1f", (float)m_nBeatSensitivity, tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
                 }
 			break;
 			
@@ -7318,13 +7327,13 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 					// Start spout
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Spout output enabled.", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
 				}
 				else {
 					// Stop Spout
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Spout output disabled.", tmp, 64);
-                    AddError(buf, 3.0f, ERR_NOTIFY, false);
+                    AddNotif(buf);
 				}
 				if (bInitialized) {
 					spoutsender.ReleaseDX9sender();
@@ -7347,13 +7356,13 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
             {
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Manual Beat Sensitivity Mode", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
             else
             {
                 wchar_t buf[1024], tmp[64];
                 swprintf(buf, L"Automatic Beat Sensitivity Mode", tmp, 64);
-                AddError(buf, 3.0f, ERR_NOTIFY, false);
+                AddNotif(buf);
             }
         break;
 
@@ -7507,7 +7516,7 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
             wchar_t buf[1024], tmp[64];
             swprintf(buf, wasabiApiLangString(IDS_PRESET_ORDER_IS_NOW_X),
 					wasabiApiLangString((m_bSequentialPresetOrder) ? IDS_SEQUENTIAL : IDS_RANDOM, tmp, 64));
-            AddError(buf, 3.0f, ERR_NOTIFY, false);
+            AddNotif(buf);
         }
 
         // erase all history, too:
@@ -7727,13 +7736,13 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
         {
             wchar_t buf[1024], tmp[64];
             swprintf(buf, L"Preset locked.", tmp, 64);
-            AddError(buf, 3.0f, ERR_NOTIFY, false);
+            AddNotif(buf);
         }
         else
         {
             wchar_t buf[1024], tmp[64];
             swprintf(buf, L"Preset unlocked.", tmp, 64);
-            AddError(buf, 3.0f, ERR_NOTIFY, false);
+            AddNotif(buf);
         }
         return 0;
 
@@ -10402,7 +10411,7 @@ void CPlugin::DeletePresetFile(wchar_t *szDelFile)
 		// pop up confirmation
 		wchar_t buf[1024];
         swprintf(buf, wasabiApiLangString(IDS_PRESET_X_DELETED), m_presets[m_nPresetListCurPos].szFilename.c_str());
-        AddError(buf, 3.0f, ERR_NOTIFY, false);
+        AddNotif(buf);
 
 		// refresh file listing & re-select the next file after the one deleted
         int newPos = m_nPresetListCurPos;

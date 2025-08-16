@@ -500,6 +500,8 @@ public:
                               // NOTE: each NOTIFY msg clears all the old NOTIFY messages!
         #define ERR_SCANNING_PRESETS 5
         ErrorMsgList m_errors;
+        void        AddNotif(wchar_t* szMsg);
+        void        AddErrorNotif(wchar_t* szMsg);
         void        AddError(wchar_t* szMsg, float fDuration, int category=ERR_ALL, bool bBold=true);
         void        ClearErrors(int category=ERR_ALL);  // 0=all categories
 
@@ -655,9 +657,9 @@ public:
         void        UvToMathSpace(float u, float v, float* rad, float* ang);
         void        ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CState* pState);
         void        RestoreShaderParams();
-        void SaveShaderBytecodeToFile(ID3DXBuffer* pShaderByteCode, uint32_t checksum, char* prefix);
-        ID3DXBuffer* LoadShaderBytecodeFromFile(uint32_t checksum, char* prefix);
-        uint32_t crc32(const char* data, size_t length);
+        void        SaveShaderBytecodeToFile(ID3DXBuffer* pShaderByteCode, uint32_t checksum, char* prefix);
+        ID3DXBuffer*LoadShaderBytecodeFromFile(uint32_t checksum, char* prefix);
+        uint32_t    crc32(const char* data, size_t length);
         bool        AddNoiseTex(const wchar_t* szTexName, int size, int zoom_factor);
         bool        AddNoiseVol(const wchar_t* szTexName, int size, int zoom_factor);
 
