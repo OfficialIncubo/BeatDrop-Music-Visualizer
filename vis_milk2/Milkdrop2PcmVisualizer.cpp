@@ -206,8 +206,11 @@ BOOL CALLBACK GetWindowNames(HWND h, LPARAM l)
 // SPOUT - DX9EX
 void InitD3d(HWND hwnd, int width, int height) {
 	
-	// TODO - error return
 	HRESULT Hr = Direct3DCreate9Ex(D3D_SDK_VERSION, &pD3D9);
+    if (Hr != S_OK) {
+        printf("Milkdrop2PcmVisualizer::InitD3d - Direct3DCreate9Ex error\n");
+        return;
+    }
 
 	D3DCAPS9 d3dCaps;
 
@@ -751,8 +754,6 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 		SpoutWidth,
 		SpoutHeight);
 
-	// g_plugin. .m_lpVS->
-
     MSG msg;
     msg.message = WM_NULL;
 
@@ -879,6 +880,10 @@ int StartThreads(HINSTANCE instance) {
     // at this point capture is running
     // wait for the user to press a key or for capture to error out
     
+    if (g_plugin.CheckDX9DLL() != 0) {
+        ERR(L"DirectX 9 DLL not found, closing...");
+        return 0;
+    }
     /*HANDLE thread =*/ StartRenderThread(instance);
     WaitForSingleObject(thread, INFINITE);
 

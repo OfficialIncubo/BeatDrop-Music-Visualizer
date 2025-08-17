@@ -1361,6 +1361,7 @@ void CPlugin::MyReadConfig()
     m_bScreenDependentRenderMode = GetPrivateProfileBoolW(L"settings", L"bScreenDependentRenderMode", m_bScreenDependentRenderMode, pIni);
     m_bManualBeatSensitivityMode = GetPrivateProfileBoolW(L"settings", L"bManualBeatSensitivityMode", m_bManualBeatSensitivityMode, pIni);
     m_bShaderCaching = GetPrivateProfileBoolW(L"settings", L"bShaderCaching", m_bShaderCaching, pIni);
+    m_bCheckForDirectXAtStartup = GetPrivateProfileBoolW(L"settings", L"bCheckForDirectXAtStartup", m_bCheckForDirectXAtStartup, pIni);
 
 	m_bShowFPS			= GetPrivateProfileBoolW(L"settings",L"bShowFPS",       m_bShowFPS			,pIni);
 	m_bShowRating		= GetPrivateProfileBoolW(L"settings",L"bShowRating",    m_bShowRating		,pIni);
@@ -1522,6 +1523,7 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_nAMDMode, L"nAMDMode", pIni, L"settings");
     WritePrivateProfileIntW(m_bManualBeatSensitivityMode, L"bManualBeatSensitivityMode", pIni, L"settings");
     WritePrivateProfileIntW(m_bShaderCaching, L"bShaderCaching", pIni, L"settings");
+    WritePrivateProfileIntW(m_bCheckForDirectXAtStartup, L"bCheckForDirectXAtStartup", pIni, L"settings");
 
 	WritePrivateProfileFloatW(m_fBlendTimeAuto,          L"fBlendTimeAuto",           pIni, L"settings");
 	WritePrivateProfileFloatW(m_fBlendTimeUser,          L"fBlendTimeUser",           pIni, L"settings");
@@ -4569,6 +4571,7 @@ void CPlugin::AddErrorNotif(wchar_t* szMsg)
 {
     AddError(szMsg, 5.0f, ERR_NOTIFY, true);
 }
+
 void CPlugin::AddError(wchar_t* szMsg, float fDuration, int category, bool bBold)
 {
     if (category == ERR_NOTIFY)
@@ -11263,6 +11266,7 @@ void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
 }
 
 // =========================================================
+// ADDITIONAL FUNCTIONS
 // SPOUT initialization function
 // Initializes OpenGL and a Spout sender
 //
@@ -11292,6 +11296,8 @@ bool CPlugin::OpenSender(unsigned int width, unsigned int height)
 
 } // end OpenSender
 
+// SET AMD FLAG
+// A setting for forcing, non-forcing or auto-checking AMD mode for PS4 presets.
 void CPlugin::SetAMDFlag()
 {
     if (m_nAMDMode == 0) {
@@ -11307,6 +11313,8 @@ void CPlugin::SetAMDFlag()
 
 #include <fstream>
 
+// SHADER CACHING
+// Shader Cache file saving and loading, used for instant shader loading.
 void CPlugin::SaveShaderBytecodeToFile(ID3DXBuffer* pShaderByteCode, uint32_t checksum, char* prefix) {
     if (!pShaderByteCode || !checksum) return;
 
@@ -11353,6 +11361,7 @@ ID3DXBuffer* CPlugin::LoadShaderBytecodeFromFile(uint32_t checksum, char* prefix
     return pBuffer;
 }
 
+//CRC32
 #include <cstdint>
 
 uint32_t CPlugin::crc32(const char* data, size_t length) {
@@ -11367,6 +11376,35 @@ uint32_t CPlugin::crc32(const char* data, size_t length) {
         }
     }
     return ~crc;
+}
+
+// DIRECTX 9 CHECKING
+// Checks for DirectX 9 whenever it's available or not.
+int CPlugin::CheckDX9DLL() {
+    // Try to load the DLL manually
+
+    if (!g_plugin.m_bCheckForDirectXAtStartup) return 0;
+
+    HMODULE hD3DX = LoadLibrary(TEXT("D3DX9_43.dll"));
+
+    if (!hD3DX) {
+        if (MessageBoxA(GetPluginWindow(),
+            "Failed to initialize DirectX 9.\n\nPlease install the DirectX End-User Runtimes.\n\nDo you want to open the DirectX download page?",
+            "BeatDrop Music Visualizer", MB_YESNO | MB_SETFOREGROUND | MB_TOPMOST) == IDYES) {
+            // open website in browser
+            ShellExecuteA(NULL, "open", "https://www.microsoft.com/en-us/download/details.aspx?id=35", NULL, NULL, SW_SHOWNORMAL);
+        }
+        return -1;
+    }
+
+    g_plugin.m_bCheckForDirectXAtStartup = false;
+
+    // If successful, free the DLL (optional if you're linking statically)
+    FreeLibrary(hD3DX);
+
+    // Continue with your app
+    // ...
+    return 0;
 }
 
 // =========================================================
