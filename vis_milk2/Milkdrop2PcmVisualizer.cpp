@@ -118,6 +118,10 @@
 #include <d3d9.h>
 #include <math.h>
 #include <dwmapi.h>
+#include <filesystem>
+#include <sstream>
+#include <locale>
+#include <codecvt>
 
 #include <ShellScalingApi.h> // for dpi awareness
 #pragma comment(lib, "shcore.lib") // for dpi awareness
@@ -126,6 +130,9 @@
 #include "plugin.h"
 #include "resource.h"
 #include "pluginshell.h"
+#include "Milkdrop2PcmVisualizer.h"
+
+namespace fs = std::filesystem;
 
 #include <mutex>
 #include <atomic>
@@ -169,6 +176,7 @@ static RECT lastRect = { 0 };
 
 static HMODULE module = nullptr;
 static std::atomic<HANDLE> thread = nullptr;
+static std::atomic<HANDLE> threadPrecache = nullptr;
 static unsigned threadId = 0;
 static std::mutex pcmMutex;
 static unsigned char pcmLeftIn[SAMPLE_SIZE];
@@ -793,6 +801,147 @@ void StartRenderThread(HINSTANCE instance) {
         &threadId);
 }
 
+unsigned __stdcall DoShaderPrecache(void* param) {
+
+    Sleep(3000); // wait for the render thread to initialize the plugin completely
+    HINSTANCE instance = (HINSTANCE)param;
+
+    if (g_plugin.m_bShaderCaching && g_plugin.m_bShaderPrecachingAtStartup) {
+
+        std::wstring cacheDir = SUBDIR L"shadercache";
+        std::wstring compiledListPath = cacheDir + L"\\cached.txt";
+
+        //Incubo_ - Check if the shader cache folder is already in. If not, create it.
+        if (!std::filesystem::exists(cacheDir))
+            std::filesystem::create_directory(cacheDir);
+
+        // Abort if compiled.txt already exists
+        if (std::filesystem::exists(compiledListPath)) {
+            //g_plugin.AddNotification(L"Shader cache already exists, skipping precompilation");
+            return -1;
+        }
+
+        // Open precompile.txt
+        std::wifstream file("precache.txt");
+        if (!file.is_open()) {
+            g_plugin.AddNotif(L"Failed to open precache.txt");
+            return -1;
+        }
+
+        // Prepare output file for compiled shader list
+        std::wofstream compiledList(compiledListPath);
+        if (!compiledList.is_open()) {
+            std::wstring msg = L"Failed to create " + compiledListPath;
+            wchar_t* writableMsg = &msg[0];  // Get non-const pointer to internal buffer
+            g_plugin.AddNotif(writableMsg);
+            return -1;
+        }
+
+        g_plugin.AddNotif(L"Precaching shaders in background...");
+
+        int compiledShaders = 0;
+        std::wstring line;
+        auto start = std::chrono::high_resolution_clock::now();
+        while (std::getline(file, line)) {
+            // Convert to wide string
+            std::wstring wLine(line.begin(), line.end());
+
+            // Trim whitespace
+            wLine.erase(0, wLine.find_first_not_of(L" \t"));
+            wLine.erase(wLine.find_last_not_of(L" \t") + 1);
+
+            // Skip empty lines or comments
+            if (wLine.empty() || wLine[0] == L'#') continue;
+
+            // Check for wildcard
+            if (!wLine.empty() && wLine.back() == L'*') {
+                std::wstring dirPath = wLine.substr(0, line.length() - 1); // Remove '*'
+                if (std::filesystem::exists(dirPath)) {
+                    for (const auto& entry : std::filesystem::directory_iterator(dirPath)) {
+                        if (entry.is_regular_file()) {
+                            PrecachePresetShaders(entry.path().wstring(), compiledList, compiledShaders);
+                        }
+                    }
+                }
+            }
+            else {
+                PrecachePresetShaders(wLine, compiledList, compiledShaders);
+            }
+        }
+
+        file.close();
+        compiledList.close();
+        auto end = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration<double>(end - start); // fractional seconds
+        std::wstringstream ss;
+        ss << std::fixed << std::setprecision(2) << duration.count();
+
+        std::wstring message = L"Precaching " + std::to_wstring(compiledShaders)
+            + L" shaders completed in " + ss.str() + L"s";
+
+        wchar_t szMessage[256];
+        wcsncpy_s(szMessage, message.c_str(), _TRUNCATE);
+        g_plugin.AddNotif(szMessage);
+    }
+    return 0;
+}
+
+void PrecachePresetShaders(std::wstring& wLine, std::wofstream& compiledList, int& compiledShaders) {
+    wchar_t szFile[512];
+    // Treat anything without a drive letter as relative
+    if (wLine.find(L":\\") == std::wstring::npos) {
+        lstrcpyW(szFile, g_plugin.m_szBaseDir);
+        lstrcatW(szFile, wLine.c_str());
+    }
+    else {
+        lstrcpyW(szFile, wLine.c_str());
+    }
+
+    // Compile the shader
+    if (std::filesystem::exists(std::filesystem::path(szFile))) {
+
+        //Checks for MILKDROP_PRESET_VERSION and PSVERSION if it's a preset that contains shaders.
+        std::ifstream presetFile(szFile);
+        if (presetFile.is_open()) {
+            std::string line;
+            bool checkedShader = false;
+            while (std::getline(presetFile, line)) {
+                if (line.find("MILKDROP_PRESET_VERSION") != std::string::npos ||
+                    line.find("PSVERSION") != std::string::npos)
+                {
+                    checkedShader = true;
+                    break;
+                }
+            }
+            presetFile.close();
+
+            if (!checkedShader)
+                return; // Skip non-shader presets
+        }
+
+        auto start = std::chrono::high_resolution_clock::now();
+        g_plugin.CompilePresetShadersToFile(szFile);
+        auto end = std::chrono::high_resolution_clock::now();
+        auto durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        std::wstring warn = L" ";
+        if (durationMs > 1000) {
+            warn = L"!";
+        }
+        compiledList << warn << std::setw(8) << std::setfill(L' ') << durationMs << " " << szFile << std::endl;
+        compiledShaders++;
+    }
+}
+
+void StartShaderPrecacheThread(HINSTANCE instance) {
+    threadPrecache = (HANDLE)_beginthreadex(
+        nullptr,
+        0,
+        &DoShaderPrecache,
+        (void*)instance,
+        0,
+        &threadId);
+}
+
 int StartThreads(HINSTANCE instance) {
 
     HRESULT hr = S_OK;
@@ -884,7 +1033,9 @@ int StartThreads(HINSTANCE instance) {
         ERR(L"DirectX 9 DLL not found, closing...");
         return 0;
     }
+
     /*HANDLE thread =*/ StartRenderThread(instance);
+    StartShaderPrecacheThread(instance);
     WaitForSingleObject(thread, INFINITE);
 
     //NEED TO STOP CAPTURE

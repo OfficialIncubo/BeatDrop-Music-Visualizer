@@ -287,6 +287,7 @@ public:
 	bool bInitialized; // did it work ?
 	bool OpenSender(unsigned int width, unsigned int height);
     void SetAMDFlag();
+    int  CheckDX9DLL();
 	bool bSpoutChanged; // set to write config on exit
 	bool bSpoutOut; // Spout output on or off
     bool bEnablePresetStartup;
@@ -348,6 +349,8 @@ public:
         bool        m_bScreenDependentRenderMode;
         bool        m_bManualBeatSensitivityMode = false;
         bool        m_bShaderCaching = true;
+        bool        m_bShaderPrecachingAtStartup = true;
+        bool        m_bCheckForDirectXAtStartup;
         float       m_nBeatSensitivity = 1;
         int         m_nAMDMode = 0; // 0 - Auto, 1 - Force AMD Mode, 2 - Force Non-AMD Mode (if you are using Intel)
         int         m_nBassStart = 0;
@@ -396,9 +399,9 @@ public:
         #define SHADER_BLUR  2
         #define SHADER_OTHER 3
         bool LoadShaderFromMemory( const char* szShaderText, char* szFn, char* szProfile,
-                                   LPD3DXCONSTANTTABLE* ppConstTable, void** ppShader, int shaderType, bool bHardErrors );
-        bool RecompileVShader(const char* szShadersText, VShaderInfo *si, int shaderType, bool bHardErrors);
-        bool RecompilePShader(const char* szShadersText, PShaderInfo *si, int shaderType, bool bHardErrors, int PSVersion);
+                                   LPD3DXCONSTANTTABLE* ppConstTable, void** ppShader, int shaderType, bool bHardErrors, bool bRecompileOnly);
+        bool RecompileVShader(const char* szShadersText, VShaderInfo *si, int shaderType, bool bHardErrors, bool bRecompileOnly);
+        bool RecompilePShader(const char* szShadersText, PShaderInfo *si, int shaderType, bool bHardErrors, int PSVersion, bool bRecompileOnly);
         bool EvictSomeTexture();
         typedef std::vector<TexInfo> TexInfoList;
         TexInfoList     m_textures;
@@ -601,6 +604,7 @@ public:
         void        DrawTooltip(wchar_t* str, int xR, int yB);
         void        RandomizeBlendPattern();
         void        GenPlasma(int x0, int x1, int y0, int y1, float dt);
+        void        RemoveAngleBrackets(wchar_t* str);
         void        LoadPerFrameEvallibVars(CState* pState);
         void        LoadCustomWavePerFrameEvallibVars(CState* pState, int i);
         void        LoadCustomShapePerFrameEvallibVars(CState* pState, int i, int instance);
@@ -653,7 +657,8 @@ public:
         void        DoCustomSoundAnalysis();
         void        DrawMotionVectors();
 
-        bool        LoadShaders(PShaderSet* sh, CState* pState, bool bTick);
+        bool        LoadShaders(PShaderSet* sh, CState* pState, bool bTick, bool bCompileOnly);
+        void        CompilePresetShadersToFile(wchar_t* sPresetFile);
         void        UvToMathSpace(float u, float v, float* rad, float* ang);
         void        ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CState* pState);
         void        RestoreShaderParams();

@@ -241,6 +241,7 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClInclude Include="fft.h" />
     <ClInclude Include="md_defines.h" />
     <ClInclude Include="menu.h" />
+    <ClInclude Include="Milkdrop2PcmVisualizer.h" />
     <ClInclude Include="plugin.h" />
     <ClInclude Include="pluginshell.h" />
     <ClInclude Include="resource.h" />

@@ -1,0 +1,23 @@
+# BeatDrop now supports precaching shaders for quicker load presets.
+# Recommended to lock the preset or not loading another preset while precaching.
+# Precache the following shaders on visualizer startup if:
+#
+# - bShaderCaching=1 is set in settings.ini
+# - bShaderPrecachingAtStartup=1 is set in settings.ini
+# - The file ResourceDir\shadercache\cached.txt does not exist
+#
+# You can remove or empty the cache folder safely anytime. Use relative or 
+# absolute paths for the presets. The base directory for relative paths is 
+# the resource directory. You can put an asterisk (*) as a wildcard to include 
+# all contents of a directory.
+#
+# A list of compiled files, along with compilation time per file in 
+# milliseconds, are written to shadercache\cached.txt.
+#
+# Specify the preset path below to precache shaders.
+#
+BeatDrop Resources\presets\*
+BeatDrop Resources\presets\Butterchurn Presets\*
+BeatDrop Resources\presets\Incubo_'s Picks\*
+BeatDrop Resources\presets\Incubo_'s Presets\*
+BeatDrop Resources\presets\MilkDrop2077 Presets\*

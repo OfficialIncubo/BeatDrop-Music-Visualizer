@@ -103,6 +103,7 @@ public:
     LPD3DXFONT   GetFont(eFontIndex idx);       // returns a D3DX font handle for drawing text; see shell_defines.h for the definition of the 'eFontIndex' enum.
     int          GetFontHeight(eFontIndex idx); // returns the height of the font, in pixels; see shell_defines.h for the definition of the 'eFontIndex' enum.
     CTextManager m_text;
+    wchar_t      m_szBaseDir[MAX_PATH];
 protected:
 
     // MISC

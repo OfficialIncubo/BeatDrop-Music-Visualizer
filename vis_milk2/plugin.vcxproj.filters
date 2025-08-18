@@ -203,6 +203,9 @@
     <ClInclude Include="AMDDetection.h">
       <Filter>library\headers</Filter>
     </ClInclude>
+    <ClInclude Include="Milkdrop2PcmVisualizer.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="text1.bin">

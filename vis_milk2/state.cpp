@@ -222,6 +222,7 @@ CState::CState()
 
 	// this is the list of variables that can be used for a PER-FRAME calculation;
 	// it is a SUBSET of the per-vertex calculation variable list.
+	wcscpy_s(m_szDesc, L"");
 	m_pf_codehandle = NULL;
 	m_pp_codehandle = NULL;
 	m_pf_eel = NSEEL_VM_alloc();

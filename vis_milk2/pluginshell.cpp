@@ -1014,6 +1014,8 @@ int CPluginShell::PluginPreInitialize(HWND hWinampWnd, HINSTANCE hWinampInstance
 	m_szConfigIniFile[0] = 0;  // will be set further down
 	// m_szPluginsDirPath:
 
+	wcscpy(m_szPluginsDirPath, m_szBaseDir);
+
 	// get path to INI file & read in prefs/settings right away, so DumpMsg works!
 	GetModuleFileNameW(m_hInstance, m_szPluginsDirPath, MAX_PATH);
 	wchar_t *p = m_szPluginsDirPath + wcslen(m_szPluginsDirPath);

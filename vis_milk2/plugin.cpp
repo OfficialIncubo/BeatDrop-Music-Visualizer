@@ -980,7 +980,7 @@ void OnUserEditedWarpShaders(LPARAM param1, LPARAM param2)
     g_plugin.ClearErrors(ERR_PRESET);
     if (g_plugin.m_nMaxPSVersion == 0)
         return;
-    if (!g_plugin.RecompilePShader(g_plugin.m_pState->m_szWarpShadersText, &g_plugin.m_shaders.warp, SHADER_WARP, false, g_plugin.m_pState->m_nWarpPSVersion))
+    if (!g_plugin.RecompilePShader(g_plugin.m_pState->m_szWarpShadersText, &g_plugin.m_shaders.warp, SHADER_WARP, false, g_plugin.m_pState->m_nWarpPSVersion, false))
     {
         // switch to fallback
         g_plugin.m_fallbackShaders_ps.warp.ptr->AddRef();
@@ -995,7 +995,7 @@ void OnUserEditedCompShaders(LPARAM param1, LPARAM param2)
     g_plugin.ClearErrors(ERR_PRESET);
     if (g_plugin.m_nMaxPSVersion == 0)
         return;
-    if (!g_plugin.RecompilePShader(g_plugin.m_pState->m_szCompShadersText, &g_plugin.m_shaders.comp, SHADER_COMP, false, g_plugin.m_pState->m_nCompPSVersion))
+    if (!g_plugin.RecompilePShader(g_plugin.m_pState->m_szCompShadersText, &g_plugin.m_shaders.comp, SHADER_COMP, false, g_plugin.m_pState->m_nCompPSVersion, false))
     {
         // switch to fallback
         g_plugin.m_fallbackShaders_ps.comp.ptr->AddRef();
@@ -1361,6 +1361,7 @@ void CPlugin::MyReadConfig()
     m_bScreenDependentRenderMode = GetPrivateProfileBoolW(L"settings", L"bScreenDependentRenderMode", m_bScreenDependentRenderMode, pIni);
     m_bManualBeatSensitivityMode = GetPrivateProfileBoolW(L"settings", L"bManualBeatSensitivityMode", m_bManualBeatSensitivityMode, pIni);
     m_bShaderCaching = GetPrivateProfileBoolW(L"settings", L"bShaderCaching", m_bShaderCaching, pIni);
+    m_bShaderPrecachingAtStartup = GetPrivateProfileBoolW(L"settings", L"bShaderPrecachingAtStartup", m_bShaderPrecachingAtStartup, pIni);
     m_bCheckForDirectXAtStartup = GetPrivateProfileBoolW(L"settings", L"bCheckForDirectXAtStartup", m_bCheckForDirectXAtStartup, pIni);
 
 	m_bShowFPS			= GetPrivateProfileBoolW(L"settings",L"bShowFPS",       m_bShowFPS			,pIni);
@@ -1523,6 +1524,7 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_nAMDMode, L"nAMDMode", pIni, L"settings");
     WritePrivateProfileIntW(m_bManualBeatSensitivityMode, L"bManualBeatSensitivityMode", pIni, L"settings");
     WritePrivateProfileIntW(m_bShaderCaching, L"bShaderCaching", pIni, L"settings");
+    WritePrivateProfileIntW(m_bShaderPrecachingAtStartup, L"bShaderPrecachingAtStartup", pIni, L"settings");
     WritePrivateProfileIntW(m_bCheckForDirectXAtStartup, L"bCheckForDirectXAtStartup", pIni, L"settings");
 
 	WritePrivateProfileFloatW(m_fBlendTimeAuto,          L"fBlendTimeAuto",           pIni, L"settings");
@@ -2002,7 +2004,7 @@ int CPlugin::AllocateMyDX9Stuff()
 
 				// Load the FALLBACK shaders...
                 int PSVersionAMD = m_IsAMD ? m_nMaxPSVersion_DX9 : 2;
-				    if (!RecompilePShader(m_szDefaultWarpPShaderText, &m_fallbackShaders_ps.warp, SHADER_WARP, true, PSVersionAMD))
+				    if (!RecompilePShader(m_szDefaultWarpPShaderText, &m_fallbackShaders_ps.warp, SHADER_WARP, true, PSVersionAMD, false))
 				    {
 					    wchar_t szSM[64];
 					    switch(m_nMaxPSVersion_DX9)
@@ -2024,21 +2026,21 @@ int CPlugin::AllocateMyDX9Stuff()
 					    MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
 					    return false;
 				    }
-				if (!RecompileVShader(m_szDefaultWarpVShaderText, &m_fallbackShaders_vs.warp, SHADER_WARP, true))
+				if (!RecompileVShader(m_szDefaultWarpVShaderText, &m_fallbackShaders_vs.warp, SHADER_WARP, true, false))
 				{
 			wasabiApiLangString(IDS_COULD_NOT_COMPILE_FALLBACK_WV_SHADER,buf,sizeof(buf));
 		    dumpmsg(buf);
 		    MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
 		    return false;
         }
-        if (!RecompileVShader(m_szDefaultCompVShaderText, &m_fallbackShaders_vs.comp, SHADER_COMP, true))
+        if (!RecompileVShader(m_szDefaultCompVShaderText, &m_fallbackShaders_vs.comp, SHADER_COMP, true, false))
         {
 			wasabiApiLangString(IDS_COULD_NOT_COMPILE_FALLBACK_CV_SHADER,buf,sizeof(buf));
 		    dumpmsg(buf);
 		    MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
 		    return false;
         }
-        if (!RecompilePShader(m_szDefaultCompPShaderText, &m_fallbackShaders_ps.comp, SHADER_COMP, true, PSVersionAMD))
+        if (!RecompilePShader(m_szDefaultCompPShaderText, &m_fallbackShaders_ps.comp, SHADER_COMP, true, PSVersionAMD, false))
         {
             wasabiApiLangString(IDS_COULD_NOT_COMPILE_FALLBACK_CP_SHADER, buf, sizeof(buf));
             dumpmsg(buf);
@@ -2047,28 +2049,28 @@ int CPlugin::AllocateMyDX9Stuff()
         }
 
         // Load the BLUR shaders...
-        if (!RecompileVShader(m_szBlurVS, &m_BlurShaders[0].vs, SHADER_BLUR, true))
+        if (!RecompileVShader(m_szBlurVS, &m_BlurShaders[0].vs, SHADER_BLUR, true, false))
         {
 			wasabiApiLangString(IDS_COULD_NOT_COMPILE_BLUR1_VERTEX_SHADER,buf,sizeof(buf));
 		    dumpmsg(buf);
 		    MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
 		    return false;
         }
-        if (!RecompilePShader(m_szBlurPSX, &m_BlurShaders[0].ps, SHADER_BLUR, true, PSVersionAMD))
+        if (!RecompilePShader(m_szBlurPSX, &m_BlurShaders[0].ps, SHADER_BLUR, true, PSVersionAMD, false))
         {
 		    wasabiApiLangString(IDS_COULD_NOT_COMPILE_BLUR1_PIXEL_SHADER,buf,sizeof(buf));
 		    dumpmsg(buf);
 		    MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
 		    return false;
         }
-        if (!RecompileVShader(m_szBlurVS, &m_BlurShaders[1].vs, SHADER_BLUR, true))
+        if (!RecompileVShader(m_szBlurVS, &m_BlurShaders[1].vs, SHADER_BLUR, true, false))
         {
 			wasabiApiLangString(IDS_COULD_NOT_COMPILE_BLUR2_VERTEX_SHADER,buf,sizeof(buf));
 		    dumpmsg(buf);
 		    MessageBoxW(GetPluginWindow(), buf, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
 		    return false;
         }
-        if (!RecompilePShader(m_szBlurPSY, &m_BlurShaders[1].ps, SHADER_BLUR, true, PSVersionAMD))
+        if (!RecompilePShader(m_szBlurPSY, &m_BlurShaders[1].ps, SHADER_BLUR, true, PSVersionAMD, false))
         {
             wasabiApiLangString(IDS_COULD_NOT_COMPILE_BLUR2_PIXEL_SHADER, buf, sizeof(buf));
             dumpmsg(buf);
@@ -2629,7 +2631,7 @@ int CPlugin::AllocateMyDX9Stuff()
         m_bInitialPresetSelected = true;
     }
     else
-        LoadShaders(&m_shaders, m_pState, false);  // Also force-load the shaders - otherwise they'd only get compiled on a preset switch.
+        LoadShaders(&m_shaders, m_pState, false, false);  // Also force-load the shaders - otherwise they'd only get compiled on a preset switch.
 
 	return true;
 }
@@ -3588,7 +3590,7 @@ void CShaderParams::CacheParams(LPD3DXCONSTANTTABLE pCT, bool bHardErrors)
 
 //----------------------------------------------------------------------
 
-bool CPlugin::RecompileVShader(const char* szShadersText, VShaderInfo *si, int shaderType, bool bHardErrors)
+bool CPlugin::RecompileVShader(const char* szShadersText, VShaderInfo *si, int shaderType, bool bHardErrors, bool bCompileOnly)
 {
     SafeRelease(si->ptr);
     ZeroMemory(si, sizeof(VShaderInfo));
@@ -3600,17 +3602,20 @@ bool CPlugin::RecompileVShader(const char* szShadersText, VShaderInfo *si, int s
         lstrcpy(ver, "vs_1_1");
         
     // LOAD SHADER
-    if (!LoadShaderFromMemory( szShadersText, "VS", ver, &si->CT, (void**)&si->ptr, shaderType, bHardErrors))
+    if (!LoadShaderFromMemory( szShadersText, "VS", ver, &si->CT, (void**)&si->ptr, shaderType, bHardErrors, bCompileOnly))
         return false;
 
-    // Track down texture & float4 param bindings for this shader.
-    // Also loads any textures that need loaded.
-    si->params.CacheParams(si->CT, bHardErrors);
+    if (!bCompileOnly)
+    {
+        // Track down texture & float4 param bindings for this shader.
+        // Also loads any textures that need loaded.
+        si->params.CacheParams(si->CT, bHardErrors);
+    }
 
     return true;
 }
 
-bool CPlugin::RecompilePShader(const char* szShadersText, PShaderInfo *si, int shaderType, bool bHardErrors, int PSVersion)
+bool CPlugin::RecompilePShader(const char* szShadersText, PShaderInfo *si, int shaderType, bool bHardErrors, int PSVersion, bool bCompileOnly)
 {
     assert(m_nMaxPSVersion > 0);
 
@@ -3637,17 +3642,20 @@ bool CPlugin::RecompilePShader(const char* szShadersText, PShaderInfo *si, int s
 		default: assert(0); break;
 		}
 
-    if (!LoadShaderFromMemory( szShadersText, "PS", ver, &si->CT, (void**)&si->ptr, shaderType, bHardErrors))
+    if (!LoadShaderFromMemory( szShadersText, "PS", ver, &si->CT, (void**)&si->ptr, shaderType, bHardErrors, bCompileOnly))
         return false;
 
-    // Track down texture & float4 param bindings for this shader.
-    // Also loads any textures that need loaded.
-    si->params.CacheParams(si->CT, bHardErrors);
+    if (!bCompileOnly)
+    {
+        // Track down texture & float4 param bindings for this shader.
+        // Also loads any textures that need loaded.
+        si->params.CacheParams(si->CT, bHardErrors);
+    }
 
     return true;
 }
 
-bool CPlugin::LoadShaders(PShaderSet* sh, CState* pState, bool bTick)
+bool CPlugin::LoadShaders(PShaderSet* sh, CState* pState, bool bTick, bool bCompileOnly)
 {
     if (m_nMaxPSVersion <= 0)
         return true;
@@ -3655,7 +3663,7 @@ bool CPlugin::LoadShaders(PShaderSet* sh, CState* pState, bool bTick)
     // load one of the pixel shaders
     if (!sh->warp.ptr && pState->m_nWarpPSVersion > 0)
     {
-        bool bOK = RecompilePShader(pState->m_szWarpShadersText, &sh->warp, SHADER_WARP, false, pState->m_nWarpPSVersion);
+        bool bOK = RecompilePShader(pState->m_szWarpShadersText, &sh->warp, SHADER_WARP, false, pState->m_nWarpPSVersion, bCompileOnly);
         if (!bOK)
         {
             // switch to fallback shader
@@ -3672,7 +3680,7 @@ bool CPlugin::LoadShaders(PShaderSet* sh, CState* pState, bool bTick)
 
     if (!sh->comp.ptr && pState->m_nCompPSVersion > 0)
     {
-        bool bOK = RecompilePShader(pState->m_szCompShadersText, &sh->comp, SHADER_COMP, false, pState->m_nCompPSVersion);
+        bool bOK = RecompilePShader(pState->m_szCompShadersText, &sh->comp, SHADER_COMP, false, pState->m_nCompPSVersion, bCompileOnly);
         if (!bOK)
         {
             // switch to fallback shader
@@ -3741,7 +3749,7 @@ bool CPlugin::LoadShaderFromFile( char* szFile, char* szFn, char* szProfile,
 */
 
 bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, char* szProfile,
-                                    LPD3DXCONSTANTTABLE* ppConstTable, void** ppShader, int shaderType, bool bHardErrors )
+                                    LPD3DXCONSTANTTABLE* ppConstTable, void** ppShader, int shaderType, bool bHardErrors, bool bCompileOnly)
 {
     const char szWarpDefines[] = "#define rad _rad_ang.x\n"
                                  "#define ang _rad_ang.y\n"
@@ -3911,13 +3919,13 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
     int len = lstrlen(szShaderText);
 
     uint32_t checksum = crc32(szShaderText, len);
-    if (m_bShaderCaching && !strcmp(szProfile, "ps_3_0"))
+    if (m_bShaderCaching && (!strcmp(szProfile, "ps_2_0") || !strcmp(szProfile, "ps_2_a") || !strcmp(szProfile, "ps_2_b") || !strcmp(szProfile, "ps_3_0")))
     {
         pShaderByteCode = LoadShaderBytecodeFromFile(checksum, &szProfile[0]);
     }
 
-    if (pShaderByteCode) {
-        // restore ConstTabe from bytecode
+    if (pShaderByteCode != NULL && !bCompileOnly) {
+        // restore ConstTable from bytecode
         HRESULT hr = D3DXGetShaderConstantTable(
             (DWORD*)pShaderByteCode->GetBufferPointer(),
             ppConstTable // pass the pointer to pointer
@@ -3972,31 +3980,34 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
 			return false;
 		}
 
-    if (m_bShaderCaching && !strcmp(szProfile, "ps_3_0"))
+    if (m_bShaderCaching && (!strcmp(szProfile, "ps_2_0") || !strcmp(szProfile, "ps_2_a") || !strcmp(szProfile, "ps_2_b") || !strcmp(szProfile, "ps_3_0")))
         SaveShaderBytecodeToFile(pShaderByteCode, checksum, &szProfile[0]);
 
     // load ok, create the shader
-    HRESULT hr = 1;
-    if (szProfile[0] == 'v')
+    if (!bCompileOnly)
     {
-        hr = GetDevice()->CreateVertexShader((const unsigned long *)(pShaderByteCode->GetBufferPointer()), (IDirect3DVertexShader9**)ppShader);
-    }
-    else if (szProfile[0] == 'p')
-    {
-        hr = GetDevice()->CreatePixelShader((const unsigned long *)(pShaderByteCode->GetBufferPointer()), (IDirect3DPixelShader9**)ppShader);
-    }
-
-    if (hr != D3D_OK)
-    {
-		wchar_t temp[512];
-        wasabiApiLangString(IDS_ERROR_CREATING_SHADER,temp,sizeof(temp));
-		dumpmsg(temp);
-        if (bHardErrors)
-		    MessageBoxW(GetPluginWindow(), temp, wasabiApiLangString(IDS_MILKDROP_ERROR,title,64), MB_OK|MB_SETFOREGROUND|MB_TOPMOST );
-        else {
-            AddError(temp, 6.0f, ERR_PRESET, true);
+        HRESULT hr = 1;
+        if (szProfile[0] == 'v')
+        {
+            hr = GetDevice()->CreateVertexShader((const unsigned long*)(pShaderByteCode->GetBufferPointer()), (IDirect3DVertexShader9**)ppShader);
         }
-		return false;
+        else if (szProfile[0] == 'p')
+        {
+            hr = GetDevice()->CreatePixelShader((const unsigned long*)(pShaderByteCode->GetBufferPointer()), (IDirect3DPixelShader9**)ppShader);
+        }
+
+        if (hr != D3D_OK)
+        {
+            wchar_t temp[512];
+            wasabiApiLangString(IDS_ERROR_CREATING_SHADER, temp, sizeof(temp));
+            dumpmsg(temp);
+            if (bHardErrors)
+                MessageBoxW(GetPluginWindow(), temp, wasabiApiLangString(IDS_MILKDROP_ERROR, title, 64), MB_OK | MB_SETFOREGROUND | MB_TOPMOST);
+            else {
+                AddError(temp, 6.0f, ERR_PRESET, true);
+            }
+            return false;
+        }
     }
 
     pShaderByteCode->Release();
@@ -5257,7 +5268,7 @@ void CPlugin::MyRenderUI(
                             SafeRelease( m_shaders.warp.ptr );
                         if (ApplyFlags & STATE_COMP)
                             SafeRelease( m_shaders.comp.ptr );
-                        LoadShaders(&m_shaders, m_pState, false);
+                        LoadShaders(&m_shaders, m_pState, false, false);
 
                         SetMenusForPresetVersion( m_pState->m_nWarpPSVersion, m_pState->m_nCompPSVersion );
                     }
@@ -6029,7 +6040,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_pState->m_nMinPSVersion = min(m_pState->m_nWarpPSVersion, m_pState->m_nCompPSVersion);
                 m_pState->m_nMaxPSVersion = max(m_pState->m_nWarpPSVersion, m_pState->m_nCompPSVersion);
 
-                LoadShaders(&m_shaders, m_pState, false);
+                LoadShaders(&m_shaders, m_pState, false, false);
                 SetMenusForPresetVersion( m_pState->m_nWarpPSVersion, m_pState->m_nCompPSVersion );
 			}
             if (wParam != 13)
@@ -9416,6 +9427,18 @@ void CPlugin::GenPlasma(int x0, int x1, int y0, int y1, float dt)
     }
 }
 
+void CPlugin::CompilePresetShadersToFile(wchar_t* sPresetFile) {
+    CState* pState = new CState();
+    PShaderSet pShaders;
+    RemoveAngleBrackets(sPresetFile);
+
+    DWORD ApplyFlags = STATE_ALL;
+    pState->Import(sPresetFile, GetTime(), NULL, ApplyFlags);
+    LoadShaders(&pShaders, pState, false, true);
+    delete pState;
+    pState = NULL;
+}
+
 void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
 {
     // clear old error msg...
@@ -9491,7 +9514,7 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
         m_OldShaders = m_shaders;
         ZeroMemory(&m_shaders, sizeof(PShaderSet));
 
-        LoadShaders(&m_shaders, m_pState, false);
+        LoadShaders(&m_shaders, m_pState, false, false);
         NumTotalPresetsLoaded++;
         OnFinishedLoadingPreset();
     }
@@ -9532,7 +9555,7 @@ void CPlugin::LoadPresetTick()
     if (m_nLoadingPreset == 2 || m_nLoadingPreset == 5)
     {
         // just loads one shader (warp or comp) then returns.
-        LoadShaders(&m_NewShaders, m_pNewState, true);
+        LoadShaders(&m_NewShaders, m_pNewState, true, false);
     }
     else if (m_nLoadingPreset == 8)
     {
@@ -11097,7 +11120,7 @@ for (int i=0;i<576;i++)
 		if (GetFrame() < 50)
 			rate = 0.9f;
 		else
-			rate = 0.995f;
+			rate = 0.992f;
         rate = AdjustRateToFPS(rate, 30.0f, GetFps());
         mysound.long_avg[i] = mysound.long_avg[i]*rate + mysound.imm[i]*(1-rate);
 
@@ -11405,6 +11428,20 @@ int CPlugin::CheckDX9DLL() {
     // Continue with your app
     // ...
     return 0;
+}
+
+void CPlugin::RemoveAngleBrackets(wchar_t* str) {
+    wchar_t cleaned[MAX_PATH] = { 0 }; // Temporary buffer for the cleaned string
+    int j = 0;
+
+    for (int i = 0; str[i] != L'\0'; i++) {
+        if (str[i] != L'<' && str[i] != L'>') {
+            cleaned[j++] = str[i];
+        }
+    }
+
+    cleaned[j] = L'\0'; // Null-terminate the cleaned string
+    wcscpy_s(str, MAX_PATH, cleaned); // Copy the cleaned string back to the original
 }
 
 // =========================================================
