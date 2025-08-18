@@ -288,6 +288,7 @@ public:
 	bool OpenSender(unsigned int width, unsigned int height);
     void SetAMDFlag();
     int  CheckDX9DLL();
+    void ToggleAlwaysOnTop(HWND hwnd);
 	bool bSpoutChanged; // set to write config on exit
 	bool bSpoutOut; // Spout output on or off
     bool bEnablePresetStartup;
@@ -342,6 +343,7 @@ public:
         float		m_fTimeBetweenRandomCustomMsgs;
         int			m_nSongTitlesSpawned;
         int			m_nCustMsgsSpawned;
+        bool        m_bAlwaysOnTop = false;
         bool        m_bEnablePresetStartup;
         bool        m_bAutoLockPresetWhenNoMusic;
         bool        m_bEnableSongTitlePoll;

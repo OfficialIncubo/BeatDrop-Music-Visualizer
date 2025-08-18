@@ -328,7 +328,10 @@ void ToggleStretch(HWND hwnd) {
 
         SetWindowLongW(hwnd, GWL_STYLE, lastWindowStyle);
         SetWindowLongW(hwnd, GWL_EXSTYLE, lastWindowStyleEx);
-        SetWindowPos(hwnd, HWND_NOTOPMOST, lastRect.left, lastRect.top, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
+        if (g_plugin.m_bAlwaysOnTop)
+            SetWindowPos(hwnd, HWND_TOPMOST, lastRect.left, lastRect.top, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
+        else
+            SetWindowPos(hwnd, HWND_NOTOPMOST, lastRect.left, lastRect.top, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
         SetWindowPos(hwnd, 0, 0, 0, 0, 0, SWP_DRAWFRAME | SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOZORDER);
         if (borderless)
         {
@@ -389,7 +392,10 @@ void ToggleFullScreen(HWND hwnd) {
 
         SetWindowLongW(hwnd, GWL_STYLE, lastWindowStyle);
         SetWindowLongW(hwnd, GWL_EXSTYLE, lastWindowStyleEx);
-        SetWindowPos(hwnd, HWND_NOTOPMOST, lastRect.left, lastRect.top, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
+        if (g_plugin.m_bAlwaysOnTop)
+            SetWindowPos(hwnd, HWND_TOPMOST, lastRect.left, lastRect.top, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
+        else
+            SetWindowPos(hwnd, HWND_NOTOPMOST, lastRect.left, lastRect.top, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
         SetWindowPos(hwnd, 0, 0, 0, 0, 0, SWP_DRAWFRAME | SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_NOZORDER);
         if (borderless)
         {
@@ -424,7 +430,10 @@ void ToggleBorderlessWindow(HWND hwnd)
         int height = rect.bottom - rect.top;
 
         SetWindowLongW(hwnd, GWL_STYLE, WS_OVERLAPPEDWINDOW | WS_VISIBLE);
-        SetWindowPos(hwnd, HWND_NOTOPMOST, x, y, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
+        if (g_plugin.m_bAlwaysOnTop)
+            SetWindowPos(hwnd, HWND_TOPMOST, x, y, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
+        else
+            SetWindowPos(hwnd, HWND_NOTOPMOST, x, y, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
         borderless = false;
     }
 }
@@ -837,7 +846,7 @@ unsigned __stdcall DoShaderPrecache(void* param) {
             return -1;
         }
 
-        g_plugin.AddNotif(L"Precaching shaders in background...");
+        g_plugin.AddNotif(L"Precaching shaders...");
 
         int compiledShaders = 0;
         std::string line;
@@ -891,8 +900,8 @@ unsigned __stdcall DoShaderPrecache(void* param) {
         std::wstringstream ss;
         ss << std::fixed << std::setprecision(2) << duration.count();
 
-        std::wstring message = L"Precaching " + std::to_wstring(compiledShaders)
-            + L" shaders completed in " + ss.str() + L"s";
+        std::wstring message = std::to_wstring(compiledShaders)
+            + L" precached shaders completed in " + ss.str() + L"s";
 
         wchar_t szMessage[256];
         wcsncpy_s(szMessage, message.c_str(), _TRUNCATE);

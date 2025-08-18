@@ -635,7 +635,6 @@ SPOUT :
 #define clamp(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
 
 SongTitleGetter songtitlegetter;
-static bool m_bAlwaysOnTop = false;
 int ToggleFPSNumPressed = 7;			// Default is Unlimited FPS.
 int HardcutMode = 0;
 float timetick = 0;
@@ -1383,7 +1382,7 @@ void CPlugin::MyReadConfig()
 	//m_bAlways3D				= GetPrivateProfileBool("settings","bAlways3D",m_bAlways3D,pIni);
     //m_fStereoSep            = GetPrivateProfileFloat("settings","fStereoSep",m_fStereoSep,pIni);
 	//m_bFixSlowText          = GetPrivateProfileBool("settings","bFixSlowText",m_bFixSlowText,pIni);
-	//m_bAlwaysOnTop		= GetPrivateProfileBool("settings","bAlwaysOnTop",m_bAlwaysOnTop,pIni);
+	m_bAlwaysOnTop = GetPrivateProfileBoolW(L"settings",L"bAlwaysOnTop",m_bAlwaysOnTop,pIni);
 	//m_bWarningsDisabled		= GetPrivateProfileBool("settings","bWarningsDisabled",m_bWarningsDisabled,pIni);
 	m_bWarningsDisabled2    = GetPrivateProfileBoolW(L"settings",L"bWarningsDisabled2",m_bWarningsDisabled2,pIni);
     //m_bAnisotropicFiltering = GetPrivateProfileBool("settings","bAnisotropicFiltering",m_bAnisotropicFiltering,pIni);
@@ -1497,7 +1496,7 @@ void CPlugin::MyWriteConfig()
 	//WritePrivateProfileIntW(m_bAlways3D, 			"bAlways3D",			pIni, "settings");
     //WritePrivateProfileFloat(m_fStereoSep,          "fStereoSep",           pIni, "settings");
 	//WritePrivateProfileIntW(m_bFixSlowText,		    "bFixSlowText",			pIni, "settings");
-	//itePrivateProfileInt(m_bAlwaysOnTop,		    "bAlwaysOnTop",			pIni, "settings");
+	WritePrivateProfileIntW(m_bAlwaysOnTop,		    L"bAlwaysOnTop",			pIni, L"settings");
 	//WritePrivateProfileIntW(m_bWarningsDisabled,	    "bWarningsDisabled",	pIni, "settings");
 	WritePrivateProfileIntW(m_bWarningsDisabled2,	L"bWarningsDisabled2",	pIni, L"settings");
 	//WritePrivateProfileIntW(m_bAnisotropicFiltering,	"bAnisotropicFiltering",pIni, "settings");
@@ -5640,7 +5639,7 @@ void CPlugin::MyRenderUI(
 		}
     }
 }
-void ToggleAlwaysOnTop(HWND hwnd) {
+void CPlugin::ToggleAlwaysOnTop(HWND hwnd) {
 
 	RECT rect;
 	GetWindowRect(hwnd, &rect);
@@ -5649,12 +5648,10 @@ void ToggleAlwaysOnTop(HWND hwnd) {
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 
-	if (m_bAlwaysOnTop) {
+	if (g_plugin.m_bAlwaysOnTop)
 		SetWindowPos(hwnd, HWND_TOPMOST, x, y, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
-	}
-	else {
+	else
 		SetWindowPos(hwnd, HWND_NOTOPMOST, x, y, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
-	}
 }
 
 void ToggleTransparency(HWND hwnd)
