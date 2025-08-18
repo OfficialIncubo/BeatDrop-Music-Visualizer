@@ -2,8 +2,8 @@
 # Recommended to lock the preset or not loading another preset while precaching.
 # Precache the following shaders on visualizer startup if:
 #
-# - bShaderCaching=1 is set in settings.ini
-# - bShaderPrecachingAtStartup=1 is set in settings.ini
+# - bShaderCaching=1 is set in beatdrop.ini
+# - bShaderPrecachingAtStartup=1 is set in beatdrop.ini
 # - The file ResourceDir\shadercache\cached.txt does not exist
 #
 # You can remove or empty the cache folder safely anytime. Use relative or 
