@@ -13,7 +13,7 @@ It features:
 - Perfectly adjusted beat detection for better audio reaction (also configurable)
 - New waveforms and transitions
 - 16 custom shapes and waves limit
-- Shader Caching for Quicker Pixel Shader Version 4 Preset Loading
+- Shader Precaching or Caching for Instant Preset Loading
 - [Spout](https://spout.zeal.co) integration
 - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library integration
 - Hard Cut Modes, Transparency Mode, Playback Controls, Startup Preset etc.
