@@ -1,5 +1,7 @@
 # BeatDrop now supports precaching shaders for quicker load presets.
-# Recommended to lock the preset or not loading another preset while precaching.
+# Recommended to lock the preset or not loading another preset while precaching, else it could cause crash.
+# If it crashed during precaching, browse to resources folder, find the shadercache folder and delete it.
+# Now run BeatDrop.exe again and let them re-precache.
 # Precache the following shaders on visualizer startup if:
 #
 # - bShaderCaching=1 is set in beatdrop.ini
@@ -12,7 +14,7 @@
 # all contents of a directory.
 #
 # A list of compiled files, along with compilation time per file in 
-# milliseconds, are written to shadercache\cached.txt.
+# milliseconds, are written to shadercache\cached.txt. You can check it for a log.
 #
 # Specify the preset path below to precache shaders.
 #
