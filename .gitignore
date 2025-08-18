@@ -6,3 +6,4 @@
 **/*.suo
 **/*.db
 vis_milk2/bin
+vis_milk2/*.bak

@@ -822,7 +822,7 @@ unsigned __stdcall DoShaderPrecache(void* param) {
         }
 
         // Open precompile.txt
-        std::wifstream file("precache.txt");
+        std::ifstream file("precache.txt");
         if (!file.is_open()) {
             g_plugin.AddNotif(L"Failed to open precache.txt");
             return -1;
@@ -840,11 +840,26 @@ unsigned __stdcall DoShaderPrecache(void* param) {
         g_plugin.AddNotif(L"Precaching shaders in background...");
 
         int compiledShaders = 0;
-        std::wstring line;
+        std::string line;
         auto start = std::chrono::high_resolution_clock::now();
+
+        // Set UTF-8 locale for the output stream
+        compiledList.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
+
         while (std::getline(file, line)) {
-            // Convert to wide string
-            std::wstring wLine(line.begin(), line.end());
+
+            // Skip BOM if present (UTF-8)
+            if (!line.empty() && line[0] == '\xEF' && line[1] == '\xBB' && line[2] == '\xBF') {
+                line.erase(0, 3);
+            }
+
+            // Convert UTF-8 to wide string properly
+            std::wstring wLine;
+            if (!line.empty()) {
+                int size_needed = MultiByteToWideChar(CP_UTF8, 0, &line[0], (int)line.size(), NULL, 0);
+                wLine.resize(size_needed);
+                MultiByteToWideChar(CP_UTF8, 0, &line[0], (int)line.size(), &wLine[0], size_needed);
+            }
 
             // Trim whitespace
             wLine.erase(0, wLine.find_first_not_of(L" \t"));
