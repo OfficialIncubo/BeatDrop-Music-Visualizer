@@ -625,6 +625,8 @@ SPOUT :
 #include <shellapi.h>
 #include <strsafe.h>
 #include <Windows.h>
+#include <cstdint>
+#include <fstream>
 #include "AutoCharFn.h"
 #include "songtitlegetter.h"
 #include "AMDDetection.h"
@@ -11331,8 +11333,6 @@ void CPlugin::SetAMDFlag()
     }
 }
 
-#include <fstream>
-
 // SHADER CACHING
 // Shader Cache file saving and loading, used for instant shader loading.
 void CPlugin::SaveShaderBytecodeToFile(ID3DXBuffer* pShaderByteCode, uint32_t checksum, char* prefix) {
@@ -11382,7 +11382,6 @@ ID3DXBuffer* CPlugin::LoadShaderBytecodeFromFile(uint32_t checksum, char* prefix
 }
 
 //CRC32
-#include <cstdint>
 
 uint32_t CPlugin::crc32(const char* data, size_t length) {
     uint32_t crc = 0xFFFFFFFF;
@@ -11400,7 +11399,7 @@ uint32_t CPlugin::crc32(const char* data, size_t length) {
 
 // DIRECTX 9 CHECKING
 // Checks for DirectX 9 whenever it's available or not.
-int CPlugin::CheckDX9DLL() {
+bool CPlugin::CheckDX9DLL() {
     // Try to load the DLL manually
 
     if (!g_plugin.m_bCheckForDirectXAtStartup) return 0;
@@ -11439,6 +11438,47 @@ void CPlugin::RemoveAngleBrackets(wchar_t* str) {
 
     cleaned[j] = L'\0'; // Null-terminate the cleaned string
     wcscpy_s(str, MAX_PATH, cleaned); // Copy the cleaned string back to the original
+}
+
+// Test for DirectX installation and warn if not installed
+//
+// Registry method only works for DirectX 9 and lower but that is OK
+bool CPlugin::CheckForDirectX9c() {
+
+    // HKLM\Software\Microsoft\DirectX\Version should be 4.09.00.0904
+    // handy information : http://en.wikipedia.org/wiki/DirectX
+    HKEY  hRegKey;
+    LONG  regres;
+    DWORD  dwSize, major, minor, revision, notused;
+    char value[256];
+    dwSize = 256;
+
+    // Does the key exist
+    regres = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\DirectX", NULL, KEY_READ, &hRegKey);
+    if (regres == ERROR_SUCCESS) {
+        // Read the key
+        regres = RegQueryValueExA(hRegKey, "Version", 0, NULL, (LPBYTE)value, &dwSize);
+        // Decode the string : 4.09.00.0904
+        sscanf_s(value, "%d.%d.%d.%d", &major, &minor, &notused, &revision);
+        // printf("DirectX registry : [%s] (%d.%d.%d.%d)\n", value, major, minor, notused, revision);
+        RegCloseKey(hRegKey);
+        if (major == 4 && minor == 9 && revision == 904)
+            return true;
+    }
+    else {
+        ShowMissingDirectXMessage();
+        return false;
+    }
+}
+
+void CPlugin::ShowMissingDirectXMessage()
+{
+    if (MessageBoxA(NULL,
+        "Failed to initialize DirectX 9.\nPlease install the DirectX End-User Runtimes.\nDo you want to open DirectX download page?",
+        "BeatDrop Music Visualizer", MB_YESNO | MB_SETFOREGROUND | MB_TOPMOST) == IDYES) {
+        // open website in browser
+        ShellExecuteA(NULL, "open", "https://www.microsoft.com/en-us/download/details.aspx?id=35", NULL, NULL, SW_SHOWNORMAL);
+    }
 }
 
 // =========================================================

@@ -823,17 +823,19 @@ unsigned __stdcall DoShaderPrecache(void* param) {
         //Incubo_ - Check if the shader cache folder is already in. If not, create it.
         if (!std::filesystem::exists(cacheDir))
             std::filesystem::create_directory(cacheDir);
+        else
+            std::cerr << "Cannot create shadercache directory.\n";
 
         // Abort if compiled.txt already exists
         if (std::filesystem::exists(compiledListPath)) {
-            //g_plugin.AddNotification(L"Shader cache already exists, skipping precompilation");
+            std::cerr << "Shader cache already exists, skipping precompilation\n";
             return -1;
         }
 
         // Open precompile.txt
         std::ifstream file("precache.txt");
         if (!file.is_open()) {
-            g_plugin.AddNotif(L"Failed to open precache.txt");
+            std::cerr << "Failed to open precache.txt\n";
             return -1;
         }
 
@@ -1053,9 +1055,18 @@ int StartThreads(HINSTANCE instance) {
     // at this point capture is running
     // wait for the user to press a key or for capture to error out
     
-    if (g_plugin.CheckDX9DLL() != 0) {
-        ERR(L"DirectX 9 DLL not found, closing...");
-        return 0;
+    if (g_plugin.m_bCheckForDirectXAtStartup) {
+        if (!g_plugin.CheckForDirectX9c()) {
+            ERR(L"DirectX 9 DLL not in registry, closing...");
+            return 0;
+        }
+        if (!g_plugin.CheckDX9DLL()) {
+            ERR(L"DirectX 9 DLL not found, closing...");
+            return 0;
+        }
+
+        // if we made it here, skip this check in the future
+        g_plugin.m_bCheckForDirectXAtStartup = false;
     }
 
     /*HANDLE thread =*/ StartRenderThread(instance);
@@ -1203,40 +1214,6 @@ int StartThreads(HINSTANCE instance) {
     return 0;
 }
 
-// SPOUT
-//
-// Test for DirectX installation and warn if not installed
-// TODO : doesn't seem to need a header declaration
-//
-// Registry method only works for DirectX 9 and lower but that is OK
-bool CheckForDirectX9c()
-{
-
-	// HKLM\Software\Microsoft\DirectX\Version should be 4.09.00.0904
-	// handy information : http://en.wikipedia.org/wiki/DirectX
-	HKEY  hRegKey;
-	LONG  regres;
-	DWORD  dwSize, major, minor, revision, notused;
-	char value[256];
-	dwSize = 256;
-
-	// Does the key exist
-	regres = RegOpenKeyExA(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\DirectX", NULL, KEY_READ, &hRegKey);
-	if (regres == ERROR_SUCCESS) {
-		// Read the key
-		regres = RegQueryValueExA(hRegKey, "Version", 0, NULL, (LPBYTE)value, &dwSize);
-		// Decode the string : 4.09.00.0904
-		sscanf_s(value, "%d.%d.%d.%d", &major, &minor, &notused, &revision);
-		// printf("DirectX registry : [%s] (%d.%d.%d.%d)\n", value, major, minor, notused, revision);
-		RegCloseKey(hRegKey);
-		if (major == 4 && minor == 9 && revision == 904)
-			return true;
-	}
-
-	return false;
-
-}
-
 
 #ifdef COMPILE_AS_DLL
     BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID lpReserved) {
@@ -1248,7 +1225,7 @@ bool CheckForDirectX9c()
     int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow) {
         api_orig_hinstance = hInstance;
 		// SPOUT
-		if (CheckForDirectX9c())
+		if (g_plugin.CheckForDirectX9c())
 			return StartThreads(hInstance);
 		else
 			return false;

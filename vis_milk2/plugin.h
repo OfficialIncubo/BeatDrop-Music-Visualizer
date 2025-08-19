@@ -287,7 +287,9 @@ public:
 	bool bInitialized; // did it work ?
 	bool OpenSender(unsigned int width, unsigned int height);
     void SetAMDFlag();
-    int  CheckDX9DLL();
+    bool CheckDX9DLL();
+    bool CheckForDirectX9c();
+    void ShowMissingDirectXMessage();
     void ToggleAlwaysOnTop(HWND hwnd);
 	bool bSpoutChanged; // set to write config on exit
 	bool bSpoutOut; // Spout output on or off
