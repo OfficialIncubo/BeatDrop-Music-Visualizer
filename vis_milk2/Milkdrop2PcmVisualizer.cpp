@@ -824,7 +824,7 @@ unsigned __stdcall DoShaderPrecache(void* param) {
         if (!std::filesystem::exists(cacheDir))
             std::filesystem::create_directory(cacheDir);
         else
-            std::cerr << "Cannot create shadercache directory.\n";
+            g_plugin.AddErrorNotif(L"Cannot create shadercache directory.");
 
         // Abort if compiled.txt already exists
         if (std::filesystem::exists(compiledListPath)) {
@@ -835,7 +835,7 @@ unsigned __stdcall DoShaderPrecache(void* param) {
         // Open precompile.txt
         std::ifstream file("precache.txt");
         if (!file.is_open()) {
-            std::cerr << "Failed to open precache.txt\n";
+            g_plugin.AddErrorNotif(L"Failed to open precache.txt");
             return -1;
         }
 
@@ -844,7 +844,7 @@ unsigned __stdcall DoShaderPrecache(void* param) {
         if (!compiledList.is_open()) {
             std::wstring msg = L"Failed to create " + compiledListPath;
             wchar_t* writableMsg = &msg[0];  // Get non-const pointer to internal buffer
-            g_plugin.AddNotif(writableMsg);
+            g_plugin.AddErrorNotif(writableMsg);
             return -1;
         }
 
@@ -902,8 +902,8 @@ unsigned __stdcall DoShaderPrecache(void* param) {
         std::wstringstream ss;
         ss << std::fixed << std::setprecision(2) << duration.count();
 
-        std::wstring message = std::to_wstring(compiledShaders)
-            + L" precached shaders completed in " + ss.str() + L"s";
+        std::wstring message = L"Precached " + std::to_wstring(compiledShaders)
+            + L" shaders. Finished in " + ss.str() + L" seconds.";
 
         wchar_t szMessage[256];
         wcsncpy_s(szMessage, message.c_str(), _TRUNCATE);
