@@ -823,8 +823,8 @@ unsigned __stdcall DoShaderPrecache(void* param) {
         //Incubo_ - Check if the shader cache folder is already in. If not, create it.
         if (!std::filesystem::exists(cacheDir))
             std::filesystem::create_directory(cacheDir);
-        else
-            g_plugin.AddErrorNotif(L"Cannot create shadercache directory.");
+        //else
+            //g_plugin.AddErrorNotif(L"Cannot create shadercache directory. Folder already exists or doesn't have permission to create.");
 
         // Abort if compiled.txt already exists
         if (std::filesystem::exists(compiledListPath)) {
