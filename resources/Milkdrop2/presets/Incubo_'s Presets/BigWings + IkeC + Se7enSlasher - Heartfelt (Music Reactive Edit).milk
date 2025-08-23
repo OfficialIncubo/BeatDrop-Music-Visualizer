@@ -347,22 +347,18 @@ comp_262=`  lightning *= pow(max(0., sin(t+sin(t))), 50); // lightning flash
 comp_263=`*/
 comp_264=`
 comp_265=`  //col *= 1.+lightning*fade*lerp(1., .1, story*story); // composite lightning  
-comp_266=`
-comp_267=`  #ifdef bass_smooth
-comp_268=`   col = col+0.05*(clamp(bass_smooth, 0, 2)-1);
-comp_269=`  #endif
-comp_270=`  
-comp_271=`  //col *= 1.-dot(UV-=.5, UV); // vignette
-comp_272=`    											
-comp_273=`  #ifdef HAS_HEART
-comp_274=`   col = lerp(pow(col, float3(1.2, 1.2, 1.2)), col, heart);
-comp_275=`   fade *= S(stimetotal, stimetotal-5, T);
-comp_276=`  #endif
-comp_277=`    
-comp_278=`  col *= fade; // composite start and end fade
-comp_279=` #endif
-comp_280=`    
-comp_281=` //col = float3(heart,heart,heart);
-comp_282=` fragColor = float4(col, 1);
-comp_283=` ret = fragColor;
-comp_284=`}
+comp_266=`  
+comp_267=`  //col *= 1.-dot(UV-=.5, UV); // vignette
+comp_268=`    											
+comp_269=`  #ifdef HAS_HEART
+comp_270=`   col = lerp(pow(col, float3(1.2, 1.2, 1.2)), col, heart);
+comp_271=`   fade *= S(stimetotal, stimetotal-5, T);
+comp_272=`  #endif
+comp_273=`    
+comp_274=`  col *= fade; // composite start and end fade
+comp_275=` #endif
+comp_276=`    
+comp_277=` //col = float3(heart,heart,heart);
+comp_278=` fragColor = float4(col, 1);
+comp_279=` ret = fragColor;
+comp_280=`}
