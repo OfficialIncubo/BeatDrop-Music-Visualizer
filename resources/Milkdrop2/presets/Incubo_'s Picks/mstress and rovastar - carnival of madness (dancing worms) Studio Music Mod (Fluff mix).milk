@@ -342,13 +342,13 @@ per_frame_15=
 per_frame_16=
 per_frame_17=
 per_frame_18=
-per_frame_19=q7 = if(beat,0.001+0.0001*rand(40),oldq7);
+per_frame_19=q7 = if(beat,0.001+0.0001*int(rand(40)),oldq7);
 per_frame_20=oldq7=q7;
-per_frame_21=q6 = if(beat,0.001+0.0001*rand(40),oldq6);
+per_frame_21=q6 = if(beat,0.001+0.0001*int(rand(40)),oldq6);
 per_frame_22=oldq6=q6;
-per_frame_23=q5= if(beat,0.001+0.0001*rand(40),oldq5);
+per_frame_23=q5= if(beat,0.001+0.0001*int(rand(40)),oldq5);
 per_frame_24=oldq5=q5;
-per_frame_25=q4 = if(beat,0.001+0.0001*rand(40),oldq4);
+per_frame_25=q4 = if(beat,0.001+0.0001*int(rand(40)),oldq4);
 per_frame_26=oldq4=q4;
 per_frame_27=q1 = if(beat,12,0);
 per_frame_28=
