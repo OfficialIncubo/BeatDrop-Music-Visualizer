@@ -49,6 +49,8 @@ Steps on how to compile BeatDrop with [projectM-eval](https://github.com/project
 
 ## Second method: Using [CMake](https://cmake.org) (for latest version build)
 
+Before this, [Git](https://git-scm.com) is required for cloning repositories.
+
 1. Make sure you have disabled the vcpkg feature (if you want). First go to Project from toolbar, click properties, then go to Configuration Properties -> vcpkg, then turn the first two options off. It should look like this:
 <img width="786" height="544" alt="image" src="https://github.com/user-attachments/assets/f1351a8b-e03c-4379-a13b-ae3804fd9c3b" />
 
