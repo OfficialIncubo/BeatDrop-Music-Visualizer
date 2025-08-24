@@ -508,6 +508,7 @@ public:
         #define ERR_SCANNING_PRESETS 5
         ErrorMsgList m_errors;
         void        AddNotif(wchar_t* szMsg);
+        void        AddNotif(wchar_t* szMsg, float time);
         void        AddErrorNotif(wchar_t* szMsg);
         void        AddError(wchar_t* szMsg, float fDuration, int category=ERR_ALL, bool bBold=true);
         void        ClearErrors(int category=ERR_ALL);  // 0=all categories

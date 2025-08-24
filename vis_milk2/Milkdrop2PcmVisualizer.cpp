@@ -848,7 +848,7 @@ unsigned __stdcall DoShaderPrecache(void* param) {
             return -1;
         }
 
-        g_plugin.AddNotif(L"Precaching shaders...");
+        g_plugin.AddNotif(L"Precaching shaders...", INFINITE);
 
         int compiledShaders = 0;
         std::string line;
@@ -907,7 +907,7 @@ unsigned __stdcall DoShaderPrecache(void* param) {
 
         wchar_t szMessage[256];
         wcsncpy_s(szMessage, message.c_str(), _TRUNCATE);
-        g_plugin.AddNotif(szMessage);
+        g_plugin.AddNotif(szMessage, 5);
     }
     return 0;
 }

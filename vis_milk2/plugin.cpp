@@ -4579,6 +4579,11 @@ void CPlugin::AddNotif(wchar_t* szMsg)
     AddError(szMsg, 3.0f, ERR_NOTIFY, false);
 }
 
+void CPlugin::AddNotif(wchar_t* szMsg, float time)
+{
+    AddError(szMsg, time, ERR_NOTIFY, false);
+}
+
 void CPlugin::AddErrorNotif(wchar_t* szMsg)
 {
     AddError(szMsg, 5.0f, ERR_NOTIFY, true);
@@ -9720,7 +9725,7 @@ retry:
             goto retry;
         }
 
-        g_plugin.AddError(wasabiApiLangString(IDS_SCANNING_PRESETS), 8.0f, ERR_SCANNING_PRESETS, false);
+        g_plugin.AddError(wasabiApiLangString(IDS_SCANNING_PRESETS), INFINITE, ERR_SCANNING_PRESETS, false);
     }
 
     if (g_plugin.m_bPresetListReady)
