@@ -637,7 +637,7 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 	wndClass.cbClsExtra = 0;
 	wndClass.cbWndExtra = 0;
 	wndClass.hInstance = instance;
-	wndClass.hIcon = NULL;
+	wndClass.hIcon = LoadIconW(instance, MAKEINTRESOURCEW(IDI_PLUGIN_ICON));
 	wndClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 	wndClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
 	wndClass.lpszMenuName = NULL;
