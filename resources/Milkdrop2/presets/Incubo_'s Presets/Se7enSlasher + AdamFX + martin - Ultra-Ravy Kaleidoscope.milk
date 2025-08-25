@@ -399,7 +399,7 @@ shape_2_per_frame8=rad0  = (1-q24)*rad0 + q24*(.05+int(rand(100))/400);
 shape_2_per_frame9=rad = rad0;
 shape_2_per_frame10=
 shape_2_per_frame11=
-shape_2_per_frame12=x =  posx+q26;
+shape_2_per_frame12=x =  posx+(q26/35);
 shape_2_per_frame13=y =  posy;
 shape_2_per_frame14=ang = rot0;
 shapecode_3_enabled=0
@@ -835,5 +835,4 @@ comp_23=`}
 comp_24=`
 comp_25=`ret = ret1/1.5;
 comp_26=`ret /= float3(q29, q30, q31);
-comp_27=`
-comp_28=`}
+comp_27=`}

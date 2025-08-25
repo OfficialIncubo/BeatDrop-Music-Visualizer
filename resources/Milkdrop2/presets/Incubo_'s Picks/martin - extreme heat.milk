@@ -348,18 +348,24 @@ per_frame_74=  gmegabuf (m+7) = gmegabuf(n+7);
 per_frame_75=  gmegabuf (m+8) = gmegabuf(n+8);  
 per_frame_76=n += 12);
 per_frame_77=
-per_frame_78=dec = if (bass>bass1,0.5,0.9);
-per_frame_79=bass1 = bass1*dec + bass*(1-dec);
-per_frame_80=q1 = min(1,max(0,bass1-1.5) * abs(q3-0.5)*3);
-per_frame_81=
-per_frame_82=q10 = max (vol_-0.1,0.1);
-per_frame_83=vol_alt = vol;
-per_frame_84=q32 = aspecty;
-per_frame_85=
-per_frame_86=new1 = if (new>0,new,new1);
+per_frame_78=
+per_frame_79=
+per_frame_80=dec = if (bass>bass1,0.5,0.9);
+per_frame_81=bass1 = bass1*dec + bass*(1-dec);
+per_frame_82=q1 = min(1,max(0,bass1-1.5) * abs(q3-0.5)*3);
+per_frame_83=
+per_frame_84=q10 = max (vol_-0.1,0.1);
+per_frame_85=vol_alt = vol;
+per_frame_86=
 per_frame_87=
-per_frame_88=
+per_frame_88=q32 = aspecty;
 per_frame_89=
+per_frame_90=
+per_frame_91=new1 = if (new>0,new,new1);
+per_frame_92=
+per_frame_93=monitor = New1;
+per_frame_94=
+per_frame_95=
 per_pixel_1=dy = -.007*y;
 per_pixel_2=warp =.0;
 per_pixel_3=rot = .025*sin(q27+x*7+y*0)*0.2/(abs(y-0.7)+0.1) * q10;// * (1-2*(y>0.7));

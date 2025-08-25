@@ -3,7 +3,7 @@ PSVERSION=3
 PSVERSION_WARP=3
 PSVERSION_COMP=3
 [preset00]
-fRating=3.000
+fRating=3.000000
 fGammaAdj=1.980
 fDecay=0.500
 fVideoEchoZoom=1.000
@@ -110,7 +110,7 @@ wave_0_per_point20=
 wave_0_per_point21=a = t1/1024 * (z0 >= 0.5)/2;
 wave_0_per_point22=
 wave_0_per_point23=t1 -= 1;
-wave_0_per_point24=gmegabuf (10000 +t2) = abs(value1+value2); 
+wave_0_per_point24=gmegabuf (10000 +t2) = abs(value1+value2);
 wave_0_per_point25=t2 += 1;
 wavecode_1_enabled=1
 wavecode_1_samples=512
@@ -300,16 +300,16 @@ per_frame_init_7=
 per_frame_init_8=recsize = 8;
 per_frame_init_9=reg00 = recsize;
 per_frame_init_10=
-per_frame_init_11=points = 512*2; 
+per_frame_init_11=points = 512*2;
 per_frame_init_12=
 per_frame_init_13=reg01 = 0; //benoetigt fuer "new"
 per_frame_init_14=zofs = 1 + rand(100)/100*2; reg02 = zofs;
 per_frame_init_15=
 per_frame_init_16=fov = .3; reg03 = fov;
-per_frame_1=dec_f = exp (-30/fps);
-per_frame_2=dec_m = exp (-5/fps);
-per_frame_3=dec_s = exp (-2/fps);
-per_frame_4=beat = (bass + mid+ treb)-(bass_att + mid_att+ treb_att) + (bass+mid+treb); 
+per_frame_1=dec_f = pow (0.3, 30/fps);
+per_frame_2=dec_m = pow (0.85, 30/fps);
+per_frame_3=dec_s = pow (0.95, 30/fps);
+per_frame_4=beat = (bass + mid+ treb)-(bass_att + mid_att+ treb_att) + (bass+mid+treb);
 per_frame_5=beat /= 3;
 per_frame_6=
 per_frame_7=peak = peak*dec_m + (1-dec_m)*pow(beat-1,1)*(beat>1)*4;
@@ -359,7 +359,7 @@ per_frame_50=//Neue Punkte oberhalb des Arrays
 per_frame_51=n = recsize*points; m = 0;
 per_frame_52=dt1 = (if (ran1>0,4*pk,4/pk))/fps*new/6;
 per_frame_53=vol = max(ran1+ran2,.2)*pk*2;
-per_frame_54=loop (new, 
+per_frame_54=loop (new,
 per_frame_55=  trel1 = trel1 + dt1;
 per_frame_56=  x0 = x0 * dec + (1-dec)* (sin(trel1+ran3*6)*vol    +ran1);
 per_frame_57=  y0 = y0 * dec + (1-dec)* (sin(trel1+ran2*6)*vol    +ran2);
@@ -392,14 +392,14 @@ per_frame_83=q2 = ddy*2;
 per_frame_84=//Rotieren
 per_frame_85=n = 0;
 per_frame_86=loop (points,
-per_frame_87=  ox = gmegabuf (n);  
+per_frame_87=  ox = gmegabuf (n);
 per_frame_88=  oy = gmegabuf (n+1);
 per_frame_89=  oz = gmegabuf (n+2);
 per_frame_90=  mx = ox*cos(zang) - oy*sin(zang);
 per_frame_91=  my = ox*sin(zang) + oy*cos(zang);
 per_frame_92=  ox = mx;  oy = my;
 per_frame_93=  mx = ox*cos(yang) + oz*sin(yang);
-per_frame_94=  mz = - ox*sin(yang) + oz*cos(yang);
+per_frame_94=  mz = -ox*sin(yang) + oz*cos(yang);
 per_frame_95=  ox = mx;  oz = mz;
 per_frame_96=  my = oy*cos(xang) - oz*sin(xang);
 per_frame_97=  mz = oy*sin(xang) + oz*cos(xang);
@@ -443,7 +443,7 @@ per_frame_134=
 per_frame_135=monitor =   m;
 per_frame_136=
 per_frame_137=q32 = aspecty;
-per_pixel_1=rot = 0.; zoom = 1; warp = 0; dy = .00; dx = -.00;
+per_pixel_1=rot = 0; zoom = 1; warp = 0; dy = .00; dx = -.00;
 warp_1=`float3 ret1;
 warp_2=`shader_body {
 warp_3=`
@@ -457,8 +457,8 @@ comp_3=`float2 zz, uv0, uv1,uv2,uv3,uv4;
 comp_4=`float smask;
 comp_5=`
 comp_6=`float aTan2(float y, float x) {float angle;	 float abs_y = abs(y);
-comp_7=`if (x >= 0) {float r = (x - abs_y) / (x + abs_y); angle = 1-r;} 
-comp_8=`else {float r = (x + abs_y) / (abs_y - x); angle = 3-r; }	
+comp_7=`if (x >= 0) {float r = (x - abs_y) / (x + abs_y); angle = 1-r;}
+comp_8=`else {float r = (x + abs_y) / (abs_y - x); angle = 3-r; }
 comp_9=`angle = angle * .25;
 comp_10=`return y < 0 ? -angle : angle;}
 comp_11=`
@@ -466,7 +466,7 @@ comp_12=`shader_body { ;
 comp_13=`uv0 = uv;
 comp_14=`uv1 = (uv-.5)*aspect.xy;
 comp_15=`
-comp_16=`uv1 = (uv - .5) * aspect.xy;    
+comp_16=`uv1 = (uv - .5) * aspect.xy;
 comp_17=`float stars = 0; float dist, inten;
 comp_18=`int n = 1;
 comp_19=`int anz = 3;
