@@ -1,4 +1,4 @@
-# BeatDrop now supports precaching shaders for quicker load presets.
+# BeatDrop now supports precaching shaders for quicker loading presets.
 # Recommended to lock the preset or not loading another preset while precaching, else it could cause crash.
 # If it crashed during precaching or if it's already precached (needed if you want to delete), browse to resources folder, find the shadercache folder and delete it.
 # Now run BeatDrop.exe again and let them re-precache.
