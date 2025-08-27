@@ -1,8 +1,12 @@
-# BeatDrop now supports precaching shaders for quicker loading presets.
-# Recommended to lock the preset or not loading another preset while precaching, else it could cause crash.
-# If it crashed during precaching or if it's already precached (needed if you want to delete), browse to resources folder, find the shadercache folder and delete it.
+# BeatDrop now supports precaching shaders for quicker load presets.
+# Recommended to lock the preset or not loading another preset while
+# precaching, else it could cause crash.
+# If it crashed during precaching or if it's already precached
+# (needed if you want to delete), browse to resources folder, find the
+# shadercache folder and delete it.
 # Now run BeatDrop.exe again and let them re-precache.
 # Or delete cached.txt file from shader cache folder in order to precache again.
+#
 # Precache the following shaders on visualizer startup if:
 #
 # - bShaderCaching=1 is set in beatdrop.ini
@@ -14,11 +18,18 @@
 # the resource directory. You can put an asterisk (*) as a wildcard to include 
 # all contents of a directory.
 #
+# If you want to precache a shader in one preset file, just specify a preset 
+# path, then copy any preset file name and paste it.
+# .milk extension is necessary, otherwise it doesn't work.
+# For example: 
+# BeatDrop Resources\presets\martin - the Dome ps3.milk
+# BeatDrop Resources\presets\Incubo_'s Presets\totetmatt + Se7enSlasher - Tunnel Cable.milk
+#
 # A list of compiled files, along with compilation time per file in 
 # milliseconds, are written to shadercache\cached.txt. You can check it for a log.
 #
 # Specify the preset path below to precache shaders.
-#
+
 BeatDrop Resources\presets\*
 BeatDrop Resources\presets\Butterchurn Presets\*
 BeatDrop Resources\presets\Incubo_'s Picks\*
