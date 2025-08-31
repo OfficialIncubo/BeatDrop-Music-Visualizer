@@ -56,7 +56,7 @@ Before this, [Git](https://git-scm.com) is required for cloning repositories.
 
 If you want to turn back on, do the same step, then change them to "Yes".
 
-2. Use [VS2022](https://visualstudio.microsoft.com/vs)'s terminal (View from toolbar -> Terminal) or PowerShell. Clone the repository and check the status
+2. Use [VS2022](https://visualstudio.microsoft.com/vs)'s terminal (View from toolbar -> Terminal) or PowerShell. Clone the repository as a local package.
 ```
 git clone https://github.com/projectM-visualizer/projectm-eval.git
 cd projectm-eval
