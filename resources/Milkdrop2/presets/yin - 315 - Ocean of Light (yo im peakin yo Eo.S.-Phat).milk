@@ -412,9 +412,9 @@ per_frame_22=warp=0;
 per_frame_23=zoom=1.04;
 per_frame_24=
 per_frame_25=rnd=equal(frame%400,0);
-per_frame_26=offy=(1-rnd)*offy+rnd*(-3+rand(600)/100);
-per_frame_27=offz=(1-rnd)*offz+rnd*(-80-0*rand(1000)/1000);
-per_frame_28=sc=(1-rnd)*sc+rnd*(1+rand(500)/100);
+per_frame_26=offy=(1-rnd)*offy+rnd*(-3+int(rand(600))/100);
+per_frame_27=offz=(1-rnd)*offz+rnd*(-80-0*int(rand(1000))/1000);
+per_frame_28=sc=(1-rnd)*sc+rnd*(1+int(rand(500))/100);
 per_frame_29=offx=0;
 per_frame_30=offy=-3.1;
 per_frame_31=offz=-300+160*pow(contVol,.25);
@@ -433,8 +433,8 @@ per_frame_43=
 per_frame_44=stime=if(equal(stime,0),time,stime );
 per_frame_45=mytime=time-stime;
 per_frame_46=phase = .1*mytime - int(.1*mytime);
-per_frame_47=tilex=if(below(phase,.025),1 + rand(4),tilex );
-per_frame_48=tilez=if(below(phase,.025),1 + rand(4),tilez );
+per_frame_47=tilex=if(below(phase,.025),1 + int(rand(4)),tilex );
+per_frame_48=tilez=if(below(phase,.025),1 + int(rand(4)),tilez );
 per_frame_49=q7=tilex;
 per_frame_50=
 per_frame_51=contVol=((bass+mid+att)*.3333)*.02+contVol*.98;
@@ -444,8 +444,8 @@ per_frame_54=
 per_frame_55=darken=above(frame%3,0);
 per_frame_56=
 per_frame_57=c1=above(contvol,.7)*min(contvol-.7,.3);
-per_frame_58=dx=c1*.05*(-10+rand(20));
-per_frame_59=dy=c1*.05*(-10+rand(20));
+per_frame_58=dx=c1*.05*(-10+int(rand(20)));
+per_frame_59=dy=c1*.05*(-10+int(rand(20)));
 per_frame_60=
 per_frame_61=solarize=0;
 per_frame_62=darken=frame%2;
