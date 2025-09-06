@@ -1,0 +1,171 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=3.000
+fGammaAdj=2.000
+fDecay=0.980
+fVideoEchoZoom=2.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.800
+fWaveScale=1.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // sample previous frame
+warp_4=`    ret = tex2D( sampler_main, uv ).xyz;
+warp_5=`    
+warp_6=`    // darken (decay) over time
+warp_7=`    ret *= 0.98; //or try: ret -= 0.004;
+warp_8=`}
+comp_1=`// kasari39 + IkeC - Phantom Star for CineShader / https://www.shadertoy.com/view/ttKGDt
+comp_2=`// Transpiled to HLSL using Milkwave
+comp_3=`
+comp_4=`#define tx sin(time)*0.5+1
+comp_5=`#define pi M_PI
+comp_6=`#define pi2 M_PI*2
+comp_7=`
+comp_8=`// CONV: adding helper functions
+comp_9=`float mod_conv(float x, float y) { return x - y * floor(x / y); }
+comp_10=`float2 mod_conv(float2 x, float2 y) { return x - y * floor(x / y); }
+comp_11=`float3 mod_conv(float3 x, float3 y) { return x - y * floor(x / y); }
+comp_12=`float4 mod_conv(float4 x, float4 y) { return x - y * floor(x / y); }
+comp_13=`
+comp_14=`// precision float;
+comp_15=`
+comp_16=`float2x2 rot(float a) {
+comp_17=`  float c = cos(a), s = sin(a);
+comp_18=`  return float2x2(c,s,-s,c);
+comp_19=`}
+comp_20=`
+comp_21=`float2 pmod_conv(float2 p, float r) {
+comp_22=`  float a = atan2(p.x, p.y) + pi/r;
+comp_23=`  float n = pi2 / r;
+comp_24=`  a = floor(a/n)*n;
+comp_25=`  return mul(p,transpose(rot(-a)));
+comp_26=`}
+comp_27=`
+comp_28=`float box( float3 p, float3 b ) {
+comp_29=`  float3 d = abs(p) - b;
+comp_30=`  return min(max(d.x,max(d.y,d.z)),0.0) + length(max(d,0.0));
+comp_31=`}
+comp_32=`
+comp_33=`float ifsBox(float3 p) {
+comp_34=`  for (int i=0; i<5; i++) {
+comp_35=`    p = abs(p) - 1.0;
+comp_36=`    p.xy = mul(p.xy,transpose(rot(time*0.3)));
+comp_37=`    p.xz = mul(p.xz,transpose(rot(time*0.1)));
+comp_38=`  }
+comp_39=`
+comp_40=`  p.xz = mul(p.xz,transpose(rot(time)));
+comp_41=`  return box(p, float3(0.4,0.8,0.3));
+comp_42=`}
+comp_43=`
+comp_44=`float map(float3 p, float3 cPos) {
+comp_45=`  float3 p1 = p;
+comp_46=`  p1.x = mod_conv(p1.x-5., 10.) - 5.;
+comp_47=`  p1.y = mod_conv(p1.y-5., 10.) - 5.;
+comp_48=`  p1.z = mod_conv(p1.z, 16.)-8.;
+comp_49=`  p1.xy = pmod_conv(p1.xy, 5.0);
+comp_50=`  return ifsBox(p1);
+comp_51=`}
+comp_52=`
+comp_53=`shader_body {
+comp_54=`  uv = (uv*2)-1;
+comp_55=`  uv *= float2(1, texsize.y/texsize.x); //Using texsize ensures perfect aspect correction, even when the screen-dependent render mode is on.
+comp_56=`  uv = float2(uv.x, -uv.y);
+comp_57=`
+comp_58=`  // float2 p = (fragCoord.xy * 2.0 - uv.xy) / min(uv.x, uv.y);
+comp_59=`  float2 p = uv;
+comp_60=`
+comp_61=`  float3 cPos = float3(0.0,0.0, -3.0 * time);
+comp_62=`  // float3 cPos = float3(0.3*sin(time*0.8), 0.4*cos(time*0.3), -6.0 * time);
+comp_63=`  float3 cDir = normalize(float3(0.0, 0.0, -1.0));
+comp_64=`  
+comp_65=`  float3 cUp  = float3(sin(time), 1.0, 0.0);
+comp_66=`  float3 cSide = cross(cDir, cUp);
+comp_67=`  float3 ray = normalize(cSide * p.x + cUp * p.y + cDir);
+comp_68=`
+comp_69=`  // Phantom Mode https://www.shadertoy.com/view/MtScWW by aiekick
+comp_70=`  float acc = 0.0;
+comp_71=`  float acc2 = 0.0;
+comp_72=`  float t = 0.0;
+comp_73=`  for (int i = 0; i < 99; i++) {
+comp_74=`    float3 pos = cPos + ray * t;
+comp_75=`    float dist = map(pos, cPos);
+comp_76=`    dist = max(abs(dist), 0.02);
+comp_77=`    float a = exp(-dist*3.0);
+comp_78=`    if (mod_conv(length(pos)+24.0*time, 30.0) < 3.0) {
+comp_79=`      a *= 2.0;
+comp_80=`      acc2 += a;
+comp_81=`    }
+comp_82=`    acc += a;
+comp_83=`    t += dist * 0.5;
+comp_84=`  }
+comp_85=`  
+comp_86=`  float3 col = float3(acc * 0.01, acc * 0.011 + acc2*0.002, acc * 0.012+ acc2*0.005);
+comp_87=`  float3 fragColor = float4(col, 1.0 - t * 0.03);
+comp_88=`  ret = fragColor;
+comp_89=`}

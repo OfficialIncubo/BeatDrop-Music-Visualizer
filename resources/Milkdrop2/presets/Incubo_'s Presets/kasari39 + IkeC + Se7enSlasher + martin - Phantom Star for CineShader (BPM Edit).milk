@@ -1,0 +1,234 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=3.000
+fGammaAdj=2.000
+fDecay=0.980
+fVideoEchoZoom=2.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.800
+fWaveScale=1.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=i=0; loop (5000,i[0]=0; gmem[i]=0; i+=1;);
+per_frame_init_2=octaves=3; minbpm=75; maxbpm=200; nres_oct=60; 
+per_frame_init_3=nres_extra=nres_oct/log(2)*log(maxbpm/minbpm/2);
+per_frame_init_4=nres=nres_oct*octaves+nres_extra;
+per_frame_init_5=bstep = log(2)/nres_oct;
+per_frame_init_6=nres_out = ceil(nres_oct+nres_extra); //int is necessary !
+per_frame_init_7=
+per_frame_init_8=maxind = 40;
+per_frame_init_9=i=0;
+per_frame_init_10=loop (nres,
+per_frame_init_11= //precalculate BPM
+per_frame_init_12=  (8*i)[3]=minbpm*exp(i*bstep); 
+per_frame_init_13= //precalculate weighting
+per_frame_init_14=  if (i<=nres_out,(8*i)[4]=min(2,1+sin($pi*i/nres_out)*3)/2,0);; 
+per_frame_init_15=i+=1);
+per_frame_1=//Martin/Nitorami - DFT based BPM identification
+per_frame_2=
+per_frame_3=dt=1/fps; 
+per_frame_4=tcorr = (dt - dt_); //to compensate timing errors caused by MD's time smoothing
+per_frame_5=dt_= dt;
+per_frame_6=treal += dt + tcorr*38; //I-share of timing error comp.
+per_frame_7=exc=2*bass+mid+treb;  //choose what you like but mind this could affect quali
+per_frame_8=d0= exp(-1.5*dt);
+per_frame_9=i=0; avg = 0;
+per_frame_10=loop (nres,
+per_frame_11=  n = 8*i;
+per_frame_12=  w = 2*$pi/60*n[3];
+per_frame_13=  d = 1-dt*w*0.013; //DFT smoothing optimised for nres_oct=60
+per_frame_14=  arg = treal*w + tcorr*15000; //P-share of timing error comp.
+per_frame_15=  n[1] = n[1]*d +exc*cos(arg)*(1-d); //DFT real part
+per_frame_16=  n[2] = n[2]*d +exc*sin(arg)*(1-d); //DFT imaginary part
+per_frame_17=  if (i<nres_out, 
+per_frame_18=    n2 = 8*(i+nres_oct);
+per_frame_19=    n4 = 8*(i+nres_oct*2);
+per_frame_20=    sum = sqrt (sqr(n[1])+sqr(n[2]) + sqr(n2[1])+sqr(n2[2]) + sqr(n4[1])+sqr(n4[2]));
+per_frame_21=    avg += sum;
+per_frame_22=    n[0]= n[0]*d0+sum*(1-d0)*n[4];
+per_frame_23=    if (n[0]>(8*promax)[0], promax=max(2,min(nres_out-2,i));,0); 
+per_frame_24=  ,0);
+per_frame_25=i += 1;);
+per_frame_26=avg_ = avg_*d0 + (1-d0)*avg/nres_out;
+per_frame_27=
+per_frame_28=//Resist frequent BPM changes
+per_frame_29=m8 = 8*maxind;
+per_frame_30=wait += abs(m8[0]-(8*promax)[0])*dt*100; 
+per_frame_31=if (wait>abs(promax-maxind)*80/nres_oct, maxind=promax; wait = 0,0);
+per_frame_32=
+per_frame_33=//OUTPUT
+per_frame_34=BPM = m8[3];
+per_frame_35=
+per_frame_36=//Se7enSlasher - Convert BPM to integer and do a simple rounding.
+per_frame_37=//q1 = floor(BPM+.5); //More efficient way?
+per_frame_38=q1 = int(BPM);
+per_frame_39=q2 = dt;
+per_frame_40=
+per_frame_41=//Se7enSlasher - Timed Stop Technique
+per_frame_42=//Change the t1 value to 0 when there is no sound.
+per_frame_43=timeUntilStop = if (bass+mid+treb > 0, 2, timeUntilStop);
+per_frame_44=timeUntilStop -= 1/fps;
+per_frame_45=q1 = if(timeUntilStop <= 0, 0, q1);
+per_frame_46=
+per_frame_47=monitor = q1;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // sample previous frame
+warp_4=`    ret = tex2D( sampler_main, uv ).xyz;
+warp_5=`    
+warp_6=`    // darken (decay) over time
+warp_7=`    ret *= 0.98; //or try: ret -= 0.004;
+warp_8=`}
+comp_1=`// kasari39 + IkeC - Phantom Star for CineShader / https://www.shadertoy.com/view/ttKGDt
+comp_2=`// Transpiled to HLSL using Milkwave
+comp_3=`
+comp_4=`#define tx sin(time)*0.5+1
+comp_5=`#define pi M_PI
+comp_6=`#define pi2 M_PI*2
+comp_7=`#define bpm_pos fmod(time, 120/q1) / (120/q1)
+comp_8=`
+comp_9=`// CONV: adding helper functions
+comp_10=`float mod_conv(float x, float y) { return x - y * floor(x / y); }
+comp_11=`float2 mod_conv(float2 x, float2 y) { return x - y * floor(x / y); }
+comp_12=`float3 mod_conv(float3 x, float3 y) { return x - y * floor(x / y); }
+comp_13=`float4 mod_conv(float4 x, float4 y) { return x - y * floor(x / y); }
+comp_14=`
+comp_15=`// precision float;
+comp_16=`
+comp_17=`float2x2 rot(float a) {
+comp_18=`  float c = cos(a), s = sin(a);
+comp_19=`  return float2x2(c,s,-s,c);
+comp_20=`}
+comp_21=`
+comp_22=`float2 pmod_conv(float2 p, float r) {
+comp_23=`  float a = atan2(p.x, p.y) + pi/r;
+comp_24=`  float n = pi2 / r;
+comp_25=`  a = floor(a/n)*n;
+comp_26=`  return mul(p,transpose(rot(-a)));
+comp_27=`}
+comp_28=`
+comp_29=`float box( float3 p, float3 b ) {
+comp_30=`  float3 d = abs(p) - b;
+comp_31=`  return min(max(d.x,max(d.y,d.z)),0.0) + length(max(d,0.0));
+comp_32=`}
+comp_33=`
+comp_34=`float ifsBox(float3 p) {
+comp_35=`  for (int i=0; i<5; i++) {
+comp_36=`    p = abs(p) - 1.0;
+comp_37=`    p.xy = mul(p.xy,transpose(rot(time*0.3)));
+comp_38=`    p.xz = mul(p.xz,transpose(rot(time*0.1)));
+comp_39=`  }
+comp_40=`
+comp_41=`  p.xz = mul(p.xz,transpose(rot(time)));
+comp_42=`  return box(p, float3(0.4,0.8,0.3));
+comp_43=`}
+comp_44=`
+comp_45=`float map(float3 p, float3 cPos) {
+comp_46=`  float3 p1 = p;
+comp_47=`  p1.x = mod_conv(p1.x-5., 10.) - 5.;
+comp_48=`  p1.y = mod_conv(p1.y-5., 10.) - 5.;
+comp_49=`  p1.z = mod_conv(p1.z, 16.)-8.;
+comp_50=`  p1.xy = pmod_conv(p1.xy, 5.0);
+comp_51=`  return ifsBox(p1);
+comp_52=`}
+comp_53=`
+comp_54=`shader_body {
+comp_55=`  uv = (uv*2)-1;
+comp_56=`  uv *= float2(1, texsize.y/texsize.x); //Using texsize ensures perfect aspect correction, even when the screen-dependent render mode is on.
+comp_57=`  uv = float2(uv.x, -uv.y);
+comp_58=`
+comp_59=`  // float2 p = (fragCoord.xy * 2.0 - uv.xy) / min(uv.x, uv.y);
+comp_60=`  float2 p = uv;
+comp_61=`
+comp_62=`  float3 cPos = float3(0.0,0.0, -3.0 * time);
+comp_63=`  // float3 cPos = float3(0.3*sin(time*0.8), 0.4*cos(time*0.3), -6.0 * time);
+comp_64=`  float3 cDir = normalize(float3(0.0, 0.0, -1.0));
+comp_65=`  
+comp_66=`  float3 cUp  = float3(sin(time), 1.0, 0.0);
+comp_67=`  float3 cSide = cross(cDir, cUp);
+comp_68=`  float3 ray = normalize(cSide * p.x + cUp * p.y + cDir);
+comp_69=`
+comp_70=`  // Phantom Mode https://www.shadertoy.com/view/MtScWW by aiekick
+comp_71=`  float acc = 0.0;
+comp_72=`  float acc2 = 0.0;
+comp_73=`  float t = 0.0;
+comp_74=`  for (int i = 0; i < 99; i++) {
+comp_75=`    float3 pos = cPos + ray * t;
+comp_76=`    float dist = map(pos, cPos);
+comp_77=`    dist = max(abs(dist), 0.02);
+comp_78=`    float a = exp(-dist*3.0);
+comp_79=`    if (mod_conv(length(pos)+(bpm_pos*30), 30.0) < 3.0) {
+comp_80=`      a *= 2.0;
+comp_81=`      acc2 += a;
+comp_82=`    }
+comp_83=`    acc += a;
+comp_84=`    t += dist * 0.5;
+comp_85=`  }
+comp_86=`  
+comp_87=`  float3 col = float3(acc * 0.01, acc * 0.011 + acc2*0.002, acc * 0.012+ acc2*0.005);
+comp_88=`  float3 fragColor = float4(col, 1.0 - t * 0.03);
+comp_89=`  ret = fragColor;
+comp_90=`}
