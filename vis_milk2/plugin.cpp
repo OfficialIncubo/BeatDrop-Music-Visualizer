@@ -633,12 +633,14 @@ SPOUT :
 
 #include <dwmapi.h>  // Link with Dwmapi.lib
 #pragma comment(lib, "dwmapi.lib")
+
 #define FRAND ((rand() % 7381)/7380.0f)
 #define clamp(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
 
 SongTitleGetter songtitlegetter;
 int ToggleFPSNumPressed = 7;			// Default is Unlimited FPS.
 int HardcutMode = 0;
+int TransitionLimit = 18;
 float timetick = 0;
 float timetick2 = 0;
 float TimeToAutoLockPreset = 0;
@@ -1410,6 +1412,7 @@ void CPlugin::MyReadConfig()
     m_nTrebStart = GetPrivateProfileIntW(L"settings", L"TrebStart", m_nTrebStart, pIni);
     m_nTrebEnd = GetPrivateProfileIntW(L"settings", L"TrebEnd", m_nTrebEnd, pIni);
     m_dTimeVariableResetDelay = GetPrivateProfileIntW(L"settings", L"dTimeVariableResetDelay", m_dTimeVariableResetDelay, pIni);
+    m_nTransitionBlendPattern = GetPrivateProfileIntW(L"settings", L"nTransitionBlendPattern", m_nTransitionBlendPattern, pIni);
     m_nAMDMode = GetPrivateProfileIntW(L"settings", L"nAMDMode", m_nAMDMode, pIni);
 
 	m_fBlendTimeUser			= GetPrivateProfileFloatW(L"settings",L"fBlendTimeUser"         ,m_fBlendTimeUser         ,pIni);
@@ -1527,6 +1530,7 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_bShaderCaching, L"bShaderCaching", pIni, L"settings");
     WritePrivateProfileIntW(m_bShaderPrecachingAtStartup, L"bShaderPrecachingAtStartup", pIni, L"settings");
     WritePrivateProfileIntW(m_bCheckForDirectXAtStartup, L"bCheckForDirectXAtStartup", pIni, L"settings");
+    WritePrivateProfileIntW(m_nTransitionBlendPattern, L"nTransitionBlendPattern", pIni, L"settings");
 
 	WritePrivateProfileFloatW(m_fBlendTimeAuto,          L"fBlendTimeAuto",           pIni, L"settings");
 	WritePrivateProfileFloatW(m_fBlendTimeUser,          L"fBlendTimeUser",           pIni, L"settings");
@@ -7497,30 +7501,32 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
 
     // row 1 keys
 	case 'q':
-		m_pState->m_fVideoEchoZoom /= 1.05f;
+		//m_pState->m_fVideoEchoZoom /= 1.05f;
 		return 0; // we processed (or absorbed) the key
 	case 'Q':
-		m_pState->m_fVideoEchoZoom *= 1.05f;
+		//m_pState->m_fVideoEchoZoom *= 1.05f;
 		return 0; // we processed (or absorbed) the key
 	case 'w':
-		m_pState->m_nWaveMode++;
-		if (m_pState->m_nWaveMode >= NUM_WAVES) m_pState->m_nWaveMode = 0;
+		//m_pState->m_nWaveMode++;
+		//if (m_pState->m_nWaveMode >= NUM_WAVES) m_pState->m_nWaveMode = 0;
 		return 0; // we processed (or absorbed) the key
 	case 'W':
-		m_pState->m_nWaveMode--;
-		if (m_pState->m_nWaveMode < 0) m_pState->m_nWaveMode = NUM_WAVES - 1;
+		//m_pState->m_nWaveMode--;
+		//if (m_pState->m_nWaveMode < 0) m_pState->m_nWaveMode = NUM_WAVES - 1;
 		return 0; // we processed (or absorbed) the key
 	case 'e':
-		m_pState->m_fWaveAlpha -= 0.1f;
-		if (m_pState->m_fWaveAlpha.eval(-1) < 0.0f) m_pState->m_fWaveAlpha = 0.0f;
+		//m_pState->m_fWaveAlpha -= 0.1f;
+		//if (m_pState->m_fWaveAlpha.eval(-1) < 0.0f) m_pState->m_fWaveAlpha = 0.0f;
 		return 0; // we processed (or absorbed) the key
 	case 'E':
-		m_pState->m_fWaveAlpha += 0.1f;
+		//m_pState->m_fWaveAlpha += 0.1f;
 		//if (m_pState->m_fWaveAlpha.eval(-1) > 1.0f) m_pState->m_fWaveAlpha = 1.0f;
 		return 0; // we processed (or absorbed) the key
 
-	case 'I':	m_pState->m_fZoom -= 0.01f;		return 0; // we processed (or absorbed) the key
-	case 'i':	m_pState->m_fZoom += 0.01f;		return 0; // we processed (or absorbed) the key
+	case 'I':	//m_pState->m_fZoom -= 0.01f;		
+        return 0; // we processed (or absorbed) the key
+	case 'i':	//m_pState->m_fZoom += 0.01f;		
+        return 0; // we processed (or absorbed) the key
 
 	case 'n':
 	case 'N':
@@ -7544,26 +7550,24 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
         m_presetHistoryBackFence = 0;
 
 		return 0; // we processed (or absorbed) the key
-
-
-	//NOT NEEDED
-	//case 'u':
-	//case 'U':
-        //AddError(wasabiApiLangString(IDS_SHUFFLE_IS_NOW_ON), 3.0f, ERR_NOTIFY, false);
-		//return 0; // we processed (or absorbed) the key
-
 	
-	case 'u':	m_pState->m_fWarpScale /= 1.1f;			break;
-	case 'U':	m_pState->m_fWarpScale *= 1.1f;			break;
-	case 'b':	m_pState->m_fWarpAnimSpeed /= 1.1f;		break;
-	case 'B':	m_pState->m_fWarpAnimSpeed *= 1.1f;		break;
+	case 'u':	//m_pState->m_fWarpScale /= 1.1f;			
+        return 0; // we processed (or absorbed) the key
+	case 'U':	//m_pState->m_fWarpScale *= 1.1f;			
+        return 0; // we processed (or absorbed) the key
+	case 'b':	//m_pState->m_fWarpAnimSpeed /= 1.1f;		
+        return 0; // we processed (or absorbed) the key
+	case 'B':	//m_pState->m_fWarpAnimSpeed *= 1.1f;		
+        return 0; // we processed (or absorbed) the key
 	
 	case 't':
 	case 'T':
 		LaunchSongTitleAnim();
 		return 0; // we processed (or absorbed) the key
-	case 'o':	m_pState->m_fWarpAmount /= 1.1f;	return 0; // we processed (or absorbed) the key
-	case 'O':	m_pState->m_fWarpAmount *= 1.1f;	return 0; // we processed (or absorbed) the key
+	case 'o':	//m_pState->m_fWarpAmount /= 1.1f;	
+        return 0; // we processed (or absorbed) the key
+	case 'O':	//m_pState->m_fWarpAmount *= 1.1f;	
+        return 0; // we processed (or absorbed) the key
 
     case '!':
         // randomize warp shader
@@ -7626,16 +7630,60 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
         }
         break;
 
-	// row 2 keys
-    // 'A' KEY IS FREE!!
-    // 'D' KEY IS FREE!!
 	case 'p':
-		m_pState->m_fVideoEchoAlpha -= 0.1f;
-		if (m_pState->m_fVideoEchoAlpha.eval(-1) < 0) m_pState->m_fVideoEchoAlpha = 0;
-		return 0; // we processed (or absorbed) the key
+		//m_pState->m_fVideoEchoAlpha -= 0.1f;
+		//if (m_pState->m_fVideoEchoAlpha.eval(-1) < 0) m_pState->m_fVideoEchoAlpha = 0;
+		//return 0; // we processed (or absorbed) the key
 	case 'P':
-		m_pState->m_fVideoEchoAlpha += 0.1f;
-		if (m_pState->m_fVideoEchoAlpha.eval(-1) > 1.0f) m_pState->m_fVideoEchoAlpha = 1.0f;
+
+        m_nTransitionBlendPattern++;
+        if (m_nTransitionBlendPattern >= (TransitionLimit + 1))
+            m_nTransitionBlendPattern = -1;
+
+        if (m_nTransitionBlendPattern == -1)
+            AddNotif(L"Transition Blend Pattern: Random");
+        else if (m_nTransitionBlendPattern == 0)
+            AddNotif(L"Transition Blend Pattern: Fade");
+        else if (m_nTransitionBlendPattern == 1)
+            AddNotif(L"Transition Blend Pattern: Directional Wipe");
+        else if (m_nTransitionBlendPattern == 2)
+            AddNotif(L"Transition Blend Pattern: Plasma");
+        else if (m_nTransitionBlendPattern == 3)
+            AddNotif(L"Transition Blend Pattern: Radial");
+        else if (m_nTransitionBlendPattern == 4)
+            AddNotif(L"Transition Blend Pattern: Clock");
+        else if (m_nTransitionBlendPattern == 5)
+            AddNotif(L"Transition Blend Pattern: Spiral/Snail");
+        else if (m_nTransitionBlendPattern == 6)
+            AddNotif(L"Transition Blend Pattern: Rhombus/Diamond");
+        else if (m_nTransitionBlendPattern == 7)
+            AddNotif(L"Transition Blend Pattern: Nuclear Clock");
+        else if (m_nTransitionBlendPattern == 8)
+            AddNotif(L"Transition Blend Pattern: Square/Diamond");
+        else if (m_nTransitionBlendPattern == 9)
+            AddNotif(L"Transition Blend Pattern: Checkerboard Wipe");
+        else if (m_nTransitionBlendPattern == 10)
+            AddNotif(L"Transition Blend Pattern: Curtain");
+        else if (m_nTransitionBlendPattern == 11)
+            AddNotif(L"Transition Blend Pattern: Bubble");
+        else if (m_nTransitionBlendPattern == 12)
+            AddNotif(L"Transition Blend Pattern: Kaleidoscope");
+        else if (m_nTransitionBlendPattern == 13)
+            AddNotif(L"Transition Blend Pattern: Moebius Strip");
+        else if (m_nTransitionBlendPattern == 14)
+            AddNotif(L"Transition Blend Pattern: Star");
+        else if (m_nTransitionBlendPattern == 15)
+            AddNotif(L"Transition Blend Pattern: Disco Floor");
+        else if (m_nTransitionBlendPattern == 16)
+            AddNotif(L"Transition Blend Pattern: Fire/Flame");
+        else if (m_nTransitionBlendPattern == 17)
+            AddNotif(L"Transition Blend Pattern: Whirlpool Drain");
+        else if (m_nTransitionBlendPattern == 18)
+            AddNotif(L"Transition Blend Pattern: Julia Fractal");
+
+		//m_pState->m_fVideoEchoAlpha += 0.1f;
+		//if (m_pState->m_fVideoEchoAlpha.eval(-1) > 1.0f) m_pState->m_fVideoEchoAlpha = 1.0f;
+
 		return 0; // we processed (or absorbed) the key
 	/*case 'd':
 		m_pState->m_fDecay += 0.01f;
@@ -7672,21 +7720,21 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
 		return 0; // we processed (or absorbed) the key
 	case 'f':
 	case 'F':
-		m_pState->m_nVideoEchoOrientation = (m_pState->m_nVideoEchoOrientation + 1) % 4;
+		//m_pState->m_nVideoEchoOrientation = (m_pState->m_nVideoEchoOrientation + 1) % 4;
 		return 0; // we processed (or absorbed) the key
 	case 'g':
-		m_pState->m_fGammaAdj -= 0.1f;
-		if (m_pState->m_fGammaAdj.eval(-1) < 0.0f) m_pState->m_fGammaAdj = 0.0f;
+		//m_pState->m_fGammaAdj -= 0.1f;
+		//if (m_pState->m_fGammaAdj.eval(-1) < 0.0f) m_pState->m_fGammaAdj = 0.0f;
 		return 0; // we processed (or absorbed) the key
 	case 'G':
-		m_pState->m_fGammaAdj += 0.1f;
+		//m_pState->m_fGammaAdj += 0.1f;
 		//if (m_pState->m_fGammaAdj > 1.0f) m_pState->m_fGammaAdj = 1.0f;
 		return 0; // we processed (or absorbed) the key
     case 'j':
-		m_pState->m_fWaveScale *= 0.9f;
+		//m_pState->m_fWaveScale *= 0.9f;
 		return 0; // we processed (or absorbed) the key
 	case 'J':
-		m_pState->m_fWaveScale /= 0.9f;
+		//m_pState->m_fWaveScale /= 0.9f;
 		return 0; // we processed (or absorbed) the key
 	case 'k':
 	case 'K':
@@ -7706,22 +7754,22 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
 	// row 3/misc. keys
 
 	case '[':
-		m_pState->m_fXPush -= 0.005f;
+		//m_pState->m_fXPush -= 0.005f;
 		return 0; // we processed (or absorbed) the key
 	case ']':
-		m_pState->m_fXPush += 0.005f;
+		//m_pState->m_fXPush += 0.005f;
 		return 0; // we processed (or absorbed) the key
 	case '{':
-		m_pState->m_fYPush -= 0.005f;
+		//m_pState->m_fYPush -= 0.005f;
 		return 0; // we processed (or absorbed) the key
 	case '}':
-		m_pState->m_fYPush += 0.005f;
+		//m_pState->m_fYPush += 0.005f;
 		return 0; // we processed (or absorbed) the key
 	case '<':
-		m_pState->m_fRot += 0.02f;
+		//m_pState->m_fRot += 0.02f;
 		return 0; // we processed (or absorbed) the key
 	case '>':
-		m_pState->m_fRot -= 0.02f;
+		//m_pState->m_fRot -= 0.02f;
 		return 0; // we processed (or absorbed) the key
 
 	case 's':				// SAVE PRESET
@@ -8267,7 +8315,7 @@ void CPlugin::RandomizeBlendPattern()
 
     // note: we now avoid constant uniform blend b/c it's half-speed for shader blending.
     //       (both old & new shaders would have to run on every pixel...)           reenabled due to further notice
-    int mixtype = 0 + (rand()%19);//rand()%4;
+    int mixtype = m_nTransitionBlendPattern > -1 ? m_nTransitionBlendPattern : 0 + (rand()%(TransitionLimit+1));//rand()%4;
 
     if (mixtype==0)
     {
