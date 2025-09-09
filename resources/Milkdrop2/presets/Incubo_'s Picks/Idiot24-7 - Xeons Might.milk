@@ -67,8 +67,8 @@ per_frame_3=
 per_frame_4=
 per_frame_5=
 per_frame_6=wave_R=wave_R+.10*sin(time)-above(Bass,bass_Att);
-per_frame_7=wave_B=wave_B-.20*cos(time*.53)-above(treb,treb_att)&treb+.2;
-per_frame_8=wave_g=wave_G+.6*tan(time*.24)-above(mid,mid_att)&mid-.6;
+per_frame_7=wave_B=wave_B-.20*cos(time*.53)-above(treb,treb_att)-2&treb+.2;
+per_frame_8=wave_g=wave_G+.6*tan(time*.24)-above(mid,mid_att)-2&mid-.6;
 per_pixel_1=zoom=zoom+.10*sin(rad-.20+treb*ang)*ang*sin(mid+ang*rad)*cos(treb+mid/bass)*ang;
 per_pixel_2=rot=rot*sin(rad+.20+bass*ang)*sin(bass+Treb);
 per_pixel_3=
