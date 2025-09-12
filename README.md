@@ -19,7 +19,12 @@ It features:
 - Hard Cut Modes, Transparency Mode, Playback Controls, Startup Preset etc.
 - And so much more!
 
-Before compiling the code:
+# FEATURES
+
+TBA (To Be Announced)
+
+# Before compiling the code
+
 * First of all, [Visual Studio 2022](https://visualstudio.microsoft.com/vs) is now required.
 * [DirectX SDK](https://www.microsoft.com/en-us/download/details.aspx?id=6812) is even required for building.
 * Workloads required before compiling:
