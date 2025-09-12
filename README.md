@@ -49,8 +49,8 @@ Steps on how to compile BeatDrop with [projectM-eval](https://github.com/project
 4. It will receive an error about one of the libraries: `Invalid or corrupt file: cannot read at 0x536E` (projectM_ns-eel2.lib).
 5. The generated files are in vcpkg_installed folder. Copy both libraries from vcpkg_installed\x86-windows-static\x86-windows-static\lib, then paste them to lib folder from the main source code folder.
 6. (Optional) Copy the ns-eel header from the same step from 5., but in include\projectm-eval\ns-eel2, then paste it to ns-eel-shim folder, still from the main source code folder.
-7. Now compile the code and you are ready to go. If you see that your output gives "1 up to date", just delete BeatDrop.exe from vis_milk2 -> Release folder. Compile it again.
-8. It will receive `The command "copy /y /v "..\vis_milk2\Release\BeatDrop.exe" "..\BeatDrop\BeatDrop.exe"`, but it built succesfully. It tries to copy the generated .exe file to BeatDrop folder, which it doesn't exist. Ignore it. Please check your generated .exe file in vis_milk2/Release/BeatDrop.exe, then copy it in your BeatDrop folder.
+7. Now build/compile the code and you are ready to go. If you see that your output gives "1 up to date", just delete BeatDrop.exe from vis_milk2 -> Release folder. Compile it again.
+8. Check your generated .exe file in vis_milk2/Release/BeatDrop.exe, then copy it in your BeatDrop folder.
 
 ## Second method: Using [CMake](https://cmake.org) (for latest version build)
 
@@ -80,7 +80,7 @@ cmake --build . --config "Release" --parallel
 cmake --install . --prefix your-installation-folder-name-here.
 ```
 5. Now do the same steps as step 4 and 5, but look at your main code folder -> projectm-eval -> your build folder -> your CMake installation folder you provided, then there are include headers and library files installed in. If you want to copy only header or library files, then look at them inside.
-6. Now compile and it should be working. If the same problem happens about the copy command, please look at the step 8 from the first method.
+6. Now build/compile and it should be working. Again, look at the step 8 from the first method after you built/compiled.
 
 If you have problems, ask me on Discord, Twitter or Instagram.
 
