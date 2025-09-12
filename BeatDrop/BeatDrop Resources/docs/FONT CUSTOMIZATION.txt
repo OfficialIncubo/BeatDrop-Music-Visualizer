@@ -1,0 +1,9 @@
+If you want to customize the font, right click in the ”beatdrop.ini” file, click ”Edit”, then go to ”szFontFace(num)”.
+
+szFontFace number meanings:
+0 - Simple Font
+1 - Decorative Font
+2 - Help Screen
+3 - Playlist
+4 - Tooltips
+5 - Animated Songtitles
