@@ -103,6 +103,8 @@ Download Spout: https://spout.zeal.co
 4. Open [YouTube](https://www.youtube.com), [Spotify](https://open.spotify.com), [AIMP](https://www.aimp.ru) or any media players/audio sources and let them play! (Yes! It reacts to all the audio sources)
 5. Watch them react and enjoy! 👌🪩
 
+Get started by pressing F1 to get a list of hotkeys and functionalities.
+
 # USAGE
 
 You can use BeatDrop for parties, karaoke, music videos, DJ mixes and so on, but you must credit this repo if you used this! I am not even angry anymore if you didn't credit this, but use #beatdrop, #beatdropmusicvisualizer or BeatDrop as tags, then I'll look at them.
@@ -111,7 +113,7 @@ You can use BeatDrop for parties, karaoke, music videos, DJ mixes and so on, but
 
 If you want to have all the MilkDrop presets in your own, just download [this MegaPack](https://drive.google.com/file/d/1DlszoqMG-pc5v1Bo9x4NhemGPiwT-0pv/view), then extract them to your BeatDrop folder (ex: to BeatDrop Resources folder).
 
-# Featured Websites:
+# FEATURED WEBSITES
 
 [![Softpedia](https://upload.wikimedia.org/wikipedia/commons/f/f4/Softpedia_logo.svg)](https://www.softpedia.com/get/Multimedia/Audio/Other-AUDIO-Tools/BeatDrop-Music-Visualizer.shtml)
 
@@ -129,10 +131,10 @@ If you want to have all the MilkDrop presets in your own, just download [this Me
 
 [Never Complete Only Abandoned](https://publish.obsidian.md/xybre/permalink/73b8a0f5-2464-4404-929b-42a5d3c451fd)
 
-# Follow me on any social networks:
+# FOLLOW ME ON ANY SOCIAL NETWORKS
 
-[<img src="https://static.vecteezy.com/system/resources/previews/042/148/611/non_2x/new-twitter-x-logo-twitter-icon-x-social-media-icon-free-png.png" alt="X" style="width:7%; height:50%;">](https://x.com/BeatDropVis)
-[<img src="https://static.vecteezy.com/system/resources/previews/018/930/718/non_2x/discord-logo-discord-icon-transparent-free-png.png" alt="Discord (Join server)" style="width:7%; height:50%;">](https://discord.gg/rp5cBDtGuM)
+[<img src="https://static.vecteezy.com/system/resources/previews/042/148/611/non_2x/new-twitter-x-logo-twitter-icon-x-social-media-icon-free-png.png" alt="X" style="width:10%; height:75%;">](https://x.com/BeatDropVis)
+[<img src="https://static.vecteezy.com/system/resources/previews/018/930/718/non_2x/discord-logo-discord-icon-transparent-free-png.png" alt="Discord (Join server)" style="width:10%; height:75%;">](https://discord.gg/rp5cBDtGuM)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
