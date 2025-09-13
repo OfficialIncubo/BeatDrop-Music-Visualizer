@@ -8,7 +8,7 @@
 
 BeatDrop Music Visualizer is an improved standalone version of the [original inactive repository fork](https://github.com/mvsoft74/BeatDrop) based of the [Original MilkDrop2 Plug-in](https://www.geisswerks.com/milkdrop/) for [Winamp](https://winamp.com) that aims to add better features and bug fixes/optimizations for versatility, usability and amazing. This is also considered as MilkDrop improvement.
 
-It features:
+Highlights:
 - Based of the [Original MilkDrop Plug-in](https://www.geisswerks.com/milkdrop/).
 - Perfectly adjusted beat detection for better audio reaction (also configurable)
 - New waveforms and transitions
