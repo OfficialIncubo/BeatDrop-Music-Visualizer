@@ -4043,78 +4043,47 @@ void CPlugin::DrawWave(float *fL, float *fR)
 
 					break;
 
-				case 16:
-					// DeepSeek - Triangle Wave
-					nVerts = 256; // More vertices for smoother audio modulation
-
+				case 16: // DeepSeek + Kai Blaschke (CodAv) - Triangle Waveform
+				{
 					if (m_pState->m_bModWaveAlphaByVolume)
 						alpha *= ((mysound.imm_rel[0] + mysound.imm_rel[1] + mysound.imm_rel[2]) * 0.333f - m_pState->m_fModWaveAlphaStart.eval(GetTime())) / (m_pState->m_fModWaveAlphaEnd.eval(GetTime()) - m_pState->m_fModWaveAlphaStart.eval(GetTime()));
 					if (alpha < 0) alpha = 0;
 					if (alpha > 1) alpha = 1;
 
+					// Use half the vertices for this waveform
+					nVerts /= 2;
+
+					float inverseSamplesMinusOne = 1.0f / static_cast<float>(nVerts);
+					float angleOffset = -(GetTime() * 0.2f);
+
+					for (int i = 0; i < nVerts; i++)
 					{
-						float size = 0.575f;
-						float rotation = (fWaveParam2) * 3.141593f;
-						float cos_rot = cosf(rotation);
-						float sin_rot = sinf(rotation);
+						float progress = static_cast<float>(i) * inverseSamplesMinusOne;
+						float phi0 = (floor(progress * 3.0f) + 0.5f) / 3.0f * 6.28f + angleOffset;
+						float angle = (progress * 6.28f) + angleOffset;
+						float edgeDistance = cosf(angle - phi0);
+						float radius = (0.7f + (edgeDistance * fR[i]) + fWaveParam2) / (2.0f * edgeDistance);
 
-						float inv_nverts = 1.0f / (float)(nVerts - 1);
-
-						for (i = 0; i < nVerts; i++)
+						if (m_bScreenDependentRenderMode)
 						{
-							// Create perfect triangle shape
-							float phase = i * inv_nverts;
-							float x, y;
-
-							if (phase < 0.3333f) {
-								// First segment (bottom left to top)
-								float t = phase * 3.0f;
-								x = -size + t * size;
-								y = -size + t * 2.0f * size;
-							}
-							else if (phase < 0.6666f) {
-								// Second segment (top to bottom right)
-								float t = (phase - 0.3333f) * 3.0f;
-								x = 0.0f + t * size;
-								y = size - t * 2.0f * size;
-							}
-							else {
-								// Third segment (bottom right to bottom left)
-								float t = (phase - 0.6666f) * 3.0f;
-								x = size - t * 2.0f * size;
-								y = -size;
-							}
-
-							// Apply audio modulation (using circular buffer position)
-							float audio_mod = 1.0f + 0.3f * fL[(i * 2) % NUM_WAVEFORM_SAMPLES];
-							x *= audio_mod;
-							y *= audio_mod;
-
-							// Apply rotation
-							float x_rot = x * cos_rot - y * sin_rot;
-							float y_rot = x * sin_rot + y * cos_rot;
-
-							// Apply position and aspect ratio
-							if (m_bScreenDependentRenderMode)
-							{
-								v[i].x = x_rot + fWavePosX;
-								v[i].y = y_rot + fWavePosY;
-							}
-							else
-							{
-								v[i].x = x_rot * m_fAspectY + fWavePosX;
-								v[i].y = y_rot * m_fAspectX + fWavePosY;
-							}
+							v[i].x = radius * cosf(angle) + fWavePosX;
+							v[i].y = radius * sinf(angle) + fWavePosY;
+						}
+						else
+						{
+							v[i].x = radius * cosf(angle) * m_fAspectY + fWavePosX;
+							v[i].y = radius * sinf(angle) * m_fAspectX + fWavePosY;
 						}
 					}
 
-					// Close the triangle
+					// Close the loop if not blending
 					if (!m_pState->m_bBlending)
 					{
 						nVerts++;
 						memcpy(&v[nVerts - 1], &v[0], sizeof(WFVERTEX));
 					}
 					break;
+				}
 
 				case 17:
 					// DeepSeek - Fireworks Waveform
