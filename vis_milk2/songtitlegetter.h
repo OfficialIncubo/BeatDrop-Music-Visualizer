@@ -10,13 +10,12 @@
 #include <dbghelp.h>
 
 // Win RT
-#if NTDDI_VERSION >= NTDDI_WIN10
 #include <winrt/Windows.Media.Control.h>
 #include <winrt/Windows.Foundation.h>
-#endif
 
 using namespace winrt;
 using namespace Windows::Media::Control;
+
 using namespace std::chrono_literals;
 
 class SongTitleGetter {

@@ -11455,8 +11455,6 @@ uint32_t CPlugin::crc32(const char* data, size_t length) {
 bool CPlugin::CheckDX9DLL() {
     // Try to load the DLL manually
 
-    if (!g_plugin.m_bCheckForDirectXAtStartup) return 0;
-
     HMODULE hD3DX = LoadLibrary(TEXT("D3DX9_43.dll"));
 
     if (!hD3DX) {
@@ -11466,17 +11464,15 @@ bool CPlugin::CheckDX9DLL() {
             // open website in browser
             ShellExecuteA(NULL, "open", "https://www.microsoft.com/en-us/download/details.aspx?id=35", NULL, NULL, SW_SHOWNORMAL);
         }
-        return -1;
+        return false;
     }
-
-    g_plugin.m_bCheckForDirectXAtStartup = false;
 
     // If successful, free the DLL (optional if you're linking statically)
     FreeLibrary(hD3DX);
 
     // Continue with your app
     // ...
-    return 0;
+    return true;
 }
 
 void CPlugin::RemoveAngleBrackets(wchar_t* str) {
@@ -11511,12 +11507,19 @@ bool CPlugin::CheckForDirectX9c() {
     if (regres == ERROR_SUCCESS) {
         // Read the key
         regres = RegQueryValueExA(hRegKey, "Version", 0, NULL, (LPBYTE)value, &dwSize);
-        // Decode the string : 4.09.00.0904
-        sscanf_s(value, "%d.%d.%d.%d", &major, &minor, &notused, &revision);
-        // printf("DirectX registry : [%s] (%d.%d.%d.%d)\n", value, major, minor, notused, revision);
         RegCloseKey(hRegKey);
-        if (major == 4 && minor == 9 && revision == 904)
-            return true;
+
+        if (regres == ERROR_SUCCESS) {
+            // Decode the string : 4.09.00.0904
+            sscanf_s(value, "%d.%d.%d.%d", &major, &minor, &notused, &revision);
+            // printf("DirectX registry : [%s] (%d.%d.%d.%d)\n", value, major, minor, notused, revision);
+            if (major == 4 && minor == 9 && revision == 904)
+                return true;
+        }
+
+        // If we get here, either RegQueryValueExA failed or version check failed
+        ShowMissingDirectXMessage();
+        return false;
     }
     else {
         ShowMissingDirectXMessage();

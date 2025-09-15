@@ -4054,15 +4054,15 @@ void CPlugin::DrawWave(float *fL, float *fR)
 					nVerts /= 2;
 
 					float inverseSamplesMinusOne = 1.0f / static_cast<float>(nVerts);
-					float angleOffset = -(GetTime() * 0.2f);
+					float angleOffset = -(GetTime() * .2f);
 
 					for (int i = 0; i < nVerts; i++)
 					{
 						float progress = static_cast<float>(i) * inverseSamplesMinusOne;
-						float phi0 = (floor(progress * 3.0f) + 0.5f) / 3.0f * 6.28f + angleOffset;
+						float phi0 = (floor(progress * 3.0f) + .5f) / 3.0f * 6.28f + angleOffset;
 						float angle = (progress * 6.28f) + angleOffset;
 						float edgeDistance = cosf(angle - phi0);
-						float radius = (0.7f + (edgeDistance * fR[i]) + fWaveParam2) / (2.0f * edgeDistance);
+						float radius = (.7f + (edgeDistance * fR[i]) + fWaveParam2) / (2.0f * edgeDistance);
 
 						if (m_bScreenDependentRenderMode)
 						{
