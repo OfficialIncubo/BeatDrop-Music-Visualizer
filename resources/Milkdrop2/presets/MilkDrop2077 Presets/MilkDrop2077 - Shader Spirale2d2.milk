@@ -1,0 +1,134 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=3
+[preset00]
+fRating=4.000
+fGammaAdj=1.460
+fDecay=0.935
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=1.000
+zoom=0.99990
+rot=-0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=0.99990
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=volume = 0;
+per_frame_1=q1 = bass+mid+treb;
+per_frame_2=volume = volume+(q1*0.012);
+per_frame_3=monitor = q2 = volume;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // Define PI
+warp_4=`    #define PI 3.14159265359
+warp_5=`
+warp_6=`    // Coordinate setup with aspect ratio correction
+warp_7=`    float aspect = aspect.x/aspect.y;
+warp_8=`    uv = (uv.xy-0.5)*float2(aspect,1.0);
+warp_9=`
+warp_10=`    // Make a tube
+warp_11=`    float f = 1.0 / length(uv*3);
+warp_12=`
+warp_13=`    // Add the angle
+warp_14=`    f += atan2(uv.x, uv.y) / (PI / 2.0);
+warp_15=`
+warp_16=`    // Let's roll
+warp_17=`    f -= time/3;
+warp_18=`
+warp_19=`    // Make it black and white
+warp_20=`    f = 1.0 - clamp(sin(f * PI * 1.0) * dot(uv, uv) * texsize.y / 15.0 + 0.5, 0.0, 1.0);
+warp_21=`
+warp_22=`    // Add the darkness to the end of the tunnel
+warp_23=`    f *= sin(length(uv) - 0.1);
+warp_24=`
+warp_25=`    // Output the final color
+warp_26=`    ret = float4(f, f, f, 1.0);
+warp_27=`}
+comp_1=`// tribute to suksma!
+comp_2=`
+comp_3=`shader_body
+comp_4=`{
+comp_5=`    float2 uv2;
+comp_6=`
+comp_7=`    float4 c = float4(5,0.4,0.15,0.1);
+comp_8=`
+comp_9=`    uv2 = uv + float2(1,0)*texsize.zw;
+comp_10=`    float gx1 = GetPixel(uv2)*c.x + GetBlur1(uv2)*c.y + GetBlur2(uv2)*c.z + GetBlur3(uv2)*c.w;
+comp_11=`    uv2 = uv + float2(-1,0)*texsize.zw;
+comp_12=`    float gx2 = GetPixel(uv2)*c.x + GetBlur1(uv2)*c.y + GetBlur2(uv2)*c.z + GetBlur3(uv2)*c.w;
+comp_13=`
+comp_14=`    uv2 = uv + float2(0,1)*texsize.zw;
+comp_15=`    float gy1 = GetPixel(uv2)*c.x + GetBlur1(uv2)*c.y + GetBlur2(uv2)*c.z + GetBlur3(uv2)*c.w;
+comp_16=`    uv2 = uv + float2(0,-1)*texsize.zw;
+comp_17=`    float gy2 = GetPixel(uv2)*c.x + GetBlur1(uv2)*c.y + GetBlur2(uv2)*c.z + GetBlur3(uv2)*c.w;
+comp_18=`
+comp_19=`    float3 g = normalize(float3(gx1-gx2, gy1-gy2, 0.14));
+comp_20=`
+comp_21=`    ret = 0.5 + 0.5*g;
+comp_22=`    ret *= saturate(length(ret.xy-0.5)*5);
+comp_23=`    ret = ret.xxy;
+comp_24=`    ret += 1.15;
+comp_25=`    ret *= lerp(ret,ret*(GetBlur3(uv)-GetBlur1(uv)*treb_att/3),pow(hue_shader.xzy,bass_att/3));
+comp_26=`    ret *= ret;
+comp_27=`
+comp_28=`    //ret *= 1.5; //old gamma effect    
+comp_29=`}
