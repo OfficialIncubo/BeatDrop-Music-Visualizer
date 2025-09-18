@@ -738,9 +738,8 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 
     ShowWindow(hwnd, SW_SHOW);
 
-    if (g_plugin.m_bAlwaysOnTop) {
+    if (g_plugin.m_bAlwaysOnTop)
         g_plugin.ToggleAlwaysOnTop(hwnd);
-    }
 
 	unsigned int frame = 0;
 
@@ -775,6 +774,15 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 		// windowHeight);
 		SpoutWidth,
 		SpoutHeight);
+
+    if (g_plugin.m_bFullscreenOnStartup && !g_plugin.m_bFullscreenStretchOnStartup && pD3DDevice != nullptr)
+    {
+        ToggleFullScreen(hwnd);
+    }
+    if (!g_plugin.m_bFullscreenOnStartup && g_plugin.m_bFullscreenStretchOnStartup && pD3DDevice != nullptr)
+    {
+        ToggleStretch(hwnd);
+    }
 
     MSG msg;
     msg.message = WM_NULL;

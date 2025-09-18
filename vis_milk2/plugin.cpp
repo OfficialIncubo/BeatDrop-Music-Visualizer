@@ -1366,6 +1366,8 @@ void CPlugin::MyReadConfig()
     m_bShaderCaching = GetPrivateProfileBoolW(L"settings", L"bShaderCaching", m_bShaderCaching, pIni);
     m_bShaderPrecachingAtStartup = GetPrivateProfileBoolW(L"settings", L"bShaderPrecachingAtStartup", m_bShaderPrecachingAtStartup, pIni);
     m_bCheckForDirectXAtStartup = GetPrivateProfileBoolW(L"settings", L"bCheckForDirectXAtStartup", m_bCheckForDirectXAtStartup, pIni);
+    m_bFullscreenOnStartup = GetPrivateProfileBoolW(L"settings", L"bFullscreenOnStartup", m_bFullscreenOnStartup, pIni);
+    m_bFullscreenStretchOnStartup = GetPrivateProfileBoolW(L"settings", L"bFullscreenStretchOnStartup", m_bFullscreenOnStartup, pIni);
 
 	m_bShowFPS			= GetPrivateProfileBoolW(L"settings",L"bShowFPS",       m_bShowFPS			,pIni);
 	m_bShowRating		= GetPrivateProfileBoolW(L"settings",L"bShowRating",    m_bShowRating		,pIni);
@@ -1530,6 +1532,8 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_bShaderCaching, L"bShaderCaching", pIni, L"settings");
     WritePrivateProfileIntW(m_bShaderPrecachingAtStartup, L"bShaderPrecachingAtStartup", pIni, L"settings");
     WritePrivateProfileIntW(m_bCheckForDirectXAtStartup, L"bCheckForDirectXAtStartup", pIni, L"settings");
+    WritePrivateProfileIntW(m_bFullscreenOnStartup, L"bFullscreenOnStartup", pIni, L"settings");
+    WritePrivateProfileIntW(m_bFullscreenStretchOnStartup, L"bFullscreenStretchOnStartup", pIni, L"settings");
     WritePrivateProfileIntW(m_nTransitionBlendPattern, L"nTransitionBlendPattern", pIni, L"settings");
 
 	WritePrivateProfileFloatW(m_fBlendTimeAuto,          L"fBlendTimeAuto",           pIni, L"settings");
