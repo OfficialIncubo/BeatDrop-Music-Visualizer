@@ -88,7 +88,9 @@ If you have problems, ask me on Discord, Twitter or Instagram.
 
 Please download and install [DirectX End-User Runtime Web](https://www.microsoft.com/en-us/download/details.aspx?id=35) first.
 
-BeatDrop now has a Spout integration! It now only supported to route the visual to any apps, such as [NestDrop](https://nestimmersion.ca/nestdrop.php), [OBS](https://obsproject.com) ([as plug-in](https://github.com/Off-World-Live/obs-spout2-plugin)) etc.
+Microsoft Visual C++ Redistributable is also required to run. You can get it from [system requirements](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer#system-requirements) category.
+
+BeatDrop now has a Spout integration! It's now supported to route the visual to any apps, such as [NestDrop](https://nestimmersion.ca/nestdrop.php), [Resolume Arena](https://www.resolume.com/software/avenue-arena), [OBS](https://obsproject.com) ([as plug-in](https://github.com/Off-World-Live/obs-spout2-plugin)) and so much more.
 
 Download Spout: https://spout.zeal.co
 
