@@ -738,6 +738,10 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 
     ShowWindow(hwnd, SW_SHOW);
 
+    if (g_plugin.m_bAlwaysOnTop) {
+        g_plugin.ToggleAlwaysOnTop(hwnd);
+    }
+
 	unsigned int frame = 0;
 
 	// SPOUT - defaults if no GUI
@@ -756,7 +760,8 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 	SpoutWidthOld = SpoutWidth;
 	SpoutHeightOld = SpoutHeight;
 
-	g_plugin.PluginPreInitialize(0, 0);
+    //Moved to StartThreads().
+	//g_plugin.PluginPreInitialize(0, 0);
 
     // SPOUT
 	// InitD3d(hwnd, windowWidth, windowHeight);
@@ -970,6 +975,9 @@ void StartShaderPrecacheThread(HINSTANCE instance) {
 
 int StartThreads(HINSTANCE instance) {
 
+    // Early init so we can read from settings
+    g_plugin.PluginPreInitialize(0, 0);
+
     HRESULT hr = S_OK;
 
     hr = CoInitialize(NULL);
@@ -978,6 +986,20 @@ int StartThreads(HINSTANCE instance) {
         return -__LINE__;
     }
     CoUninitializeOnExit cuoe;
+
+    if (g_plugin.m_bCheckForDirectXAtStartup) {
+        if (!g_plugin.CheckForDirectX9c()) {
+            ERR(L"DirectX 9 DLL not in registry, closing...");
+            return 0;
+        }
+        if (!g_plugin.CheckDX9DLL()) {
+            ERR(L"DirectX 9 DLL not found, closing...");
+            return 0;
+        }
+
+        // if we made it here, skip this check in the future
+        g_plugin.m_bCheckForDirectXAtStartup = false;
+    }
 
     // argc==1 No additional params. Output disabled.
     // argc==3 Two additional params. Output file enabled (32bit IEEE 754 FLOAT).
@@ -1054,20 +1076,6 @@ int StartThreads(HINSTANCE instance) {
 
     // at this point capture is running
     // wait for the user to press a key or for capture to error out
-    
-    if (g_plugin.m_bCheckForDirectXAtStartup) {
-        if (!g_plugin.CheckForDirectX9c()) {
-            ERR(L"DirectX 9 DLL not in registry, closing...");
-            return 0;
-        }
-        if (!g_plugin.CheckDX9DLL()) {
-            ERR(L"DirectX 9 DLL not found, closing...");
-            return 0;
-        }
-
-        // if we made it here, skip this check in the future
-        g_plugin.m_bCheckForDirectXAtStartup = false;
-    }
 
     /*HANDLE thread =*/ StartRenderThread(instance);
     StartShaderPrecacheThread(instance);
