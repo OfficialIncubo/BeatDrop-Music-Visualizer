@@ -1,0 +1,142 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=2
+PSVERSION_COMP=3
+[preset00]
+fRating=3.000
+fGammaAdj=1.800
+fDecay=0.980
+fVideoEchoZoom=1.289
+fVideoEchoAlpha=0.400
+nVideoEchoOrientation=1
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.794
+fWaveScale=0.387
+fWaveSmoothing=0.400
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=3.40000
+fShader=0.000
+zoom=1.04200
+rot=-0.02000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.12200
+sx=1.00000
+sy=1.00000
+wave_r=0.650
+wave_g=0.650
+wave_b=0.650
+wave_x=0.500
+wave_y=0.440
+ob_size=0.060
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=1.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=wave_a = 0;
+per_frame_2=zoom = 1;
+per_frame_3=rot = 0;
+per_frame_4=warp = 0;
+warp_1=`sampler sampler_Plane_Mask01;
+warp_2=`
+warp_3=`shader_body
+warp_4=`{
+warp_5=`    // SETELAN WARNA PESAWAT TEMPUR 
+warp_6=`    float4 color = tex2D(sampler_Plane_Mask01, uv);
+warp_7=`    ret = float4(color.r, 0, 0, color.a);
+warp_8=`}
+comp_1=`// **** Awan **** //
+comp_2=`#define TIME_CLOUDS 0.1
+comp_3=`#define SCALE_CLOUDS 0.5
+comp_4=`float3 ret1, clouds, color_sky;
+comp_5=`float2 rs1, uv1, uv2;
+comp_6=`float z1;
+comp_7=`
+comp_8=`// **** Pesawat tempur **** //
+comp_9=`#define TIME_JET_PLANE 1.4
+comp_10=`#define SCALE_JET_PLANE 200.0
+comp_11=`#define SCALE_MASK_ERASER 40.0
+comp_12=`float3 ret2, mask, grayColor;
+comp_13=`float2 rs2, uv3, uv4;
+comp_14=`float z2, maskValue, jetplaneAlpha, luminance;
+comp_15=`sampler sampler_rand00_window_uv_5x5;
+comp_16=`
+comp_17=`shader_body
+comp_18=`{
+comp_19=`
+comp_20=`// -----**************** Awan ****************----- //
+comp_21=`uv1 = uv-float2(.3,1);
+comp_22=`uv1 *= aspect.xy;
+comp_23=`uv2 = uv1;
+comp_24=`z1 = clamp(1/(abs(uv2.y-.3)),-0,18);
+comp_25=`rs1 = float2(uv2.x*z1, z1*2+time*TIME_CLOUDS)/39;
+comp_26=`clouds = tex2D(sampler_noise_lq, rs1*SCALE_CLOUDS).zzz;
+comp_27=`color_sky = float3(0,0.5,1); // Setelan efek warna
+comp_28=`ret1 = clouds*float3(1,1,1)+(1.0 - clouds)*color_sky;
+comp_29=`
+comp_30=`// -----***************** Pesawat tempur *****************----- //
+comp_31=`uv3 = uv-float2(.5,1);
+comp_32=`uv3 *= aspect.xy;
+comp_33=`uv4 = uv3;
+comp_34=`z2 = clamp(1/(abs(uv2.y-.6)),-0,18);
+comp_35=`rs2 = float2(uv3.x*z2, z2*2+time*TIME_JET_PLANE)/39;
+comp_36=`float4 jetplaneSample = tex2D(sampler_main, rs2*SCALE_JET_PLANE);
+comp_37=`float3 jetplaneColor = jetplaneSample.xyz;
+comp_38=`
+comp_39=`// Konversi warna merah ke abu-abu (grayscale)
+comp_40=`luminance = dot(jetplaneColor, float3(0.299, 0.587, 0.114));
+comp_41=`grayColor = float3(luminance, luminance, luminance);
+comp_42=`jetplaneAlpha = length(jetplaneColor);
+comp_43=`jetplaneAlpha = smoothstep(0.1, 0.3, jetplaneAlpha);
+comp_44=`
+comp_45=`// Setelan mask untuk mengurangi jumlah pesawat
+comp_46=`mask = 1.0 - tex2D(sampler_rand00_window_uv_5x5, rs2*SCALE_MASK_ERASER).xyz;
+comp_47=`maskValue = length(mask);
+comp_48=`maskValue = smoothstep(0.3, 0.7, maskValue);
+comp_49=`jetplaneAlpha *= maskValue;
+comp_50=`ret2 = grayColor * jetplaneAlpha;
+comp_51=`ret = lerp(ret1, ret2, jetplaneAlpha);
+comp_52=`// -----*********************** end ***********************----- //
+comp_53=`
+comp_54=`// written by Jian Simanjuntak 
+comp_55=`}
+comp_56=`
