@@ -4728,6 +4728,15 @@ void CPlugin::MyRenderUI(
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
             swprintf(buf, L"%s %s %6.4f ", ((double)mysound.imm_rel[2] >= 1.3) ? L"+" : L" ", L"treb:", (float)(*m_pState->var_pf_treb));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
+            swprintf(buf, L"");
+            MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
+            for (int i = 0; i < NUM_Q_VAR; i++)
+            {
+                    swprintf(buf, L"q%d: %6.4f ", i + 1, (float)(*m_pState->var_pf_q[i]));
+                    MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
+            }
+            swprintf(buf, L"%s %d ", L"Time (s):", (int)(GetTime()));
+            MyTextOut_Shadow(buf, MTO_LOWER_RIGHT);
         }
         // NOTE: custom timed msg comes at the end!!
     }
