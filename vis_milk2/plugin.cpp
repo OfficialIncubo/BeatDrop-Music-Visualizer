@@ -4692,7 +4692,7 @@ void CPlugin::MyRenderUI(
                 (m_bPresetLockedByUser || m_bPresetLockedByCode) ? L"" : L"",
                 (m_nLoadingPreset != 0) ? m_pState->m_szDesc : m_pOldState->m_szDesc);
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-            swprintf(buf, L" %s: %d / %d", L"Current preset position", (int)(m_nCurrentPreset - (m_nDirs - 1)), (int)(m_nPresets - (m_nDirs)));
+            swprintf(buf, L" %s: %d / %d", L"Current preset position", (int)(m_nCurrentPreset - (m_nDirs - 1)), (int)(m_nPresets - m_nDirs));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
             swprintf(buf, L" %s: %d ", L"Total presets loaded", (int)(NumTotalPresetsLoaded));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
@@ -5493,7 +5493,7 @@ void CPlugin::MyRenderUI(
                 MyTextOut(buf, MTO_UPPER_LEFT, true);
                 swprintf(buf, L"Cursor position: %d / %d", m_nPresetListCurPos+1, m_nPresets);
                 MyTextOut(buf, MTO_UPPER_LEFT, true);
-                swprintf(buf, L"Total presets: %d", (m_nPresets) - (m_nDirs));
+                swprintf(buf, L"Total presets: %d", m_nPresets - m_nDirs);
                 MyTextOut(buf, MTO_UPPER_LEFT, true);
 
                 *upper_left_corner_y += h/2;
