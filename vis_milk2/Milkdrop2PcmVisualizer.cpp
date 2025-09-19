@@ -655,8 +655,8 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 	// SPOUT
 	// Make the window a fixed size
     // The sender resolution is independent - see SpoutWidth/SpoutHeight below
-	int windowWidth = g_plugin.m_nWindowWidth; // standalone version 1280x720
-	int windowHeight = g_plugin.m_nWindowHeight;
+	int windowWidth = g_plugin.m_nWindowWidth-16; // standalone version 1280x720
+	int windowHeight = g_plugin.m_nWindowHeight-39;
 
 	RECT rc;
 	SetRect(&rc, 0, 0, windowWidth, windowHeight);
