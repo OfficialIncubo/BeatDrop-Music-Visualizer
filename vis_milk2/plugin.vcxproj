@@ -68,6 +68,7 @@
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)\Lib\x86;$(LibraryPath)</LibraryPath>
+    <TargetName>BeatDrop</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_OldOS|Win32'">
     <OutDir>.\Release\</OutDir>
@@ -76,6 +77,7 @@
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>$(DXSDK_DIR)Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(DXSDK_DIR)\Lib\x86;$(LibraryPath)</LibraryPath>
+    <TargetName>BeatDrop_OldOS</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>.\Debug\</OutDir>
@@ -149,9 +151,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>copy /y /v "..\vis_milk2\Release\BeatDrop.exe" "..\BeatDrop\BeatDrop.exe"
-
-</Command>
+      <Command>copy /y /v "..\vis_milk2\Release\BeatDrop.exe" "..\BeatDrop\BeatDrop.exe"</Command>
     </PostBuildEvent>
     <Manifest />
     <Manifest>
@@ -220,9 +220,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>copy /y /v "..\vis_milk2\Release\BeatDrop.exe" "..\BeatDrop\BeatDrop.exe"
-
-</Command>
+      <Command>copy /y /v "..\vis_milk2\Release\BeatDrop_OldOS.exe" "..\BeatDrop\BeatDrop_OldOS.exe"</Command>
     </PostBuildEvent>
     <Manifest />
     <Manifest>
