@@ -348,6 +348,7 @@ public:
         bool        m_bAlwaysOnTop = false;
         bool        m_bFullscreenOnStartup = false;
         bool        m_bFullscreenStretchOnStartup = false;
+        bool        m_bBorderlessOnStartup = false;
         bool        m_bEnablePresetStartup;
         bool        m_bAutoLockPresetWhenNoMusic;
         bool        m_bEnableSongTitlePoll;

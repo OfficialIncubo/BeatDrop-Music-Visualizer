@@ -775,14 +775,12 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 		SpoutWidth,
 		SpoutHeight);
 
-    if (g_plugin.m_bFullscreenOnStartup && !g_plugin.m_bFullscreenStretchOnStartup && pD3DDevice != nullptr)
-    {
+    if (g_plugin.m_bFullscreenOnStartup && !g_plugin.m_bFullscreenStretchOnStartup && !g_plugin.m_bBorderlessOnStartup && pD3DDevice != nullptr)
         ToggleFullScreen(hwnd);
-    }
-    if (!g_plugin.m_bFullscreenOnStartup && g_plugin.m_bFullscreenStretchOnStartup && pD3DDevice != nullptr)
-    {
+    if (!g_plugin.m_bFullscreenOnStartup && g_plugin.m_bFullscreenStretchOnStartup && !g_plugin.m_bBorderlessOnStartup && pD3DDevice != nullptr)
         ToggleStretch(hwnd);
-    }
+    if (!g_plugin.m_bFullscreenOnStartup && !g_plugin.m_bFullscreenStretchOnStartup && g_plugin.m_bBorderlessOnStartup && pD3DDevice != nullptr)
+        ToggleBorderlessWindow(hwnd);
 
     MSG msg;
     msg.message = WM_NULL;

@@ -1370,6 +1370,7 @@ void CPlugin::MyReadConfig()
     m_bCheckForDirectXAtStartup = GetPrivateProfileBoolW(L"settings", L"bCheckForDirectXAtStartup", m_bCheckForDirectXAtStartup, pIni);
     m_bFullscreenOnStartup = GetPrivateProfileBoolW(L"settings", L"bFullscreenOnStartup", m_bFullscreenOnStartup, pIni);
     m_bFullscreenStretchOnStartup = GetPrivateProfileBoolW(L"settings", L"bFullscreenStretchOnStartup", m_bFullscreenOnStartup, pIni);
+    m_bBorderlessOnStartup = GetPrivateProfileBoolW(L"settings", L"bBorderlessOnStartup", m_bBorderlessOnStartup, pIni);
 
 	m_bShowFPS			= GetPrivateProfileBoolW(L"settings",L"bShowFPS",       m_bShowFPS			,pIni);
 	m_bShowRating		= GetPrivateProfileBoolW(L"settings",L"bShowRating",    m_bShowRating		,pIni);
@@ -1536,6 +1537,7 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_bCheckForDirectXAtStartup, L"bCheckForDirectXAtStartup", pIni, L"settings");
     WritePrivateProfileIntW(m_bFullscreenOnStartup, L"bFullscreenOnStartup", pIni, L"settings");
     WritePrivateProfileIntW(m_bFullscreenStretchOnStartup, L"bFullscreenStretchOnStartup", pIni, L"settings");
+    WritePrivateProfileIntW(m_bBorderlessOnStartup, L"bBorderlessOnStartup", pIni, L"settings");
     WritePrivateProfileIntW(m_nTransitionBlendPattern, L"nTransitionBlendPattern", pIni, L"settings");
 
 	WritePrivateProfileFloatW(m_fBlendTimeAuto,          L"fBlendTimeAuto",           pIni, L"settings");
@@ -4690,7 +4692,9 @@ void CPlugin::MyRenderUI(
                 (m_bPresetLockedByUser || m_bPresetLockedByCode) ? L"" : L"",
                 (m_nLoadingPreset != 0) ? m_pState->m_szDesc : m_pOldState->m_szDesc);
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-            swprintf(buf, L" %s: %0.0f ", L"Total presets loaded", (float)(NumTotalPresetsLoaded));
+            swprintf(buf, L" %s: %d / %d", L"Current preset position", (int)(m_nCurrentPreset - (m_nDirs - 1)), (int)(m_nPresets - (m_nDirs)));
+            MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
+            swprintf(buf, L" %s: %d ", L"Total presets loaded", (int)(NumTotalPresetsLoaded));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
 		}
 
@@ -5486,6 +5490,10 @@ void CPlugin::MyRenderUI(
 
                 wchar_t buf[MAX_PATH+64];
                 swprintf(buf, wasabiApiLangString(IDS_DIRECTORY_OF_X), m_szPresetDir);
+                MyTextOut(buf, MTO_UPPER_LEFT, true);
+                swprintf(buf, L"Cursor position: %d / %d", m_nPresetListCurPos+1, m_nPresets);
+                MyTextOut(buf, MTO_UPPER_LEFT, true);
+                swprintf(buf, L"Total presets: %d", (m_nPresets) - (m_nDirs));
                 MyTextOut(buf, MTO_UPPER_LEFT, true);
 
                 *upper_left_corner_y += h/2;
