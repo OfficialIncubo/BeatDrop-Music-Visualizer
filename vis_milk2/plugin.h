@@ -291,6 +291,7 @@ public:
     bool CheckForDirectX9c();
     void ShowMissingDirectXMessage();
     void ToggleAlwaysOnTop(HWND hwnd);
+    void SaveWindowSizeAndPosition(HWND hwnd);
 	bool bSpoutChanged; // set to write config on exit
 	bool bSpoutOut; // Spout output on or off
     bool bEnablePresetStartup;
@@ -328,6 +329,11 @@ public:
 		int         m_nTexBitsPerCh;
         int			m_nGridX;
         int			m_nGridY;
+
+        int         m_nWindowPosX = 50;
+        int         m_nWindowPosY = 50;
+        int         m_nWindowWidth = 854;
+        int         m_nWindowHeight = 480;
 
         bool		m_bShowPressF1ForHelp;
         //char		m_szMonitorName[256];

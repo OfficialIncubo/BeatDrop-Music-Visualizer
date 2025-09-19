@@ -146,8 +146,8 @@ namespace fs = std::filesystem;
 #define DLL_EXPORT __declspec(dllexport)
 //#define COMPILE_AS_DLL
 #define SAMPLE_SIZE 576
-#define DEFAULT_WIDTH 720;
-#define DEFAULT_HEIGHT 720;
+//#define DEFAULT_WIDTH 720;
+//#define DEFAULT_HEIGHT 720;
 
 CPlugin g_plugin;
 HINSTANCE api_orig_hinstance = nullptr;
@@ -443,6 +443,8 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	switch(uMsg) {
 
         case WM_CLOSE: {
+            if (!fullscreen && !stretch)
+                g_plugin.SaveWindowSizeAndPosition(hWnd);
             DestroyWindow( hWnd );
             UnregisterClassW(L"Direct3DWindowClass", NULL);
             return 0;
@@ -653,8 +655,8 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 	// SPOUT
 	// Make the window a fixed size
     // The sender resolution is independent - see SpoutWidth/SpoutHeight below
-	int windowWidth = 720; // standalone version 1280x720
-	int windowHeight = 720;
+	int windowWidth = g_plugin.m_nWindowWidth; // standalone version 1280x720
+	int windowHeight = g_plugin.m_nWindowHeight;
 
 	RECT rc;
 	SetRect(&rc, 0, 0, windowWidth, windowHeight);
@@ -662,12 +664,12 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 
 	// SPOUT
 	// Centre on the desktop work area
-	int WindowPosLeft = 0;
-	int WindowPosTop = 0;
-	RECT WorkArea;
-	SystemParametersInfo(SPI_GETWORKAREA, 0, (LPVOID)&WorkArea, 0);
-	WindowPosLeft += ((WorkArea.right - WorkArea.left) - windowWidth) / 2;
-	WindowPosTop += ((WorkArea.bottom - WorkArea.top) - windowHeight) / 2;
+	//int WindowPosLeft = 0;
+	//int WindowPosTop = 0;
+	//RECT WorkArea;
+	//SystemParametersInfo(SPI_GETWORKAREA, 0, (LPVOID)&WorkArea, 0);
+	//WindowPosLeft += ((WorkArea.right - WorkArea.left) - windowWidth) / 2;
+	//WindowPosTop += ((WorkArea.bottom - WorkArea.top) - windowHeight) / 2;
 
 	// SPOUT
 	// Remove minimize and maximize
@@ -712,12 +714,16 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 		// ===========================
         WS_OVERLAPPEDWINDOW, // SPOUT
 		//dwStyle,
-		WindowPosLeft, // SPOUT
-		WindowPosTop,
+		//WindowPosLeft, // SPOUT
+		//WindowPosTop,
 		// CW_USEDEFAULT,
 		// CW_USEDEFAULT,
-		(rc.right - rc.left),
-        (rc.bottom - rc.top),
+		//(rc.right - rc.left),
+        //(rc.bottom - rc.top),
+        g_plugin.m_nWindowPosX,
+        g_plugin.m_nWindowPosY,
+        g_plugin.m_nWindowWidth,
+        g_plugin.m_nWindowHeight,
         0,
         NULL,
         instance,

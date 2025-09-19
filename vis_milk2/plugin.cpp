@@ -1372,6 +1372,11 @@ void CPlugin::MyReadConfig()
     m_bFullscreenStretchOnStartup = GetPrivateProfileBoolW(L"settings", L"bFullscreenStretchOnStartup", m_bFullscreenOnStartup, pIni);
     m_bBorderlessOnStartup = GetPrivateProfileBoolW(L"settings", L"bBorderlessOnStartup", m_bBorderlessOnStartup, pIni);
 
+    m_nWindowPosX = GetPrivateProfileIntW(L"settings", L"nWindowPosX", m_nWindowPosX, pIni);
+    m_nWindowPosY = GetPrivateProfileIntW(L"settings", L"nWindowPosY", m_nWindowPosY, pIni);
+    m_nWindowWidth = GetPrivateProfileIntW(L"settings", L"nWindowWidth", m_nWindowWidth, pIni);
+    m_nWindowHeight = GetPrivateProfileIntW(L"settings", L"nWindowHeight", m_nWindowHeight, pIni);
+
 	m_bShowFPS			= GetPrivateProfileBoolW(L"settings",L"bShowFPS",       m_bShowFPS			,pIni);
 	m_bShowRating		= GetPrivateProfileBoolW(L"settings",L"bShowRating",    m_bShowRating		,pIni);
 	m_bShowPresetInfo	= GetPrivateProfileBoolW(L"settings",L"bShowPresetInfo",m_bShowPresetInfo	,pIni);
@@ -1540,6 +1545,11 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_bBorderlessOnStartup, L"bBorderlessOnStartup", pIni, L"settings");
     WritePrivateProfileIntW(m_nTransitionBlendPattern, L"nTransitionBlendPattern", pIni, L"settings");
 
+    WritePrivateProfileIntW(m_nWindowPosX, L"nWindowPosX", pIni, L"settings");
+    WritePrivateProfileIntW(m_nWindowPosY, L"nWindowPosY", pIni, L"settings");
+    WritePrivateProfileIntW(m_nWindowWidth, L"nWindowWidth", pIni, L"settings");
+    WritePrivateProfileIntW(m_nWindowHeight, L"nWindowHeight", pIni, L"settings");
+
 	WritePrivateProfileFloatW(m_fBlendTimeAuto,          L"fBlendTimeAuto",           pIni, L"settings");
 	WritePrivateProfileFloatW(m_fBlendTimeUser,          L"fBlendTimeUser",           pIni, L"settings");
 	WritePrivateProfileFloatW(m_fTimeBetweenPresets,     L"fTimeBetweenPresets",      pIni, L"settings");
@@ -1556,6 +1566,16 @@ void CPlugin::MyWriteConfig()
 }
 
 //----------------------------------------------------------------------
+
+void CPlugin::SaveWindowSizeAndPosition(HWND hwnd) {
+    RECT rect;
+    if (GetWindowRect(hwnd, &rect)) {
+        m_nWindowPosX = rect.left;
+        m_nWindowPosY = rect.top;
+        m_nWindowWidth = rect.right - rect.left;
+        m_nWindowHeight = rect.bottom - rect.top;
+    }
+}
 
 void ConvertLLCto1310(char* d, const char *s)
 {
