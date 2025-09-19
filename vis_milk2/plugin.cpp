@@ -1359,8 +1359,10 @@ void CPlugin::MyReadConfig()
 	m_bSongTitleAnims   = GetPrivateProfileBoolW(L"settings",L"bSongTitleAnims",m_bSongTitleAnims,pIni);
     m_bEnablePresetStartup = GetPrivateProfileBoolW(L"settings", L"bEnablePresetStartup", m_bEnablePresetStartup, pIni);
     m_bAutoLockPresetWhenNoMusic = GetPrivateProfileBoolW(L"settings", L"bAutoLockPresetWhenNoMusic", m_bAutoLockPresetWhenNoMusic, pIni);
+    #if SUPPORT_SMTC
     m_bEnableSongTitlePoll = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePoll", m_bEnableSongTitlePoll, pIni);
     m_bEnableSongTitlePollExplicit = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePollExplicit", m_bEnableSongTitlePollExplicit, pIni);
+    #endif
     m_bScreenDependentRenderMode = GetPrivateProfileBoolW(L"settings", L"bScreenDependentRenderMode", m_bScreenDependentRenderMode, pIni);
     m_bManualBeatSensitivityMode = GetPrivateProfileBoolW(L"settings", L"bManualBeatSensitivityMode", m_bManualBeatSensitivityMode, pIni);
     m_bShaderCaching = GetPrivateProfileBoolW(L"settings", L"bShaderCaching", m_bShaderCaching, pIni);
@@ -11280,6 +11282,7 @@ void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
 {
     szSongTitle[0] = 0;
 
+    #if SUPPORT_SMTC
     if (m_bEnableSongTitlePoll || m_bEnableSongTitlePollExplicit)
     {
         // Static variables maintain state between calls
@@ -11342,6 +11345,7 @@ void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
             szSongTitle[nSize - 1] = L'\0';
         }
     }
+    #endif
 }
 
 // =========================================================

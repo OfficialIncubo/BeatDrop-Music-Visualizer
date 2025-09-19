@@ -2,16 +2,28 @@
 
 SongTitleGetter::SongTitleGetter()
 {
+#if SUPPORT_SMTC
+    SMTCSupported = true;
+#else
+    SMTCSupported = false;
+#endif
 }
 
 void SongTitleGetter::Init() {
+#if SUPPORT_SMTC
     winrt::init_apartment(); // Initialize the WinRT runtime
     start_time = std::chrono::steady_clock::now();
+#else
+    SMTCSupported = false;
+#endif
 }
 
 void SongTitleGetter::PollMediaInfo() {
 
+    if (!SMTCSupported) return;
     if (!doPoll && !doPollExplicit) return;
+
+    #if SUPPORT_SMTC
 
     // Get the current time
     auto current_time = std::chrono::steady_clock::now();
@@ -47,4 +59,5 @@ void SongTitleGetter::PollMediaInfo() {
         // Reset the start time to the current time
         start_time = current_time;
     }
+#endif
 }
