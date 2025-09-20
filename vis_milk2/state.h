@@ -422,6 +422,8 @@ public:
     double *var_pf_blur2max;
     double *var_pf_blur3max;
     double *var_pf_blur1_edge_darken;
+	// new in BeatDrop v1.4.1:
+	double* var_pf_mousex, *var_pf_mousey, *var_pf_mouseclicked;
 
 	// for per-vertex expression evaluation:
 		NSEEL_VMCTX m_pv_eel;

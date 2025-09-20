@@ -770,6 +770,10 @@ void CPlugin::RunPerFrameEquations(int code)
         *m_pState->var_pf_blur2max  = mix*(*m_pState->var_pf_blur2max ) + mix2*(*m_pOldState->var_pf_blur2max );
         *m_pState->var_pf_blur3max  = mix*(*m_pState->var_pf_blur3max ) + mix2*(*m_pOldState->var_pf_blur3max );
         *m_pState->var_pf_blur1_edge_darken = mix*(*m_pState->var_pf_blur1_edge_darken) + mix2*(*m_pOldState->var_pf_blur1_edge_darken);
+		// added in BeatDrop v1.4.1:
+		*m_pState->var_pf_mousex = mix * (*m_pState->var_pf_mousex) + mix2 * (*m_pOldState->var_pf_mousex);
+		*m_pState->var_pf_mousey = mix * (*m_pState->var_pf_mousey) + mix2 * (*m_pOldState->var_pf_mousey);
+		*m_pState->var_pf_mouseclicked = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_mouseclicked : *m_pState->var_pf_mouseclicked;
     }
 }
 

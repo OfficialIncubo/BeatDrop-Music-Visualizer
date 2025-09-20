@@ -341,6 +341,9 @@ void CState::RegisterBuiltInVariables(int flags)
         var_pf_pixelsy       = NSEEL_VM_regvar(m_pf_eel, "pixelsy");
         var_pf_aspectx       = NSEEL_VM_regvar(m_pf_eel, "aspectx");
         var_pf_aspecty       = NSEEL_VM_regvar(m_pf_eel, "aspecty");
+		var_pf_mousex        = NSEEL_VM_regvar(m_pf_eel, "mousex");
+		var_pf_mousey        = NSEEL_VM_regvar(m_pf_eel, "mousey");
+		var_pf_mouseclicked  = NSEEL_VM_regvar(m_pf_eel, "mouseclicked");
         var_pf_blur1min      = NSEEL_VM_regvar(m_pf_eel, "blur1_min");
         var_pf_blur2min      = NSEEL_VM_regvar(m_pf_eel, "blur2_min");
         var_pf_blur3min      = NSEEL_VM_regvar(m_pf_eel, "blur3_min");
