@@ -1,5 +1,7 @@
 // prefs.cpp
 
+#pragma once
+
 #include "common.h"
 
 #define DEFAULT_FILE L"loopback-capture.wav"
