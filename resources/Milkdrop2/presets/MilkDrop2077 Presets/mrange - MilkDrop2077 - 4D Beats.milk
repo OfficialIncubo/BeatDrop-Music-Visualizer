@@ -226,5 +226,6 @@ warp_62=`    ret = tanh(o)/0.9;
 warp_63=`}
 comp_1=`shader_body
 comp_2=`{
-comp_3=` ret = GetPixel(uv);
-comp_4=`}
+comp_3=` uv.y = -uv.y;
+comp_4=` ret = GetPixel(uv);
+comp_5=`}
