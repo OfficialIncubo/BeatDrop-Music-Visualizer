@@ -1,0 +1,4 @@
+mouse_x - retrieves the X position of mouse
+mouse_y - retrieves the Y position of mouse
+mouse_pos - retrieves the XY position of mouse
+mouse_clicked - retrieves if the left button of the mouse is clicked/held or not

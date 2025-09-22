@@ -1256,7 +1256,7 @@ void CPlugin::MyPreInitialize()
 	m_bShowFPS			= false;
 	m_bShowRating		= false;
 	m_bShowPresetInfo	= false;
-	m_bShowDebugInfo	= false;
+	m_bShowDebugInfo	= 0;
 	m_bShowSongTitle	= false;
 	m_bShowSongTime		= false;
 	m_bShowSongLen		= false;
@@ -4457,6 +4457,28 @@ void CPlugin::MyRenderFn(int redraw)
     }
     //END
 
+    //Mouse Control Variables:
+    // Update mouse variables
+    POINT pt;
+    GetCursorPos(&pt);
+    ScreenToClient(GetPluginWindow(), &pt);
+
+    RECT clientRect;
+    GetClientRect(GetPluginWindow(), &clientRect);
+
+    // Check if mouse is inside the client area
+    if (PtInRect(&clientRect, pt))
+    {
+        m_mouseX = (2.0f * pt.x / clientRect.right) - 1.0f;
+        m_mouseY = 1.0f - (2.0f * pt.y / clientRect.bottom);
+    }
+    else
+    {
+        m_mouseX = -1;
+        m_mouseY = -1;
+    }
+    //END
+
     //Don't show the help message again when the "Press F1 for help" message is finished.
     //Useful when I press CTRL + T or when it reaches 250000 seconds, it shows the message again, so I did.
     if (GetTime() >= PRESS_F1_DUR)
@@ -4737,7 +4759,7 @@ void CPlugin::MyRenderUI(
         }
 
         // d) debug information
-        if (m_bShowDebugInfo)
+        if (m_bShowDebugInfo == 1) // Page 1
         {
             SelectFont(SIMPLE_FONT);
             swprintf(buf, L" %s: %6.4f ", wasabiApiLangString(IDS_PF_MONITOR), (float)(*m_pState->var_pf_monitor));
@@ -4750,11 +4772,18 @@ void CPlugin::MyRenderUI(
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
             swprintf(buf, L"");
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
+        }
+        if (m_bShowDebugInfo == 2) // Page 2
+        {
             for (int i = 0; i < NUM_Q_VAR; i++)
             {
-                    swprintf(buf, L"q%d: %6.4f ", i + 1, (float)(*m_pState->var_pf_q[i]));
-                    MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
+                SelectFont(SIMPLE_FONT);
+                swprintf(buf, L"q%d: %6.4f ", i + 1, (float)(*m_pState->var_pf_q[i]));
+                MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
             }
+        }
+        if (m_bShowDebugInfo) //If show debug info is enabled, it entirely shows it, else it's hidden.
+        {
             swprintf(buf, L"%s %d ", L"Time (s):", (int)(GetTime()));
             MyTextOut_Shadow(buf, MTO_LOWER_RIGHT);
         }
@@ -4776,6 +4805,7 @@ void CPlugin::MyRenderUI(
         wchar_t buf3[512+1] = {0}; // add two extra spaces to end, so italicized fonts don't get clipped
 
         // render song title in lower-left corner:
+        #if SUPPORT_SMTC
         if (m_bShowSongTitle)
         {
 			wchar_t buf4[512] = {0};
@@ -4783,6 +4813,7 @@ void CPlugin::MyRenderUI(
             GetSongTitle(buf4, sizeof(buf4)); // defined in utility.h/cpp
             MyTextOut_Shadow(buf4, MTO_LOWER_LEFT);
         }
+        #endif
 
         // render song time & len above that:
         if (m_bShowSongTime || m_bShowSongLen)
@@ -6146,6 +6177,13 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
          LoadPresetFilesViaDragAndDrop(wParam);
      return 0;
 
+     case WM_LBUTTONDOWN:
+         m_mouseClicked = 1;
+         break;
+     case WM_LBUTTONUP:
+         m_mouseClicked = 0;
+         break;
+
     case WM_KEYDOWN:    // virtual-key codes
 
         // Note that some keys will never reach this point, since they are
@@ -6189,63 +6227,49 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_max_fps_fs = 60;
                 m_max_fps_dm = 60;
                 m_max_fps_w = 60;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"60 fps", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"60 fps");
             }
             else if (ToggleFPSNumPressed == 2)
             {
                 m_max_fps_fs = 90;
                 m_max_fps_dm = 90;
                 m_max_fps_w = 90;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"90 fps", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"90 fps");
             }
             else if (ToggleFPSNumPressed == 3)
             {
                 m_max_fps_fs = 120;
                 m_max_fps_dm = 120;
                 m_max_fps_w = 120;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"120 fps", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"120 fps");
             }
             else if (ToggleFPSNumPressed == 4)
             {
                 m_max_fps_fs = 144;
                 m_max_fps_dm = 144;
                 m_max_fps_w = 144;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"144 fps", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"144 fps");
             }
             else if (ToggleFPSNumPressed == 5)
             {
                 m_max_fps_fs = 240;
                 m_max_fps_dm = 240;
                 m_max_fps_w = 240;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"240 fps", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"240 fps");
             }
             else if (ToggleFPSNumPressed == 6)
             {
                 m_max_fps_fs = 360;
                 m_max_fps_dm = 360;
                 m_max_fps_w = 360;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"360 fps", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"360 fps");
             }
             else if (ToggleFPSNumPressed == 7)
             {
                 m_max_fps_fs = 0;
                 m_max_fps_dm = 0;
                 m_max_fps_w = 0;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Unlimited fps!", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Unlimited fps!");
             }
             else if (ToggleFPSNumPressed == 8)
             {
@@ -6253,9 +6277,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 m_max_fps_fs = 30;
                 m_max_fps_dm = 30;
                 m_max_fps_w = 30;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"30 fps", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"30 fps");
             }
         }
             return 0; // we processed (or absorbed) the key
@@ -6266,35 +6288,29 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 			m_bAlwaysOnTop = !m_bAlwaysOnTop;
 			if (m_bAlwaysOnTop) {
 				ToggleAlwaysOnTop(hWnd);
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Always On Top ON", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Always On Top ON");
 			}
 			else { 
 				ToggleAlwaysOnTop(hWnd);
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Always On Top OFF", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Always On Top OFF");
 			}
 			 return 0; // we processed (or absorbed) the key
         case VK_F8:
+            #if SUPPORT_SMTC
             m_bShowSongTitle = !m_bShowSongTitle;
+            #endif
             return 0; // we processed (or absorbed) the key
         case VK_F12:
             TranspaMode = !TranspaMode;
         if (TranspaMode)
             {
                 ToggleTransparency(hWnd);
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Transparency Mode ON", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Transparency Mode ON");
             }
         else
             {
                 ToggleTransparency(hWnd);
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Transparency Mode OFF", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Transparency Mode OFF");
             }
         return 0; // we processed (or absorbed) the key
         //case VK_F2:
@@ -6325,98 +6341,72 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
             if (HardcutMode == 1)
             {
                 m_bHardCutsDisabled = false;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Hard cut Mode: Normal", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Hard cut Mode: Normal");
             }
             if (HardcutMode == 2)
             {
                 m_bHardCutsDisabled = true;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Hard cut Mode: Bass Blend", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Hard cut Mode: Bass Blend");
             }
 
             if (HardcutMode == 3)
             {
                 m_bHardCutsDisabled = true;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Hard cut Mode: Bass", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Hard cut Mode: Bass");
             }
             if (HardcutMode == 4)
             {
                 m_bHardCutsDisabled = true;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Hard cut Mode: Middle", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Hard cut Mode: Middle");
             }
             if (HardcutMode == 5)
             {
                 m_bHardCutsDisabled = true;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Hard cut Mode: Treble", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Hard cut Mode: Treble");
             }
             if (HardcutMode == 6)
             {
                 m_bHardCutsDisabled = true;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Hard cut Mode: Bass Fast Blend", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Hard cut Mode: Bass Fast Blend");
             }
             if (HardcutMode == 7)
             {
                 m_bHardCutsDisabled = true;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Hard cut Mode: Treble Fast Blend", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Hard cut Mode: Treble Fast Blend");
             }
             if (HardcutMode == 8)
             {
                 m_bHardCutsDisabled = true;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Hard cut Mode: Bass Blend and Hardcut Treble", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Hard cut Mode: Bass Blend and Hardcut Treble");
             }
             if (HardcutMode == 9)
             {
                 m_bHardCutsDisabled = true;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Hard cut Mode: Rhythmic Hardcut", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Hard cut Mode: Rhythmic Hardcut");
             }
             if (HardcutMode == 10)
             {
                 m_bHardCutsDisabled = true;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Hard cut Mode: 2 beats", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Hard cut Mode: 2 beats");
                 beatcount = -1;
             }
             if (HardcutMode == 11)
             {
                 m_bHardCutsDisabled = true;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Hard cut Mode: 4 beats", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Hard cut Mode: 4 beats");
                 beatcount = -1;
             }
             if (HardcutMode == 12)
             {
                 m_bHardCutsDisabled = true;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Hard cut Mode: Kinetronix (Vizikord)", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Hard cut Mode: Kinetronix (Vizikord)");
                 beatcount = -1;
             }
             if (HardcutMode == 13)
             {
                 HardcutMode = 0;
                 m_bHardCutsDisabled = true;
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Hard cut Mode: OFF", tmp, 64);
-                AddNotif(buf);
+                AddNotif(L"Hard cut Mode: OFF");
             }
         }
         return 0; // we processed (or absorbed) the key
@@ -7390,15 +7380,11 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 				bSpoutOut = !bSpoutOut;
 				if (bSpoutOut) {
 					// Start spout
-                    wchar_t buf[1024], tmp[64];
-                    swprintf(buf, L"Spout output enabled.", tmp, 64);
-                    AddNotif(buf);
+                    AddNotif(L"Spout output enabled.");
 				}
 				else {
 					// Stop Spout
-                    wchar_t buf[1024], tmp[64];
-                    swprintf(buf, L"Spout output disabled.", tmp, 64);
-                    AddNotif(buf);
+                    AddNotif(L"Spout output disabled.");
 				}
 				if (bInitialized) {
 					spoutsender.ReleaseDX9sender();
@@ -7418,17 +7404,9 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
         case 'Q':
             m_bManualBeatSensitivityMode = !m_bManualBeatSensitivityMode;
             if (m_bManualBeatSensitivityMode)
-            {
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Manual Beat Sensitivity Mode", tmp, 64);
-                AddNotif(buf);
-            }
+                AddNotif(L"Manual Beat Sensitivity Mode");
             else
-            {
-                wchar_t buf[1024], tmp[64];
-                swprintf(buf, L"Automatic Beat Sensitivity Mode", tmp, 64);
-                AddNotif(buf);
-            }
+                AddNotif(L"Automatic Beat Sensitivity Mode");
         break;
 
 		//case 'T':
@@ -7573,7 +7551,9 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
 
 	case 'n':
 	case 'N':
-		m_bShowDebugInfo = !m_bShowDebugInfo;
+		m_bShowDebugInfo++;
+        if (m_bShowDebugInfo >= 3)
+            m_bShowDebugInfo = 0;
 		return 0; // we processed (or absorbed) the key
 
 	case 'r':
@@ -7842,17 +7822,9 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
     case '~':
         m_bPresetLockedByUser = !m_bPresetLockedByUser;
 	    if (m_bPresetLockedByUser)
-        {
-            wchar_t buf[1024], tmp[64];
-            swprintf(buf, L"Preset locked.", tmp, 64);
-            AddNotif(buf);
-        }
+            AddNotif(L"Preset locked.");
         else
-        {
-            wchar_t buf[1024], tmp[64];
-            swprintf(buf, L"Preset unlocked.", tmp, 64);
-            AddNotif(buf);
-        }
+            AddNotif(L"Preset unlocked.");
         return 0;
 
 	case 'l': // LOAD PRESET
@@ -11566,10 +11538,9 @@ bool CPlugin::CheckForDirectX9c() {
         ShowMissingDirectXMessage();
         return false;
     }
-    else {
-        ShowMissingDirectXMessage();
-        return false;
-    }
+    // If we get here, DirectX 9c is not installed
+    ShowMissingDirectXMessage();
+    return false;
 }
 
 void CPlugin::ShowMissingDirectXMessage()

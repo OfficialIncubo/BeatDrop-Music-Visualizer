@@ -1,0 +1,12 @@
+1. Normal: Uses built-in hard-cut mode
+2. Bass Blend: Blends to next preset with a delay of 1 second when the bass is triggered
+3. Bass: Forcibly hard-cut to next preset when the bass is triggered
+4. Middle: Forcibly hard-cut to next preset when the middle is triggered
+5. Treble: Forcibly hard-cut to next preset when the treble is triggered
+6. Bass Fast Blend: Blends to next preset 2 times faster when the bass is triggered
+7. Treble Fast Blend: Blends to next preset 2 times faster when the treble is triggered
+8. Bass Blend and Hard Cut Treble: Blends to next preset based on bass or hard-cuts to next preset based on treble with a delay of 0.25 seconds
+9. Rhythmic Hardcut: Hard-cuts to next preset based on bass and treble with a delay of 0.25 seconds.
+10. 2 beats: Hard-cuts to next preset when the bass is triggered 2 times every. Resets at 1 second when it's no reaction.
+11. 4 beats: Hard-cuts to next preset when the bass is triggered 4 times every. Resets at 1 second when it's no reaction.
+12. Kinetronix (Vizikord): Hard-cuts to next and previous preset back & fourth when the bass is triggered. It jumps to next 2 presets when it reached 32 beats. Resets at 1 second when it's no reaction.

@@ -31,6 +31,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <math.h>
 #include <locale.h>
 #include <windows.h>
+#include <intrin.h>
 #ifdef _DEBUG
     #define D3D_DEBUG_INFO  // declare this before including d3d9.h
 #endif
@@ -334,25 +335,9 @@ void MissingDirectX(HWND hwnd)
 
 bool CheckForMMX()
 {
-    DWORD bMMX = 0;
-    DWORD *pbMMX = &bMMX;
-    __try {
-        __asm {
-            mov eax, 1
-            cpuid
-            mov edi, pbMMX
-            mov dword ptr [edi], edx
-        }
-    }
-    __except(EXCEPTION_EXECUTE_HANDLER)
-    {
-        bMMX = 0;
-    }
-
-    if (bMMX & 0x00800000)  // check bit 23
-		return true;
-
-	return false;
+    int cpuInfo[4];
+    __cpuid(cpuInfo, 1);
+    return (cpuInfo[3] & (1 << 23)) != 0;  // Bit 23 = MMX
 }
 
 bool CheckForSSE()

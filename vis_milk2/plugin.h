@@ -334,6 +334,9 @@ public:
         int         m_nWindowPosY = 50;
         int         m_nWindowWidth = 854;
         int         m_nWindowHeight = 480;
+        float       m_mouseX;
+        float       m_mouseY;
+        bool        m_mouseClicked;
 
         bool		m_bShowPressF1ForHelp;
         //char		m_szMonitorName[256];
@@ -503,7 +506,7 @@ public:
         bool		m_bShowFPS;
         bool		m_bShowRating;
         bool		m_bShowPresetInfo;
-        bool		m_bShowDebugInfo;
+        int		    m_bShowDebugInfo;
         bool		m_bShowSongTitle;
         bool		m_bShowSongTime;
         bool		m_bShowSongLen;

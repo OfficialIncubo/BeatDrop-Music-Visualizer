@@ -1,0 +1,11 @@
+smoothstep() - Returns a smooth Hermite interpolation between 0 and 1, if x is in the range [min, max].
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-smoothstep
+
+transpose() - Transposes the specified input matrix.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-transpose
+
+all() - Determines if all components of the specified value are non-zero.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-all
+
+If there are more undocumented shader functions, please contact me on Discord, Twitter/X or Reddit.
+Written by DJ XcitMosphere/Incubo_/Se7enSlasher
