@@ -285,7 +285,10 @@ void DeinitD3d() {
 //Multiple monitor stretch - Credit to @milkdropper for the code!
 void ToggleStretch(HWND hwnd) {
     if (!stretch) {
-        ShowCursor(FALSE);
+
+        if (!g_plugin.m_bShowCursorOnFullscreenOrStretch)
+            ShowCursor(FALSE);
+
         int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
         int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
         int left = GetSystemMetrics(SM_XVIRTUALSCREEN);
@@ -312,7 +315,9 @@ void ToggleStretch(HWND hwnd) {
         stretch = true;
     }
     else {
-        ShowCursor(TRUE);
+
+        if (!g_plugin.m_bShowCursorOnFullscreenOrStretch)
+            ShowCursor(TRUE);
 
         int x = lastRect.left;
         int y = lastRect.top;
@@ -344,7 +349,9 @@ void ToggleStretch(HWND hwnd) {
 
 void ToggleFullScreen(HWND hwnd) {
     if (!fullscreen) {
-        ShowCursor(FALSE);
+
+        if (!g_plugin.m_bShowCursorOnFullscreenOrStretch)
+            ShowCursor(FALSE);
 
         if (!stretch) {
             lastWindowStyle = GetWindowLong(hwnd, GWL_STYLE);
@@ -376,7 +383,9 @@ void ToggleFullScreen(HWND hwnd) {
         fullscreen = true;
     }
     else {
-        ShowCursor(TRUE);
+
+        if (!g_plugin.m_bShowCursorOnFullscreenOrStretch)
+            ShowCursor(TRUE);
 
         int x = lastRect.left;
         int y = lastRect.top;

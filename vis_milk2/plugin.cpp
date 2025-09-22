@@ -1371,6 +1371,7 @@ void CPlugin::MyReadConfig()
     m_bFullscreenOnStartup = GetPrivateProfileBoolW(L"settings", L"bFullscreenOnStartup", m_bFullscreenOnStartup, pIni);
     m_bFullscreenStretchOnStartup = GetPrivateProfileBoolW(L"settings", L"bFullscreenStretchOnStartup", m_bFullscreenOnStartup, pIni);
     m_bBorderlessOnStartup = GetPrivateProfileBoolW(L"settings", L"bBorderlessOnStartup", m_bBorderlessOnStartup, pIni);
+    m_bShowCursorOnFullscreenOrStretch = GetPrivateProfileBoolW(L"settings", L"bShowCursorOnFullscreenOrStretch", m_bShowCursorOnFullscreenOrStretch, pIni);
 
     m_nWindowPosX = GetPrivateProfileIntW(L"settings", L"nWindowPosX", m_nWindowPosX, pIni);
     m_nWindowPosY = GetPrivateProfileIntW(L"settings", L"nWindowPosY", m_nWindowPosY, pIni);
@@ -1543,6 +1544,7 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_bFullscreenOnStartup, L"bFullscreenOnStartup", pIni, L"settings");
     WritePrivateProfileIntW(m_bFullscreenStretchOnStartup, L"bFullscreenStretchOnStartup", pIni, L"settings");
     WritePrivateProfileIntW(m_bBorderlessOnStartup, L"bBorderlessOnStartup", pIni, L"settings");
+    WritePrivateProfileIntW(m_bShowCursorOnFullscreenOrStretch, L"bShowCursorOnFullscreenOrStretch", pIni, L"settings");
     WritePrivateProfileIntW(m_nTransitionBlendPattern, L"nTransitionBlendPattern", pIni, L"settings");
 
     WritePrivateProfileIntW(m_nWindowPosX, L"nWindowPosX", pIni, L"settings");
