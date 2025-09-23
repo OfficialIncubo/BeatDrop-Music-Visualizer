@@ -6180,10 +6180,12 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
      return 0;
 
      case WM_LBUTTONDOWN:
-         m_mouseClicked = 1;
+         m_mouseDown = 1;
+         m_mouseClicked = 0;
          break;
      case WM_LBUTTONUP:
-         m_mouseClicked = 0;
+         m_mouseDown = 0;
+         m_mouseClicked = 1;
          break;
 
     case WM_KEYDOWN:    // virtual-key codes
