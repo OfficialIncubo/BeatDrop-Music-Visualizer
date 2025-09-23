@@ -4954,7 +4954,7 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
         ));
     if (h[12]) pCT->SetVector( lpDevice, h[12], &D3DXVECTOR4( mip_x, mip_y, mip_avg, 0 ));
     if (h[13]) pCT->SetVector( lpDevice, h[13], &D3DXVECTOR4( blur_min[1], blur_max[1], blur_min[2], blur_max[2] ));
-	if (h[14]) pCT->SetVector( lpDevice, h[14], &D3DXVECTOR4( -m_mouseX, m_mouseY, m_mouseDown, m_mouseClicked ));
+	if (h[14]) pCT->SetVector( lpDevice, h[14], &D3DXVECTOR4( m_mouseX != -2 ? -m_mouseX/2 : -2, m_mouseY != -2 ? m_mouseY/2 : -2, m_mouseDown, m_mouseClicked ));
 
     // write q vars
     int num_q_float4s = sizeof(p->q_const_handles)/sizeof(p->q_const_handles[0]);
