@@ -4476,8 +4476,8 @@ void CPlugin::MyRenderFn(int redraw)
     }
     else
     {
-        m_mouseX = -1;
-        m_mouseY = -1;
+        m_mouseX = -2;
+        m_mouseY = -2;
     }
     //END
 
