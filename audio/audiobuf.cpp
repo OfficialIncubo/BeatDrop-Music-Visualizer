@@ -95,46 +95,71 @@ void SetAudioBuf(const BYTE *pData, const UINT32 nNumFramesToRead, const WAVEFOR
     //memset(pcmLeftLpb, 0, SAMPLE_SIZE_LPB);
     //memset(pcmRightLpb, 0, SAMPLE_SIZE_LPB);
 
-    int i = 0;
-    int n = 0;
+    // Determine downsampling ratio (supporting 96kHz and 192kHz)
+    int downsampleRatio = 1;
+    if (pwfx->nSamplesPerSec > TARGET_SAMPLE_RATE) {
+        downsampleRatio = pwfx->nSamplesPerSec / TARGET_SAMPLE_RATE;
+    }
 
+    // Calculate output samples after downsampling
+    int outputSamples = nNumFramesToRead / downsampleRatio;
+
+    // Adjust buffer writing parameters for downsampled data
+    int n = 0;
     int start = 0;
-    int len = 0;
-    if (nNumFramesToRead >= SAMPLE_SIZE_LPB) {
+    int len = outputSamples;
+    if (outputSamples >= SAMPLE_SIZE_LPB) {
         n = 0;
-        start = nNumFramesToRead - SAMPLE_SIZE_LPB;
+        start = outputSamples - SAMPLE_SIZE_LPB;
         len = SAMPLE_SIZE_LPB;
     }
     else {
-        n = SAMPLE_SIZE_LPB - nNumFramesToRead;
+        n = SAMPLE_SIZE_LPB - outputSamples;
         start = 0;
-        len = nNumFramesToRead;
+        len = outputSamples;
     }
 
     for (int i = start; i < len; i++, n++) {
-        BlockOffset = i * pwfx->nBlockAlign;
+        int32_t sumLeft = 0;
+        int32_t sumRight = 0;
 
-        // Left channel (number 0)
-        LeftSample8 = 0; // Init with silence
-        if (pwfx->nChannels >= 1) {
-            LeftSample8 = GetChannelSample(pData, BlockOffset, 0 * (pwfx->wBitsPerSample / 8), bInt16);
+        // Average samples for downsampling
+        for (int j = 0; j < downsampleRatio; j++) {
+            int inputIndex = i * downsampleRatio + j;
+            if (inputIndex >= nNumFramesToRead) break;
+
+            int blockOffset = inputIndex * pwfx->nBlockAlign;
+
+            // Get left channel sample
+            int8_t sampleLeft = 0;
+            if (pwfx->nChannels >= 1) {
+                sampleLeft = GetChannelSample(pData, blockOffset, 0, bInt16);
+            }
+            sumLeft += sampleLeft;
+
+            // Get right channel sample (use left if mono)
+            int8_t sampleRight = sampleLeft;
+            if (pwfx->nChannels >= 2) {
+                sampleRight = GetChannelSample(pData, blockOffset, pwfx->wBitsPerSample / 8, bInt16);
+            }
+            sumRight += sampleRight;
         }
 
-        // Right channel (number 1)
-        RightSample8 = LeftSample8; // Init with left channel value just in case of Mono, 1 channel count
-        if (pwfx->nChannels >= 2) {
-            RightSample8 = GetChannelSample(pData, BlockOffset, 1 * (pwfx->wBitsPerSample / 8), bInt16);
-        }
-
-        // TODO: add support for 96000 Hz and 192000 Hz sample rates
+		/*
+        Added support for 96000 Hz and 192000 Hz sample rates.
+        Technically downsamples when it's above the target sample rate
+        provided in audiobuf.h
+        */
 
         // Ignoring data in all other audio channels (Quadraphonic 4.0, Surround 4.0, Surround 5.1, Surround 7.1, ...)
 
         // Saving audio data for visualizer
         // 8-bit signed integer in Two's Complement Representation stored in unsigned char array
         // int8_t[-128 .. + 127] stored into uint8_t[0 .. 255]
-        pcmLeftLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = LeftSample8;
-        pcmRightLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = RightSample8;
+
+        // Store averaged/downsampled values
+        pcmLeftLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = sumLeft / downsampleRatio;
+        pcmRightLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = sumRight / downsampleRatio;
     }
 
     pcmBufDrained = false;

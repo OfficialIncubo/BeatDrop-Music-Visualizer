@@ -3,6 +3,8 @@
 #include <mutex>
 #include <windows.h>
 
+#define TARGET_SAMPLE_RATE 44100
+
 // Reset audio buffer discarding stored audio data
 void ResetAudioBuf();
 
