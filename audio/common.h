@@ -13,4 +13,5 @@
 #include "cleanup.h"
 #include "prefs.h"
 #include "loopback-capture.h"
+#include "audiodevicehandler.h"
 #include "audiobuf.h"

@@ -13,10 +13,6 @@
     <Filter Include="library\resources">
       <UniqueIdentifier>{d2f87be5-5f0e-4c55-b98f-23f5810cce55}</UniqueIdentifier>
     </Filter>
-    <Filter Include="musikcube">
-      <UniqueIdentifier>{a80939e4-d079-498f-bb43-482a4708d7d5}</UniqueIdentifier>
-      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
-    </Filter>
     <Filter Include="spoutDX9">
       <UniqueIdentifier>{f96a24de-a941-4632-b3b9-924e81a488d3}</UniqueIdentifier>
     </Filter>
@@ -29,10 +25,17 @@
     <Filter Include="library\ns-eel2-shim">
       <UniqueIdentifier>{add1dcaa-f5e1-4311-86fb-d739360085a5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="library\audio-headers">
+      <UniqueIdentifier>{0108206f-3970-40e8-b386-eff3a3bdd667}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="audio">
+      <UniqueIdentifier>{a80939e4-d079-498f-bb43-482a4708d7d5}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Milkdrop2PcmVisualizer.cpp">
-      <Filter>musikcube</Filter>
+      <Filter>audio</Filter>
     </ClCompile>
     <ClCompile Include="textmgr.cpp">
       <Filter>library\sources</Filter>
@@ -71,19 +74,19 @@
       <Filter>library\sources</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\guid.cpp">
-      <Filter>musikcube</Filter>
+      <Filter>audio</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\log.cpp">
-      <Filter>musikcube</Filter>
+      <Filter>audio</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\loopback-capture.cpp">
-      <Filter>musikcube</Filter>
+      <Filter>audio</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\prefs.cpp">
-      <Filter>musikcube</Filter>
+      <Filter>audio</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\audiobuf.cpp">
-      <Filter>musikcube</Filter>
+      <Filter>audio</Filter>
     </ClCompile>
     <ClCompile Include="..\spoutDX9\SpoutCopy.cpp">
       <Filter>spoutDX9</Filter>
@@ -108,6 +111,9 @@
     </ClCompile>
     <ClCompile Include="AMDDetection.cpp">
       <Filter>library\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\audio\audiodevicehandler.cpp">
+      <Filter>audio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -167,12 +173,6 @@
     <ClInclude Include="AutoWide.h">
       <Filter>library\headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\audio\cleanup.h" />
-    <ClInclude Include="..\audio\common.h" />
-    <ClInclude Include="..\audio\log.h" />
-    <ClInclude Include="..\audio\loopback-capture.h" />
-    <ClInclude Include="..\audio\prefs.h" />
-    <ClInclude Include="..\audio\audiobuf.h" />
     <ClInclude Include="..\spoutDX9\SpoutCommon.h">
       <Filter>spoutDX9</Filter>
     </ClInclude>
@@ -205,6 +205,27 @@
     </ClInclude>
     <ClInclude Include="Milkdrop2PcmVisualizer.h">
       <Filter>library\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\audio\audiobuf.h">
+      <Filter>library\audio-headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\audio\cleanup.h">
+      <Filter>library\audio-headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\audio\common.h">
+      <Filter>library\audio-headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\audio\log.h">
+      <Filter>library\audio-headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\audio\loopback-capture.h">
+      <Filter>library\audio-headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\audio\prefs.h">
+      <Filter>library\audio-headers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\audio\audiodevicehandler.h">
+      <Filter>library\audio-headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

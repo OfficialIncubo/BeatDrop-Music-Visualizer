@@ -1,6 +1,9 @@
 // loopback-capture.cpp
 
 #include "common.h"
+#include "audiodevicehandler.h"
+
+static AudioDeviceHandler* g_pAudioDeviceHandler = NULL;
 
 HRESULT LoopbackCapture(
     IMMDevice *pMMDevice,
@@ -25,14 +28,43 @@ DWORD WINAPI LoopbackCaptureThreadFunction(LPVOID pContext) {
     }
     CoUninitializeOnExit cuoe;
 
-    pArgs->hr = LoopbackCapture(
-        pArgs->pMMDevice,
-        pArgs->hFile,
-        pArgs->bInt16,
-        pArgs->hStartedEvent,
-        pArgs->hStopEvent,
-        &pArgs->nFrames
-    );
+    while (true) {
+        pArgs->hr = LoopbackCapture(
+            pArgs->pMMDevice,
+            pArgs->hFile,
+            pArgs->bInt16,
+            pArgs->hStartedEvent,
+            pArgs->hStopEvent,
+            &pArgs->nFrames
+        );
+
+        // Only retry if device was invalidated
+        if (pArgs->hr != AUDCLNT_E_DEVICE_INVALIDATED) {
+            break; // Exit loop for any other error or normal completion
+        }
+
+        // Device was invalidated - try to recover
+        if (g_pAudioDeviceHandler) {
+            g_pAudioDeviceHandler->ResetToDefaultDevice();
+
+            // Update the device in arguments for next retry
+            if (pArgs->pMMDevice) {
+                pArgs->pMMDevice->Release();
+            }
+            HRESULT hr = g_pAudioDeviceHandler->CheckForDeviceChanges(&pArgs->pMMDevice);
+            if (FAILED(hr)) {
+                ERR(L"Failed to get new audio device after invalidation: hr = 0x%08x", hr);
+                break; // Can't recover if we can't get a new device
+            }
+
+            LOG(L"Audio device invalidated - retrying with new default device");
+            continue; // Retry with the new device
+        }
+        else {
+            ERR(L"Audio device invalidated but no device handler available");
+            break; // Can't recover without device handler
+        }
+    }
 
     return 0;
 }
@@ -46,6 +78,16 @@ HRESULT LoopbackCapture(
     PUINT32 pnFrames
 ) {
     HRESULT hr;
+
+    // Initialize device handler if not already done
+    if (!g_pAudioDeviceHandler) {
+        g_pAudioDeviceHandler = new AudioDeviceHandler();
+        hr = g_pAudioDeviceHandler->Initialize();
+        if (FAILED(hr)) {
+            ERR(L"Failed to initialize audio device handler: hr = 0x%08x", hr);
+            // Continue without device change detection
+        }
+    }
 
     // activate an IAudioClient
     IAudioClient *pAudioClient;
@@ -209,6 +251,25 @@ HRESULT LoopbackCapture(
     bool bErrorInAudioData = false;
 
     for (UINT32 nPasses = 0; !bDone; nPasses++) {
+
+        if (g_pAudioDeviceHandler && (nPasses % 100 == 0)) {
+            IMMDevice* pNewDevice = NULL;
+            if (SUCCEEDED(g_pAudioDeviceHandler->CheckForDeviceChanges(&pNewDevice))) {
+                if (pNewDevice != pMMDevice) {
+                    LOG(L"Audio device change detected, stopping capture");
+                    bDone = true;
+                    hr = AUDCLNT_E_DEVICE_INVALIDATED; // Signal device change
+                    if (pNewDevice) {
+                        pNewDevice->Release();
+                    }
+                    continue;
+                }
+                if (pNewDevice) {
+                    pNewDevice->Release();
+                }
+            }
+        }
+
         // drain data while it is available
         UINT32 nNextPacketSize;
         for (
