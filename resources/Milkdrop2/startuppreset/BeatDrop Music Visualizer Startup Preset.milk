@@ -175,7 +175,7 @@ comp_8=`shader_body
 comp_9=`{
 comp_10=`
 comp_11=`#ifdef mouse
-comp_12=`if (mouse.x > -2 || mouse.y > -2)
+comp_12=`if (mouse.x > -1 || mouse.y > -1)
 comp_13=`   uv1 = (uv-0.5)*aspect.xy-(mouse.xy-.5);
 comp_14=`else
 comp_15=`   uv1 = (uv-0.5)*aspect.xy;

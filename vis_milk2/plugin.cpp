@@ -4471,13 +4471,13 @@ void CPlugin::MyRenderFn(int redraw)
     // Check if mouse is inside the client area
     if (PtInRect(&clientRect, pt))
     {
-        m_mouseX = (2.0f * pt.x / clientRect.right) - 1.0f;
-        m_mouseY = 1.0f - (2.0f * pt.y / clientRect.bottom);
+        m_mouseX = ((2.0f * pt.x / clientRect.right) - 1.0f) / 2 + .5; //both from [-1, 1], normalized to [0, 1]
+        m_mouseY = (1.0f - (2.0f * pt.y / clientRect.bottom)) / 2 + .5;
     }
     else
     {
-        m_mouseX = -2;
-        m_mouseY = -2;
+        m_mouseX = -1;
+        m_mouseY = -1;
     }
 
 	//Duration of the click called from WM_LBUTTONDOWN
