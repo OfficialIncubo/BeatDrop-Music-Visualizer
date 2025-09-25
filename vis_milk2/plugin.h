@@ -337,7 +337,7 @@ public:
         float       m_mouseX;
         float       m_mouseY;
         bool        m_mouseDown;
-        bool        m_mouseClicked;
+        int         m_mouseClicked;
 
         bool		m_bShowPressF1ForHelp;
         //char		m_szMonitorName[256];

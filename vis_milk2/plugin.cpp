@@ -4479,6 +4479,12 @@ void CPlugin::MyRenderFn(int redraw)
         m_mouseX = -2;
         m_mouseY = -2;
     }
+
+	//Duration of the click called from WM_LBUTTONDOWN
+    if (m_mouseClicked > 0)
+    {
+        m_mouseClicked--;
+    }
     //END
 
     //Don't show the help message again when the "Press F1 for help" message is finished.
@@ -6181,11 +6187,18 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 
      case WM_LBUTTONDOWN:
          m_mouseDown = 1;
-         m_mouseClicked = 0;
+         m_mouseClicked = 2; //no. of frames you set when you click (not to be confused with mouse held down)
          break;
+     case WM_RBUTTONDOWN:
+         m_mouseDown = 1;
+         m_mouseClicked = 2; //no. of frames you set when you click (not to be confused with mouse held down)
+         break;
+
      case WM_LBUTTONUP:
          m_mouseDown = 0;
-         m_mouseClicked = 1;
+         break;
+     case WM_RBUTTONUP:
+         m_mouseDown = 0;
          break;
 
     case WM_KEYDOWN:    // virtual-key codes

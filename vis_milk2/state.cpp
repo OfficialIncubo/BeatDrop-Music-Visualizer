@@ -343,8 +343,8 @@ void CState::RegisterBuiltInVariables(int flags)
         var_pf_aspecty       = NSEEL_VM_regvar(m_pf_eel, "aspecty");
 		var_pf_mousex        = NSEEL_VM_regvar(m_pf_eel, "mousex");
 		var_pf_mousey        = NSEEL_VM_regvar(m_pf_eel, "mousey");
+		var_pf_mousehold     = NSEEL_VM_regvar(m_pf_eel, "mousehold");
 		var_pf_mouseclick    = NSEEL_VM_regvar(m_pf_eel, "mouseclick");
-		var_pf_mouseclicked  = NSEEL_VM_regvar(m_pf_eel, "mouseclicked");
         var_pf_blur1min      = NSEEL_VM_regvar(m_pf_eel, "blur1_min");
         var_pf_blur2min      = NSEEL_VM_regvar(m_pf_eel, "blur2_min");
         var_pf_blur3min      = NSEEL_VM_regvar(m_pf_eel, "blur3_min");
@@ -383,8 +383,8 @@ void CState::RegisterBuiltInVariables(int flags)
 	    var_pv_ang		= NSEEL_VM_regvar(m_pv_eel, "ang");		// i
 		var_pv_mousex   = NSEEL_VM_regvar(m_pv_eel, "mousex");		// i
 		var_pv_mousey   = NSEEL_VM_regvar(m_pv_eel, "mousey");		// i
+		var_pv_mousehold = NSEEL_VM_regvar(m_pv_eel, "mousehold");		// i
 		var_pv_mouseclick = NSEEL_VM_regvar(m_pv_eel, "mouseclick");		// i
-		var_pv_mouseclicked = NSEEL_VM_regvar(m_pv_eel, "mouseclicked");		// i
         for (vi=0; vi<NUM_Q_VAR; vi++)
         {
             char buf[16];
