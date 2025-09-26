@@ -81,7 +81,7 @@ To make BeatDrop more and more interactive, Me & [MilkDrop2077/Serge Blanc](http
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ### REAL-TIME SONG INFORMATION
-Now it can get the song information from any media players using SMTC, sending it to visualizer. You can also this on the bottom-left corner by pressing F8.
+Now it can get the song information from any media players using SMTC, sending it to visualizer. You can also show/hide this on the bottom-left corner by pressing F8.
 
 ![BeatDropRealTimeSongInfoDemo](https://github.com/user-attachments/assets/6cc5cb3d-f82e-4526-b686-94670e3483b8)
 
