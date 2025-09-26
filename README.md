@@ -22,7 +22,7 @@ Highlights:
 # FEATURES
 
 ## +9 ADDITIONAL SIMPLE WAVEFORMS!
-Enjoy the new simple waveforms with most crazy and fascinating patterns! Made by community, made for you.
+Enjoy these new simple waveforms with most crazy and fascinating patterns! Made by community, made for you.
 
 ![BeatDropNewWaveformsDemo](https://github.com/user-attachments/assets/ad90e429-f556-4d27-8dc7-fb26f3dfc02e)
 
