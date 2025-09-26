@@ -19,6 +19,10 @@ Highlights:
 - Hard Cut Modes, Transparency Mode, Playback Controls, Startup Preset etc.
 - And so much more!
 
+# FOR MACOS USERS
+
+Sorry, I have not tested running BeatDrop on a MacOS, but you can try running it with [Parallels Desktop](https://www.parallels.com) or [similar virtualization tools](https://www.youtube.com/watch?v=dHnw-K1-Ui8), such as [UTM (known as Universal Turing Machine)](https://mac.getutm.app)
+
 # FEATURES
 
 ## +9 ADDITIONAL SIMPLE WAVEFORMS!
