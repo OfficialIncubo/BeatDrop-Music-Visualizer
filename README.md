@@ -214,6 +214,8 @@ If you want to have all the MilkDrop presets in your own, just download [this Me
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
+# ORIGINAL REPOSITORY DESCRIPTION
+
 BeatDrop is a stand-alone implementation of the amazing Milkdrop2 Winamp plug-in.
 It lets you experience the stunning visual 2D effects with your music player of choice. No additional configuration steps needed! Just start BeatDrop and play your music.
 Use BeatDrop with your favourite:
