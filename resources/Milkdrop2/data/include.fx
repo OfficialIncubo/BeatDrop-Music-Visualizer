@@ -118,8 +118,6 @@ float4x3 rot_rand4;
 #define mouse_x _c14.x
 #define mouse_y _c14.y
 #define mouse_pos _c14.xy
-#define mouse_hold _c14.z
-#define mouse_click _c14.w
 #define GetMain(uv) (tex2D(sampler_main,uv).xyz)
 #define GetPixel(uv) (tex2D(sampler_main,uv).xyz)
 #define GetBlur1(uv) (tex2D(sampler_blur1,uv).xyz*_c5.x + _c5.y)

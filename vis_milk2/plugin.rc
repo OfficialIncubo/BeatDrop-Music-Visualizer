@@ -457,10 +457,10 @@ BEGIN
     IDS_CUSTOM_SHAPE_X      "--custom shape %d"
     IDS_MENU_EDIT_PRESET_INIT_CODE "[ edit preset initialization code ]"
     IDS_MENU_EDIT_PRESET_INIT_CODE_TT 
-                            "read-only: zoom, rot, warp, cx, cy, dx, dy, sx, sy; decay, gamma;\n           echo_zoom, echo_scale, echo_orient;\n           ib_{size|r|g|b|a}, ob_{size|r|g|b|a}, mv_{x|y|dx|dy|l|r|g|b|a};\n           wave_{r|g|b|a|x|y|mode|mystery|usedots|thick|additive|brighten};\n           darken_center, wrap; invert, brighten, darken, solarize\n           time, fps, frame, progress;\n           mousex, mousey, mousehold, mouseclick; {bass|mid|treb}[_att]\nwrite:     q1-q8, monitor"
+                            "read-only: zoom, rot, warp, cx, cy, dx, dy, sx, sy; decay, gamma;\n           echo_zoom, echo_scale, echo_orient;\n           ib_{size|r|g|b|a}, ob_{size|r|g|b|a}, mv_{x|y|dx|dy|l|r|g|b|a};\n           wave_{r|g|b|a|x|y|mode|mystery|usedots|thick|additive|brighten};\n           darken_center, wrap; invert, brighten, darken, solarize\n           time, fps, frame, progress;\n           mousex, mousey, mousedown, mouseclick; {bass|mid|treb}[_att]\nwrite:     q1-q8, monitor"
     IDS_MENU_EDIT_PER_FRAME_EQUATIONS "[ edit per_frame equations ]"
     IDS_MENU_EDIT_PER_FRAME_EQUATIONS_TT 
-                            "read-only:  time, fps, frame, progress;\nmousex, mousey, mousehold, mouseclick; {bass|mid|treb}[_att]\nread/write: zoom, rot, warp, cx, cy, dx, dy, sx, sy; q1-q8; monitor\n            mv_{x|y|dx|dy|l|r|g|b|a}, ib_{size|r|g|b|a}, ob_{size|r|g|b|a};\n            wave_{r|g|b|a|x|y|mode|mystery|usedots|thick|additive|brighten};\n            darken_center, wrap; invert, brighten, darken, solarize\n            decay, gamma, echo_zoom, echo_alpha, echo_orient"
+                            "read-only:  time, fps, frame, progress;\nmousex, mousey, mousedown, mouseclick; {bass|mid|treb}[_att]\nread/write: zoom, rot, warp, cx, cy, dx, dy, sx, sy; q1-q8; monitor\n            mv_{x|y|dx|dy|l|r|g|b|a}, ib_{size|r|g|b|a}, ob_{size|r|g|b|a};\n            wave_{r|g|b|a|x|y|mode|mystery|usedots|thick|additive|brighten};\n            darken_center, wrap; invert, brighten, darken, solarize\n            decay, gamma, echo_zoom, echo_alpha, echo_orient"
 END
 
 STRINGTABLE
@@ -656,7 +656,7 @@ BEGIN
                             "narrowing these to just the color range you need will greatly increase color fidelity in the blurred images.  MUST BE SUBSET OF BLUR1, BLUR2 RANGES."
     IDS_MENU_EDIT_PER_VERTEX_EQUATIONS "[ edit per_vertex equations ]"
     IDS_MENU_EDIT_PER_VERTEX_EQUATIONS_TT 
-                            "read-only:  x, y, rad, ang; time, fps, frame, progress;\nmousex, mousey, mousehold, mouseclick; {bass|mid|treb}[_att]\nread/write: dx, dy, zoom, rot, warp, cx, cy, sx, sy, q1-q8"
+                            "read-only:  x, y, rad, ang; time, fps, frame, progress;\nmousex, mousey, mousedown, mouseclick; {bass|mid|treb}[_att]\nread/write: dx, dy, zoom, rot, warp, cx, cy, sx, sy, q1-q8"
     IDS_MENU_EDIT_WARP_SHADER_TT 
                             "This pixel shader drives the warping, color, etc. of the internal image each frame.\n"
     IDS_MENU_EDIT_COMPOSITE_SHADER_TT 

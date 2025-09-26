@@ -336,6 +336,8 @@ public:
         int         m_nWindowHeight = 480;
         float       m_mouseX;
         float       m_mouseY;
+        float       m_lastMouseX;
+        float       m_lastMouseY;
         bool        m_mouseDown;
         int         m_mouseClicked;
 
