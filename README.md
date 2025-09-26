@@ -21,26 +21,26 @@ Highlights:
 
 # FEATURES
 
-### +9 ADDITIONAL SIMPLE WAVEFORMS!
+## +9 ADDITIONAL SIMPLE WAVEFORMS!
 Enjoy the new simple waveforms with most crazy and fascinating patterns! Made by community, made for you.
 
 ![BeatDropNewWaveformsDemo](https://github.com/user-attachments/assets/ad90e429-f556-4d27-8dc7-fb26f3dfc02e)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-### UP TO 16 CUSTOM WAVES AND SHAPES!
+## UP TO 16 CUSTOM WAVES AND SHAPES!
 Now you have more possibilities to create/edit some custom waves or shapes with up to 16 slots! This will get much chaotic than before.
 
 ![BeatDrop16ShapesMilkDrop2077Demo](https://github.com/user-attachments/assets/81ddcd0e-754a-466a-9749-120ac0aaf8b7)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-### INTEGRATED WITH [SPOUT](https://spout.zeal.co/) FOR SHARING VISUALS EVERYWHERE!
+## INTEGRATED WITH [SPOUT](https://spout.zeal.co/) FOR SHARING VISUALS EVERYWHERE!
 Now you can share the BeatDrop's Visual Renderer via Spout to use in [OBS](https://obsproject.com) ([plug-in](https://obsproject.com/forum/resources/obs-spout-bi-directional-video-sharing-with-obs-studio-from-any-spout-program.1384) needed), [Resolume](https://www.resolume.com/software), [NestDrop](https://nestimmersion.ca/nestdrop.php), [TouchDesigner](https://derivative.ca), [MadMapper](https://madmapper.com), [Unity](https://unity.com) ([KlakSpout](https://github.com/keijiro/KlakSpout) needed), [HeavyM](https://www.heavym.net) and so much more that support it. Simply press CTRL + Z and you're good to go!
 List of available apps here: https://spout.zeal.co
 
 ![BeatDropSpoutDemo](https://github.com/user-attachments/assets/5abf19b8-d064-4a4f-b756-d1936fdc88dc) ![BeatDropSpoutResolumeArenaDemo](https://github.com/user-attachments/assets/63ef3d28-4244-40d7-88a4-848cd3751cf3)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-### SCREEN-DEPENDENT RENDER MODE & PRESET PATCH FIXES
+## SCREEN-DEPENDENT RENDER MODE & PRESET PATCH FIXES
 Bring back the nostalgia from 2000s by fixing some old MilkDrop 1 presets behavior with Screen-Dependent Render Mode, making the visual way better. You are free to turn it off if you don't want it.
 
 I've also manually patch fixed all the bugged presets to look very/almost identical to MilkDrop 1/2.0.
@@ -48,7 +48,7 @@ I've also manually patch fixed all the bugged presets to look very/almost identi
 ![BeatDropScreenDependentRenderModeDemo](https://github.com/user-attachments/assets/85b93017-178b-4b13-8be4-1998872784fd)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-### SHADER PRECACHING/CACHING
+## SHADER PRECACHING/CACHING
 Getting in stress if the visual is freezing while the shaders are compiling? Don't worry. I've got you! BeatDrop now supports shader precaching/caching for instant loading presets. Now you can experience 0 seconds compile time when you loaded the same preset that contains shaders! ;)
 
 Here is the comparison below!
@@ -56,13 +56,13 @@ Here is the comparison below!
 ![BeatDropShaderCacheComparison](https://github.com/user-attachments/assets/16bcc5a4-e9b2-4bb1-a511-c85f63648465)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-### BORDERLESS MODE
+## BORDERLESS MODE
 Need any media players that needs a music visualizer on top? Of course! Just run BeatDrop, press F2, adjust or fit to any part of the window in your needs and you're good to relax! You can also start BeatDrop with this feature on by modifying the .ini setting file (beatdrop.ini).
 
 <img width="1493" height="751" alt="BeatDropBorderlessModeDemo" src="https://github.com/user-attachments/assets/48e4d8c0-45a9-4589-8a20-2f3aa7866e3d" /> <img width="1376" height="889" alt="BeatDropBorderlessModeOnSpotifyDemo" src="https://github.com/user-attachments/assets/4ae6cd0c-646c-487f-bbac-19ebce42d7d5" />
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-### PIXEL SHADER VERSION 4 PRESETS SUPPORT FOR [AMD/ATI]((https://www.amd.com/en.html)) PROCESSOR/GRAPHIC CARD
+## PIXEL SHADER VERSION 4 PRESETS SUPPORT FOR [AMD/ATI]((https://www.amd.com/en.html)) PROCESSOR/GRAPHIC CARD
 After 20 years of the bug when using any Pixel Shader Version 4 presets that cause stutters/freezes on one of the shaders, We have researched to fix this bug & making it support for AMD/ATI cards. Now you don't worry about the shader bottleneck.
 
 ![BeatDropAMDATISupport](https://github.com/user-attachments/assets/3cf63f90-9eea-47a7-a0a7-d39d1f707e59)
@@ -70,19 +70,19 @@ After 20 years of the bug when using any Pixel Shader Version 4 presets that cau
 (not affiliated with Advanced Micro Devices, Inc. or ATI Technologies Inc.)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-### HI-RES AUDIO SUPPORT (96kHz, 192kHz and beyond)
+## HI-RES AUDIO SUPPORT (96kHz, 192kHz and beyond)
 7 years ago, BeatDrop had it's issue that it resulted a loss of frequency response or a complete non-reaction when you set the sample rate above 44100Hz or 48000Hz. So, I've made support for higher sample rates (from 96000Hz to beyond) by downsampling it to the visual-preferred one, because MilkDrop is designed for 44100Hz sample rate.
 
 ![hi-res-audio-sound-waves](https://github.com/user-attachments/assets/7b80210c-a7c4-4c84-9cb4-8bfbc3eca8ea)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-### CONTROL PRESETS BY USING A MOUSE
+## CONTROL PRESETS BY USING A MOUSE
 To make BeatDrop more and more interactive, Me & [MilkDrop2077/Serge Blanc](https://x.com/MilkDrop2077) have made support for controlling presets by just using a mouse! Preset authors can now use the mouse variables in a simple way. Just pass them to init, per-frame, per-vertex or shaders, use a mouse and look how it goes! For more information about this, you can read it from docs folder.
 
 ![BeatDropMouseSupportDemo](https://github.com/user-attachments/assets/5184e575-26cf-4dc9-a2cb-22fa59656c8e)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-### REAL-TIME SONG INFORMATION
+## REAL-TIME SONG INFORMATION
 Now it can get the song information from any media players using SMTC, sending it to visualizer. You can also show/hide this on the bottom-left corner by pressing F8.
 
 ![BeatDropRealTimeSongInfoDemo](https://github.com/user-attachments/assets/6cc5cb3d-f82e-4526-b686-94670e3483b8)
@@ -90,11 +90,11 @@ Now it can get the song information from any media players using SMTC, sending i
 Note that it only works for Windows 10 or Windows 11. For Windows Vista, 7, 8 and 8.1 users, please run BeatDrop_OldOS.exe, which it doesn't use this feature and makes it better support for old Windows OS.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-### INTEGRATED WITH [PROJECTM-EVAL](https://github.com/projectM-visualizer/projectm-eval) FOR OPTIMIZATION
+## INTEGRATED WITH [PROJECTM-EVAL](https://github.com/projectM-visualizer/projectm-eval) FOR OPTIMIZATION
 BeatDrop now features [projectM Expression Evaluation Library](https://github.com/projectM-visualizer/projectm-eval), which replaces [Nullsoft Expression Evaluation Library](https://github.com/projectM-visualizer/milkdrop2/tree/master/src/ns-eel2) for portability, compile time + speed optimization and assembly-free.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-### NO AUDIO CUTOFF WHILE AUDIO OUTPUT DEVICE CHANGE, SAMPLE RATE CHANGE OR DISCONNECTION
+## NO AUDIO CUTOFF WHILE AUDIO OUTPUT DEVICE CHANGE, SAMPLE RATE CHANGE OR DISCONNECTION
 To not break the listening sessions or DJ sessions, BeatDrop will no longer interrupts the audio reaction while the audio device is changed, sample rate is changed or the device disconnection happens. Also no need to restart. ;)
 
 # BEFORE COMPILING THE CODE
