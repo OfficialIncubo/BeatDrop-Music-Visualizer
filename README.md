@@ -70,7 +70,7 @@ Need any media players that needs a music visualizer on top? Of course! Just run
 ## PIXEL SHADER VERSION 4 PRESETS SUPPORT FOR [AMD/ATI]((https://www.amd.com/en.html)) PROCESSOR/GRAPHIC CARD
 After 20 years of the bug when using any Pixel Shader Version 4 presets that cause stutters/freezes on one of the shaders, We have researched to fix this bug & making it support for AMD/ATI cards. Now you don't worry about the shader bottleneck.
 
-![BeatDropAMDATISupport](https://github.com/user-attachments/assets/3cf63f90-9eea-47a7-a0a7-d39d1f707e59)
+<img width="1920" height="1080" alt="BeatDropAMDATISupportV2" src="https://github.com/user-attachments/assets/c29cc402-0854-495d-a143-df385f6c9840" />
 
 (not affiliated with Advanced Micro Devices, Inc. or ATI Technologies Inc.)
 
