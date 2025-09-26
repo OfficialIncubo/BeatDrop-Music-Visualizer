@@ -34,7 +34,7 @@ Now you have more possibilities to create/edit some custom waves or shapes with 
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## INTEGRATED WITH [SPOUT](https://spout.zeal.co/) FOR SHARING VISUALS EVERYWHERE!
-Now you can share the BeatDrop's Visual Renderer via Spout to use in [OBS](https://obsproject.com) ([plug-in](https://obsproject.com/forum/resources/obs-spout-bi-directional-video-sharing-with-obs-studio-from-any-spout-program.1384) needed), [Resolume](https://www.resolume.com/software), [NestDrop](https://nestimmersion.ca/nestdrop.php), [TouchDesigner](https://derivative.ca), [MadMapper](https://madmapper.com), [Unity](https://unity.com) ([KlakSpout](https://github.com/keijiro/KlakSpout) needed), [HeavyM](https://www.heavym.net) and so much more that support it. Simply press CTRL + Z and you're good to go!
+Now you can send the BeatDrop's Visual Renderer via Spout to [OBS](https://obsproject.com) ([plug-in](https://obsproject.com/forum/resources/obs-spout-bi-directional-video-sharing-with-obs-studio-from-any-spout-program.1384) needed), [Resolume](https://www.resolume.com/software), [NestDrop](https://nestimmersion.ca/nestdrop.php), [TouchDesigner](https://derivative.ca), [MadMapper](https://madmapper.com), [Unity](https://unity.com) ([KlakSpout](https://github.com/keijiro/KlakSpout) needed), [HeavyM](https://www.heavym.net) and so much more that support it. Simply press CTRL + Z and you're good to go!
 
 List of available apps here: https://spout.zeal.co
 
