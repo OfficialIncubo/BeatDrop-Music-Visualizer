@@ -40,8 +40,10 @@ List of available apps here: https://spout.zeal.co
 ![BeatDropSpoutDemo](https://github.com/user-attachments/assets/5abf19b8-d064-4a4f-b756-d1936fdc88dc) ![BeatDropSpoutResolumeArenaDemo](https://github.com/user-attachments/assets/63ef3d28-4244-40d7-88a4-848cd3751cf3)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-### SCREEN-DEPENDENT RENDER MODE
-Return the nostalgia from 2000s by fixing some old MilkDrop 1 presets behavior with Screen-Dependent Render Mode, making the visual way better. You are free to turn it off if you don't want it.
+### SCREEN-DEPENDENT RENDER MODE & PRESET PATCH FIXES
+Bring back the nostalgia from 2000s by fixing some old MilkDrop 1 presets behavior with Screen-Dependent Render Mode, making the visual way better. You are free to turn it off if you don't want it.
+
+I've also manually patch fixed all the bugged presets to look very/almost identical to MilkDrop 1/2.0.
 
 ![BeatDropScreenDependentRenderModeDemo](https://github.com/user-attachments/assets/85b93017-178b-4b13-8be4-1998872784fd)
 
