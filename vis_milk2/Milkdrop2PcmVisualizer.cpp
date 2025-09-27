@@ -454,6 +454,12 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         case WM_CLOSE: {
             if (!fullscreen && !stretch)
                 g_plugin.SaveWindowSizeAndPosition(hWnd);
+            if (g_plugin.m_bClearShaderCacheAtExit)
+            {
+                DeleteShaderCacheDirectory();
+                if (g_plugin.m_bOneTimeClearShaderCache)
+                    g_plugin.m_bClearShaderCacheAtExit = false;
+            }
             DestroyWindow( hWnd );
             UnregisterClassW(L"Direct3DWindowClass", NULL);
             return 0;
@@ -981,6 +987,21 @@ void PrecachePresetShaders(std::wstring& wLine, std::wofstream& compiledList, in
         }
         compiledList << warn << std::setw(8) << std::setfill(L' ') << durationMs << " " << szFile << std::endl;
         compiledShaders++;
+    }
+}
+
+void DeleteShaderCacheDirectory()
+{
+    std::wstring cacheDir = SUBDIR L"shadercache";
+
+    if (std::filesystem::exists(cacheDir)) {
+        try {
+            std::filesystem::remove_all(cacheDir);
+            printf("Shader cache directory deleted: %S\n", cacheDir.c_str());
+        }
+        catch (const std::filesystem::filesystem_error& ex) {
+            printf("Error deleting shader cache directory: %s\n", ex.what());
+        }
     }
 }
 

@@ -1367,6 +1367,8 @@ void CPlugin::MyReadConfig()
     m_bManualBeatSensitivityMode = GetPrivateProfileBoolW(L"settings", L"bManualBeatSensitivityMode", m_bManualBeatSensitivityMode, pIni);
     m_bShaderCaching = GetPrivateProfileBoolW(L"settings", L"bShaderCaching", m_bShaderCaching, pIni);
     m_bShaderPrecachingAtStartup = GetPrivateProfileBoolW(L"settings", L"bShaderPrecachingAtStartup", m_bShaderPrecachingAtStartup, pIni);
+    m_bClearShaderCacheAtExit = GetPrivateProfileBoolW(L"settings", L"bClearShaderCacheAtExit", m_bClearShaderCacheAtExit, pIni);
+    m_bOneTimeClearShaderCache = GetPrivateProfileBoolW(L"settings", L"bOneTimeClearShaderCache", m_bOneTimeClearShaderCache, pIni);
     m_bCheckForDirectXAtStartup = GetPrivateProfileBoolW(L"settings", L"bCheckForDirectXAtStartup", m_bCheckForDirectXAtStartup, pIni);
     m_bFullscreenOnStartup = GetPrivateProfileBoolW(L"settings", L"bFullscreenOnStartup", m_bFullscreenOnStartup, pIni);
     m_bFullscreenStretchOnStartup = GetPrivateProfileBoolW(L"settings", L"bFullscreenStretchOnStartup", m_bFullscreenOnStartup, pIni);
@@ -1540,6 +1542,8 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_bManualBeatSensitivityMode, L"bManualBeatSensitivityMode", pIni, L"settings");
     WritePrivateProfileIntW(m_bShaderCaching, L"bShaderCaching", pIni, L"settings");
     WritePrivateProfileIntW(m_bShaderPrecachingAtStartup, L"bShaderPrecachingAtStartup", pIni, L"settings");
+    WritePrivateProfileIntW(m_bClearShaderCacheAtExit, L"bClearShaderCacheAtExit", pIni, L"settings");
+    WritePrivateProfileIntW(m_bOneTimeClearShaderCache, L"bOneTimeClearShaderCache", pIni, L"settings");
     WritePrivateProfileIntW(m_bCheckForDirectXAtStartup, L"bCheckForDirectXAtStartup", pIni, L"settings");
     WritePrivateProfileIntW(m_bFullscreenOnStartup, L"bFullscreenOnStartup", pIni, L"settings");
     WritePrivateProfileIntW(m_bFullscreenStretchOnStartup, L"bFullscreenStretchOnStartup", pIni, L"settings");
