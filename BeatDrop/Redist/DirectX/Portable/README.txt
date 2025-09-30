@@ -2,7 +2,7 @@ In case you don't have access to install DirectX Web User Runtime, here is how t
 
 Copy all the DLL files to your BeatDrop folder or in C:\Windows\System32\.
 
-Borrowed those from:
+Borrowed those from & credits:
 - https://github.com/Manhera666/DirectX9-portable
 - https://github.com/july19jake/direct_x_portable
 
