@@ -72,7 +72,8 @@ After 20 years of the bug when using any Pixel Shader Version 4 presets that cau
 
 <img width="1920" height="1080" alt="BeatDropAMDATISupportV2" src="https://github.com/user-attachments/assets/c29cc402-0854-495d-a143-df385f6c9840" />
 
-This is a BETA feature. Only a few presets can get errors about complicated shader code, e.g. martin - Gin Tonic on Ice, martin - enlighten me etc. If anyone wants to get it fully work, please open a PR and check the issue #38.
+This is a BETA feature. Only a few presets can get errors about complicated shader code, e.g. martin - Gin Tonic on Ice, martin - enlighten me etc. If anyone wants to get it fully work, please open a PR and check the issue [#38](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/38).
+
 (not affiliated with Advanced Micro Devices, Inc. or ATI Technologies Inc.)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
