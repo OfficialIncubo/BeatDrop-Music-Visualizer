@@ -169,7 +169,7 @@ If you have problems, ask me on Discord, Twitter or Instagram.
 
 Please download and install [DirectX End-User Runtime Web](https://www.microsoft.com/en-us/download/details.aspx?id=35) first.
 
-Microsoft Visual C++ Redistributable is also required to run. You can get it from [system requirements](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer#system-requirements) category.
+Microsoft Visual C++ 2015-2022 Redistributable is also required to run. You can get it from [system requirements](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer#system-requirements) category.
 
 BeatDrop now has a Spout integration! It's now supported to route the visual to any apps, such as [NestDrop](https://nestimmersion.ca/nestdrop.php), [Resolume Arena](https://www.resolume.com/software/avenue-arena), [OBS](https://obsproject.com) ([as plug-in](https://github.com/Off-World-Live/obs-spout2-plugin)) and so much more.
 
@@ -246,7 +246,7 @@ Use BeatDrop with your favourite:
 * WASAPI - compatible sound card
 * DirectX 9 or higher - compatible GPU
 * DirectX End-User [Runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=8109) (also included in the installer) contains the required 32-bit helper libraries d3dx9_43.dll and d3dx9_31.dll
-* [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=52685) or [Microsoft Visual C++ Redistributable All-in-One](https://www-techpowerup-com.cdn.ampproject.org/v/s/www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/?amp=&amp_gsa=1&amp_js_v=a9&usqp=mq331AQIUAKwASCAAgM%3D#amp_tf=De%20la%20%251%24s&aoh=17542342520002&referrer=https%3A%2F%2Fwww.google.com&ampshare=https%3A%2F%2Fwww.techpowerup.com%2Fdownload%2Fvisual-c-redistributable-runtime-package-all-in-one%2F)
+* [Microsoft Visual C++ 2015-2022 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=52685) or (optional) [Microsoft Visual C++ Redistributable All-in-One](https://www-techpowerup-com.cdn.ampproject.org/v/s/www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/?amp=&amp_gsa=1&amp_js_v=a9&usqp=mq331AQIUAKwASCAAgM%3D#amp_tf=De%20la%20%251%24s&aoh=17542342520002&referrer=https%3A%2F%2Fwww.google.com&ampshare=https%3A%2F%2Fwww.techpowerup.com%2Fdownload%2Fvisual-c-redistributable-runtime-package-all-in-one%2F)
 
 # Acknowledgements
 Special thanks to:
