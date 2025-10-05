@@ -633,7 +633,6 @@ void ResizeBeatDrop(int newWidth, int newHeight)
 	SetWindowPos(hw, NULL, 0, 0, width, height, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOZORDER);
 }
 
-
 unsigned __stdcall CreateWindowAndRun(void* data) {
 	HINSTANCE instance = (HINSTANCE)data;
 
@@ -670,8 +669,8 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 	// SPOUT
 	// Make the window a fixed size
     // The sender resolution is independent - see SpoutWidth/SpoutHeight below
-	int windowWidth = g_plugin.m_nWindowWidth-16; // standalone version 1280x720
-	int windowHeight = g_plugin.m_nWindowHeight-39;
+	int windowWidth = g_plugin.m_nWindowWidth; // standalone version 1280x720
+	int windowHeight = g_plugin.m_nWindowHeight;
 
 	RECT rc;
 	SetRect(&rc, 0, 0, windowWidth, windowHeight);
@@ -766,8 +765,10 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 
 	// SPOUT - defaults if no GUI
     // Change the values here to set the fixed sender size
-	unsigned int SpoutWidth = windowWidth;
-	unsigned int SpoutHeight = windowHeight;
+    RECT clientRect;
+    GetClientRect(hwnd, &clientRect);
+    unsigned int SpoutWidth = clientRect.right - clientRect.left;
+    unsigned int SpoutHeight = clientRect.bottom - clientRect.top;
 
     // Set to windowWidth/windowHeight for a variable sender size
     // See milkDropfs.cpp RenderFrame - change to SendDX9surface(back_buffer, true); 
