@@ -1,6 +1,6 @@
 MILKDROP_PRESET_VERSION=201
 PSVERSION=3
-PSVERSION_WARP=2
+PSVERSION_WARP=3
 PSVERSION_COMP=3
 [preset00]
 fRating=4.000
@@ -112,20 +112,6 @@ wave_0_per_point22=b = 0.6 + 0.4*sin(s+time*.23);
 wave_0_per_point23=t1 += 1;
 wave_0_per_point24=a = max(0.0,min(1,mid_att*2-1))*0.75;
 wave_0_per_point25=
-wavecode_1_enabled=0
-wavecode_1_samples=72
-wavecode_1_sep=0
-wavecode_1_bSpectrum=0
-wavecode_1_bUseDots=1
-wavecode_1_bDrawThick=1
-wavecode_1_bAdditive=1
-wavecode_1_scaling=9.71091
-wavecode_1_smoothing=0.00000
-wavecode_1_r=1.000
-wavecode_1_g=1.000
-wavecode_1_b=1.000
-wavecode_1_a=1.000
-wave_1_per_frame1=t1=0; t3=sin(q5); t4=cos(q5);
 wavecode_2_enabled=1
 wavecode_2_samples=15
 wavecode_2_sep=0
@@ -146,116 +132,6 @@ wave_2_per_point4=g=0.6+0.3*sin(q6*1.3);
 wave_2_per_point5=b=0.6+0.3*sin(q6*1.7);
 wave_2_per_point6=
 wave_2_per_point7=a = max(0,sin(q7*.37));
-wavecode_3_enabled=0
-wavecode_3_samples=512
-wavecode_3_sep=0
-wavecode_3_bSpectrum=0
-wavecode_3_bUseDots=0
-wavecode_3_bDrawThick=0
-wavecode_3_bAdditive=1
-wavecode_3_scaling=1.81669
-wavecode_3_smoothing=0.00000
-wavecode_3_r=0.800
-wavecode_3_g=0.400
-wavecode_3_b=0.700
-wavecode_3_a=1.000
-shapecode_0_enabled=0
-shapecode_0_sides=4
-shapecode_0_additive=0
-shapecode_0_thickOutline=1
-shapecode_0_textured=0
-shapecode_0_num_inst=1
-shapecode_0_x=0.600
-shapecode_0_y=0.400
-shapecode_0_rad=0.12001
-shapecode_0_ang=0.00000
-shapecode_0_tex_ang=0.00000
-shapecode_0_tex_zoom=1.25489
-shapecode_0_r=0.000
-shapecode_0_g=0.000
-shapecode_0_b=0.000
-shapecode_0_a=1.000
-shapecode_0_r2=0.000
-shapecode_0_g2=0.000
-shapecode_0_b2=0.000
-shapecode_0_a2=0.000
-shapecode_0_border_r=1.000
-shapecode_0_border_g=1.000
-shapecode_0_border_b=1.000
-shapecode_0_border_a=0.000
-shape_0_per_frame1=x = sin(time/3)*0.5+0.5;
-shapecode_1_enabled=0
-shapecode_1_sides=4
-shapecode_1_additive=0
-shapecode_1_thickOutline=0
-shapecode_1_textured=1
-shapecode_1_num_inst=1
-shapecode_1_x=0.700
-shapecode_1_y=0.700
-shapecode_1_rad=0.17914
-shapecode_1_ang=0.00000
-shapecode_1_tex_ang=0.00000
-shapecode_1_tex_zoom=1.14148
-shapecode_1_r=1.000
-shapecode_1_g=1.000
-shapecode_1_b=1.000
-shapecode_1_a=0.700
-shapecode_1_r2=0.000
-shapecode_1_g2=0.000
-shapecode_1_b2=0.000
-shapecode_1_a2=0.000
-shapecode_1_border_r=1.000
-shapecode_1_border_g=0.000
-shapecode_1_border_b=0.000
-shapecode_1_border_a=0.000
-shapecode_2_enabled=0
-shapecode_2_sides=14
-shapecode_2_additive=0
-shapecode_2_thickOutline=0
-shapecode_2_textured=0
-shapecode_2_num_inst=400
-shapecode_2_x=0.650
-shapecode_2_y=0.380
-shapecode_2_rad=0.01645
-shapecode_2_ang=0.00000
-shapecode_2_tex_ang=0.00000
-shapecode_2_tex_zoom=0.73678
-shapecode_2_r=0.600
-shapecode_2_g=0.400
-shapecode_2_b=1.000
-shapecode_2_a=0.200
-shapecode_2_r2=0.000
-shapecode_2_g2=0.000
-shapecode_2_b2=0.000
-shapecode_2_a2=0.400
-shapecode_2_border_r=0.500
-shapecode_2_border_g=0.500
-shapecode_2_border_b=0.000
-shapecode_2_border_a=0.000
-shapecode_3_enabled=0
-shapecode_3_sides=10
-shapecode_3_additive=0
-shapecode_3_thickOutline=1
-shapecode_3_textured=0
-shapecode_3_num_inst=400
-shapecode_3_x=0.800
-shapecode_3_y=0.750
-shapecode_3_rad=0.07316
-shapecode_3_ang=0.00000
-shapecode_3_tex_ang=0.00000
-shapecode_3_tex_zoom=1.04372
-shapecode_3_r=1.000
-shapecode_3_g=1.000
-shapecode_3_b=0.000
-shapecode_3_a=1.000
-shapecode_3_r2=0.000
-shapecode_3_g2=1.000
-shapecode_3_b2=1.000
-shapecode_3_a2=1.000
-shapecode_3_border_r=1.000
-shapecode_3_border_g=0.800
-shapecode_3_border_b=0.500
-shapecode_3_border_a=0.000
 per_frame_init_1=n = 0; loop (10000, megabuf(n)=gmegabuf(n)=0; n +=1; );
 per_frame_init_2=
 per_frame_init_3=MINBPM = 60; MAXBPM = 190; num_res = 256; 
@@ -375,6 +251,6 @@ comp_35=`uv6 = sin(10*uv1+dz*16 + float2(time*.2,0));
 comp_36=`mus = 1/length(uv6) * (1+4*length(dz1)*sqrt(treb_att)*(1+4*GetBlur2(frac((0.6-uv)*0.25+.5))));
 comp_37=`
 comp_38=`ret = sqrt(ret1)*(-.1+rand_preset.z*.3+mus*.5);
-comp_39=`ret = 1-exp(-ret*(2-2*rad*rand_preset.y));
+comp_39=`ret = 1-exp(-ret*(2-1.99*rad*rand_preset.y));
 comp_40=`//ret = GetPixel(uv);
 comp_41=`}

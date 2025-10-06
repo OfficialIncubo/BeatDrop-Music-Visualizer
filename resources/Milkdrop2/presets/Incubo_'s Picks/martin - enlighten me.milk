@@ -106,76 +106,6 @@ wave_0_per_point17=);
 wave_0_per_point18=
 wave_0_per_point19=a=sqrt(z)*(1-pow(z,4));
 wave_0_per_point20=t1+=1;
-wavecode_1_enabled=0
-wavecode_1_samples=512
-wavecode_1_sep=0
-wavecode_1_bSpectrum=0
-wavecode_1_bUseDots=1
-wavecode_1_bDrawThick=0
-wavecode_1_bAdditive=0
-wavecode_1_scaling=1.00000
-wavecode_1_smoothing=0.50000
-wavecode_1_r=1.000
-wavecode_1_g=1.000
-wavecode_1_b=1.000
-wavecode_1_a=0.400
-wavecode_2_enabled=0
-wavecode_2_samples=212
-wavecode_2_sep=0
-wavecode_2_bSpectrum=0
-wavecode_2_bUseDots=1
-wavecode_2_bDrawThick=0
-wavecode_2_bAdditive=0
-wavecode_2_scaling=1.00000
-wavecode_2_smoothing=0.10000
-wavecode_2_r=1.000
-wavecode_2_g=1.000
-wavecode_2_b=1.000
-wavecode_2_a=0.400
-wavecode_3_enabled=0
-wavecode_3_samples=512
-wavecode_3_sep=10
-wavecode_3_bSpectrum=0
-wavecode_3_bUseDots=1
-wavecode_3_bDrawThick=0
-wavecode_3_bAdditive=0
-wavecode_3_scaling=1.34784
-wavecode_3_smoothing=0.50000
-wavecode_3_r=1.000
-wavecode_3_g=1.000
-wavecode_3_b=1.000
-wavecode_3_a=0.300
-shapecode_0_enabled=0
-shapecode_0_sides=5
-shapecode_0_additive=1
-shapecode_0_thickOutline=1
-shapecode_0_textured=0
-shapecode_0_num_inst=400
-shapecode_0_x=0.800
-shapecode_0_y=0.500
-shapecode_0_rad=0.12821
-shapecode_0_ang=0.00000
-shapecode_0_tex_ang=0.00000
-shapecode_0_tex_zoom=5.42791
-shapecode_0_r=1.000
-shapecode_0_g=1.000
-shapecode_0_b=1.000
-shapecode_0_a=1.000
-shapecode_0_r2=1.000
-shapecode_0_g2=1.000
-shapecode_0_b2=1.000
-shapecode_0_a2=0.000
-shapecode_0_border_r=1.000
-shapecode_0_border_g=1.000
-shapecode_0_border_b=1.000
-shapecode_0_border_a=0.000
-shape_0_init1=i=0; 
-shape_0_init2=loop (1024, 
-shape_0_init3=  megabuf(i+2)=rand(1); //z
-shape_0_init4=  z=megabuf(i+2)+.1;
-shape_0_init5=  megabuf(i)=(rand(2)-1)*z/2; //x
-shape_0_init6=  megabuf(i+1)=(rand(2)-1)*z/2; //y
-shape_0_init7= i+=3);
 shapecode_1_enabled=1
 shapecode_1_sides=6
 shapecode_1_additive=0
@@ -535,7 +465,7 @@ comp_41=`ret-=ncity/2;
 comp_42=`
 comp_43=`struc=sat(ncity-ncity2)*(pwnoise(1.5*uv,0)-.5);
 comp_44=`ret+=.15*struc;
-comp_45=`ret+=struc*sat(1-rad)*GetBlur1(.5)*0.5;
+comp_45=`ret+=struc*sat(1-rad)*GetBlur1(.501)*0.5;
 comp_46=`
 comp_47=`ret=sat(ret);
 comp_48=`radi = 1;
