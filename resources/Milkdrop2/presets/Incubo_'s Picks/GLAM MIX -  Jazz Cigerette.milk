@@ -85,7 +85,7 @@ wavecode_0_r=0.500
 wavecode_0_g=0.300
 wavecode_0_b=1.000
 wavecode_0_a=0.070
-wave_0_per_point1=z=if(rand(2)%2,-1,1);
+wave_0_per_point1=z=if(int(rand(2))%2,-1,1);
 wave_0_per_point2=v=(value1+value2)*z;
 wave_0_per_point3=//a=1/abs(value1-value2)*.01*v;
 wave_0_per_point4=c=((value1-value2)+v);//*q1;
@@ -193,8 +193,8 @@ shape_2_per_frame4=a = trans;
 shape_2_per_frame5=//a2 = trans2;
 shape_2_per_frame6=//border_a = trans3;
 shape_2_per_frame7=
-shape_2_per_frame8=x = .5 + rand(15)*0.01*bass_att*if(equal(rand(2),1),1,-1)+instance-instance;
-shape_2_per_frame9=y = .5 + rand(15)*0.01*bass_att*if(equal(rand(2),1),1,-1)+instance-instance;
+shape_2_per_frame8=x = .5 + rand(15)*0.01*bass_att*if(equal(int(rand(2)),1),1,-1)+instance-instance;
+shape_2_per_frame9=y = .5 + rand(15)*0.01*bass_att*if(equal(int(rand(2)),1),1,-1)+instance-instance;
 shape_2_per_frame10=rad = .09 + rand(int(q30))/15+instance-instance;
 shape_2_per_frame11=r=rand(q30)*.1+instance-instance;
 shape_2_per_frame12=g=rand(q30)*.1+instance-instance;
@@ -236,8 +236,8 @@ shape_3_per_frame4=a = trans;
 shape_3_per_frame5=//a2 = trans2;
 shape_3_per_frame6=//border_a = trans3;
 shape_3_per_frame7=
-shape_3_per_frame8=x = .5 + rand(15)*0.01*mid_att*if(equal(rand(2),1),1,-1)+instance-instance;
-shape_3_per_frame9=y = .5 + rand(15)*0.01*mid_att*if(equal(rand(2),1),1,-1)+instance-instance;
+shape_3_per_frame8=x = .5 + rand(15)*0.01*mid_att*if(equal(int(rand(2)),1),1,-1)+instance-instance;
+shape_3_per_frame9=y = .5 + rand(15)*0.01*mid_att*if(equal(int(rand(2)),1),1,-1)+instance-instance;
 shape_3_per_frame10=rad = .09 + rand(int(q30))/15+instance-instance;
 shape_3_per_frame11=r=rand(q30)*.1+instance-instance;
 shape_3_per_frame12=g=rand(q30)*.1+instance-instance;

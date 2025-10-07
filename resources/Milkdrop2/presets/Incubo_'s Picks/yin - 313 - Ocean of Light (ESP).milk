@@ -336,9 +336,9 @@ per_frame_1=warp=0;
 per_frame_2=zoom=1;
 per_frame_3=
 per_frame_4=rnd=equal(frame%400,0);
-per_frame_5=offy=(1-rnd)*offy+rnd*(-3+rand(600)/100);
-per_frame_6=offz=(1-rnd)*offz+rnd*(-80-0*rand(1000)/1000);
-per_frame_7=sc=(1-rnd)*sc+rnd*(1+rand(500)/100);
+per_frame_5=offy=(1-rnd)*offy+rnd*(-3+int(rand(600))/100);
+per_frame_6=offz=(1-rnd)*offz+rnd*(-80-0*int(rand(1000))/1000);
+per_frame_7=sc=(1-rnd)*sc+rnd*(1+int(rand(500))/100);
 per_frame_8=offx=0;
 per_frame_9=offy=-3.1;
 per_frame_10=offz=-60;
@@ -354,8 +354,8 @@ per_frame_19=
 per_frame_20=stime=if(equal(stime,0),time,stime );
 per_frame_21=mytime=time-stime;
 per_frame_22=phase = .1*mytime - int(.1*mytime);
-per_frame_23=tilex=if(below(phase,.025),1 + rand(4),tilex );
-per_frame_24=tilez=if(below(phase,.025),1 + rand(4),tilez );
+per_frame_23=tilex=if(below(phase,.025),1 + int(rand(4)),tilex );
+per_frame_24=tilez=if(below(phase,.025),1 + int(rand(4)),tilez );
 per_frame_25=q7=tilex;
 per_frame_26=q8=tilez;
 per_frame_27=q1=abs(sin(3.1415*phase));

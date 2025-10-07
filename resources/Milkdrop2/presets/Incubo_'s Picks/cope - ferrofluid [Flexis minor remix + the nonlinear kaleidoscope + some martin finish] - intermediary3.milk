@@ -304,8 +304,8 @@ shape_2_per_frame2=trans2 = rand(int(q1))/5+instance-instance;
 shape_2_per_frame3=trans3 = rand(int(q1))/5+instance-instance;
 shape_2_per_frame4=a = trans;
 shape_2_per_frame5=
-shape_2_per_frame6=x = (sin(q23)+1.57)*.3 + rand(15)*0.01*bass_att*if(equal(rand(2),1),1,-1)+instance-instance;
-shape_2_per_frame7=y = (cos(q23)+1.57)*.3 + rand(15)*0.01*bass_att*if(equal(rand(2),1),1,-1)+instance-instance;
+shape_2_per_frame6=x = (sin(q23)+1.57)*.3 + rand(15)*0.01*bass_att*if(equal(int(rand(2)),1),1,-1)+instance-instance;
+shape_2_per_frame7=y = (cos(q23)+1.57)*.3 + rand(15)*0.01*bass_att*if(equal(int(rand(2)),1),1,-1)+instance-instance;
 shape_2_per_frame8=rad = .09 + rand(int(q1))/15+instance-instance;
 shape_2_per_frame9=r=rand(q1)*.1+instance-instance;
 shape_2_per_frame10=g=rand(q1)*.1+instance-instance;
@@ -345,8 +345,8 @@ shape_3_per_frame2=trans2 = rand(int(q1))/15+instance-instance;
 shape_3_per_frame3=trans3 = rand(int(q1))/15+instance-instance;
 shape_3_per_frame4=a = trans;
 shape_3_per_frame5=
-shape_3_per_frame6=x = (sin(q23)+1.57)*.3 + rand(15)*0.01*mid_att*if(equal(rand(2),1),1,-1)+instance-instance;
-shape_3_per_frame7=y = (cos(q23)+1.57)*.3 + rand(15)*0.01*mid_att*if(equal(rand(2),1),1,-1)+instance-instance;
+shape_3_per_frame6=x = (sin(q23)+1.57)*.3 + rand(15)*0.01*mid_att*if(equal(int(rand(2)),1),1,-1)+instance-instance;
+shape_3_per_frame7=y = (cos(q23)+1.57)*.3 + rand(15)*0.01*mid_att*if(equal(int(rand(2)),1),1,-1)+instance-instance;
 shape_3_per_frame8=rad = .09 + rand(int(q1))/15+instance-instance;
 shape_3_per_frame9=r=rand(q1)*.1+instance-instance;
 shape_3_per_frame10=g=rand(q1)*.1+instance-instance;

@@ -249,7 +249,7 @@ wave_2_per_point19=fdy=fdy*invMag;
 wave_2_per_point20=
 wave_2_per_point21=rdx=fdx*cos(1.5707+t2)-fdy*sin(1.5707+t2);
 wave_2_per_point22=rdy=fdx*sin(1.5707+t2)+fdx*cos(1.5707+t2);
-wave_2_per_point23=tt=rand(100)/100;
+wave_2_per_point23=tt=int(rand(100))/100;
 wave_2_per_point24=x=x+rdx*(.15*tt)*(1-sample);
 wave_2_per_point25=y=y+rdy*(.15*tt)*(1-sample);
 wave_2_per_point26=

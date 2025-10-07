@@ -396,9 +396,9 @@ per_pixel_18=if(equal(q8,  cross),below(dist,.15)*inX*sign(y-cy)*.02*bass,
 per_pixel_19=if(equal(q8,     line),if(equal(q1%2,0)*below(abs(x-(q1*.5+1)*.333),.01),00,0),
 per_pixel_20=0)));
 per_pixel_21=
-per_pixel_22=dx = -(q5-1)*.1*
+per_pixel_22=dx += -(q5-1)*.1*
 per_pixel_23=below(abs(x-(q5*.3333+.166)),.16)*below(abs(y-(q6*.3333+.166)),.16);
-per_pixel_24=dy = -(q6-1)*.1*
+per_pixel_24=dy += -(q6-1)*.1*
 per_pixel_25=below(abs(x-(q5*.3333+.166)),.16)*below(abs(y-(q6*.3333+.166)),.16);
 per_pixel_26=
 per_pixel_27=dx = dx+.02*equal(q5,q6)*equal(q5,1)*sign(x-.5)* below(abs(x-(q5*.3333+.166)),.16)*below(abs(y-(q6*.3333+.166)),.1);

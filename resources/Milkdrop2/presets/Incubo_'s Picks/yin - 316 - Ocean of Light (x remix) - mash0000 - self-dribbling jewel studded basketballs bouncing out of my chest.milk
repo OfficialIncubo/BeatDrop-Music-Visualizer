@@ -436,9 +436,9 @@ per_frame_22=warp=0;
 per_frame_23=zoom=1.04;
 per_frame_24=
 per_frame_25=rnd=equal(frame%400,0);
-per_frame_26=offy=(1-rnd)*offy+rnd*(-3+rand(600)/100);
-per_frame_27=offz=(1-rnd)*offz+rnd*(-80-0*rand(1000)/1000);
-per_frame_28=sc=(1-rnd)*sc+rnd*(1+rand(500)/100);
+per_frame_26=offy=(1-rnd)*offy+rnd*(-3+int(rand(600))/100);
+per_frame_27=offz=(1-rnd)*offz+rnd*(-80-0*int(rand(1000))/1000);
+per_frame_28=sc=(1-rnd)*sc+rnd*(1+int(rand(500))/100);
 per_frame_29=offx=0;
 per_frame_30=offy=-3.1;
 per_frame_31=offz=-300+160*pow(contVol,.25);
@@ -464,8 +464,8 @@ per_frame_50=contVol=min(1,contVol);
 per_frame_51=zoom=1.01+.05*contVol;
 per_frame_52=
 per_frame_53=c1=above(contvol,.7)*min(contvol-.7,.3);
-per_frame_54=dx=c1*.0015*(-10+rand(20));
-per_frame_55=dy=c1*.0015*(-10+rand(20));
+per_frame_54=dx=c1*.0015*(-10+int(rand(20)));
+per_frame_55=dy=c1*.0015*(-10+int(rand(20)));
 per_frame_56=
 per_frame_57=darken=1;
 per_frame_58=brighten=1-darken;
