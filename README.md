@@ -107,7 +107,10 @@ To not break the listening sessions or DJ sessions, BeatDrop will no longer inte
 * First of all, [Visual Studio 2022](https://visualstudio.microsoft.com/vs) is now required.
 * [DirectX SDK](https://www.microsoft.com/en-us/download/details.aspx?id=6812) is even required.
 * Workloads required before compiling:
-![Workloads required to use with Visual Studio 2022](https://github.com/user-attachments/assets/7bc967d5-3683-4180-a1ad-8a99a855d5fc)
+![Workloads required to use with Visual Studio 2022](https://github.com/user-attachments/assets/3eeeccb3-c23a-4580-9315-7e1062cbc2ef)
+
+![DesktopDevOptionalSettings](https://github.com/user-attachments/assets/a1d9955a-867c-4a92-87d4-0526a4b54d3b) ![GameDevOptionalSettings](https://github.com/user-attachments/assets/94b79e4d-ed6c-4b78-9bce-611b005f7414) ![NETDesktopDevOptionalSettings](https://github.com/user-attachments/assets/cc532fd5-af19-4413-86ff-74820b4f265d)
+
 * CMake is now obligatory to install! Look at the name from Desktop development with C++ category below and check this box. [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library is now integrated in.
 
 ![CMake optional library checked](https://github.com/user-attachments/assets/219d03a0-3c16-42ef-a05d-1374ae7ee3a8)
