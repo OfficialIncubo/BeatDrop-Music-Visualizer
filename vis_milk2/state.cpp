@@ -1634,6 +1634,45 @@ void CState::RecompileExpressions(int flags, int bReInit)
 	if (bReInit)
 	{
 		RegisterBuiltInVariables(flags);
+
+		// --- Reset monitor variable on recompile ---
+		monitor_after_init_code = 0;
+		*var_pf_monitor = 0;
+
+		// --- Reset per-frame q variables on recompile ---
+		for (int vi = 0; vi < NUM_Q_VAR; vi++)
+		{
+			q_values_after_init_code[vi] = 0;
+			if (var_pf_q[vi]) *var_pf_q[vi] = 0;
+		}
+
+		// --- Reset custom shapes/waves q and t variables on recompile ---
+		// --- SHAPE ---
+		for (int i = 0; i < MAX_CUSTOM_SHAPES; i++)
+		{
+			for (vi = 0; vi < NUM_Q_VAR; vi++)
+				if (m_shape[i].var_pf_q[vi]) *m_shape[i].var_pf_q[vi] = 0;
+
+			for (vi = 0; vi < NUM_T_VAR; vi++)
+			{
+				m_shape[i].t_values_after_init_code[vi] = 0;
+				if (m_shape[i].var_pf_t[vi]) *m_shape[i].var_pf_t[vi] = 0;
+			}
+		}
+
+		// --- WAVE ---
+		for (int i = 0; i < MAX_CUSTOM_WAVES; i++)
+		{
+
+			for (vi = 0; vi < NUM_Q_VAR; vi++)
+				if (m_wave[i].var_pf_q[vi]) *m_wave[i].var_pf_q[vi] = 0;
+
+			for (vi = 0; vi < NUM_T_VAR; vi++)
+			{
+				m_wave[i].t_values_after_init_code[vi] = 0;
+				if (m_wave[i].var_pf_t[vi]) *m_wave[i].var_pf_t[vi] = 0;
+			}
+		}
 	}
 
 	// QUICK FIX: if the code strings ONLY have spaces and linefeeds, erase them,
