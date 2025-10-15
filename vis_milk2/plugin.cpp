@@ -630,6 +630,7 @@ SPOUT :
 #include "AutoCharFn.h"
 #include "songtitlegetter.h"
 #include "AMDDetection.h"
+#include <random>
 
 #include <dwmapi.h>  // Link with Dwmapi.lib
 #pragma comment(lib, "dwmapi.lib")
@@ -6886,9 +6887,11 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 		switch(wParam)
 		{
 		case VK_LEFT:
-		    if (m_UI_mode == UI_REGULAR)
+            if (m_UI_mode == UI_REGULAR)
+            {
                 SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_REWIND));
-            break;
+                return 0; // we processed (or absorbed) the key
+            }
 		case VK_RIGHT:
 			if (m_UI_mode == UI_LOAD)
 			{
@@ -6910,7 +6913,10 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 				return 0; // we processed (or absorbed) the key
             }
             else if (m_UI_mode == UI_REGULAR)
+            {
                 SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_FAST_FORWARD));
+                return 0; // we processed (or absorbed) the key
+            }
             break;
 
 		case VK_ESCAPE:
@@ -7760,16 +7766,20 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
 		// instant hard cut
         if (m_UI_mode == UI_MASHUP)
         {
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<int> mash_dist(m_nDirs, m_nPresets - 1);
+
             if (wParam=='h')
             {
-                m_nMashPreset[m_nMashSlot] = m_nDirs + (rand() % (m_nPresets-m_nDirs));
+                m_nMashPreset[m_nMashSlot] = mash_dist(gen);
                 m_nLastMashChangeFrame[m_nMashSlot] = GetFrame() + MASH_APPLY_DELAY_FRAMES;  // causes instant apply
             }
             else
             {
                 for (int mash=0; mash<MASH_SLOTS; mash++)
                 {
-                    m_nMashPreset[mash] = m_nDirs + (rand() % (m_nPresets-m_nDirs));
+                    m_nMashPreset[mash] = mash_dist(gen);
                     m_nLastMashChangeFrame[mash] = GetFrame() + MASH_APPLY_DELAY_FRAMES;  // causes instant apply
                 }
             }
@@ -8311,11 +8321,17 @@ void CPlugin::LoadRandomPreset(float fBlendTime)
 		// pick a random file
 		if (!m_bEnableRating || (m_presets[m_nPresets - 1].fRatingCum < 0.1f))// || (m_nRatingReadProgress < m_nPresets))
 		{
-			m_nCurrentPreset = m_nDirs + (rand() % (m_nPresets - m_nDirs));
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_int_distribution<int> preset_dist(m_nDirs, m_nPresets - 1);
+            m_nCurrentPreset = preset_dist(gen);
 		}
 		else
 		{
-			float cdf_pos = (rand() % 14345)/14345.0f*m_presets[m_nPresets - 1].fRatingCum;
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_real_distribution<float> float_dist(0.0f, m_presets[m_nPresets - 1].fRatingCum);
+            float cdf_pos = float_dist(gen);
 
 			/*
 			char buf[512];
