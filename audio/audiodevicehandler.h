@@ -15,7 +15,7 @@ public:
     HRESULT CheckForDeviceChanges(IMMDevice** ppNewDevice);
     void ResetToDefaultDevice();
 
-private:
+//private:
     IMMDeviceEnumerator* m_pEnumerator;
     IMMDevice* m_pCurrentDevice;
     DWORD m_dwCurrentFormatTag;

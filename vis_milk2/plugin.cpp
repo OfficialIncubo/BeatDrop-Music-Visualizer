@@ -7178,6 +7178,20 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
             }
             break;
 
+        case 'D':
+            if (GetKeyState(VK_CONTROL) & 0x8000) {
+                // CTRL+D pressed → toggle capture device
+                m_bCaptureMic = !m_bCaptureMic;
+                DetectSampleRate();
+                if (m_bCaptureMic) {
+                    AddNotif(L"Switched to input audio device (Microphone)");
+                }
+                else {
+                    AddNotif(L"Switched to output audio device (Speaker)");
+                }
+            }
+            break;
+
 		case VK_SPACE:
 			if (m_UI_mode == UI_LOAD)
                 goto HitEnterFromLoadMenu;
@@ -11065,8 +11079,16 @@ HRESULT DetectSampleRate()
     PropVariantInit(&var);
 
     // Initialize COM
+    // Use existing COM instance if already initialized
+    bool coInitialized = false;
     hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
-    if (FAILED(hr)) return hr;
+    if (SUCCEEDED(hr)) {
+        coInitialized = true;
+    }
+    else if (hr == RPC_E_CHANGED_MODE) {
+        // COM already initialized with different mode, continue anyway
+        hr = S_OK;
+    }
 
     // Create device enumerator
     hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL,
@@ -11075,7 +11097,7 @@ HRESULT DetectSampleRate()
     if (FAILED(hr)) goto Cleanup;
 
     // Get default audio endpoint
-    hr = pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &pDevice);
+    hr = pEnumerator->GetDefaultAudioEndpoint(GetCaptureMicFlag() ? eCapture : eRender, eConsole, &pDevice);
     if (FAILED(hr)) goto Cleanup;
 
     // Open property store
@@ -11084,7 +11106,7 @@ HRESULT DetectSampleRate()
 
     // Get the format property
     hr = pProps->GetValue(PKEY_AudioEngine_DeviceFormat, &var);
-    if (SUCCEEDED(hr) && var.vt == VT_BLOB)
+    if (SUCCEEDED(hr) && var.vt == VT_BLOB && var.blob.pBlobData)
     {
         WAVEFORMATEX* pwfx = (WAVEFORMATEX*)var.blob.pBlobData;
         if (pwfx != NULL)
@@ -11099,7 +11121,9 @@ Cleanup:
     if (pProps) pProps->Release();
     if (pDevice) pDevice->Release();
     if (pEnumerator) pEnumerator->Release();
-    CoUninitialize();
+    if (coInitialized) {
+        CoUninitialize();
+    }
 
     return hr;
 }
@@ -11144,11 +11168,13 @@ for (int i=0;i<576;i++)
 
 	// DeepSeek - Update the sample rate (we don't need to check HRESULT every frame)
     static DWORD lastCheck = 0;
-    DWORD currentTime = GetTickCount();
-    if (currentTime - lastCheck > 5000) // Check once per second
+    static bool firstRun = true;
+    DWORD currentTime = GetTickCount64();
+    if (firstRun || (currentTime - lastCheck > 5000))
     {
         DetectSampleRate();
         lastCheck = currentTime;
+        firstRun = false;
     }
 
 	// sum spectrum up into 3 bands
@@ -11576,6 +11602,11 @@ void CPlugin::ShowMissingDirectXMessage()
         // open website in browser
         ShellExecuteA(NULL, "open", "https://www.microsoft.com/en-us/download/details.aspx?id=35", NULL, NULL, SW_SHOWNORMAL);
     }
+}
+
+bool GetCaptureMicFlag()
+{
+    return g_plugin.m_bCaptureMic;
 }
 
 // =========================================================

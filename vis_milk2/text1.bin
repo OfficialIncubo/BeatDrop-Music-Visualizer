@@ -4,6 +4,7 @@
    ALT + ENTER          toggle fullscreen (or double-click)
    ALT + S              toggle multiple monitor stretch
    CTRL + Z             enable/disable spout output
+   CTRL + D             toggle output/input audio device
    CTRL + T             instantly reset time variable
    SHIFT + UP           increase window opacity
    SHIFT + DOWN         decrease window opacity

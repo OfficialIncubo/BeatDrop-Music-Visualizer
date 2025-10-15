@@ -3,6 +3,8 @@
 #include "common.h"
 #include "audiodevicehandler.h"
 
+extern bool GetCaptureMicFlag();
+
 static AudioDeviceHandler* g_pAudioDeviceHandler = NULL;
 
 HRESULT LoopbackCapture(
@@ -51,7 +53,17 @@ DWORD WINAPI LoopbackCaptureThreadFunction(LPVOID pContext) {
             if (pArgs->pMMDevice) {
                 pArgs->pMMDevice->Release();
             }
-            HRESULT hr = g_pAudioDeviceHandler->CheckForDeviceChanges(&pArgs->pMMDevice);
+            HRESULT hr;
+            // Use microphone if enabled, otherwise use speaker loopback
+            if (GetCaptureMicFlag()) {
+                // Get default input device (microphone)
+                hr = pArgs->pMMDevice->Release();
+                hr = g_pAudioDeviceHandler->m_pEnumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &pArgs->pMMDevice);
+            }
+            else {
+                // Get default output device (speaker)
+                hr = g_pAudioDeviceHandler->CheckForDeviceChanges(&pArgs->pMMDevice);
+            }
             if (FAILED(hr)) {
                 ERR(L"Failed to get new audio device after invalidation: hr = 0x%08x", hr);
                 break; // Can't recover if we can't get a new device
@@ -182,9 +194,19 @@ HRESULT LoopbackCapture(
     // do not work together...
     // the "data ready" event never gets set
     // so we're going to do a timer-driven loop
+    DWORD streamFlags;
+    if (GetCaptureMicFlag()) {
+        // For microphone - regular capture
+        streamFlags = 0;
+    }
+    else {
+        // For speaker - loopback capture  
+        streamFlags = AUDCLNT_STREAMFLAGS_LOOPBACK;
+    }
+
     hr = pAudioClient->Initialize(
         AUDCLNT_SHAREMODE_SHARED,
-        AUDCLNT_STREAMFLAGS_LOOPBACK,
+        streamFlags,
         0, 0, pwfx, 0
     );
     if (FAILED(hr)) {
@@ -254,8 +276,35 @@ HRESULT LoopbackCapture(
 
         if (g_pAudioDeviceHandler && (nPasses % 100 == 0)) {
             IMMDevice* pNewDevice = NULL;
-            if (SUCCEEDED(g_pAudioDeviceHandler->CheckForDeviceChanges(&pNewDevice))) {
-                if (pNewDevice != pMMDevice) {
+            HRESULT deviceCheckHr;
+
+            if (GetCaptureMicFlag()) {
+                // For microphone - get default input device
+                deviceCheckHr = g_pAudioDeviceHandler->m_pEnumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &pNewDevice);
+            }
+            else {
+                // For speaker - check for device changes
+                deviceCheckHr = g_pAudioDeviceHandler->CheckForDeviceChanges(&pNewDevice);
+            }
+
+            if (SUCCEEDED(deviceCheckHr)) {
+                // Compare device IDs to see if device changed
+                LPWSTR szCurrentId = NULL;
+                LPWSTR szNewId = NULL;
+                BOOL bDeviceChanged = FALSE;
+
+                if (SUCCEEDED(pMMDevice->GetId(&szCurrentId))) {
+                    if (SUCCEEDED(pNewDevice->GetId(&szNewId))) {
+                        if (wcscmp(szCurrentId, szNewId) != 0) {
+                            LOG(L"Audio device changed: %ls -> %ls", szCurrentId, szNewId);
+                            bDeviceChanged = TRUE;
+                        }
+                        CoTaskMemFree(szNewId);
+                    }
+                    CoTaskMemFree(szCurrentId);
+                }
+
+                if (bDeviceChanged) {
                     LOG(L"Audio device change detected, stopping capture");
                     bDone = true;
                     hr = AUDCLNT_E_DEVICE_INVALIDATED; // Signal device change

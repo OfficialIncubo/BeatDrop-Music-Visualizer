@@ -1,6 +1,7 @@
 // audiodevicehandler.cpp
 #include "audiodevicehandler.h"
 #include "common.h"
+extern bool GetCaptureMicFlag();
 
 AudioDeviceHandler::AudioDeviceHandler()
     : m_pEnumerator(NULL)
@@ -28,7 +29,12 @@ HRESULT AudioDeviceHandler::Initialize() {
     }
 
     // Get initial default device
-    hr = m_pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &m_pCurrentDevice);
+    if (GetCaptureMicFlag()) {
+        hr = m_pEnumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &m_pCurrentDevice);
+    }
+    else {
+        hr = m_pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &m_pCurrentDevice);
+    }
     if (FAILED(hr)) {
         ERR(L"Failed to get default audio endpoint: hr = 0x%08x", hr);
         return hr;

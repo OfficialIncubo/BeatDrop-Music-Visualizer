@@ -56,6 +56,10 @@ typedef char* CHARPTR;
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 #define MY_FFT_SAMPLES 512     // for old [pre-vms] milkdrop sound analysis
+
+HRESULT DetectSampleRate();
+bool GetCaptureMicFlag();
+
 typedef struct
 {
 	float   imm[3];			// bass, mids, treble (absolute)
@@ -382,6 +386,7 @@ public:
         int         m_nMidEnd = 4000;
         int         m_nTrebStart = 4000;
         int         m_nTrebEnd = 20000;
+        bool        m_bCaptureMic = false; // false = default output (speaker), true = default input (microphone)
         bool        m_IsAMD = false;
 
         //bool		m_bAlways3D;
