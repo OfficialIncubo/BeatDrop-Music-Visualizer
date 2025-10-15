@@ -10,7 +10,7 @@
 # For the next (or further) version of BeatDrop
 
 * \[ ] Window-Independent Spout Output ([https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0](https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0))
-* \[ ] Ability to change the audio device from output to input (microphone) and vice-versa by pressing B hotkey
+* \[x] Ability to change the audio device from output to input (microphone) and vice-versa by pressing B hotkey (now CTRL + D)
 * \[ ] Freeze/unfreeze beat detection
 * \[ ] Enable/Disable Mashup Functionality
 * New Hardcut Modes (0/2):
