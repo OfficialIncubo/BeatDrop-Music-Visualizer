@@ -664,6 +664,9 @@ bool AutoLockedPreset = false;
 void NSEEL_HOSTSTUB_EnterMutex() {}
 void NSEEL_HOSTSTUB_LeaveMutex() {}
 
+std::random_device rd;
+std::mt19937 gen(rd());
+
 #ifdef NS_EEL2
 void NSEEL_VM_resetvars(NSEEL_VMCTX ctx)
 {
@@ -3188,7 +3191,8 @@ bool PickRandomTexture(const wchar_t* prefix, wchar_t* szRetTextureFilename)  //
     if (prefix==NULL || prefix[0]==0)
     {
         // pick randomly from entire list
-        int i = rand() % texfiles.size();
+        std::uniform_int_distribution<size_t> dist(0, texfiles.size() - 1);
+        int i = dist(gen);
         lstrcpyW(szRetTextureFilename, texfiles[i].c_str());
     }
     else
@@ -3204,7 +3208,8 @@ bool PickRandomTexture(const wchar_t* prefix, wchar_t* szRetTextureFilename)  //
         if (N==0)
             return false;
         // pick randomly from the subset
-        i = rand() % temp_list.size();
+        std::uniform_int_distribution<size_t> dist(0, temp_list.size() - 1);
+        int i = dist(gen);
         lstrcpyW(szRetTextureFilename, temp_list[i].c_str());
     }
     return true;
@@ -7766,8 +7771,6 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
 		// instant hard cut
         if (m_UI_mode == UI_MASHUP)
         {
-            std::random_device rd;
-            std::mt19937 gen(rd());
             std::uniform_int_distribution<int> mash_dist(m_nDirs, m_nPresets - 1);
 
             if (wParam=='h')
@@ -8321,15 +8324,11 @@ void CPlugin::LoadRandomPreset(float fBlendTime)
 		// pick a random file
 		if (!m_bEnableRating || (m_presets[m_nPresets - 1].fRatingCum < 0.1f))// || (m_nRatingReadProgress < m_nPresets))
 		{
-            std::random_device rd;
-            std::mt19937 gen(rd());
             std::uniform_int_distribution<int> preset_dist(m_nDirs, m_nPresets - 1);
             m_nCurrentPreset = preset_dist(gen);
 		}
 		else
 		{
-            std::random_device rd;
-            std::mt19937 gen(rd());
             std::uniform_real_distribution<float> float_dist(0.0f, m_presets[m_nPresets - 1].fRatingCum);
             float cdf_pos = float_dist(gen);
 
@@ -8385,7 +8384,8 @@ void CPlugin::RandomizeBlendPattern()
 
     // note: we now avoid constant uniform blend b/c it's half-speed for shader blending.
     //       (both old & new shaders would have to run on every pixel...)           reenabled due to further notice
-    int mixtype = m_nTransitionBlendPattern > -1 ? m_nTransitionBlendPattern : 0 + (rand()%(TransitionLimit+1));//rand()%4;
+    std::uniform_int_distribution<int> dist(0, TransitionLimit);
+    int mixtype = m_nTransitionBlendPattern > -1 ? m_nTransitionBlendPattern : dist(gen);//rand()%4;
 
     if (mixtype==0)
     {
