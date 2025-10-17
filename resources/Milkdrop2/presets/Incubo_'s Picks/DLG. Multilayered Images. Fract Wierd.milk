@@ -91,9 +91,9 @@ wave_0_per_point2=ita = (ita + equal(it,0))*above(sample,0);
 wave_0_per_point3=
 wave_0_per_point4=sw = 1-equal(it,0)*equal(ita,0);
 wave_0_per_point5=swi = (equal(lr,9) + equal(lr,5))*equal(it,0)*equal(ita,4);
-wave_0_per_point6=xv = if(sw - swi,xv,rand(1001)*.001*.8);
+wave_0_per_point6=xv = if(sw - swi,xv,int(rand(1001))*.001*.8);
 wave_0_per_point7=mx = xv + ita*.025;
-wave_0_per_point8=my = if(sw - swi,my,rand(1001)*.001*.975);
+wave_0_per_point8=my = if(sw - swi,my,int(rand(1001))*.001*.975);
 wave_0_per_point9=
 wave_0_per_point10=sz = .01;
 wave_0_per_point11=vx = above(it,1)*below(it,39) + above(it,12)*below(it,28) - equal(it,20) + equal(it,46) + equal(it,51) + equal(it,41) - equal(it,15) - equal(it,25) + equal(it,10) + equal(it,30) - equal(it,4) - equal(it,36);
@@ -110,7 +110,7 @@ wave_0_per_point21=sh = equal(ita,0)*19 + equal(ita,1)*21 + equal(ita,2)*18 + eq
 wave_0_per_point22=si = equal(ita,0)*8 + equal(ita,1)*1 + equal(ita,2)*16 + equal(ita,3)*16 + equal(ita,4)*25;
 wave_0_per_point23=sj = equal(ita,0)*25 + equal(ita,1)*5 + equal(ita,2)*19 + equal(ita,6)*14 + equal(ita,7)*15;
 wave_0_per_point24=
-wave_0_per_point25=lr = if(sw,lr,rand(10));
+wave_0_per_point25=lr = if(sw,lr,int(rand(10)));
 wave_0_per_point26=let = equal(lr,0)*sa + equal(lr,1)*sb + equal(lr,2)*sc + equal(lr,3)*sd + equal(lr,4)*se + equal(lr,5)*sf + equal(lr,6)*sg + equal(lr,7)*sh + equal(lr,8)*si + equal(lr,9)*sj;
 wave_0_per_point27=
 wave_0_per_point28=va = equal(let,23) + equal(let,24) + equal(let,26);
@@ -310,7 +310,7 @@ per_frame_26=itranslation_u = 0;
 per_frame_27=itranslation_v = 0;
 per_frame_28=
 per_frame_29=
-per_frame_30=// the möbius transformation
+per_frame_30=// the m?bius transformation
 per_frame_31=// z -> (az+b)/(cz-d); where a,b,c,d are complex numbers and z will be the uv-vector
 per_frame_32=// (az+b)/(cz-d) = a/c + mu/(cz+d), with mu = (bc-ad)/c
 per_frame_33=// so a/c and mu can be calculated outside of the shader
