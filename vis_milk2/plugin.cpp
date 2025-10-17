@@ -3227,7 +3227,7 @@ void CShaderParams::CacheParams(LPD3DXCONSTANTTABLE pCT, bool bHardErrors)
 
     D3DXCONSTANT_DESC cd;
 
-    #define MAX_RAND_TEX 16
+    #define MAX_RAND_TEX 100
     std::wstring RandTexName[MAX_RAND_TEX];
 
     // pass 1: find all the samplers (and texture bindings).
@@ -3382,7 +3382,7 @@ void CShaderParams::CacheParams(LPD3DXCONSTANTTABLE pCT, bool bHardErrors)
                     szRootName[6] = 0;
 
                     swscanf(&szRootName[4], L"%d", &rand_slot);
-                    if (rand_slot >= 0 && rand_slot <= 15)      // otherwise, not a special filename - ignore it
+                    if (rand_slot >= 0 && rand_slot <= MAX_RAND_TEX - 1)      // otherwise, not a special filename - ignore it
                     {
                         if (!PickRandomTexture(prefix, szRootName))
                         {
