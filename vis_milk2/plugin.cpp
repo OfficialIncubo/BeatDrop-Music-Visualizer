@@ -8725,6 +8725,7 @@ void CPlugin::RandomizeBlendPattern()
         bool diagonal = (rand() % 2) == 0;    // true = X-shape, false = +-shape
         float center_bias = 0.3f + FRAND * 0.4f; // 0.3-0.7, controls center emphasis
         float softness = 0.1f + FRAND * 0.2f; // edge softness
+        bool reverse = (rand() % 2) == 0;     // true = reverse direction, false = normal
 
         // Define our own clamp function
         auto clamp = [](float value, float min, float max) {
@@ -8767,6 +8768,9 @@ void CPlugin::RandomizeBlendPattern()
                 // Add optional softness to edges
                 t = t * (1.0f + softness) - softness * 0.5f;
                 t = clamp(t, 0.0f, 1.0f);
+
+                if (reverse)
+                    t = 1.0f - t;
 
                 // Apply band blending
                 m_vertinfo[nVert].a = inv_band * (1.0f + band);
