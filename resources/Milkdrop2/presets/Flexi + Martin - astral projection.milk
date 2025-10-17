@@ -143,8 +143,8 @@ wave_0_per_point25=x1 = (c1*c2*xx + c1*s2*yy - s1*zz);
 wave_0_per_point26=y1 = ((s3*s1*c2 - c3*s2)*xx + (s3*s1*s2+c3*c2)*yy + s3*c1*zz);
 wave_0_per_point27=
 wave_0_per_point28=zoom = .5*(1/(z+0.5));
-wave_0_per_point29=x = 0.5 + zoom*x1 + sin(time*0.1)*0.;;
-wave_0_per_point30=y = 0.5 + zoom*y1 + cos(time*0.16801)*0.;
+wave_0_per_point29=x = 0.5 + zoom*x1 + sin(time*0.1)*0;;
+wave_0_per_point30=y = 0.5 + zoom*y1 + cos(time*0.16801)*0;
 wave_0_per_point31=
 wave_0_per_point32=pi3 = 3.1415*2*0.3333;
 wave_0_per_point33=t = z*2+t2*1;
