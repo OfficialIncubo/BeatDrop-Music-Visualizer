@@ -1,6 +1,7 @@
 # Future plans
+
 - [ ] ImGui support for ease-of-use: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/35
-- [ ] Aero-like Effect (For example, Nomi's Video: <https://x.com/nomimugen/status/1789240101085557050>)
+- [ ] Aero-like Effect (For example, Nomi's Video: (https://x.com/nomimugen/status/1789240101085557050))
 - [ ] Spout Input as Sprites (like NestDrop's Spout Sprites): https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/26
 - [ ] GIF Support for both Sprites and Textures: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/34
 - [ ] Reviving 3D toggle functionality from MilkDrop v1.04: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/6
@@ -9,7 +10,7 @@
 
 # For the next (or further) version of BeatDrop
 
-- [ ] Window-Independent Spout Output ([https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0](https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0))
+- [ ] Window-Independent Spout Output (https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0)
 - [x] Ability to change the audio device from output to input (microphone) and vice-versa by pressing B hotkey (now CTRL + D)
 - [ ] Freeze/unfreeze beat detection
 - [ ] Enable/Disable Mashup Functionality
@@ -19,7 +20,8 @@
 
 # Known wishlist feature (for re-releasing v1.4.1.1)
 
-- [ ] Show/Hide render window (useful for VJs/DJs)
+- [x] Show/Hide render window (useful for VJs/DJs)
+
 
 
 There are more that it's unfeatured here. Let me know if you tell some features to be added here.

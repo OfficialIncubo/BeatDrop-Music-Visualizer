@@ -4,6 +4,7 @@
    ALT + ENTER          toggle fullscreen (or double-click)
    ALT + S              toggle multiple monitor stretch
    CTRL + Z             enable/disable spout output
+   CTRL + W             hide render window (it pops up the icon on the taskbar tray icon when hidden; hover for tooltip)
    CTRL + D             toggle output/input audio device
    CTRL + T             instantly reset time variable
    SHIFT + UP           increase window opacity

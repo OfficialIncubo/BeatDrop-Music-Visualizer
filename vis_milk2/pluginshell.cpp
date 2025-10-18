@@ -143,7 +143,45 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AutoCharFn.h"
 #include <mmsystem.h>
 #include "plugin.h"
+#include <shellapi.h>
 #pragma comment(lib,"winmm.lib")    // for timeGetTime
+
+NOTIFYICONDATA nid = {};
+bool renderWindowHidden = false;
+HWND g_hWnd = NULL;
+
+void InitializeTrayIcon(HWND hWnd)
+{
+	g_hWnd = hWnd;
+
+	nid.cbSize = sizeof(NOTIFYICONDATA);
+	nid.hWnd = hWnd;
+	nid.uID = 1;
+	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
+	nid.uCallbackMessage = WM_USER + 1; // Custom message for tray events
+	nid.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_PLUGIN_ICON)); // Use your app icon
+}
+
+// Function to update tray icon when window is hidden
+void UpdateTrayIconForHiddenWindow()
+{
+	lstrcpy(nid.szTip, TEXT("BeatDrop Music Visualizer - Render window hidden\nLeft click to show. Right click to exit visualizer."));
+	Shell_NotifyIcon(NIM_ADD, &nid);
+	renderWindowHidden = true;
+}
+
+// Function to update tray icon when window is shown
+void UpdateTrayIconForShownWindow()
+{
+	Shell_NotifyIcon(NIM_DELETE, &nid);
+	renderWindowHidden = false;
+}
+
+// Function to remove tray icon (call this when closing)
+void RemoveTrayIcon()
+{
+	Shell_NotifyIcon(NIM_DELETE, &nid);
+}
 
 // STATE VALUES & VERTEX FORMATS FOR HELP SCREEN TEXTURE:
 #define TEXT_SURFACE_NOT_READY  0
@@ -2202,6 +2240,14 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 			m_lpDX->SaveWindow();
 		break;
 
+	case WM_CREATE:
+		InitializeTrayIcon(hWnd);
+		break;
+
+	case WM_CLOSE:
+		RemoveTrayIcon();
+		break;
+
 	case WM_DESTROY:
 		// note: don't post quit message here if the window is being destroyed
 		// and re-created on a switch between windowed & FAKE fullscreen modes.
@@ -2211,9 +2257,23 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 			// so, flag DXContext so it knows that someone else
 			// will take care of destroying the window!
 			m_lpDX->OnTrulyExiting();
+			RemoveTrayIcon();
 			PostQuitMessage(0);
 		}
 		return FALSE;
+		break;
+
+	case WM_USER + 1: // Our custom tray message
+		if (lParam == WM_LBUTTONUP) // Double click
+		{
+			if (renderWindowHidden)
+			{
+				ShowWindow(hWnd, SW_SHOW);
+				UpdateTrayIconForShownWindow();
+			}
+		}
+		else if (lParam == WM_RBUTTONUP)
+			PostMessage(hWnd, WM_CLOSE, 0, 0);
 		break;
 
 	// benski> a little hack to get the window size correct. it seems to work
@@ -2417,12 +2477,24 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 
 		switch (wParam)
 		{
+			// leadedge/Lynn Jarvis
 			// SPOUT : hide/show render window
-			case VK_F12:
-				if(IsWindowVisible(GetPluginWindow()))
-					ShowWindow(GetPluginWindow(), SW_HIDE);
-				else
-					ShowWindow(GetPluginWindow(), SW_SHOW);
+			// Incubo_ - The show render window is moved to WM_USER + 1, the custom system tray message handler
+			case 'w':
+			case 'W':
+				if (GetKeyState(VK_CONTROL) & 0x0800)
+				{
+					if (IsWindowVisible(GetPluginWindow()))
+					{
+						ShowWindow(GetPluginWindow(), SW_HIDE);
+						UpdateTrayIconForHiddenWindow();
+					}
+					/*
+					Don't to else because the window and the icon from taskbar is hidden,
+					but it pops up the icon to system tray, where you can double click
+					to show the render window. Check WM_USER + 1.
+					*/
+				}
 				return 0;
 
 		    case VK_ESCAPE:
