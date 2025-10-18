@@ -9,13 +9,18 @@
 
 # For the next (or further) version of BeatDrop
 
-* \[ ] Window-Independent Spout Output ([https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0](https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0))
-* \[x] Ability to change the audio device from output to input (microphone) and vice-versa by pressing B hotkey (now CTRL + D)
-* \[ ] Freeze/unfreeze beat detection
-* \[ ] Enable/Disable Mashup Functionality
+- [ ] Window-Independent Spout Output ([https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0](https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0))
+- [x] Ability to change the audio device from output to input (microphone) and vice-versa by pressing B hotkey (now CTRL + D)
+- [ ] Freeze/unfreeze beat detection
+- [ ] Enable/Disable Mashup Functionality
 * New Hardcut Modes (0/2):
-* \[ ] BPM (1/4/8/16/32 beats)
-* \[ ] Improved Kinetronix (Visikord) Hardcut Mode (with BPM Algorithm)
+- [ ] BPM (1/4/8/16/32 beats)
+- [ ] Improved Kinetronix (Visikord) Hardcut Mode (with BPM Algorithm)
+
+# Known wishlist feature (for re-releasing v1.4.1.1)
+
+- [ ] Show/Hide render window (useful for VJs/DJs)
+
 
 There are more that it's unfeatured here. Let me know if you tell some features to be added here.
 
