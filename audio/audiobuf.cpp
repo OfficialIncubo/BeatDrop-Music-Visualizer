@@ -21,19 +21,33 @@ void ResetAudioBuf() {
 
 void GetAudioBuf(unsigned char *pWaveL, unsigned char *pWaveR, int SamplesCount) {
     std::unique_lock<std::mutex> lock(pcmLpbMutex);
-    if ((pcmLen < SamplesCount) || (pcmBufDrained)) {
+
+    static int consecutiveReads = 0;
+    static int lastPcmPos = pcmPos;
+
+    if (pcmPos == lastPcmPos) {
+        consecutiveReads++;
+    }
+    else {
+        consecutiveReads = 0;
+        lastPcmPos = pcmPos;
+    }
+
+    if ((pcmLen < SamplesCount) || (consecutiveReads > 3)) {
         // Buffer underrun. Insufficient new samples in circular buffer (pcmLeftLpb, pcmRightLpb)
         memset(pWaveL, 0, SamplesCount);
         memset(pWaveR, 0, SamplesCount);
+        if (consecutiveReads > 3)
+            pcmLen = 0; // Reset buffer length to force underrun next time
     }
     else {
         // Circular buffer (pcmLeftLpb, pcmRightLpb) hold enough samples in it
-        for (int i = 0; i < SAMPLE_SIZE_LPB; i++) {
+        for (int i = 0; i < SamplesCount; i++) {
             // int8_t [-128 .. +127] stored into uint8_t [0..255]
             pWaveL[i % SamplesCount] = pcmLeftLpb[(pcmPos + i) % SAMPLE_SIZE_LPB];
             pWaveR[i % SamplesCount] = pcmRightLpb[(pcmPos + i) % SAMPLE_SIZE_LPB];
         }
-        pcmBufDrained = true;
+        //pcmBufDrained = true;
     }
 }
 
