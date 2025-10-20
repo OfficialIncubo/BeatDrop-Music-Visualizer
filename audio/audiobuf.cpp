@@ -38,7 +38,7 @@ void GetAudioBuf(unsigned char *pWaveL, unsigned char *pWaveR, int SamplesCount)
         memset(pWaveL, 0, SamplesCount);
         memset(pWaveR, 0, SamplesCount);
         if (consecutiveReads > 3)
-            pcmLen = 0; // Reset buffer length to force underrun next time
+       	    pcmBufDrained = true; // Drain buffer to force underrun next time
     }
     else {
         // Circular buffer (pcmLeftLpb, pcmRightLpb) hold enough samples in it
