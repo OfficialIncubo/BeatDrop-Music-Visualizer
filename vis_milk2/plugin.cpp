@@ -635,6 +635,9 @@ SPOUT :
 #include <dwmapi.h>  // Link with Dwmapi.lib
 #pragma comment(lib, "dwmapi.lib")
 
+std::random_device rd;
+std::mt19937_64 gen(rd());
+
 #define FRAND ((rand() % 7381)/7380.0f)
 #define clamp(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
 
@@ -663,9 +666,6 @@ bool AutoLockedPreset = false;
 
 void NSEEL_HOSTSTUB_EnterMutex() {}
 void NSEEL_HOSTSTUB_LeaveMutex() {}
-
-std::random_device rd;
-std::mt19937 gen(rd());
 
 #ifdef NS_EEL2
 void NSEEL_VM_resetvars(NSEEL_VMCTX ctx)
@@ -2766,21 +2766,24 @@ bool CPlugin::AddNoiseTex(const wchar_t* szTexName, int size, int zoom_factor)
     DWORD* dst = (DWORD*)r.pBits;
     int dwords_per_line = r.Pitch / sizeof(DWORD);
     int RANGE = (zoom_factor > 1) ? 216 : 256;
+    std::uniform_int_distribution<int> range_dist(0, RANGE - 1);
+    std::uniform_int_distribution<int> size_dist(0, size - 1);
+
     for (int y=0; y<size; y++) {
         LARGE_INTEGER q;
         QueryPerformanceCounter(&q);
-        srand(q.LowPart ^ q.HighPart ^ rand());
+        gen.seed(q.LowPart ^ q.HighPart ^ gen());
         for (int x=0; x<size; x++) {
-            dst[x] = (((DWORD)(rand() % RANGE)+RANGE/2) << 24) |
-                     (((DWORD)(rand() % RANGE)+RANGE/2) << 16) |
-                     (((DWORD)(rand() % RANGE)+RANGE/2) <<  8) |
-                     (((DWORD)(rand() % RANGE)+RANGE/2)      );
+            dst[x] = ((DWORD)(range_dist(gen) + RANGE / 2) << 24) |
+                     ((DWORD)(range_dist(gen) + RANGE / 2) << 16) |
+                     ((DWORD)(range_dist(gen) + RANGE / 2) <<  8) |
+                     ((DWORD)(range_dist(gen) + RANGE / 2)      );
         }
         // swap some pixels randomly, to improve 'randomness'
         for (x=0; x<size; x++)
         {
-            int x1 = (rand() ^ q.LowPart ) % size;
-            int x2 = (rand() ^ q.HighPart) % size;
+            int x1 = (size_dist(gen) ^ q.LowPart ) % size;
+            int x2 = (size_dist(gen) ^ q.HighPart) % size;
             DWORD temp = dst[x2];
             dst[x2] = dst[x1];
             dst[x1] = temp;
@@ -2898,23 +2901,26 @@ bool CPlugin::AddNoiseVol(const wchar_t* szTexName, int size, int zoom_factor)
     int dwords_per_slice = r.SlicePitch / sizeof(DWORD);
     int dwords_per_line = r.RowPitch / sizeof(DWORD);
     int RANGE = (zoom_factor > 1) ? 216 : 256;
+    std::uniform_int_distribution<int> range_dist(0, RANGE - 1);
+    std::uniform_int_distribution<int> size_dist(0, size - 1);
+
     for (int z=0; z<size; z++) {
         DWORD* dst = (DWORD*)r.pBits + z*dwords_per_slice;
         for (int y=0; y<size; y++) {
             LARGE_INTEGER q;
             QueryPerformanceCounter(&q);
-            srand(q.LowPart ^ q.HighPart ^ rand());
+            gen.seed(q.LowPart ^ q.HighPart ^ gen());
             for (int x=0; x<size; x++) {
-                dst[x] = (((DWORD)(rand() % RANGE)+RANGE/2) << 24) |
-                         (((DWORD)(rand() % RANGE)+RANGE/2) << 16) |
-                         (((DWORD)(rand() % RANGE)+RANGE/2) <<  8) |
-                         (((DWORD)(rand() % RANGE)+RANGE/2)      );
+                dst[x] = ((DWORD)(range_dist(gen) + RANGE / 2) << 24) |
+                         ((DWORD)(range_dist(gen) + RANGE / 2) << 16) |
+                         ((DWORD)(range_dist(gen) + RANGE / 2) <<  8) |
+                         ((DWORD)(range_dist(gen) + RANGE / 2)      );
             }
             // swap some pixels randomly, to improve 'randomness'
             for (x=0; x<size; x++)
             {
-                int x1 = (rand() ^ q.LowPart ) % size;
-                int x2 = (rand() ^ q.HighPart) % size;
+                int x1 = (size_dist(gen) ^ q.LowPart ) % size;
+                int x2 = (size_dist(gen) ^ q.HighPart) % size;
                 DWORD temp = dst[x2];
                 dst[x2] = dst[x1];
                 dst[x1] = temp;
@@ -7950,12 +7956,17 @@ wchar_t* FormImageCacheSizeString(wchar_t* itemStr, UINT sizeID)
 
 void CPlugin::Randomize()
 {
-	srand((int)(GetTime()*100));
+    std::uniform_int_distribution<int> dist_64841(0, 64840);
+    std::uniform_int_distribution<int> dist_53751(0, 53750);
+    std::uniform_int_distribution<int> dist_42661(0, 42660);
+    std::uniform_int_distribution<int> dist_31571(0, 31570);
+
+	gen.seed((int)(GetTime()*100));
 	//m_fAnimTime		= (rand() % 51234L)*0.01f;
-	m_fRandStart[0]		= (rand() % 64841L)*0.01f;
-	m_fRandStart[1]		= (rand() % 53751L)*0.01f;
-	m_fRandStart[2]		= (rand() % 42661L)*0.01f;
-	m_fRandStart[3]		= (rand() % 31571L)*0.01f;
+	m_fRandStart[0]		= dist_64841(gen)*0.01f;
+	m_fRandStart[1]		= dist_53751(gen)*0.01f;
+	m_fRandStart[2]		= dist_42661(gen)*0.01f;
+	m_fRandStart[3]		= dist_31571(gen)*0.01f;
 
 	//CState temp;
 	//temp.Randomize(rand() % NUM_MODES);
