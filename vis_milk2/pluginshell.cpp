@@ -1833,8 +1833,8 @@ void CPluginShell::AnalyzeNewSound(unsigned char *pWaveL, unsigned char *pWaveR)
 			//   bass:  0-1097          200-761
 			//   mids:  1097-4705       761-2897
 			//   treb:  4705-11025      2897-11025
-			int start = (int)(NUM_FREQUENCIES * min_freq*powf(mult, (float)i)/11025.0f);
-			int end   = (int)(NUM_FREQUENCIES * min_freq*powf(mult, (float)(i+1))/11025.0f);
+			int start = (int)(NUM_FREQUENCIES * min_freq*powf(mult, (float)i)/max_freq);
+			int end   = (int)(NUM_FREQUENCIES * min_freq*powf(mult, (float)(i+1))/max_freq);
 			if (start < 0) start = 0;
 			if (end > NUM_FREQUENCIES) end = NUM_FREQUENCIES;
 
