@@ -338,13 +338,18 @@ public:
         int         m_nWindowPosY = 50;
         int         m_nWindowWidth = 854;
         int         m_nWindowHeight = 480;
+        
+        // Preset mouse interaction controls
         float       m_mouseX;
         float       m_mouseY;
         float       m_lastMouseX;
         float       m_lastMouseY;
         bool        m_mouseDown;
         int         m_mouseClicked;
-
+        
+        // Revived preset keyboard interaction controls
+        bool        m_CtrlLeft = 0, m_CtrlRight = 0, m_CtrlDown = 0, m_CtrlUp = 0;
+        
         bool		m_bShowPressF1ForHelp;
         //char		m_szMonitorName[256];
         bool		m_bShowMenuToolTips;

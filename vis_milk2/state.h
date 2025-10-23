@@ -423,7 +423,8 @@ public:
     double *var_pf_blur3max;
     double *var_pf_blur1_edge_darken;
 	// new in BeatDrop v1.4.1:
-	double* var_pf_mousex, * var_pf_mousey, *var_pf_mousedown, *var_pf_mouseclick;
+	double *var_pf_mousex, * var_pf_mousey, *var_pf_mousedown, *var_pf_mouseclick;
+	double *var_pf_ctrllt, *var_pf_ctrlrt, *var_pf_ctrldn, *var_pf_ctrlup;
 
 	// for per-vertex expression evaluation:
 		NSEEL_VMCTX m_pv_eel;
@@ -440,6 +441,7 @@ public:
     double *var_pv_aspectx, *var_pv_aspecty;
 	// new in BeatDrop v1.4.1:
 	double *var_pv_mousex, *var_pv_mousey, *var_pv_mousedown, *var_pv_mouseclick;
+	double *var_pv_ctrllt, *var_pv_ctrlrt, *var_pv_ctrldn, *var_pv_ctrlup;
 
 	double q_values_after_init_code[NUM_Q_VAR];
     double monitor_after_init_code;

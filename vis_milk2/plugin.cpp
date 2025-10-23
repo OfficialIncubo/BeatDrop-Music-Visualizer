@@ -6900,8 +6900,16 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 		case VK_LEFT:
             if (m_UI_mode == UI_REGULAR)
             {
-                SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_REWIND));
-                return 0; // we processed (or absorbed) the key
+                if (bCtrlHeldDown)
+                {
+                    m_CtrlLeft = 1;
+                    return 0; // we processed (or absorbed) the key
+                }
+                else
+                {
+                    SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_REWIND));
+                    return 0; // we processed (or absorbed) the key
+                }
             }
 		case VK_RIGHT:
 			if (m_UI_mode == UI_LOAD)
@@ -6925,8 +6933,16 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
             }
             else if (m_UI_mode == UI_REGULAR)
             {
-                SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_FAST_FORWARD));
-                return 0; // we processed (or absorbed) the key
+                if (bCtrlHeldDown)
+                {
+                    m_CtrlRight = 1;
+                    return 0; // we processed (or absorbed) the key
+                }
+                else
+                {
+                    SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_FAST_FORWARD));
+                    return 0; // we processed (or absorbed) the key
+                }
             }
             break;
 
@@ -7056,6 +7072,11 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 }
                 ToggleWindowOpacity(hWnd);
             }
+            else if (bCtrlHeldDown)
+            {
+                m_CtrlUp = 1;
+                return 0; // we processed (or absorbed) the key
+            }
             else if (m_bManualBeatSensitivityMode)
             {
                 m_nBeatSensitivity += 0.1f;
@@ -7149,8 +7170,12 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 }
                 ToggleWindowOpacity(hWnd);
             }
-            else
-                if (m_bManualBeatSensitivityMode)
+            else if (bCtrlHeldDown)
+            {
+                m_CtrlDown = 1;
+                return 0; // we processed (or absorbed) the key
+            }
+            else if (m_bManualBeatSensitivityMode)
                 {
                     m_nBeatSensitivity -= 0.1f;
                     if (m_nBeatSensitivity < 0.1f) m_nBeatSensitivity = 0.1f;
@@ -7502,6 +7527,22 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
         return 1; // end case WM_KEYDOWN
 
 	case WM_KEYUP:
+        switch (wParam)
+        {
+        case VK_LEFT:
+            m_CtrlLeft = 0;
+            break;
+        case VK_RIGHT:
+            m_CtrlRight = 0;
+            break;
+        case VK_UP:
+            m_CtrlUp = 0;
+            break;
+        case VK_DOWN:
+            m_CtrlDown = 0;
+            break;
+        }
+
     	return 1;
 		break;
 

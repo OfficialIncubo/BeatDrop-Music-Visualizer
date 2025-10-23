@@ -571,8 +571,12 @@ void CPlugin::LoadPerFrameEvallibVars(CState* pState)
 	// new in BeatDrop v1.4.1:
 	*pState->var_pf_mousex        = (double)m_mouseX;
 	*pState->var_pf_mousey        = (double)m_mouseY;
-	*pState->var_pf_mousedown  = m_mouseDown ? 1.0 : 0.0;
-	*pState->var_pf_mouseclick = m_mouseClicked > 0 ? 1.0 : 0.0;
+	*pState->var_pf_mousedown     = m_mouseDown ? 1.0 : 0.0;
+	*pState->var_pf_mouseclick    = m_mouseClicked > 0 ? 1.0 : 0.0;
+	*pState->var_pf_ctrllt        = m_CtrlLeft ? 1.0 : 0.0;
+	*pState->var_pf_ctrlrt        = m_CtrlRight ? 1.0 : 0.0;
+	*pState->var_pf_ctrldn        = m_CtrlDown ? 1.0 : 0.0;
+	*pState->var_pf_ctrlup        = m_CtrlUp ? 1.0 : 0.0;
 }
 
 void CPlugin::RunPerFrameEquations(int code)
@@ -673,6 +677,10 @@ void CPlugin::RunPerFrameEquations(int code)
 		*pState->var_pv_mousey      = *pState->var_pf_mousey;
 		*pState->var_pv_mousedown   = *pState->var_pf_mousedown;
 		*pState->var_pv_mouseclick  = *pState->var_pf_mouseclick;
+		*pState->var_pf_ctrllt      = *pState->var_pf_ctrllt;
+		*pState->var_pf_ctrlrt      = *pState->var_pf_ctrlrt;
+		*pState->var_pf_ctrldn      = *pState->var_pf_ctrldn;
+		*pState->var_pf_ctrlup      = *pState->var_pf_ctrlup;
         *pState->var_pv_meshx       = (double)m_nGridX;
         *pState->var_pv_meshy       = (double)m_nGridY;
         *pState->var_pv_pixelsx     = (double)GetWidth();
