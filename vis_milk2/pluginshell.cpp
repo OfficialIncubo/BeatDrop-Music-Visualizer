@@ -2264,7 +2264,7 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 		break;
 
 	case WM_USER + 1: // Our custom tray message
-		if (lParam == WM_LBUTTONUP) // Double click
+		if (lParam == WM_LBUTTONUP) // Left click
 		{
 			if (renderWindowHidden)
 			{
