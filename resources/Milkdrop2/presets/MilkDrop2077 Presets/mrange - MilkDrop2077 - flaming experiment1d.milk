@@ -261,10 +261,10 @@ warp_2=`
 warp_3=`//Shader from https://www.shadertoy.com/view/wX33zX
 warp_4=`//Ported to MilkDrop by MilkDrop2077
 warp_5=`//license: CC0 
-warp_6=`
-warp_7=`    float3 o = float3(0,0,0);
-warp_8=`    float t = time*3;
-warp_9=`    float2 r = float2(1.0, 1.0/aspect.x);
+warp_6=`    float3 o = float3(0,0,0);
+warp_7=`    float t = time*3;
+warp_8=`    float2 r = float2(1.0, 1.0/aspect.x);
+warp_9=`    r.y = -r.y;
 warp_10=`    
 warp_11=`    for(float i=0.0, z=0.0, d=0.0, j=0.0; i<34.0; i+=1.0) {
 warp_12=`        // Ray setup

@@ -471,56 +471,57 @@ warp_6=`    float4 o = float4(0,0,0,0);
 warp_7=`    float T = time;
 warp_8=`    float2 r = float2(1.0, 1.0/aspect.x);
 warp_9=`    float4 U = float4(0,1,2,3);
-warp_10=`    
-warp_11=`    for(float i=0.0, z=0.0, d=0.0; i<28.0; i+=1.0) {
-warp_12=`        // Convert UV to ray direction
-warp_13=`        float2 centered_uv = (uv-0.5)*r*2.0;
-warp_14=`        float4 p = float4(z*normalize(float3(centered_uv,1.0)),0);
-warp_15=`        p.z -= 4.0;
-warp_16=`        
-warp_17=`        // Reset for plane accumulation
-warp_18=`        d = 9e9;
-warp_19=`        
-warp_20=`        for(float j=5.0, D=0.0; j<9.0; j+=1.0) {
-warp_21=`            // Plane thickness calculation
-warp_22=`            D = 2.0/(j-3.0+q1)+p.y/3.0;
-warp_23=`            
-warp_24=`            // Apply distortion and rotation
-warp_25=`            float4 P = p;
-warp_26=`            P.x -= 0.3*sin(p.y+T);
-warp_27=`            
-warp_28=`            // Create rotation matrix
-warp_29=`            float angle = j-T+p.y+11.0*U.x;
-warp_30=`            float2x2 rot = float2x2(cos(angle), -sin(angle), sin(angle), cos(angle));
-warp_31=`            P.xz = float2(P.x*rot[0][0] + P.z*rot[0][1], P.x*rot[1][0] + P.z*rot[1][1]);
-warp_32=`            
-warp_33=`            // Mirror space
-warp_34=`            P = abs(P)-0.01;
-warp_35=`            
-warp_36=`            // Distance field calculation
-warp_37=`            float dist = min(
-warp_38=`                max(P.z, P.x-D)+2E-2,
-warp_39=`                length(P.xz-D*U.yx)
-warp_40=`            );
-warp_41=`            
-warp_42=`            // Track closest distance
-warp_43=`            d = min(d, dist);
-warp_44=`            
-warp_45=`            // Color generation
-warp_46=`            float4 P_color = 1.2+sin(j+U.xyzy+z);
-warp_47=`            
-warp_48=`            // Accumulate color
-warp_49=`            o += P_color.w*P_color/max(dist,1E-3);
-warp_50=`        }
-warp_51=`        
-warp_52=`        // Ray marching step
-warp_53=`        z += 0.6*d + 1E-3;
-warp_54=`    }
-warp_55=`    
-warp_56=`    // Tone mapping with music reactivity
-warp_57=`    float brightness = 0.8 + 0.2*bass_att;
-warp_58=`    ret = tanh(o/1e3 * brightness);
-warp_59=`}
+warp_10=`    r.y = -r.y;
+warp_11=`    
+warp_12=`    for(float i=0.0, z=0.0, d=0.0; i<28.0; i+=1.0) {
+warp_13=`        // Convert UV to ray direction
+warp_14=`        float2 centered_uv = (uv-0.5)*r*2.0;
+warp_15=`        float4 p = float4(z*normalize(float3(centered_uv,1.0)),0);
+warp_16=`        p.z -= 4.0;
+warp_17=`        
+warp_18=`        // Reset for plane accumulation
+warp_19=`        d = 9e9;
+warp_20=`        
+warp_21=`        for(float j=5.0, D=0.0; j<9.0; j+=1.0) {
+warp_22=`            // Plane thickness calculation
+warp_23=`            D = 2.0/(j-3.0+q1)+p.y/3.0;
+warp_24=`            
+warp_25=`            // Apply distortion and rotation
+warp_26=`            float4 P = p;
+warp_27=`            P.x -= 0.3*sin(p.y+T);
+warp_28=`            
+warp_29=`            // Create rotation matrix
+warp_30=`            float angle = j-T+p.y+11.0*U.x;
+warp_31=`            float2x2 rot = float2x2(cos(angle), -sin(angle), sin(angle), cos(angle));
+warp_32=`            P.xz = float2(P.x*rot[0][0] + P.z*rot[0][1], P.x*rot[1][0] + P.z*rot[1][1]);
+warp_33=`            
+warp_34=`            // Mirror space
+warp_35=`            P = abs(P)-0.01;
+warp_36=`            
+warp_37=`            // Distance field calculation
+warp_38=`            float dist = min(
+warp_39=`                max(P.z, P.x-D)+2E-2,
+warp_40=`                length(P.xz-D*U.yx)
+warp_41=`            );
+warp_42=`            
+warp_43=`            // Track closest distance
+warp_44=`            d = min(d, dist);
+warp_45=`            
+warp_46=`            // Color generation
+warp_47=`            float4 P_color = 1.2+sin(j+U.xyzy+z);
+warp_48=`            
+warp_49=`            // Accumulate color
+warp_50=`            o += P_color.w*P_color/max(dist,1E-3);
+warp_51=`        }
+warp_52=`        
+warp_53=`        // Ray marching step
+warp_54=`        z += 0.6*d + 1E-3;
+warp_55=`    }
+warp_56=`    
+warp_57=`    // Tone mapping with music reactivity
+warp_58=`    float brightness = 0.8 + 0.2*bass_att;
+warp_59=`    ret = tanh(o/1e3 * brightness);
+warp_60=`}
 comp_1=`shader_body      
 comp_2=`{//MilkDrop3 Rotate Mode:
 comp_3=`uv = uv.yx;

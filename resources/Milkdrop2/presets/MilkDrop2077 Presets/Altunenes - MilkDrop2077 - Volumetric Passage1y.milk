@@ -489,41 +489,42 @@ warp_24=`
 warp_25=`    // Coordinate setup with aspect ratio correction
 warp_26=`    float aspect = aspect.x/aspect.y;
 warp_27=`    uv = (uv.xy-0.5)*float2(aspect,1.0);
-warp_28=`    float3 o = float3(0,0,0);
-warp_29=`    float z = 0.0, d = 0.0, t = time;
-warp_30=`    float N = 0.0;
-warp_31=`
-warp_32=`    // Raymarching loop
-warp_33=`    for(int i=0; i<50; i++) {
-warp_34=`        // Ray setup
-warp_35=`        float3 p = z*normalize(float3(uv.x, uv.y, 1.0));
-warp_36=`        p.z += t;
-warp_37=`
-warp_38=`        // Rotation matrix inspired by mrange's work
-warp_39=`        float angle = p.z;
-warp_40=`        float2x2 R = float2x2(cos(angle), -sin(angle),
-warp_41=`                             sin(angle), cos(angle));
-warp_42=`        p.xy = mul(p.xy, R);
-warp_43=`
-warp_44=`        // Fractal evaluation
-warp_45=`        N = f(p+q1/2 + t*0.1)*q3;
-warp_46=`        d = length(p.xy)-1.0+N*0.3;
-warp_47=`        p.z = fmod(p.z,4.0+cos(q1))-3.0;
-warp_48=`        d = abs(d)+0.01;
-warp_49=`
-warp_50=`        // Color composition
-warp_51=`        float3 c = float3(0.1,0.3,0.8)/(length(p.xy+N+bass_att)*0.5);
-warp_52=`        c += float3(bass_att*0.6,0.4,0.2)/(length(p.xz+N)*0.5);
-warp_53=`        c += float3(1.0,1.0,2.0)*(0.5+0.5*sin(N*1.0+t));
-warp_54=`
-warp_55=`        // Accumulate color with falloff
-warp_56=`        o += c/d*0.12;
-warp_57=`        z += d*0.6;
-warp_58=`    }
-warp_59=`
-warp_60=`    // Final color processing
-warp_61=`    ret.rgb = tanh(o*0.001);
-warp_62=`}
+warp_28=`    uv.y = -uv.y;
+warp_29=`    float3 o = float3(0,0,0);
+warp_30=`    float z = 0.0, d = 0.0, t = time;
+warp_31=`    float N = 0.0;
+warp_32=`
+warp_33=`    // Raymarching loop
+warp_34=`    for(int i=0; i<50; i++) {
+warp_35=`        // Ray setup
+warp_36=`        float3 p = z*normalize(float3(uv.x, uv.y, 1.0));
+warp_37=`        p.z += t;
+warp_38=`
+warp_39=`        // Rotation matrix inspired by mrange's work
+warp_40=`        float angle = p.z;
+warp_41=`        float2x2 R = float2x2(cos(angle), -sin(angle),
+warp_42=`                             sin(angle), cos(angle));
+warp_43=`        p.xy = mul(p.xy, R);
+warp_44=`
+warp_45=`        // Fractal evaluation
+warp_46=`        N = f(p+q1/2 + t*0.1)*q3;
+warp_47=`        d = length(p.xy)-1.0+N*0.3;
+warp_48=`        p.z = fmod(p.z,4.0+cos(q1))-3.0;
+warp_49=`        d = abs(d)+0.01;
+warp_50=`
+warp_51=`        // Color composition
+warp_52=`        float3 c = float3(0.1,0.3,0.8)/(length(p.xy+N+bass_att)*0.5);
+warp_53=`        c += float3(bass_att*0.6,0.4,0.2)/(length(p.xz+N)*0.5);
+warp_54=`        c += float3(1.0,1.0,2.0)*(0.5+0.5*sin(N*1.0+t));
+warp_55=`
+warp_56=`        // Accumulate color with falloff
+warp_57=`        o += c/d*0.12;
+warp_58=`        z += d*0.6;
+warp_59=`    }
+warp_60=`
+warp_61=`    // Final color processing
+warp_62=`    ret.rgb = tanh(o*0.001);
+warp_63=`}
 comp_1=`shader_body
 comp_2=`{
 comp_3=`    ret = tex2D(sampler_main, uv).xyz;

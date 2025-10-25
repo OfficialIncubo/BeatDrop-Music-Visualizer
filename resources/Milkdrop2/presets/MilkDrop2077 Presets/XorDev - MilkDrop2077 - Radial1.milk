@@ -159,28 +159,29 @@ warp_3=`    // Shader By XorDev (x.com/XorDev), ported to MilkDrop by MilkDrop20
 warp_4=`
 warp_5=`    float2 r = texsize.xy;
 warp_6=`    float2 p = ((uv.xy - 0.5)*r); // FC.xy - r*.5
-warp_7=`    float4 o = float4(0,0,0,0);
-warp_8=`    float t = time;
-warp_9=`
-warp_10=`    for (float i = 0.0; i < 19.0; i += 1.0)
-warp_11=`    {
-warp_12=`        float a = i * i / 180.0 - length(p) / r.y;  // i*i/8e1 - length(p)/r.y
-warp_13=`        a = max(a, -a * 3.0);                      // max(..., -a*3.)
-warp_14=`        float att = 0.01 / (a + 2.0 / r.y);        // .01/(... + 2./r.y)
-warp_15=`
-warp_16=`        float angle = atan2(p.y, p.x);             // atan(p.y,p.x)
-warp_17=`        a = cos(i - t+q1);                            // cos(i-t)
-warp_18=`        float mask = smoothstep(a, 2.0, cos(angle + a + i * i)); // smoothstep(...)
-warp_19=`
-warp_20=`        float hue = angle + i;
-warp_21=`        float3 c = 1.2 + sin(float3(hue, hue + 2.0, hue + 4.0)); // (1.2+sin(...))
-warp_22=`
-warp_23=`        o.rgb += att * mask * c;
-warp_24=`    }
-warp_25=`
-warp_26=`    o = tanh(o);
-warp_27=`    ret = float4(o.rgb, 1.0);
-warp_28=`}
+warp_7=`    p.y = -p.y;
+warp_8=`    float4 o = float4(0,0,0,0);
+warp_9=`    float t = time;
+warp_10=`
+warp_11=`    for (float i = 0.0; i < 19.0; i += 1.0)
+warp_12=`    {
+warp_13=`        float a = i * i / 180.0 - length(p) / r.y;  // i*i/8e1 - length(p)/r.y
+warp_14=`        a = max(a, -a * 3.0);                      // max(..., -a*3.)
+warp_15=`        float att = 0.01 / (a + 2.0 / r.y);        // .01/(... + 2./r.y)
+warp_16=`
+warp_17=`        float angle = atan2(p.y, p.x);             // atan(p.y,p.x)
+warp_18=`        a = cos(i - t+q1);                            // cos(i-t)
+warp_19=`        float mask = smoothstep(a, 2.0, cos(angle + a + i * i)); // smoothstep(...)
+warp_20=`
+warp_21=`        float hue = angle + i;
+warp_22=`        float3 c = 1.2 + sin(float3(hue, hue + 2.0, hue + 4.0)); // (1.2+sin(...))
+warp_23=`
+warp_24=`        o.rgb += att * mask * c;
+warp_25=`    }
+warp_26=`
+warp_27=`    o = tanh(o);
+warp_28=`    ret = float4(o.rgb, 1.0);
+warp_29=`}
 comp_1=`shader_body
 comp_2=`{
 comp_3=`    ret = GetPixel(uv);

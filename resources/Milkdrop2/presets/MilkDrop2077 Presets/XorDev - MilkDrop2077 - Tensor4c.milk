@@ -258,48 +258,49 @@ warp_4=`    // Ported to MilkDrop by MilkDrop2077
 warp_5=`
 warp_6=`    // Get screen coordinates
 warp_7=`    float2 fragCoord = uv * texsize;
-warp_8=`    float2 r = texsize;
-warp_9=`    float3 FC = float3(fragCoord, 1.0);
-warp_10=`
-warp_11=`    float t = time;
-warp_12=`
-warp_13=`    // Initialize output
-warp_14=`    float4 o = float4(0.0, 0.0, 0.0, 0.0);
-warp_15=`
-warp_16=`    // Main shader logic
-warp_17=`    float3 p = float3(0.0, 0.0, 0.0);
-warp_18=`    float i = 0.0;
-warp_19=`    float z = 0.0;
-warp_20=`    float f = 0.0;
-warp_21=`
-warp_22=`    // Outer loop - 40 iterations
-warp_23=`    for(int iter = 0; iter < 40; iter++) {
-warp_24=`        i += 1.0;
-warp_25=`
-warp_26=`        // Update z and calculate distance field
-warp_27=`        f = 0.003 + abs(length(p.xy) + dot(cos(p), sin(p / 0.6).yzx) - 5.0) / 7.0;
-warp_28=`        z += f;
-warp_29=`
-warp_30=`        // Add to output color (GRB channel swizzle: green, red, blue)
-warp_31=`        o.grb += (1.5 - p / z) / f;
-warp_32=`
-warp_33=`        // Update ray position
-warp_34=`        p = z * (FC.rgb * 2.0 - float3(r.x, r.y, r.y)) / r.y;
-warp_35=`        p.z -= t;
-warp_36=`
-warp_37=`        // Inner loop - 6 iterations for fractal detail
-warp_38=`        for(int j = 1; j <= 6; j++) {
-warp_39=`            f = float(j);
-warp_40=`            p += sin(round(p * 6.0) / 6.0 * f - t * q3) / f;
-warp_41=`        }
-warp_42=`    }
-warp_43=`
-warp_44=`    // Apply final transformation
-warp_45=`    o = tanh(o / 3000.0);
-warp_46=`
-warp_47=`    // Output final color
-warp_48=`    ret = o.rgb;
-warp_49=`}
+warp_8=`    fragCoord.y = texsize.y - fragCoord.y;
+warp_9=`    float2 r = texsize;
+warp_10=`    float3 FC = float3(fragCoord, 1.0);
+warp_11=`
+warp_12=`    float t = time;
+warp_13=`
+warp_14=`    // Initialize output
+warp_15=`    float4 o = float4(0.0, 0.0, 0.0, 0.0);
+warp_16=`
+warp_17=`    // Main shader logic
+warp_18=`    float3 p = float3(0.0, 0.0, 0.0);
+warp_19=`    float i = 0.0;
+warp_20=`    float z = 0.0;
+warp_21=`    float f = 0.0;
+warp_22=`
+warp_23=`    // Outer loop - 40 iterations
+warp_24=`    for(int iter = 0; iter < 40; iter++) {
+warp_25=`        i += 1.0;
+warp_26=`
+warp_27=`        // Update z and calculate distance field
+warp_28=`        f = 0.003 + abs(length(p.xy) + dot(cos(p), sin(p / 0.6).yzx) - 5.0) / 7.0;
+warp_29=`        z += f;
+warp_30=`
+warp_31=`        // Add to output color (GRB channel swizzle: green, red, blue)
+warp_32=`        o.grb += (1.5 - p / z) / f;
+warp_33=`
+warp_34=`        // Update ray position
+warp_35=`        p = z * (FC.rgb * 2.0 - float3(r.x, r.y, r.y)) / r.y;
+warp_36=`        p.z -= t;
+warp_37=`
+warp_38=`        // Inner loop - 6 iterations for fractal detail
+warp_39=`        for(int j = 1; j <= 6; j++) {
+warp_40=`            f = float(j);
+warp_41=`            p += sin(round(p * 6.0) / 6.0 * f - t * q3) / f;
+warp_42=`        }
+warp_43=`    }
+warp_44=`
+warp_45=`    // Apply final transformation
+warp_46=`    o = tanh(o / 3000.0);
+warp_47=`
+warp_48=`    // Output final color
+warp_49=`    ret = o.rgb;
+warp_50=`}
 comp_1=`shader_body
 comp_2=`{
 comp_3=`ret = lerp(GetBlur2(uv),GetPixel(uv),0.4);

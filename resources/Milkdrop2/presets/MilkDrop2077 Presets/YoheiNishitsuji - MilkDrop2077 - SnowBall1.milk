@@ -79,41 +79,42 @@ warp_4=`//Ported to MilkDrop by MilkDrop2077
 warp_5=`
 warp_6=`    float aspect = aspect.x / aspect.y;
 warp_7=`    float2 u = (uv - 0.5) * float2(aspect, 1.0) * 4.0;
-warp_8=`    float4 o = float4(0.0, 0.0, 0.0, 0.0);
-warp_9=`    float t = time;
-warp_10=`    float g = 0.0;
-warp_11=`    
-warp_12=`    for(float i = 0.0; i < 99.0; i += 1.0) {
-warp_13=`        float3 p = float3(u.x, u.y, g - 6.0);
-warp_14=`        float3 A = float3(0.0, 9.0, -3.0)/9.5;
-warp_15=`        p.y += 1.0;
-warp_16=`        
-warp_17=`        // 3D rotation
-warp_18=`        p = A * dot(p+p, A) - p - 0.14*cross(p, A);
-warp_19=`        
-warp_20=`        // 2D rotation
-warp_21=`        float2x2 rot = float2x2(
-warp_22=`            cos(t*0.3), -sin(t*0.3),
-warp_23=`            sin(t*0.3), cos(t*0.3)
-warp_24=`        );
-warp_25=`        p.xz = mul(p.xz, rot);
-warp_26=`        
-warp_27=`        float s = 6.0;
-warp_28=`        float e;
-warp_29=`        
-warp_30=`        // Fractal iteration
-warp_31=`        for(int j = 0; j < 12; j++) {
-warp_32=`            e = 16.0 / dot(p, p);
-warp_33=`            s *= e;
-warp_34=`            p = float3(0.0, 4.03, -1.0) - abs(abs(p)*e - float3(3.0, 4.0, 3.0));
-warp_35=`        }
-warp_36=`        
-warp_37=`        g += 0.3 * p.y*p.y / s;
-warp_38=`        o += (log2(s) - g*0.8) / 700.0 * float4(0.9, 1.0, 1.0, 0.0);
-warp_39=`    }
-warp_40=`    
-warp_41=`    ret = float4(tanh(o.x), tanh(o.y), tanh(o.z), 1.0);
-warp_42=`}
+warp_8=`    u.y = -u.y;
+warp_9=`    float4 o = float4(0.0, 0.0, 0.0, 0.0);
+warp_10=`    float t = time;
+warp_11=`    float g = 0.0;
+warp_12=`    
+warp_13=`    for(float i = 0.0; i < 99.0; i += 1.0) {
+warp_14=`        float3 p = float3(u.x, u.y, g - 6.0);
+warp_15=`        float3 A = float3(0.0, 9.0, -3.0)/9.5;
+warp_16=`        p.y += 1.0;
+warp_17=`        
+warp_18=`        // 3D rotation
+warp_19=`        p = A * dot(p+p, A) - p - 0.14*cross(p, A);
+warp_20=`        
+warp_21=`        // 2D rotation
+warp_22=`        float2x2 rot = float2x2(
+warp_23=`            cos(t*0.3), -sin(t*0.3),
+warp_24=`            sin(t*0.3), cos(t*0.3)
+warp_25=`        );
+warp_26=`        p.xz = mul(p.xz, rot);
+warp_27=`        
+warp_28=`        float s = 6.0;
+warp_29=`        float e;
+warp_30=`        
+warp_31=`        // Fractal iteration
+warp_32=`        for(int j = 0; j < 12; j++) {
+warp_33=`            e = 16.0 / dot(p, p);
+warp_34=`            s *= e;
+warp_35=`            p = float3(0.0, 4.03, -1.0) - abs(abs(p)*e - float3(3.0, 4.0, 3.0));
+warp_36=`        }
+warp_37=`        
+warp_38=`        g += 0.3 * p.y*p.y / s;
+warp_39=`        o += (log2(s) - g*0.8) / 700.0 * float4(0.9, 1.0, 1.0, 0.0);
+warp_40=`    }
+warp_41=`    
+warp_42=`    ret = float4(tanh(o.x), tanh(o.y), tanh(o.z), 1.0);
+warp_43=`}
 comp_1=`shader_body
 comp_2=`{
 comp_3=`    ret = tex2D(sampler_main, uv).xyz;

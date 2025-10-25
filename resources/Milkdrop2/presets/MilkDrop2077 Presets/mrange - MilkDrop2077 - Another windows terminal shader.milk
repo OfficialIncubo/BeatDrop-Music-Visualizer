@@ -555,14 +555,15 @@ warp_90=`
 warp_91=`    float2 q = uv;
 warp_92=`    float2 p = -1.0 + 2.0 * q;
 warp_93=`    float2 pp = p;
-warp_94=`    p.x *= aspect.x;
-warp_95=`    
-warp_96=`    float3 col = effect(p, pp);
-warp_97=`    col = aces_approx(col);
-warp_98=`    col = sqrt(col);
-warp_99=`    
-warp_100=`    ret = float4(col, 1.0);
-warp_101=`}
+warp_94=`    p.y = -p.y;
+warp_95=`    p.x *= aspect.x;
+warp_96=`    
+warp_97=`    float3 col = effect(p, pp);
+warp_98=`    col = aces_approx(col);
+warp_99=`    col = sqrt(col);
+warp_100=`    
+warp_101=`    ret = float4(col, 1.0);
+warp_102=`}
 comp_1=`shader_body
 comp_2=`{
 comp_3=`    float2 uv_echo = (uv - 0.5)*0.6*float2(1,-1) + 0.5;

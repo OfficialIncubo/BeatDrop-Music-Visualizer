@@ -486,46 +486,47 @@ warp_21=`
 warp_22=`    // Center and scale UVs
 warp_23=`    float2 uv_centered = (uv - 0.5) * 1.8;
 warp_24=`    float2 p = uv_centered * aspect_scale;
-warp_25=`    
-warp_26=`    // Initialize output
-warp_27=`    ret = float4(0.0, 0.0, 0.0, 1.0);
-warp_28=`    
-warp_29=`    // Camera setup
-warp_30=`    float3 ro = float3(0.0, 0.0, -20.0);
-warp_31=`    float3 rd = normalize(float3(p, 1.0));
-warp_32=`    
-warp_33=`    float z = 0.0;
-warp_34=`    bool hit = false;
-warp_35=`    
-warp_36=`    // Raymarching loop
-warp_37=`    for(int i = 0; i < 100; i++) {
-warp_38=`        if (!hit) {
-warp_39=`            float3 p = ro+q28 + rd * z;
-warp_40=`            
-warp_41=`            // Apply rotation
-warp_42=`            p.xy = mul(rotate(time * 0.3), p.xy);
-warp_43=`            p.xz = mul(rotate(time * 0.3), p.xz);
-warp_44=`            
-warp_45=`            // Calculate noise and distance
-warp_46=`            float n = fbm(p, float3(0.04, 0.04, 0.04));
-warp_47=`            float d = length(p) - 10.0+q1;
-warp_48=`            d -= sin(n * 2.0) * 5.0;
-warp_49=`            d = max(0.01, abs(d) * 0.6 + 0.01);
-warp_50=`            
-warp_51=`            // Color accumulation
-warp_52=`            ret.rgb += (1.1 + sin(float3(3.0, 2.0, 1.0) + (p.x + p.y) * 0.2)) / d;
-warp_53=`            z += d;
-warp_54=`            
-warp_55=`            // Check termination conditions
-warp_56=`            if (z > 40.0 || d < 1e-3) {
-warp_57=`                hit = true;
-warp_58=`            }
-warp_59=`        }
-warp_60=`    }
-warp_61=`    
-warp_62=`    // Final color adjustment
-warp_63=`    ret.rgb = tanh(ret.rgb / 2000.0);
-warp_64=`}
+warp_25=`    p.y = -p.y;
+warp_26=`    
+warp_27=`    // Initialize output
+warp_28=`    ret = float4(0.0, 0.0, 0.0, 1.0);
+warp_29=`    
+warp_30=`    // Camera setup
+warp_31=`    float3 ro = float3(0.0, 0.0, -20.0);
+warp_32=`    float3 rd = normalize(float3(p, 1.0));
+warp_33=`    
+warp_34=`    float z = 0.0;
+warp_35=`    bool hit = false;
+warp_36=`    
+warp_37=`    // Raymarching loop
+warp_38=`    for(int i = 0; i < 100; i++) {
+warp_39=`        if (!hit) {
+warp_40=`            float3 p = ro+q28 + rd * z;
+warp_41=`            
+warp_42=`            // Apply rotation
+warp_43=`            p.xy = mul(rotate(time * 0.3), p.xy);
+warp_44=`            p.xz = mul(rotate(time * 0.3), p.xz);
+warp_45=`            
+warp_46=`            // Calculate noise and distance
+warp_47=`            float n = fbm(p, float3(0.04, 0.04, 0.04));
+warp_48=`            float d = length(p) - 10.0+q1;
+warp_49=`            d -= sin(n * 2.0) * 5.0;
+warp_50=`            d = max(0.01, abs(d) * 0.6 + 0.01);
+warp_51=`            
+warp_52=`            // Color accumulation
+warp_53=`            ret.rgb += (1.1 + sin(float3(3.0, 2.0, 1.0) + (p.x + p.y) * 0.2)) / d;
+warp_54=`            z += d;
+warp_55=`            
+warp_56=`            // Check termination conditions
+warp_57=`            if (z > 40.0 || d < 1e-3) {
+warp_58=`                hit = true;
+warp_59=`            }
+warp_60=`        }
+warp_61=`    }
+warp_62=`    
+warp_63=`    // Final color adjustment
+warp_64=`    ret.rgb = tanh(ret.rgb / 2000.0);
+warp_65=`}
 comp_1=`shader_body
 comp_2=`{//MilkDrop3 Flip Mode:
 comp_3=`//uv = 1-uv;

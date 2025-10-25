@@ -155,7 +155,7 @@ warp_15=`    float c = cos(angle);
 warp_16=`    return float2x2(c, -s, s, c);
 warp_17=`}
 warp_18=`shader_body{
-warp_19=`uv = (uv_orig) * aspect.xy;
+warp_19=`uv = float2(uv_orig.x, 1-uv_orig.y) * aspect.xy;
 warp_20=`float t = time;
 warp_21=`float3 o = float3(0.0, 0.0, 0.0);
 warp_22=`float g = 0.0;
@@ -179,7 +179,7 @@ warp_39=`ret = float4(o, 1.0);
 warp_40=`}
 comp_1=`shader_body
 comp_2=`{//MilkDrop3 Flip Mode:
-comp_3=`uv = 1-uv;
+comp_3=`//uv = 1-uv; //Flipped in warp shader
 comp_4=`
 comp_5=`    ret = tex2D(sampler_main, uv).xyz;
 comp_6=`    float L = lum(ret);
