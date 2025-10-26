@@ -5,5 +5,5 @@
 **/*.aps
 **/*.suo
 **/*.db
-vis_milk2/bin
+audio/*.bak
 vis_milk2/*.bak
