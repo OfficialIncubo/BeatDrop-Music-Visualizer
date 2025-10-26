@@ -275,39 +275,41 @@ warp_16=`        float3 P = p;
 warp_17=`        
 warp_18=`        // Space transformation
 warp_19=`        float angle = P.y*P.y/4.0 + 3.0*P.y - t;
-warp_20=`        float2x2 rot = float2x2(cos(angle), -sin(angle), sin(angle), cos(angle));
+warp_20=`        float2x2 rot = transpose(float2x2(cos(angle), -sin(angle), sin(angle), cos(angle)));
 warp_21=`        p.xz = float2(p.x*rot[0][0] + p.z*rot[0][1], p.x*rot[1][0] + p.z*rot[1][1]);
 warp_22=`        p.x += sin(0.1*t - p.x);
-warp_23=`        
-warp_24=`        // Turbulence (fractal noise)
-warp_25=`        float turbulence = 12.0;
-warp_26=`        for(j=8.0; j>5.0; j-=1.0) {
-warp_27=`            turbulence /= 0.8+q1;
-warp_28=`            p += 0.1*(p.y+2.0)*cos(p.zxy*turbulence - 3.0*t)/turbulence;
-warp_29=`        }
-warp_30=`        
-warp_31=`        // Distance field
-warp_32=`        j = length(p-P);
-warp_33=`        p = abs(p*2);
-warp_34=`        d = abs(min(
-warp_35=`            max(p.z-0.1, p.x-1.0-0.3*P.y),
-warp_36=`            max(p.x-0.2, p.z-1.0-0.3*P.y)
-warp_37=`        )) + 9e-3;
-warp_38=`        
-warp_39=`        // Color calculation
-warp_40=`        float3 P_color = 1.0 + sin(0.5 + j - P.y + P.z + float3(2,3,4));
-warp_41=`        
-warp_42=`        // Volumetric rendering
-warp_43=`        o += P_color.x/d * P_color;
-warp_44=`        
-warp_45=`        // Ray marching step
-warp_46=`        z += d/8.0;
-warp_47=`    }
-warp_48=`    
-warp_49=`    // Tone mapping with music reactivity
-warp_50=`    float brightness = 0.8 + 0.2*bass_att;
-warp_51=`    ret = float4(tanh(o/2e3 * brightness), 1.0);
-warp_52=`}
+warp_23=`        // In GLSL is column-major order and in HLSL, row-major order,
+warp_24=`        // So we transpose the matrix with transpose() to be the same as GLSL.
+warp_25=`        
+warp_26=`        // Turbulence (fractal noise)
+warp_27=`        float turbulence = 12.0;
+warp_28=`        for(j=8.0; j>5.0; j-=1.0) {
+warp_29=`            turbulence /= 0.8+q1;
+warp_30=`            p += 0.1*(p.y+2.0)*cos(p.zxy*turbulence - 3.0*t)/turbulence;
+warp_31=`        }
+warp_32=`        
+warp_33=`        // Distance field
+warp_34=`        j = length(p-P);
+warp_35=`        p = abs(p*2);
+warp_36=`        d = abs(min(
+warp_37=`            max(p.z-0.1, p.x-1.0-0.3*P.y),
+warp_38=`            max(p.x-0.2, p.z-1.0-0.3*P.y)
+warp_39=`        )) + 9e-3;
+warp_40=`        
+warp_41=`        // Color calculation
+warp_42=`        float3 P_color = 1.0 + sin(0.5 + j - P.y + P.z + float3(2,3,4));
+warp_43=`        
+warp_44=`        // Volumetric rendering
+warp_45=`        o += P_color.x/d * P_color;
+warp_46=`        
+warp_47=`        // Ray marching step
+warp_48=`        z += d/8.0;
+warp_49=`    }
+warp_50=`    
+warp_51=`    // Tone mapping with music reactivity
+warp_52=`    float brightness = 0.8 + 0.2*bass_att;
+warp_53=`    ret = float4(tanh(o/2e3 * brightness), 1.0);
+warp_54=`}
 comp_1=`shader_body
 comp_2=`{//MilkDrop3 Rotate Mode:
 comp_3=`uv = uv.yx;

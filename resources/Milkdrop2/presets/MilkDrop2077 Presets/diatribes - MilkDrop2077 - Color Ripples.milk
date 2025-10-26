@@ -269,49 +269,50 @@ warp_1=`// 2D rotation matrix
 warp_2=`float2x2 rotate2D(float angle) {
 warp_3=`    float s = sin(angle);
 warp_4=`    float c = cos(angle);
-warp_5=`    return float2x2(c, -s, s, c);
+warp_5=`    return transpose(float2x2(c, -s, s, c));
 warp_6=`}
 warp_7=`
 warp_8=`shader_body
 warp_9=`{
 warp_10=`    // Properly center UV coordinates (-0.5 to 0.5) and handle aspect ratio
 warp_11=`    uv = (uv_orig - 0.5) * aspect.xy;
-warp_12=`    float3 o = float3(0.0, 0.0, 0.0);
-warp_13=`    float d = 0.0;
-warp_14=`    float s = 0.0;
-warp_15=`    uv*=0.8;
-warp_16=`    for(float i = 0.0; i < 100.0; i++) 
-warp_17=`    {
-warp_18=`        // Correct ray direction calculation (centered)
-warp_19=`        float3 rayDir = normalize(float3(uv, 1.0));
-warp_20=`        float3 p = d * rayDir;
-warp_21=`        
-warp_22=`        // Fractal iteration loop
-warp_23=`        for (s = 0.1; s < 1.0; )
-warp_24=`        {
-warp_25=`            // Add noise
-warp_26=`            p -= dot(sin(p * s * 14.0), float3(0.01, 0.01, 0.01)) / s;
-warp_27=`            
-warp_28=`            // Rotate in XZ plane
-warp_29=`            float2x2 rot = rotate2D(0.05*time + 0.5);
-warp_30=`            p.xz = mul(p.xz + q1/3, rot);
-warp_31=`            
-warp_32=`            // Increase scale
-warp_33=`            s += s;
-warp_34=`        }
-warp_35=`        
-warp_36=`        // March forward
-warp_37=`        s = 0.01 + abs(p.y);
-warp_38=`        d += s;
-warp_39=`        
-warp_40=`        // Accumulate color with cosine gradient
-warp_41=`        o += (1.0 + treb_att/3 + cos(d + float3(4.0, 2.0, 1.0))) / s;
-warp_42=`    }
-warp_43=`    
-warp_44=`    // Final color processing
-warp_45=`    o = tanh(o / 6e3);
-warp_46=`    ret = float4(o, 1.0);
-warp_47=`}
+warp_12=`    uv.x = -uv.x;
+warp_13=`    float3 o = float3(0.0, 0.0, 0.0);
+warp_14=`    float d = 0.0;
+warp_15=`    float s = 0.0;
+warp_16=`    uv*=0.8;
+warp_17=`    for(float i = 0.0; i < 100.0; i++) 
+warp_18=`    {
+warp_19=`        // Correct ray direction calculation (centered)
+warp_20=`        float3 rayDir = normalize(float3(uv, 1.0));
+warp_21=`        float3 p = d * rayDir;
+warp_22=`        
+warp_23=`        // Fractal iteration loop
+warp_24=`        for (s = 0.1; s < 1.0; )
+warp_25=`        {
+warp_26=`            // Add noise
+warp_27=`            p -= dot(sin(p * s * 14.0), float3(0.01, 0.01, 0.01)) / s;
+warp_28=`            
+warp_29=`            // Rotate in XZ plane
+warp_30=`            float2x2 rot = rotate2D(0.05*time + 0.5);
+warp_31=`            p.xz = mul(p.xz + q1/3, rot);
+warp_32=`            
+warp_33=`            // Increase scale
+warp_34=`            s += s;
+warp_35=`        }
+warp_36=`        
+warp_37=`        // March forward
+warp_38=`        s = 0.01 + abs(p.y);
+warp_39=`        d += s;
+warp_40=`        
+warp_41=`        // Accumulate color with cosine gradient
+warp_42=`        o += (1.0 + treb_att/3 + cos(d + float3(4.0, 2.0, 1.0))) / s;
+warp_43=`    }
+warp_44=`    
+warp_45=`    // Final color processing
+warp_46=`    o = tanh(o / 6e3);
+warp_47=`    ret = float4(o, 1.0);
+warp_48=`}
 comp_1=`shader_body
 comp_2=`{
 comp_3=`//MilkDrop3 Flip Mode:

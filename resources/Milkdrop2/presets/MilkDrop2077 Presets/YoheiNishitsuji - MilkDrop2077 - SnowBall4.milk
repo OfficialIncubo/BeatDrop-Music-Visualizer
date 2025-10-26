@@ -172,7 +172,7 @@ warp_4=`//Ported to MilkDrop by MilkDrop2077
 warp_5=`
 warp_6=`    float aspect = aspect.x / aspect.y;
 warp_7=`    float2 u = (uv - 0.5) * float2(aspect, 1.0) * 2.0;
-warp_8=`    u.y = -u.y;
+warp_8=`    u = -u; //Correctly flip UV
 warp_9=`    float4 o = float4(0.0, 0.0, 0.0, 0.0);
 warp_10=`    float t = time;
 warp_11=`    float g = 0.0;
@@ -187,29 +187,30 @@ warp_19=`        p = A * dot(p+p, A) - p - 0.14*cross(p, A);
 warp_20=`        
 warp_21=`        // 2D rotation on ZY plane
 warp_22=`        float angle = t * 0.92;
-warp_23=`        float2x2 rot = float2x2(
+warp_23=`        float2x2 rot = transpose(float2x2(
 warp_24=`            cos(angle), -sin(angle),
 warp_25=`            sin(angle), cos(angle)
-warp_26=`        );
-warp_27=`        p.zy = mul(p.zy, rot);
-warp_28=`        
-warp_29=`        float s = 6.0;
-warp_30=`        float e;
-warp_31=`        
-warp_32=`        // Modified fractal iteration with time-based variation
-warp_33=`        for(float j = 0.0; j < 7.0; j += 1.0) {
-warp_34=`            e = 18.0 / dot(p, p);
-warp_35=`            s *= e;
-warp_36=`            float xSize = 3.0 + 2.5 * sin(t * 0.5);
-warp_37=`            p = float3(0.0, 4.213, 0.0) - abs(abs(p)*e - float3(xSize, 4.0, 3.0));
-warp_38=`        }
-warp_39=`        
-warp_40=`        g += 0.2 * p.y * p.y / s;
-warp_41=`        o += (log2(s) - g * 0.7) / 700.0 * float4(0.9, 1.0, 1.0, 0.0);
-warp_42=`    }
-warp_43=`    
-warp_44=`    ret = float4(tanh(o.x * 2.0), tanh(o.y * 2.0), tanh(o.z * 2.0), 1.0);
-warp_45=`}
+warp_26=`        )); // In GLSL is column-major order and in HLSL, row-major order,
+warp_27=`// So we transpose the matrix with transpose() to be the same as GLSL.
+warp_28=`        p.zy = mul(p.zy, rot);
+warp_29=`        
+warp_30=`        float s = 6.0;
+warp_31=`        float e;
+warp_32=`        
+warp_33=`        // Modified fractal iteration with time-based variation
+warp_34=`        for(float j = 0.0; j < 7.0; j += 1.0) {
+warp_35=`            e = 18.0 / dot(p, p);
+warp_36=`            s *= e;
+warp_37=`            float xSize = 3.0 + 2.5 * sin(t * 0.5);
+warp_38=`            p = float3(0.0, 4.213, 0.0) - abs(abs(p)*e - float3(xSize, 4.0, 3.0));
+warp_39=`        }
+warp_40=`        
+warp_41=`        g += 0.2 * p.y * p.y / s;
+warp_42=`        o += (log2(s) - g * 0.7) / 700.0 * float4(0.9, 1.0, 1.0, 0.0);
+warp_43=`    }
+warp_44=`    
+warp_45=`    ret = float4(tanh(o.x * 2.0), tanh(o.y * 2.0), tanh(o.z * 2.0), 1.0);
+warp_46=`}
 comp_1=`shader_body
 comp_2=`{//MilkDrop3 Multiplicate Mode:
 comp_3=`uv = 1- abs( frac((uv-.5)*1.5 * 0.5 ) * 2 - 1.0 );

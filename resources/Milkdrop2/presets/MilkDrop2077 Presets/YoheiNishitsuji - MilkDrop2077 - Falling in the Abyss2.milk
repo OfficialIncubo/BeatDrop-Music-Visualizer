@@ -152,31 +152,34 @@ warp_12=`// 2D rotation matrix
 warp_13=`float2x2 rotate2D(float angle) {
 warp_14=`    float s = sin(angle);
 warp_15=`    float c = cos(angle);
-warp_16=`    return float2x2(c, -s, s, c);
+warp_16=`    return transpose(float2x2(c, -s, s, c));
 warp_17=`}
-warp_18=`shader_body{
-warp_19=`uv = float2(uv_orig.x, 1-uv_orig.y) * aspect.xy;
-warp_20=`float t = time;
-warp_21=`float3 o = float3(0.0, 0.0, 0.0);
-warp_22=`float g = 0.0;
-warp_23=`float s = 0.0;  // Added missing s declaration
-warp_24=`
-warp_25=`for(float e, i, a, h; i++ < 29.0; ) {
-warp_26=`    float3 p = float3(uv * g + 1.0, g);
-warp_27=`    p.zy = mul(p.zy, rotate2D(0.5));
-warp_28=`    e = p.y;
-warp_29=`    h = e;
-warp_30=`    for(a = 0.6; a > 0.001; a *= 0.7) {
-warp_31=`        p.xz = mul(p.xz, rotate2D(2))+time/12;
-warp_32=`        e -= exp(sin(p.z/a + t) - 2.0) * a;
-warp_33=`        h += abs(dot(sin(p.xz/a * 0.3)+time/33 * a, float2(1.0, 1.0)));
-warp_34=`    }
-warp_35=`    g += e = min(e, h * 0.5 - 1.0);
-warp_36=`    o.rgb += 0.01 - 0.02/exp(max(s, e) * 1e3)/h*hsv(a, h - 2.0, 1.0);
-warp_37=`}
-warp_38=`
-warp_39=`ret = float4(o, 1.0);
+warp_18=`// In GLSL is column-major order and in HLSL, row-major order,
+warp_19=`// So we transpose the matrix with transpose() to be the same as GLSL.
+warp_20=`
+warp_21=`shader_body{
+warp_22=`uv = (-uv_orig) * aspect.xy;
+warp_23=`float t = time;
+warp_24=`float3 o = float3(0.0, 0.0, 0.0);
+warp_25=`float g = 0.0;
+warp_26=`float s = 0.0;  // Added missing s declaration
+warp_27=`
+warp_28=`for(float e, i, a, h; i++ < 29.0; ) {
+warp_29=`    float3 p = float3(uv * g + 1.0, g);
+warp_30=`    p.zy = mul(p.zy, rotate2D(0.5));
+warp_31=`    e = p.y;
+warp_32=`    h = e;
+warp_33=`    for(a = 0.6; a > 0.001; a *= 0.7) {
+warp_34=`        p.xz = mul(p.xz, rotate2D(2))+time/12;
+warp_35=`        e -= exp(sin(p.z/a + t) - 2.0) * a;
+warp_36=`        h += abs(dot(sin(p.xz/a * 0.3)+time/33 * a, float2(1.0, 1.0)));
+warp_37=`    }
+warp_38=`    g += e = min(e, h * 0.5 - 1.0);
+warp_39=`    o.rgb += 0.01 - 0.02/exp(max(s, e) * 1e3)/h*hsv(a, h - 2.0, 1.0);
 warp_40=`}
+warp_41=`
+warp_42=`ret = float4(o, 1.0);
+warp_43=`}
 comp_1=`shader_body
 comp_2=`{//MilkDrop3 Flip Mode:
 comp_3=`//uv = 1-uv; //Flipped in warp shader

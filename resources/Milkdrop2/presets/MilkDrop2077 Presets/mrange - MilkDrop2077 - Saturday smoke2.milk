@@ -492,36 +492,38 @@ warp_27=`            P.x -= 0.3*sin(p.y+T);
 warp_28=`            
 warp_29=`            // Create rotation matrix
 warp_30=`            float angle = j-T+p.y+11.0*U.x;
-warp_31=`            float2x2 rot = float2x2(cos(angle), -sin(angle), sin(angle), cos(angle));
+warp_31=`            float2x2 rot = transpose(float2x2(cos(angle), -sin(angle), sin(angle), cos(angle)));
 warp_32=`            P.xz = float2(P.x*rot[0][0] + P.z*rot[0][1], P.x*rot[1][0] + P.z*rot[1][1]);
-warp_33=`            
-warp_34=`            // Mirror space
-warp_35=`            P = abs(P)-0.01;
-warp_36=`            
-warp_37=`            // Distance field calculation
-warp_38=`            float dist = min(
-warp_39=`                max(P.z, P.x-D)+2E-2,
-warp_40=`                length(P.xz-D*U.yx)
-warp_41=`            );
-warp_42=`            
-warp_43=`            // Track closest distance
-warp_44=`            d = min(d, dist);
-warp_45=`            
-warp_46=`            // Color generation
-warp_47=`            float4 P_color = 1.2+sin(j+U.xyzy+z);
-warp_48=`            
-warp_49=`            // Accumulate color
-warp_50=`            o += P_color.w*P_color/max(dist,1E-3);
-warp_51=`        }
-warp_52=`        
-warp_53=`        // Ray marching step
-warp_54=`        z += 0.6*d + 1E-3;
-warp_55=`    }
-warp_56=`    
-warp_57=`    // Tone mapping with music reactivity
-warp_58=`    float brightness = 0.8 + 0.2*bass_att;
-warp_59=`    ret = tanh(o/1e3 * brightness);
-warp_60=`}
+warp_33=`            // In GLSL is column-major order and in HLSL, row-major order,
+warp_34=`            // So we transpose the matrix with transpose() to be the same as GLSL.
+warp_35=`            
+warp_36=`            // Mirror space
+warp_37=`            P = abs(P)-0.01;
+warp_38=`            
+warp_39=`            // Distance field calculation
+warp_40=`            float dist = min(
+warp_41=`                max(P.z, P.x-D)+2E-2,
+warp_42=`                length(P.xz-D*U.yx)
+warp_43=`            );
+warp_44=`            
+warp_45=`            // Track closest distance
+warp_46=`            d = min(d, dist);
+warp_47=`            
+warp_48=`            // Color generation
+warp_49=`            float4 P_color = 1.2+sin(j+U.xyzy+z);
+warp_50=`            
+warp_51=`            // Accumulate color
+warp_52=`            o += P_color.w*P_color/max(dist,1E-3);
+warp_53=`        }
+warp_54=`        
+warp_55=`        // Ray marching step
+warp_56=`        z += 0.6*d + 1E-3;
+warp_57=`    }
+warp_58=`    
+warp_59=`    // Tone mapping with music reactivity
+warp_60=`    float brightness = 0.8 + 0.2*bass_att;
+warp_61=`    ret = tanh(o/1e3 * brightness);
+warp_62=`}
 comp_1=`shader_body      
 comp_2=`{//MilkDrop3 Rotate Mode:
 comp_3=`uv = uv.yx;

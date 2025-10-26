@@ -157,11 +157,11 @@ warp_12=`// 2D rotation matrix
 warp_13=`float2x2 rotate2D(float angle) {
 warp_14=`    float s = sin(angle);
 warp_15=`    float c = cos(angle);
-warp_16=`    return float2x2(c, -s, s, c);
+warp_16=`    return transpose(float2x2(c, -s, s, c));
 warp_17=`}
 warp_18=`
 warp_19=`shader_body{
-warp_20=`uv = float2(uv_orig.x, 1-uv_orig.y) * aspect.xy;
+warp_20=`uv = (-uv_orig) * aspect.xy;
 warp_21=`float t = time;
 warp_22=`float3 o = float3(0.0, 0.0, 0.0);
 warp_23=`float g = 0.0;

@@ -489,7 +489,7 @@ warp_24=`
 warp_25=`    // Coordinate setup with aspect ratio correction
 warp_26=`    float aspect = aspect.x/aspect.y;
 warp_27=`    uv = (uv.xy-0.5)*float2(aspect,1.0);
-warp_28=`    uv.y = -uv.y;
+warp_28=`    uv = -uv; //Correctly flip UV
 warp_29=`    float3 o = float3(0,0,0);
 warp_30=`    float z = 0.0, d = 0.0, t = time;
 warp_31=`    float N = 0.0;
@@ -502,29 +502,31 @@ warp_37=`        p.z += t;
 warp_38=`
 warp_39=`        // Rotation matrix inspired by mrange's work
 warp_40=`        float angle = p.z;
-warp_41=`        float2x2 R = float2x2(cos(angle), -sin(angle),
-warp_42=`                             sin(angle), cos(angle));
-warp_43=`        p.xy = mul(p.xy, R);
-warp_44=`
-warp_45=`        // Fractal evaluation
-warp_46=`        N = f(p+q1/2 + t*0.1)*q3;
-warp_47=`        d = length(p.xy)-1.0+N*0.3;
-warp_48=`        p.z = fmod(p.z,4.0+cos(q1))-3.0;
-warp_49=`        d = abs(d)+0.01;
-warp_50=`
-warp_51=`        // Color composition
-warp_52=`        float3 c = float3(0.1,0.3,0.8)/(length(p.xy+N+bass_att)*0.5);
-warp_53=`        c += float3(bass_att*0.6,0.4,0.2)/(length(p.xz+N)*0.5);
-warp_54=`        c += float3(1.0,1.0,2.0)*(0.5+0.5*sin(N*1.0+t));
-warp_55=`
-warp_56=`        // Accumulate color with falloff
-warp_57=`        o += c/d*0.12;
-warp_58=`        z += d*0.6;
-warp_59=`    }
-warp_60=`
-warp_61=`    // Final color processing
-warp_62=`    ret.rgb = tanh(o*0.001);
-warp_63=`}
+warp_41=`        float2x2 R = transpose(float2x2(cos(angle), -sin(angle),
+warp_42=`                             sin(angle), cos(angle)));
+warp_43=`        // In GLSL is column-major order and in HLSL, row-major order,
+warp_44=`        // So we transpose the matrix with transpose() to be the same as GLSL.
+warp_45=`        p.xy = mul(p.xy, R);
+warp_46=`
+warp_47=`        // Fractal evaluation
+warp_48=`        N = f(p+q1/2 + t*0.1)*q3;
+warp_49=`        d = length(p.xy)-1.0+N*0.3;
+warp_50=`        p.z = fmod(p.z,4.0+cos(q1))-3.0;
+warp_51=`        d = abs(d)+0.01;
+warp_52=`
+warp_53=`        // Color composition
+warp_54=`        float3 c = float3(0.1,0.3,0.8)/(length(p.xy+N+bass_att)*0.5);
+warp_55=`        c += float3(bass_att*0.6,0.4,0.2)/(length(p.xz+N)*0.5);
+warp_56=`        c += float3(1.0,1.0,2.0)*(0.5+0.5*sin(N*1.0+t));
+warp_57=`
+warp_58=`        // Accumulate color with falloff
+warp_59=`        o += c/d*0.12;
+warp_60=`        z += d*0.6;
+warp_61=`    }
+warp_62=`
+warp_63=`    // Final color processing
+warp_64=`    ret.rgb = tanh(o*0.001);
+warp_65=`}
 comp_1=`shader_body
 comp_2=`{
 comp_3=`    ret = tex2D(sampler_main, uv).xyz;

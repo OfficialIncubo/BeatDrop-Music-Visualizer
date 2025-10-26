@@ -286,11 +286,11 @@ warp_14=`    axis = normalize(axis);
 warp_15=`    float s = sin(angle);
 warp_16=`    float c = cos(angle);
 warp_17=`    float oc = 1.0 - c;
-warp_18=`    return float3x3(
+warp_18=`    return transpose(float3x3(
 warp_19=`        oc * axis.x * axis.x + c, oc * axis.x * axis.y - axis.z * s, oc * axis.z * axis.x + axis.y * s,
 warp_20=`        oc * axis.x * axis.y + axis.z * s, oc * axis.y * axis.y + c, oc * axis.y * axis.z - axis.x * s,
 warp_21=`        oc * axis.z * axis.x - axis.y * s, oc * axis.y * axis.z + axis.x * s, oc * axis.z * axis.z + c
-warp_22=`    );
+warp_22=`    ));
 warp_23=`}
 warp_24=`shader_body{
 warp_25=`    // Calculate aspect ratio correction

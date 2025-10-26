@@ -80,7 +80,7 @@ warp_5=`//MIT Licensed
 warp_6=`
 warp_7=`    float aspect = aspect.x / aspect.y;
 warp_8=`    float2 u = (uv - 0.5) * float2(aspect, 1.0) * 4.0;
-warp_9=`    u.y = -u.y;
+warp_9=`    u = -u; //Correctly UV flip
 warp_10=`    float4 o = float4(0.0, 0.0, 0.0, 0.0);
 warp_11=`    float t = time;
 warp_12=`    float g = 0.0;
@@ -94,28 +94,29 @@ warp_19=`        // 3D rotation
 warp_20=`        p = A * dot(p+p, A) - p - 0.14*cross(p, A);
 warp_21=`        
 warp_22=`        // 2D rotation
-warp_23=`        float2x2 rot = float2x2(
+warp_23=`        float2x2 rot = transpose(float2x2(
 warp_24=`            cos(t*0.3), -sin(t*0.3),
 warp_25=`            sin(t*0.3), cos(t*0.3)
-warp_26=`        );
-warp_27=`        p.xz = mul(p.xz, rot);
-warp_28=`        
-warp_29=`        float s = 6.0;
-warp_30=`        float e;
-warp_31=`        
-warp_32=`        // Fractal iteration
-warp_33=`        for(int j = 0; j < 12; j++) {
-warp_34=`            e = 16.0 / dot(p, p);
-warp_35=`            s *= e;
-warp_36=`            p = float3(0.0, 4.03, -1.0) - abs(abs(p)*e - float3(3.0, 4.0, 3.0));
-warp_37=`        }
-warp_38=`        
-warp_39=`        g += 0.3 * p.y*p.y / s;
-warp_40=`        o += (log2(s) - g*0.8) / 700.0 * float4(0.9, 1.0, 1.0, 0.0);
-warp_41=`    }
-warp_42=`    
-warp_43=`    ret = float4(tanh(o.x), tanh(o.y), tanh(o.z), 1.0);
-warp_44=`}
+warp_26=`        )); // In GLSL is column-major order and in HLSL, row-major order,
+warp_27=`// So we transpose the matrix with transpose() to be the same as GLSL.
+warp_28=`        p.xz = mul(p.xz, rot);
+warp_29=`        
+warp_30=`        float s = 6.0;
+warp_31=`        float e;
+warp_32=`        
+warp_33=`        // Fractal iteration
+warp_34=`        for(int j = 0; j < 12; j++) {
+warp_35=`            e = 16.0 / dot(p, p);
+warp_36=`            s *= e;
+warp_37=`            p = float3(0.0, 4.03, -1.0) - abs(abs(p)*e - float3(3.0, 4.0, 3.0));
+warp_38=`        }
+warp_39=`        
+warp_40=`        g += 0.3 * p.y*p.y / s;
+warp_41=`        o += (log2(s) - g*0.8) / 700.0 * float4(0.9, 1.0, 1.0, 0.0);
+warp_42=`    }
+warp_43=`    
+warp_44=`    ret = float4(tanh(o.x), tanh(o.y), tanh(o.z), 1.0);
+warp_45=`}
 comp_1=`shader_body
 comp_2=`{//MilkDrop3 Flip Mode:
 comp_3=`//uv = 1-uv; //Flipped in warp shader

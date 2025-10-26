@@ -470,60 +470,62 @@ warp_5=`// 2D rotation matrix function
 warp_6=`float2x2 Rotate2D(float angle) {
 warp_7=`    float s = sin(angle);
 warp_8=`    float c = cos(angle);
-warp_9=`    return float2x2(c, -s, s, c);
+warp_9=`    return transpose(float2x2(c, -s, s, c));
 warp_10=`}
-warp_11=`
-warp_12=`shader_body
-warp_13=`{
-warp_14=`    // Aspect-correct coordinates
-warp_15=`    uv = (uv_orig - 0.5) * aspect.xy;
-warp_16=`    float t = time * 0.3;
-warp_17=`    float4 col = float4(0,0,0,0);
-warp_18=`    float d = 0.0;
-warp_19=`    float s = 0.0;
-warp_20=`    float a_val = 0.0; // Renamed to avoid conflict with 'a' coordinate
-warp_21=`    
-warp_22=`    // Main raymarching loop
-warp_23=`    for(float i = 0.0; i < 100.0; i++)
-warp_24=`    {
-warp_25=`        // Position calculation
-warp_26=`        float3 p = float3(uv * d, d + t);
-warp_27=`        p.x -= t;
-warp_28=`        p.z *= 0.7+q9*2;
-warp_29=`        
-warp_30=`        // Distance field with animation
-warp_31=`        s = min(2.0 + p.y + cos(p.y + 2.0*t + p.x*0.4)*0.6, 2.0 - p.y);
-warp_32=`        
-warp_33=`        // Fractal detail loop
-warp_34=`        for(a_val = 0.08; a_val < 2.0; a_val *= 1.6)
-warp_35=`        {
-warp_36=`            // Rotate coordinates
-warp_37=`            float2x2 rot = Rotate2D(0.1 + 0.5);
-warp_38=`            p.xz = mul(p.xz, rot);
-warp_39=`            
-warp_40=`            // CORRECTED LINE: Fixed the dot product syntax
-warp_41=`            s -= abs(dot(sin(2.0*p/a_val + t), float3(0.12, 0.12, 0.12))) * a_val;
-warp_42=`        }
-warp_43=`        
-warp_44=`        // Ray marching step
-warp_45=`        s = 0.02 + abs(s) * 0.5;
-warp_46=`        d += s;
-warp_47=`        
-warp_48=`        // Color accumulation
-warp_49=`        col += 12.0 * float4(3.0, 2.0, 7.0, 0.0) / s
-warp_50=`              + 3.0 * float4(19.0*bass_att, 2.0, 1.0, 0.0) / max(abs(uv.y), 0.001);
-warp_51=`    }
-warp_52=`    
-warp_53=`    // Final color processing
-warp_54=`    uv.x += 0.7;
-warp_55=`    float len_uv = max(length(uv), 0.001);
-warp_56=`    col = tanh(col / 900000.0 / len_uv); // 3e5 = 300000
-warp_57=`    
-warp_58=`    // Output with vignette
-warp_59=`    float2 center = uv_orig - 0.5;
-warp_60=`    float vignette = 1.0 - smoothstep(0.3, 0.8, dot(center, center));
-warp_61=`    ret = col * vignette;
-warp_62=`}
+warp_11=`// In GLSL is column-major order and in HLSL, row-major order,
+warp_12=`// So we transpose the matrix with transpose() to be the same as GLSL.
+warp_13=`
+warp_14=`shader_body
+warp_15=`{
+warp_16=`    // Aspect-correct coordinates
+warp_17=`    uv = (uv_orig - 0.5) * aspect.xy;
+warp_18=`    float t = time * 0.3;
+warp_19=`    float4 col = float4(0,0,0,0);
+warp_20=`    float d = 0.0;
+warp_21=`    float s = 0.0;
+warp_22=`    float a_val = 0.0; // Renamed to avoid conflict with 'a' coordinate
+warp_23=`    
+warp_24=`    // Main raymarching loop
+warp_25=`    for(float i = 0.0; i < 100.0; i++)
+warp_26=`    {
+warp_27=`        // Position calculation
+warp_28=`        float3 p = float3(uv * d, d + t);
+warp_29=`        p.x -= t;
+warp_30=`        p.z *= 0.7+q9*2;
+warp_31=`        
+warp_32=`        // Distance field with animation
+warp_33=`        s = min(2.0 + p.y + cos(p.y + 2.0*t + p.x*0.4)*0.6, 2.0 - p.y);
+warp_34=`        
+warp_35=`        // Fractal detail loop
+warp_36=`        for(a_val = 0.08; a_val < 2.0; a_val *= 1.6)
+warp_37=`        {
+warp_38=`            // Rotate coordinates
+warp_39=`            float2x2 rot = Rotate2D(0.1 + 0.5);
+warp_40=`            p.xz = mul(p.xz, rot);
+warp_41=`            
+warp_42=`            // CORRECTED LINE: Fixed the dot product syntax
+warp_43=`            s -= abs(dot(sin(2.0*p/a_val + t), float3(0.12, 0.12, 0.12))) * a_val;
+warp_44=`        }
+warp_45=`        
+warp_46=`        // Ray marching step
+warp_47=`        s = 0.02 + abs(s) * 0.5;
+warp_48=`        d += s;
+warp_49=`        
+warp_50=`        // Color accumulation
+warp_51=`        col += 12.0 * float4(3.0, 2.0, 7.0, 0.0) / s
+warp_52=`              + 3.0 * float4(19.0*bass_att, 2.0, 1.0, 0.0) / max(abs(uv.y), 0.001);
+warp_53=`    }
+warp_54=`    
+warp_55=`    // Final color processing
+warp_56=`    uv.x += 0.7;
+warp_57=`    float len_uv = max(length(uv), 0.001);
+warp_58=`    col = tanh(col / 900000.0 / len_uv); // 3e5 = 300000
+warp_59=`    
+warp_60=`    // Output with vignette
+warp_61=`    float2 center = uv_orig - 0.5;
+warp_62=`    float vignette = 1.0 - smoothstep(0.3, 0.8, dot(center, center));
+warp_63=`    ret = col * vignette;
+warp_64=`}
 comp_1=`shader_body
 comp_2=`{//MilkDrop3 Flip Mode:
 comp_3=`//uv = 1-uv;

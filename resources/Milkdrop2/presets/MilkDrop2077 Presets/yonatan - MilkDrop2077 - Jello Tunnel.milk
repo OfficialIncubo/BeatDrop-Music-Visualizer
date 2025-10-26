@@ -136,7 +136,7 @@ warp_12=`    float R;
 warp_13=`
 warp_14=`    while (j < 100.0) {
 warp_15=`        float k = 5.0 * j;
-warp_16=`        float2x2 rot = { cos(k), -sin(k), sin(k), cos(k) };
+warp_16=`        float2x2 rot = { cos(k), sin(k), -sin(k), cos(k) };
 warp_17=`        n = mul(n, rot);
 warp_18=`        float2 p = (uv - 0.5) * texsize.xy / texsize.y;
 warp_19=`        p = mul(p, rot);
