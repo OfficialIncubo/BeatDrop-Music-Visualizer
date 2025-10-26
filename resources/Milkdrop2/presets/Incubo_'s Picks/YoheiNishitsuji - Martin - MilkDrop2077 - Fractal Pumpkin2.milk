@@ -148,30 +148,31 @@ warp_24=`
 warp_25=`shader_body
 warp_26=`{
 warp_27=`    uv = (uv_orig * aspect.xy - 0.5 * aspect.xy) / aspect.y;
-warp_28=`    float t = time / 3.0;
-warp_29=`    float3 col = float3(0.0, 0.0,0.0);
-warp_30=`    float g = 0.0;
-warp_31=`
-warp_32=`    for (float i = 0.0; i < 80.0; i++) {
-warp_33=`        float3 p = float3(uv * 1.5 * (cos(t * 0.3+q10) * 0.2 + 0.6), g - 0.4);
-warp_34=`        p.xz = mul(rotate2D(t * 0.5), p.xz);
-warp_35=`        float s = 1.0;
-warp_36=`        float e = 0.0;
-warp_37=`
-warp_38=`        for (int j = 0; j < 12; j++) {
-warp_39=`            e = max(1.01, 7.0 / dot(p, p));
-warp_40=`            p = abs(abs(p) * e - float3(4.6+q1/6, 2.0+q1/5, 1.2+q1/3));
-warp_41=`            p = float3(3.5, 5.0, 0.5) - p;
-warp_42=`            s *= e;
-warp_43=`        }
-warp_44=`
-warp_45=`        g += mod(length(p.zx), p.y) / s;
-warp_46=`        float final_s = log2(s) / g;
-warp_47=`        col += hsv(e, p.z, final_s / 1e4);
-warp_48=`    }
-warp_49=`
-warp_50=`    ret = float4(sqrt(col), 1.0);
-warp_51=`}
+warp_28=`    uv.y = -uv.y;
+warp_29=`    float t = time / 3.0;
+warp_30=`    float3 col = float3(0.0, 0.0,0.0);
+warp_31=`    float g = 0.0;
+warp_32=`
+warp_33=`    for (float i = 0.0; i < 80.0; i++) {
+warp_34=`        float3 p = float3(uv * 1.5 * (cos(t * 0.3+q10) * 0.2 + 0.6), g - 0.4);
+warp_35=`        p.xz = mul(rotate2D(t * 0.5), p.xz);
+warp_36=`        float s = 1.0;
+warp_37=`        float e = 0.0;
+warp_38=`
+warp_39=`        for (int j = 0; j < 12; j++) {
+warp_40=`            e = max(1.01, 7.0 / dot(p, p));
+warp_41=`            p = abs(abs(p) * e - float3(4.6+q1/6, 2.0+q1/5, 1.2+q1/3));
+warp_42=`            p = float3(3.5, 5.0, 0.5) - p;
+warp_43=`            s *= e;
+warp_44=`        }
+warp_45=`
+warp_46=`        g += mod(length(p.zx), p.y) / s;
+warp_47=`        float final_s = log2(s) / g;
+warp_48=`        col += hsv(e, p.z, final_s / 1e4);
+warp_49=`    }
+warp_50=`
+warp_51=`    ret = float4(sqrt(col), 1.0);
+warp_52=`}
 comp_1=`#define sat saturate
 comp_2=`float glow, tmp, lamp, dist, bdist, b2dist, dist_c, smask;
 comp_3=`float2 dz, uv1, uv3, uv4;
