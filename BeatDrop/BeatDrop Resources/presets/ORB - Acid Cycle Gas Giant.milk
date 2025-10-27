@@ -248,9 +248,9 @@ shapecode_3_border_a=0.000000
 shape_3_per_frame1=a = above(q3,2);
 shape_3_per_frame2=a2 = above(q3,2)*0.8;
 shape_3_per_frame3=
-shape_3_per_frame4=xx = if(above(q3,5),xx,rand(100)*0.01);
-shape_3_per_frame5=yy = if(above(q3,5),yy,rand(100)*0.01);
-shape_3_per_frame6=radi = if(above(q3,5),radi,rand(100)*0.01);
+shape_3_per_frame4=xx = if(above(q3,5),xx,int(rand(100))*0.01);
+shape_3_per_frame5=yy = if(above(q3,5),yy,int(rand(100))*0.01);
+shape_3_per_frame6=radi = if(above(q3,5),radi,int(rand(100))*0.01);
 shape_3_per_frame7=
 shape_3_per_frame8=rad = radi;
 shape_3_per_frame9=

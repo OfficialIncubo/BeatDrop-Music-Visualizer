@@ -3,7 +3,7 @@ PSVERSION=2
 PSVERSION_WARP=2
 PSVERSION_COMP=2
 [preset00]
-fRating=5.000
+fRating=1.000000
 fGammaAdj=1.000
 fDecay=1.000
 fVideoEchoZoom=1.000
@@ -143,8 +143,8 @@ wave_0_per_point25=x1 = (c1*c2*xx + c1*s2*yy - s1*zz);
 wave_0_per_point26=y1 = ((s3*s1*c2 - c3*s2)*xx + (s3*s1*s2+c3*c2)*yy + s3*c1*zz);
 wave_0_per_point27=
 wave_0_per_point28=zoom = .5*(1/(z+0.5));
-wave_0_per_point29=x = 0.5 + zoom*x1 + sin(time*0.1)*0.;;
-wave_0_per_point30=y = 0.5 + zoom*y1 + cos(time*0.16801)*0.;
+wave_0_per_point29=x = 0.5 + zoom*x1 + sin(time*0.1)*0;;
+wave_0_per_point30=y = 0.5 + zoom*y1 + cos(time*0.16801)*0;
 wave_0_per_point31=
 wave_0_per_point32=pi3 = 3.1415*2*0.3333;
 wave_0_per_point33=t = z*2+t2*1;
@@ -459,7 +459,7 @@ warp_9=`    ret.x += (ret.x - GetBlur3(my_uv).x)*0.2 - 0.004 ;
 warp_10=`
 warp_11=`    ret.y = tex2D( sampler_fw_main, uv_orig).y*0.98 - 0.004;
 warp_12=`
-warp_13=`    
+warp_13=`
 warp_14=`
 warp_15=`}
 comp_1=`shader_body

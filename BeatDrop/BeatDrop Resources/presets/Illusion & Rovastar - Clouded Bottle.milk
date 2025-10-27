@@ -58,8 +58,8 @@ mv_r=0
 mv_g=1
 mv_b=0
 mv_a=0.5
-per_frame_1=dx =dx -0.0005;
-per_frame_2=dy = dy-0.0035;
+per_frame_1=//dx =dx -0.0005;
+per_frame_2=//dy = dy-0.0035;
 per_frame_3=mv_l = 3000;
 per_frame_4=mv_r = 0.5 + 0.499*sin(time*1.12);
 per_frame_4=mv_g = 0.5 + 0.123*cos(time*1.83);
