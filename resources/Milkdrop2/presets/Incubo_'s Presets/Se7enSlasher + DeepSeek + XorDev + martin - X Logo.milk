@@ -104,8 +104,10 @@ comp_26=`    float pattern =
 comp_27=`        0.1 / abs(max(a.x - 0.03, abs(p.y) - 0.1)) +
 comp_28=`        0.1 / max(a.y, abs(a.x - 0.12) - 0.08);
 comp_29=`    
-comp_30=`    // Final color with tanh tonemapping
-comp_31=`    float4 O = tanh(float4(1.0, 2.0, 3.0, 1.0) / 50.0 * pattern * 6.0 * X);
-comp_32=`    
-comp_33=`    ret = O;
-comp_34=`}
+comp_30=`    // Final color with HLSL tonemapping
+comp_31=`    //XorDev - told me to replace tanh(x) with 1-exp(-x), which it works.
+comp_32=`    float4 result = float4(1.0, 2.0, 3.0, 1.0) / 50.0 * pattern * 6.0 * X;
+comp_33=`    float4 O = 1-exp(-result);
+comp_34=`    
+comp_35=`    ret = O;
+comp_36=`}

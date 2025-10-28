@@ -122,7 +122,9 @@ comp_44=`        // Coloring and brightness
 comp_45=`        O += (cos(z / 0.03 + t + float4(0, 2, 3, 0)) + 1.) / d / s;
 comp_46=`    }
 comp_47=`    
-comp_48=`    // Tanh tonemap
-comp_49=`    O = tanh(O / 3e3);
-comp_50=`    ret = O;
-comp_51=`}
+comp_48=`    // HLSL tonemap
+comp_49=`    //XorDev - told me to replace tanh(x) with 1-exp(-x), which it works.
+comp_50=`    float4 result = O / 3e3; //Make this as a separate result.
+comp_51=`    O = 1-exp(-result); //Then output tonemapping without thresholding.
+comp_52=`    ret = O;
+comp_53=`}

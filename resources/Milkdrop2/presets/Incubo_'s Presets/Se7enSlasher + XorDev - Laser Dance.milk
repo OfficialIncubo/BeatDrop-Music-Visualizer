@@ -106,7 +106,9 @@ comp_28=`
 comp_29=`    //Pick colors and attenuate
 comp_30=`    O += (cos(z + float4(0,2,3,0)) + 1.5) / d / z;
 comp_31=`    }
-comp_32=`    //Tanh tonemapping
-comp_33=`    O = tanh(O / 7e2);
-comp_34=`    ret = O;
-comp_35=`}
+comp_32=`    //HLSL tonemapping
+comp_33=`    //XorDev - told me to replace tanh(x) with 1-exp(-x), which it works.
+comp_34=`    float4 result = O / 7e2; //Make this as a separate result.
+comp_35=`    O = 1-exp(-result); //Then output tonemapping without thresholding.
+comp_36=`    ret = O;
+comp_37=`}

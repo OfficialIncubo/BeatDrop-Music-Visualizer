@@ -88,5 +88,8 @@ comp_10=`    //Centered version:
 comp_11=`    //float2 p = (uv * texsize.xy * 2.0 - texsize.xy) / texsize.y;
 comp_12=`
 comp_13=`    float l = 1. - length(p);
-comp_14=`    ret = tanh((1.2 + sin(p.x+time+float4(0,2,4,0))) * .1 / max(l/.1,-l));
-comp_15=`}
+comp_14=`
+comp_15=`    //XorDev - told me to replace tanh(x) with 1-exp(-x), which it works.
+comp_16=`    float3 result = (1.2 + sin(p.x+time+float4(0,2,4,0))) * .1 / max(l/.1,-l); //Make this as a separate result.
+comp_17=`    ret = 1-exp(-result); //Then output tonemapping without thresholding.
+comp_18=`}
