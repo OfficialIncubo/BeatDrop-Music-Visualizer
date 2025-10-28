@@ -1,0 +1,357 @@
+all() - Determines if all components of the specified value are non-zero.
+Usage: all(x)
+Parameter: x - The vector or scalar value
+Return type: True if all components of the x parameter are non-zero; otherwise, false.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-all
+
+any() - Determines if any components of the specified value are non-zero.
+Usage: any(x)
+Parameter: x - The vector or scalar value
+Return type: True if any components of the x parameter are non-zero; otherwise, false.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-any
+
+ceil() - Returns the smallest integer value that is greater than or equal to the specified value.
+Usage: ceil(x)
+Parameter: x - The specified value
+Return type: The smallest integer value (returned as a floating-point type) that is greater than or equal to the x parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-ceil
+
+clamp() - Clamps the specified value to the specified minimum and maximum range.
+Usage: clamp(x, min, max)
+Parameters: x - The value to clamp, min - The specified minimum range, max - The specified maximum range.
+Return type: The clamped value for the x parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-clamp
+
+clip() - Discards the current pixel if the specified value is less than zero.
+Usage: clip(x)
+Parameter: x - The specified value
+Return type: N/A
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-clip
+
+ddx() - Returns the partial derivative of the specified value with respect to the screen-space x-coordinate.
+Usage: ddx(x)
+Parameter: x - The value to compute partial derivative for
+Return type: The partial derivative of the x parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-ddx
+
+ddy() - Returns the partial derivative of the specified value with respect to the screen-space y-coordinate.
+Usage: ddy(x)
+Parameter: x - The value to compute partial derivative for
+Return type: The partial derivative of the x parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-ddy
+
+degrees() - Converts the specified value from radians to degrees.
+Usage: degrees(x)
+Parameter: x - The value in radians
+Return type: The result of converting the x parameter from radians to degrees.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-degrees
+
+determinant() - Returns the determinant of the specified floating-point, square matrix.
+Usage: determinant(m)
+Parameter: m - The specified square matrix value
+Return type: The floating-point, scalar value that represents the determinant of the m parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-determinant
+
+distance() - Returns a distance scalar between two vectors.
+Usage: distance(x, y)
+Parameters: x - The first floating-point vector, y - The second floating-point vector
+Return type: A floating-point, scalar value that represents the distance between the x parameter and the y parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-distance
+
+exp2() - Returns the base 2 exponential, or 2x, of the specified value.
+Usage: exp2(x)
+Parameter: x - The exponent value
+Return type: The base 2 exponential of the x parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-exp2
+
+faceforward() - Flips the surface-normal (if needed) to face in a direction opposite to i; returns the result in n.
+Usage: faceforward(n, i, ng)
+Parameters: n - The resulting surface normal vector, i - The incident vector that points from the view position to the shading position, ng - The reference geometry normal (surface-normal vector)
+Return type: A floating-point, surface normal vector that is facing the view direction.
+https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-faceforward
+
+fmod() - Returns the floating-point remainder of x/y.
+Usage: fmod(x, y)
+Parameters: x - The dividend, y - The divisor
+Return type: The floating-point remainder of the x parameter divided by the y parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-fmod
+
+frexp() - Returns the mantissa and exponent of the specified floating-point value.
+Usage: frexp(x, exp)
+Parameters: x - The specified value, exp - Output parameter for the exponent
+Return type: The mantissa of the x parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-frexp
+
+fwidth() - Returns the absolute value of the partial derivatives of the specified value.
+Usage: fwidth(x)
+Parameter: x - The value to compute partial derivatives for
+Return type: The absolute value of the partial derivatives of the x parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-fwidth
+
+isfinite() - Determines if the specified floating-point value is finite.
+Usage: isfinite(x)
+Parameter: x - The specified value
+Return type: Returns a value of the same size as the input, with a value set to True if the x parameter is finite; otherwise False.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-isfinite
+
+isinf() - Determines if the specified value is infinite.
+Usage: isinf(x)
+Parameter: x - The specified value
+Return type: Returns a value of the same size as the input, with a value set to True if the x parameter is +INF or -INF. Otherwise, False.
+https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-isinf
+
+isnan() - Determines if the specified value is NAN or QNAN.
+Usage: isnan(x)
+Parameter: x - The specified value
+Return type: Returns a value of the same size as the input, with a value set to True if the x parameter is NAN or QNAN. Otherwise, False.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-isnan
+
+ldexp() - Returns the result of multiplying the specified value by two, raised to the power of the specified exponent.
+Usage: ldexp(x, exp)
+Parameters: x - The mantissa value, exp - The exponent value
+Return type: The result of multiplying the x parameter by two, raised to the power of the exp parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-ldexp
+
+lit() - Returns a lighting coefficient vector.
+Usage: lit(n_dot_l, n_dot_h, m)
+Parameters: n_dot_l - The dot product of the normal and light vectors, n_dot_h - The dot product of the normal and half-angle vectors, m - The specular exponent
+Return type: The lighting coefficient vector
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-lit
+
+log10() - Returns the base-10 logarithm of the specified value.
+Usage: log10(x)
+Parameter: x - The specified value
+Return type: The base-10 logarithm of the x parameter. If the x parameter is negative, this function returns indefinite. If the x is 0, this function returns -INF.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-log10
+
+log2() - Returns the base-2 logarithm of the specified value.
+Usage: log2(x)
+Parameter: x - The specified value
+Return type: The base-2 logarithm of the x parameter. If the x parameter is negative, this function returns indefinite. If the x parameter is 0, this function returns +INF.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-log2
+
+modf() - Splits the value x into fractional and integer parts, each of which has the same sign as x.
+Usage: modf(x, ip)
+Parameters: x - The value to split, ip - Output parameter for the integer part
+Return type: The signed-fractional portion of x.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-modf
+
+noise() - Generates a random value using the Perlin-noise algorithm.
+Usage: noise(x)
+Parameter: x - A vector from which to generate Perlin noise.
+Return type: The Perlin noise value within a range between -1 and 1.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-noise
+
+radians() - Converts the specified value from degrees to radians.
+Usage: radians(x)
+Parameter: x - The value in degrees
+Return type: The x parameter converted from degrees to radians.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-radians
+
+reflect() - Returns a reflection vector using an incident ray and a surface normal.
+Usage: reflect(i, n)
+Parameters: i - The incident vector, n - The normal vector
+Return type: A floating-point, reflection vector.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-reflect
+
+refract() - Returns a refraction vector using an entering ray, a surface normal, and a refraction index.
+Usage: refract(i, n, eta)
+Parameters: i - The incident vector, n - The normal vector, eta - The index of refraction
+Return type: A floating-point, refraction vector. If the angle between the entering ray i and the surface normal n is too great for a given refraction index ?, the return value is (0,0,0).
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-refract
+
+round() - Rounds the specified value to the nearest integer. Halfway cases are rounded to the nearest even.
+Usage: round(x)
+Parameter: x - The specified value
+Return type: The x parameter, rounded to the nearest integer within a floating-point type.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-round
+
+rsqrt() - Returns the reciprocal of the square root of the specified value.
+Usage: rsqrt(x)
+Parameter: x - The specified value
+Return type: The reciprocal of the square root of the x parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-rsqrt
+
+sign() - Returns the sign of x.
+Usage: sign(x)
+Parameter: x - The specified value
+Return type: Returns -1 if x is less than zero; 0 if x equals zero; and 1 if x is greater than zero.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-sign
+
+sincos() - Returns the sine and cosine of x.
+Usage: sincos(x, s, c)
+Parameters: x - The angle in radians, s - Output parameter for sine, c - Output parameter for cosine
+Return type: N/A
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-sincos
+
+sinh() - Returns the hyperbolic sine of the specified value.
+Usage: sinh(x)
+Parameter: x - The specified value
+Return type: The hyperbolic sine of the x parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-sinh
+
+smoothstep() - Returns a smooth Hermite interpolation between 0 and 1, if x is in the range [min, max].
+Usage: smoothstep(min, max, x)
+Parameters: min - The minimum range, max - The maximum range, x - The value to interpolate
+Return type: Returns 0 if x is less than min; 1 if x is greater than max; otherwise, a value between 0 and 1 if x is in the range [min, max].
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-smoothstep
+
+step() - Compares two values, returning 0 or 1 based on which value is greater.
+Usage: step(y, x)
+Parameters: y - The first value, x - The second value
+Return type: 1 if the x parameter is greater than or equal to the y parameter; otherwise, 0.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-step
+
+tanh() - Returns the hyperbolic tangent of the specified value.
+Usage: tanh(x)
+Parameter: x - The specified value
+Return type: The hyperbolic tangent of the x parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tanh
+
+tex1D() - Samples a 1D texture.
+Usage: tex1D(s, t)
+Parameters: s - The sampler state, t - The texture coordinate
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex1d
+
+tex1D() (mip level) - Samples a 1D texture using a gradient to select the mip level.
+Usage: tex1D(s, t, ddx, ddy)
+Parameters: s - The sampler state, t - The texture coordinate, ddx - The rate of change of the texture coordinate in screen-space x, ddy - The rate of change of the texture coordinate in screen-space y
+Return type: The value of the texture data.
+https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex1d-s-t-ddx-ddy
+
+tex1Dbias() - Samples a 1D texture after biasing the mip level by t.w.
+Usage: tex1Dbias(s, t)
+Parameters: s - The sampler state, t - The texture coordinate (t.w used for mip level bias)
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex1dbias
+
+tex1Dgrad() - Samples a 1D texture using a gradient to select the mip level.
+Usage: tex1Dgrad(s, t, ddx, ddy)
+Parameters: s - The sampler state, t - The texture coordinate, ddx - The rate of change of the texture coordinate in screen-space x, ddy - The rate of change of the texture coordinate in screen-space y
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex1dgrad
+
+tex1Dlod() - Samples a 1D texture with mipmaps. The mipmap LOD is specified in t.w. [Shader Model 3+ only]
+Usage: tex1Dlod(s, t)
+Parameters: s - The sampler state, t - The texture coordinate (t.w specifies mipmap LOD)
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex1dlod
+
+tex1Dproj() - Samples a 1D texture using a projective divide; the texture coordinate is divided by t.w before the lookup takes place.
+Usage: tex1Dproj(s, t)
+Parameters: s - The sampler state, t - The projective texture coordinate
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex1dproj
+
+tex2D() (mip level) - Samples a 2D texture using a gradient to select the mip level.
+Usage: tex2D(s, t, ddx, ddy)
+Parameters: s - The sampler state, t - The texture coordinate, ddx - The rate of change of the texture coordinate in screen-space x, ddy - The rate of change of the texture coordinate in screen-space y
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex2d-s-t-ddx-ddy
+
+tex2Dbias() - Samples a 2D texture after biasing the mip level by t.w.
+Usage: tex2Dbias(s, t)
+Parameters: s - The sampler state, t - The texture coordinate (t.w used for mip level bias)
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex2dbias
+
+tex2Dgrad - Samples a 2D texture using a gradient to select the mip level.
+Usage: tex2Dgrad(s, t, ddx, ddy)
+Parameters: s - The sampler state, t - The texture coordinate, ddx - The rate of change of the texture coordinate in screen-space x, ddy - The rate of change of the texture coordinate in screen-space y
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex2dgrad
+
+tex2Dlod() - Samples a 2D texture with mipmaps. The mipmap LOD is specified in t.w. [Shader Model 3+ only]
+Usage: tex2Dlod(s, t)
+Parameters: s - The sampler state, t - The texture coordinate (t.w specifies mipmap LOD)
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex2dlod
+
+tex2Dproj() - Samples a 2D texture using a projective divide; the texture coordinate is divided by t.w before the lookup takes place.
+Usage: tex2Dproj(s, t)
+Parameters: s - The sampler state, t - The projective texture coordinate
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex2dproj
+
+tex3D() (mip level) - Samples a 3D texture using a gradient to select the mip level.
+Usage: tex3D(s, t, ddx, ddy)
+Parameters: s - The sampler state, t - The texture coordinate, ddx - The rate of change of the texture coordinate in screen-space x, ddy - The rate of change of the texture coordinate in screen-space y
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex3d-s-t-ddx-ddy
+
+tex3Dbias() - Samples a 3D texture after biasing the mip level by t.w.
+Usage: tex3Dbias(s, t)
+Parameters: s - The sampler state, t - The texture coordinate (t.w used for mip level bias)
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex3dbias
+
+tex3Dgrad - Samples a 3D texture using a gradient to select the mip level.
+Usage: tex3Dgrad(s, t, ddx, ddy)
+Parameters: s - The sampler state, t - The texture coordinate, ddx - The rate of change of the texture coordinate in screen-space x, ddy - The rate of change of the texture coordinate in screen-space y
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex3dgrad
+
+tex3Dlod() - Samples a 3D texture with mipmaps. The mipmap LOD is specified in t.w. [Shader Model 3+ only]
+Usage: tex3Dlod(s, t)
+Parameters: s - The sampler state, t - The texture coordinate (t.w specifies mipmap LOD)
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex3dlod
+
+tex3Dproj() - Samples a 3D texture using a projective divide; the texture coordinate is divided by t.w before the lookup takes place.
+Usage: tex3Dproj(s, t)
+Parameters: s - The sampler state, t - The projective texture coordinate
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-tex3dproj
+
+texCUBE() - Samples a cube texture.
+Usage: texCUBE(s, t)
+Parameters: s - The sampler state, t - The texture coordinate
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-texcube
+
+texCUBE() (mip level) - Samples a cube texture using a gradient to select the mip level.
+Usage: texCUBE(s, t, ddx, ddy)
+Parameters: s - The sampler state, t - The texture coordinate, ddx - The rate of change of the texture coordinate in screen-space x, ddy - The rate of change of the texture coordinate in screen-space y
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-texcube-s-t-ddx-ddy
+
+texCUBEbias() - Samples a cube texture after biasing the mip level by t.w.
+Usage: texCUBEbias(s, t)
+Parameters: s - The sampler state, t - The texture coordinate (t.w used for mip level bias)
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-texcube-s-t-ddx-ddy
+
+texCUBEgrad() - Samples a cube texture using a gradient to select the mip level.
+Usage: texCUBEgrad(s, t, ddx, ddy)
+Parameters: s - The sampler state, t - The texture coordinate, ddx - The rate of change of the texture coordinate in screen-space x, ddy - The rate of change of the texture coordinate in screen-space y
+Return type: The value of the texture data.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-texcubegrad
+
+texCUBElod() - Samples a cube texture with mipmaps. The mipmap LOD is specified in t.w. [Shader Model 3+ only]
+Usage: texCUBElod(s, t)
+Parameters: s - The sampler state, t - The texture coordinate (t.w specifies mipmap LOD)
+Return type: The value of the texture data.
+https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-texcubelod
+
+texCUBEproj() - Samples a cube texture using a projective divide; the texture coordinate is divided by t.w before the lookup takes place.
+Usage: texCUBEproj(s, t)
+Parameters: s - The sampler state, t - The projective texture coordinate
+Return type: The value of the texture data.
+https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-texcubeproj
+
+transpose() - Transposes the specified input matrix.
+Usage: transpose(m)
+Parameter: m - The specified matrix value
+Return type: The transposed value of the x parameter.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-transpose
+
+trunc() (Not natively supported on MilkDrop, added in include.fx) - Truncates a floating-point value to the integer component.
+Usage: trunc(x)
+Parameter: x - The specified value
+Return type: The input value truncated to an integer component.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-trunc
+
+All undocumented functions supported by MilkDrop are borrowed from https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-intrinsic-functions
+If there are more undocumented shader functions, please contact me on Discord, Twitter/X or Reddit.
+Written by DJ XcitMosphere/Incubo_/Se7enSlasher

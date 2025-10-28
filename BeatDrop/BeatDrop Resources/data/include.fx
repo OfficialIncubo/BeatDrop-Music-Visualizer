@@ -15,6 +15,7 @@ float4   _c10;  // .xyzw ~= 0.5 + 0.5*cos(time * float4(~0.005, ~0.008, ~0.013, 
 float4   _c11;  // .xyzw ~= same, but using sin()
 float4   _c12;  // .xyz = mip info for main image (.x=#across, .y=#down, .z=avg); .w = unused
 float4   _c13;  //.xy = blur2_min,blur2_max; .zw = blur3_min, blur3_max.
+float4   _c14;  // mouse
 float4   _qa;  // q vars bank 1 [q1-q4]
 float4   _qb;  // q vars bank 2 [q5-q8]
 float4   _qc;  // q vars ...
@@ -113,15 +114,30 @@ float4x3 rot_rand4;
 #define blur2_max _c13.y
 #define blur3_min _c13.z
 #define blur3_max _c13.w
+#define mouse _c14
+#define mouse_x _c14.x
+#define mouse_y _c14.y
+#define mouse_pos _c14.xy
 #define GetMain(uv) (tex2D(sampler_main,uv).xyz)
 #define GetPixel(uv) (tex2D(sampler_main,uv).xyz)
 #define GetBlur1(uv) (tex2D(sampler_blur1,uv).xyz*_c5.x + _c5.y)
 #define GetBlur2(uv) (tex2D(sampler_blur2,uv).xyz*_c5.z + _c5.w)
 #define GetBlur3(uv) (tex2D(sampler_blur3,uv).xyz*_c6.x + _c6.y)
 
+#define SAMPLER1D sampler1D
+#define SAMPLER2D sampler2D
+#define SAMPLER3D sampler3D
+#define texture1D tex1D
+#define texture2D tex2D
+#define texture3D tex3D
+
 #define lum(x) (dot(x,float3(0.32,0.49,0.29)))
+#define trunc(x) ((x) < 0 ? ceil((x)) : floor((x)))
+#define tex1d tex1D
 #define tex2d tex2D
 #define tex3d tex3D
+#define texcube texCUBE
+#define texCube texCUBE
 
 // previous-frame-image samplers:
 texture   PrevFrameImage;

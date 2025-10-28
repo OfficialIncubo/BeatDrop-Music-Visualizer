@@ -1,0 +1,15 @@
+Added init/per-frame/per-vertex variables: mousex, mousey, mousedown, mouseclick
+
+Mouse controls:
+mouse_x - retrieves the X position of mouse
+mouse_y - retrieves the Y position of mouse
+mouse_pos - retrieves the XY position of mouse
+
+You can also use:
+mouse.x - retrieves the X position of mouse
+mouse.y - retrieves the Y position of mouse
+mouse.z - retrieves if the left or right button of the mouse is down or not, getting X mouse coordinate (positive if held, otherwise negative)
+mouse.w - retrieves if the left or right button of the mouse is clicked (button up) or not, getting Y mouse coordinate (positive if clicked, otherwise negative)
+
+Note that both mouse coordinates return -1 when the pointer is outside the window. Make sure you add statements while editing presets.
+If you want to really use with mouse down/click events, just pass these per-frame variables mentioned above to q variables and then assign mouse.z or mouse.w with any q variable you assigned (e.g. mouse.z = (any q var);).
