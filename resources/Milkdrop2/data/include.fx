@@ -124,12 +124,20 @@ float4x3 rot_rand4;
 #define GetBlur2(uv) (tex2D(sampler_blur2,uv).xyz*_c5.z + _c5.w)
 #define GetBlur3(uv) (tex2D(sampler_blur3,uv).xyz*_c6.x + _c6.y)
 
+#define SAMPLER1D sampler1D
 #define SAMPLER2D sampler2D
+#define SAMPLER3D sampler3D
+#define texture1D tex1D
 #define texture2D tex2D
+#define texture3D tex3D
 
 #define lum(x) (dot(x,float3(0.32,0.49,0.29)))
+#define trunc(x) ((x) < 0 ? ceil((x)) : floor((x)))
+#define tex1d tex1D
 #define tex2d tex2D
 #define tex3d tex3D
+#define texcube texCUBE
+#define texCube texCUBE
 
 // previous-frame-image samplers:
 texture   PrevFrameImage;
