@@ -7,5 +7,8 @@ Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/
 all() - Determines if all components of the specified value are non-zero.
 Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-all
 
+distance() - Returns a distance scalar between two vectors.
+Learn more about this function: https://learn.microsoft.com/en-us/windows/win32/direct3dhlsl/dx-graphics-hlsl-distance
+
 If there are more undocumented shader functions, please contact me on Discord, Twitter/X or Reddit.
 Written by DJ XcitMosphere/Incubo_/Se7enSlasher
