@@ -1080,7 +1080,7 @@ BEGIN
     IDS_UPGRADE_SHADERS_TO_USE_PS2X 
                             "Do you want to upgrade all shaders to use (at least) pixel shader 2.X?  [y/N]"
     IDS_PRESS_ESC_TO_RETURN "Press ESC to return."
-    IDS_COULD_NOT_LOAD_TEXTURE_X "Could not load texture: %hs.%hs"
+    IDS_COULD_NOT_LOAD_TEXTURE_X "Could not load texture: %ls%ls"
     IDS_ERROR_COMPILING_X_X_SHADER "Error compiling %hs %hs shader:\n"
 END
 
