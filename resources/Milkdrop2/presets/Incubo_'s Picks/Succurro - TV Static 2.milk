@@ -389,13 +389,13 @@ per_frame_33=q7=phase;  // normalized phase between beats
 per_frame_34=q6=bpm; // bpm
 per_frame_35=decay=.95+.01*75/FPS;
 per_frame_36=
-per_frame_37=wx=(1-beat)*wx+beat*(-5+10*rand(1000)/1000);
+per_frame_37=wx=(1-beat)*wx+beat*(-5+10*int(rand(1000))/1000);
 per_frame_38=wx=(1-beat)*wx+beat*(wx+4*sign(wx));
-per_frame_39=wy=(1-beat)*wy+beat*(-10+20*rand(1000)/1000);
-per_frame_40=fx=(1-beat)*fx+beat*(-1+rand(5));
-per_frame_41=am=(1-beat)*am+beat*(1.5*rand(100)/100);
+per_frame_39=wy=(1-beat)*wy+beat*(-10+20*int(rand(1000))/1000);
+per_frame_40=fx=(1-beat)*fx+beat*(-1+int(rand(5)));
+per_frame_41=am=(1-beat)*am+beat*(1.5*int(rand(100))/100);
 per_frame_42=am=(1-beat)*am+beat*(equal(fx,-1)*(.5+am)*sign(-wx)+above(fx,-1)*am);
-per_frame_43=rotval=(1-beat)*rotval+beat*(.02*q6/140)*(-1+2*rand(100)/100);
+per_frame_43=rotval=(1-beat)*rotval+beat*(.02*q6/140)*(-1+2*int(rand(100))/100);
 per_frame_44=myrot=(1-beat)*(myrot+rotval)+beat*0;
 per_frame_45=q1=wx;
 per_frame_46=q2=wy;
