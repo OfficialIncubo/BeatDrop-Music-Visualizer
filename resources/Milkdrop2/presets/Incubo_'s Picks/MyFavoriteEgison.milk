@@ -1,0 +1,359 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=3
+[preset00]
+fRating=4.500
+fGammaAdj=2.300
+fDecay=0.965
+fVideoEchoZoom=1.025
+fVideoEchoAlpha=0.450
+nVideoEchoOrientation=3
+nWaveMode=6
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.200
+fWaveScale=1.450
+fWaveSmoothing=0.100
+fWaveParam=0.200
+fModWaveAlphaStart=0.650
+fModWaveAlphaEnd=1.500
+fWarpAnimSpeed=0.850
+fWarpScale=1.447
+fZoomExponent=1.01200
+fShader=0.500
+zoom=0.99950
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=0.500
+wave_g=0.500
+wave_b=0.500
+wave_x=0.000
+wave_y=0.500
+ob_size=0.005
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.005
+ib_r=0.150
+ib_g=0.150
+ib_b=0.150
+ib_a=0.000
+nMotionVectorsX=96.000
+nMotionVectorsY=36.372
+mv_dx=0.000
+mv_dy=0.000
+mv_l=5.000
+mv_r=1.000
+mv_g=1.000
+mv_b=0.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=// Initialize quantum consciousness parameters
+per_frame_init_2=consciousness_phase = 0;
+per_frame_init_3=neural_energy = 0;
+per_frame_init_4=bass_momentum = 0;
+per_frame_init_5=mid_momentum = 0;
+per_frame_init_6=treb_momentum = 0;
+per_frame_init_7=soul_depth = 0;
+per_frame_init_8=last_beat = 0;
+per_frame_init_9=beat_counter = 0;
+per_frame_init_10=dimensional_shift = 0;
+per_frame_1=// === MUSICAL INTELLIGENCE SYSTEM ===
+per_frame_2=// Beat detection with multiple thresholds
+per_frame_3=energy_total = bass + mid * 0.8 + treb * 0.5;
+per_frame_4=energy_normalized = energy_total / 2.3;
+per_frame_5=
+per_frame_6=beat_threshold = 1.2;
+per_frame_7=is_beat = if(above(energy_normalized, beat_threshold) * (1 - equal(last_beat, 1)), 1, 0);
+per_frame_8=last_beat = if(above(energy_normalized, beat_threshold), 1, 0);
+per_frame_9=
+per_frame_10=// Accumulate soul energy over time
+per_frame_11=soul_energy_raw = soul_energy_raw * 0.94 + is_beat * 0.4 + bass * 0.08 + mid * 0.06;
+per_frame_12=soul_depth = soul_depth * 0.98 + energy_normalized * 0.02;
+per_frame_13=
+per_frame_14=// Create momentum for each frequency range
+per_frame_15=bass_momentum = bass_momentum * 0.87 + bass * 0.13;
+per_frame_16=mid_momentum = mid_momentum * 0.89 + mid * 0.11;
+per_frame_17=treb_momentum = treb_momentum * 0.91 + treb * 0.09;
+per_frame_18=
+per_frame_19=// Neural intensity combines all energies
+per_frame_20=neural_energy = neural_energy * 0.85 + (bass_momentum + mid_momentum * 0.8 + treb_momentum * 0.6) * 0.15;
+per_frame_21=q8 = min(neural_energy, 2);
+per_frame_22=
+per_frame_23=// === CONSCIOUSNESS EVOLUTION ===
+per_frame_24=// Primary phase drives all rotation and evolution
+per_frame_25=consciousness_speed = 0.015 + soul_energy_raw * 0.03 + is_beat * 0.08;
+per_frame_26=consciousness_phase = consciousness_phase + consciousness_speed * (fps / 60);
+per_frame_27=q1 = consciousness_phase;
+per_frame_28=
+per_frame_29=// Breathing life force
+per_frame_30=breath_rate = 0.6 + bass_momentum * 0.3;
+per_frame_31=breath = 0.5 + 0.5 * sin(time * breath_rate);
+per_frame_32=q2 = breath;
+per_frame_33=
+per_frame_34=// Dimensional shift on strong beats
+per_frame_35=dimensional_shift = dimensional_shift * 0.92 + is_beat * 0.5;
+per_frame_36=q3 = dimensional_shift;
+per_frame_37=
+per_frame_38=// === GLOBAL TRANSFORMATIONS ===
+per_frame_39=// Zoom pulses with energy
+per_frame_40=zoom = 0.9995 + 0.003 * sin(time * 0.4 + soul_energy_raw * 2);
+per_frame_41=zoom = zoom + bass * 0.015 - is_beat * 0.08;
+per_frame_42=zoom = max(0.95, min(1.05, zoom));
+per_frame_43=
+per_frame_44=// Rotation responds to all frequencies
+per_frame_45=rot_speed = 0.003 * sin(time * 0.23);
+per_frame_46=rot_speed = rot_speed + bass_momentum * 0.008;
+per_frame_47=rot_speed = rot_speed + mid_momentum * 0.005 * sin(time * 0.5);
+per_frame_48=rot_speed = rot_speed + treb_momentum * 0.003 * cos(time * 0.7);
+per_frame_49=rot = rot + rot_speed;
+per_frame_50=
+per_frame_51=// Center drifts through conscious space
+per_frame_52=cx = 0.5 + 0.08 * sin(time * 0.17 + consciousness_phase * 0.3);
+per_frame_53=cx = cx + 0.04 * sin(time * 0.41 * mid_momentum + bass_momentum);
+per_frame_54=cy = 0.5 + 0.08 * cos(time * 0.13 + consciousness_phase * 0.2);
+per_frame_55=cy = cy + 0.04 * cos(time * 0.37 * bass_momentum + mid_momentum);
+per_frame_56=
+per_frame_57=// Directional flow based on frequency emotion
+per_frame_58=dx = 0.001 * sin(time * 0.29 + bass * 2) + 0.0008 * sin(consciousness_phase * 0.5);
+per_frame_59=dy = 0.001 * cos(time * 0.31 + mid * 2) + 0.0008 * cos(consciousness_phase * 0.3);
+per_frame_60=
+per_frame_61=// Warp creates dimensional rifts
+per_frame_62=warp = 0.01 + 0.08 * breath * soul_energy_raw;
+per_frame_63=warp = warp + dimensional_shift * 0.15;
+per_frame_64=warp = min(warp, 0.5);
+per_frame_65=
+per_frame_66=// Aspect ratio modulation
+per_frame_67=sx = 1 + 0.025 * sin(time * 0.37 + treb_momentum * 3);
+per_frame_68=sy = 1 + 0.025 * cos(time * 0.41 + bass_momentum * 3);
+per_frame_69=
+per_frame_70=// === COLOR EVOLUTION ===
+per_frame_71=// Wave colors shift through emotional spectrum
+per_frame_72=wave_r = 0.5 + 0.5 * sin(time * 0.5 + bass * 3 + consciousness_phase * 0.3);
+per_frame_73=wave_g = 0.5 + 0.5 * sin(time * 0.7 + mid * 3 + consciousness_phase * 0.5 + 2.1);
+per_frame_74=wave_b = 0.5 + 0.5 * sin(time * 0.9 + treb * 3 + consciousness_phase * 0.7 + 4.2);
+per_frame_75=
+per_frame_76=// Dynamic decay creates consciousness trails
+per_frame_77=decay = 0.965 - bass * 0.02 - is_beat * 0.06;
+per_frame_78=decay = max(0.90, min(0.99, decay));
+per_frame_79=
+per_frame_80=// Motion vectors show energy flow
+per_frame_81=mv_a = 0.15 + soul_energy_raw * 0.25;
+per_frame_82=mv_r = 0.5 + 0.5 * sin(consciousness_phase * 0.4);
+per_frame_83=mv_g = 0.5 + 0.5 * sin(consciousness_phase * 0.6 + 2.1);
+per_frame_84=mv_b = 0.5 + 0.5 * sin(consciousness_phase * 0.8 + 4.2);
+per_pixel_1=// === QUANTUM FIELD DISTORTION ===
+per_pixel_2=// Calculate polar coordinates from center
+per_pixel_3=rel_x = x - cx;
+per_pixel_4=rel_y = y - cy;
+per_pixel_5=dist = sqrt(rel_x * rel_x + rel_y * rel_y);
+per_pixel_6=ang = atan2(rel_y, rel_x);
+per_pixel_7=
+per_pixel_8=// Multiple interference patterns
+per_pixel_9=consciousness_wave1 = sin(dist * 12 - consciousness_phase * 4 + ang * 3);
+per_pixel_10=consciousness_wave2 = sin(dist * 8 + consciousness_phase * 3 - ang * 5);
+per_pixel_11=consciousness_wave3 = sin(dist * 20 - consciousness_phase * 2 + ang * 7);
+per_pixel_12=
+per_pixel_13=// Frequency-specific field layers
+per_pixel_14=bass_field = sin(ang * 4 + dist * 6 + consciousness_phase * 2) * bass_momentum;
+per_pixel_15=mid_field = sin(ang * 6 - dist * 10 + consciousness_phase * 3) * mid_momentum;
+per_pixel_16=treb_field = sin(ang * 8 + dist * 14 - consciousness_phase * 4) * treb_momentum;
+per_pixel_17=
+per_pixel_18=// Combine all consciousness fields
+per_pixel_19=total_field = consciousness_wave1 * 0.3 + consciousness_wave2 * 0.25 + consciousness_wave3 * 0.15;
+per_pixel_20=total_field = total_field + bass_field * 0.4 + mid_field * 0.35 + treb_field * 0.25;
+per_pixel_21=
+per_pixel_22=// Radial energy pulses
+per_pixel_23=radial_pulse = sin(dist * 25 - time * 2 + soul_energy_raw * 8);
+per_pixel_24=
+per_pixel_25=// Angular segmentation creates quantum cells
+per_pixel_26=angular_quantum = sin(ang * 12 + time * 1.3 + dimensional_shift * 5);
+per_pixel_27=
+per_pixel_28=// Apply distortion to spacetime
+per_pixel_29=displacement = (total_field + radial_pulse * 0.4 + angular_quantum * 0.3) * 0.015;
+per_pixel_30=displacement = displacement * (1 + breath * 0.5);
+per_pixel_31=
+per_pixel_32=// Warp zoom and rotation per pixel
+per_pixel_33=zoom = zoom + displacement * sin(dist * 8);
+per_pixel_34=rot = rot + displacement * 0.6 * cos(ang * 3);
+per_pixel_35=
+per_pixel_36=// Dimensional shifting creates ripples
+per_pixel_37=dimensional_factor = dimensional_shift * sin(dist * 15 + ang * 4);
+per_pixel_38=zoom = zoom + dimensional_factor * 0.03;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // === QUANTUM CONSCIOUSNESS WARP SHADER ===
+warp_4=`    // Multi-dimensional reality warping with musical intelligence
+warp_5=`    
+warp_6=`    float2 uv_center = uv - 0.5;
+warp_7=`    float dist = length(uv_center);
+warp_8=`    float angle = atan2(uv_center.y, uv_center.x);
+warp_9=`    
+warp_10=`    // Sample current frame
+warp_11=`    float3 current = tex2D(sampler_main, uv).xyz;
+warp_12=`    ret = current;
+warp_13=`    float3 original = ret;
+warp_14=`    
+warp_15=`    // === ORGANIC CONSCIOUSNESS SPREADING ===
+warp_16=`    // Neural growth pattern
+warp_17=`    float spread_amount = length(texsize.zw) * 6;
+warp_18=`    ret = max(ret, tex2D(sampler_main, (uv - 0.5) * (1 - spread_amount) + 0.5).xyz * 0.95);
+warp_19=`    ret = max(ret, tex2D(sampler_main, (uv - 0.5) * (1 + spread_amount) + 0.5).xyz * 0.95);
+warp_20=`    
+warp_21=`    // === DIMENSIONAL FEEDBACK LOOPS ===
+warp_22=`    // Create depth through blur differential
+warp_23=`    float3 blur_diff = ret - GetBlur1(uv);
+warp_24=`    ret += blur_diff * 0.25;
+warp_25=`    
+warp_26=`    // === VOLUMETRIC CONSCIOUSNESS NOISE ===
+warp_27=`    // 3D noise injection for texture complexity
+warp_28=`    float noise_scale = 0.08;
+warp_29=`    float noise_speed = 0.15;
+warp_30=`    float4 consciousness_noise = tex3D(sampler_noisevol_hq,
+warp_31=`        float3(uv * texsize.xy * texsize_noisevol_hq.zw * noise_scale,
+warp_32=`               time * noise_speed + q1 * 0.3));
+warp_33=`    
+warp_34=`    // === QUANTUM COLOR SHIFTING ===
+warp_35=`    // Musical intelligence drives channel manipulation
+warp_36=`    float energy_threshold = q8;
+warp_37=`    float consciousness_phase = q1;
+warp_38=`    float dimensional_shift = q3;
+warp_39=`    
+warp_40=`    // Phase-based color rotation
+warp_41=`    if (energy_threshold > 0.5) {
+warp_42=`        float shift_factor = sin(consciousness_phase * 2 + dist * 5) * 0.5 + 0.5;
+warp_43=`        if (shift_factor > 0.6) {
+warp_44=`            ret.x = original.z * (1.0 - consciousness_noise.x * 0.3);
+warp_45=`            ret.y = original.x * (1.0 - consciousness_noise.y * 0.3);
+warp_46=`            ret.z = original.y * (1.0 - consciousness_noise.z * 0.3);
+warp_47=`        }
+warp_48=`    }
+warp_49=`    
+warp_50=`    // === CONDITIONAL NOISE INJECTION ===
+warp_51=`    // Creates musical-reactive texture patterns
+warp_52=`    float noise_threshold = 0.3 + energy_threshold * 0.2;
+warp_53=`    if (ret.x > noise_threshold && ret.x < 0.8) {
+warp_54=`        ret.y += consciousness_noise.x * 0.4 * energy_threshold;
+warp_55=`    }
+warp_56=`    if (ret.y > noise_threshold && ret.y < 0.8) {
+warp_57=`        ret.z += consciousness_noise.y * 0.4 * energy_threshold;
+warp_58=`    }
+warp_59=`    if (ret.z > noise_threshold && ret.z < 0.8) {
+warp_60=`        ret.x += consciousness_noise.z * 0.4 * energy_threshold;
+warp_61=`    }
+warp_62=`    
+warp_63=`    // === DIMENSIONAL RIFT EFFECT ===
+warp_64=`    // Strong dimensional shifts create reality tears
+warp_65=`    if (dimensional_shift > 0.3) {
+warp_66=`        float rift_pattern = sin(angle * 8 + time * 2) * sin(dist * 15 - time * 3);
+warp_67=`        if (rift_pattern > 0.5) {
+warp_68=`            ret = 1.0 - ret * 0.8;
+warp_69=`        }
+warp_70=`    }
+warp_71=`    
+warp_72=`    // === CONSCIOUSNESS DECAY ===
+warp_73=`    // Intelligent temporal fade preserves intense moments
+warp_74=`    float decay_rate = 0.018 - energy_threshold * 0.012;
+warp_75=`    decay_rate = decay_rate - dimensional_shift * 0.01;
+warp_76=`    ret -= max(0.005, decay_rate);
+warp_77=`    
+warp_78=`    // Ensure valid color range
+warp_79=`    ret = saturate(ret);
+warp_80=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    // === QUANTUM EDGE DETECTION COMPOSITE ===
+comp_4=`    // Advanced neural network visualization
+comp_5=`    
+comp_6=`    float energy = q8;
+comp_7=`    float consciousness = q1;
+comp_8=`    
+comp_9=`    // Subtle border crop for stability
+comp_10=`    uv = 0.5 + (uv - 0.5) * 0.96;
+comp_11=`    
+comp_12=`    // === MULTI-SCALE GRADIENT ANALYSIS ===
+comp_13=`    // Detect neural pathways through gradient field
+comp_14=`    float2 d1 = texsize.zw * 3;
+comp_15=`    float2 d2 = texsize.zw * 6;
+comp_16=`    
+comp_17=`    // Fine detail gradients
+comp_18=`    float3 dx1 = GetBlur1(uv + float2(1,0) * d1) - GetBlur1(uv - float2(1,0) * d1);
+comp_19=`    float3 dy1 = GetBlur1(uv + float2(0,1) * d1) - GetBlur1(uv - float2(0,1) * d1);
+comp_20=`    
+comp_21=`    // Coarse structure gradients
+comp_22=`    float3 dx2 = GetBlur2(uv + float2(1,0) * d2) - GetBlur2(uv - float2(1,0) * d2);
+comp_23=`    float3 dy2 = GetBlur2(uv + float2(0,1) * d2) - GetBlur2(uv - float2(0,1) * d2);
+comp_24=`    
+comp_25=`    // === NEURAL TEXTURE SYNTHESIS ===
+comp_26=`    // Volumetric noise coupled with gradient field
+comp_27=`    float gradient_magnitude = length(dx1) + length(dy1);
+comp_28=`    float4 neural_noise = tex3D(sampler_noisevol_hq,
+comp_29=`        float3((uv + float2(lum(dx1), lum(dy1)) * 0.5) * 
+comp_30=`               texsize.xy * texsize_noisevol_hq.zw * 0.06,
+comp_31=`               time * 0.18 + consciousness * 0.2));
+comp_32=`    
+comp_33=`    // === CONSCIOUSNESS FIELD DISPLACEMENT ===
+comp_34=`    // Gradient-driven UV warping for organic feel
+comp_35=`    float2 displacement = float2(lum(dx1), lum(dy1)) * 0.05;
+comp_36=`    displacement += float2(lum(dx2), lum(dy2)) * 0.03;
+comp_37=`    uv -= displacement * (0.5 + energy * 0.5);
+comp_38=`    
+comp_39=`    // === MULTI-LAYER COMPOSITION ===
+comp_40=`    // Create depth through differential blur
+comp_41=`    float3 layer1 = GetPixel(uv);
+comp_42=`    float3 layer2 = GetBlur1(uv);
+comp_43=`    float3 layer3 = GetBlur2(uv);
+comp_44=`    float3 layer4 = GetBlur3(uv);
+comp_45=`    
+comp_46=`    // Neural pathway enhancement
+comp_47=`    ret = abs(layer1 * 2.0 + layer2 - layer3 * 0.8 - layer4 * 0.6);
+comp_48=`    
+comp_49=`    // === NOISE-ENHANCED CONSCIOUSNESS ===
+comp_50=`    // Amplify with musical-reactive noise
+comp_51=`    ret *= lum(neural_noise) * (2.5 + energy * 1.5);
+comp_52=`    
+comp_53=`    // === CONTRAST SCULPTING ===
+comp_54=`    // Power curve for detail enhancement
+comp_55=`    ret = pow(ret, float3(0.6, 0.55, 0.5));
+comp_56=`    
+comp_57=`    // Boost mid-tones, preserve extremes
+comp_58=`    ret = ret * (1.0 + (0.5 - ret) * 0.3);
+comp_59=`    
+comp_60=`    // === DIMENSIONAL INVERSION ===
+comp_61=`    // Create striking visual contrast for consciousness visualization
+comp_62=`    float inversion_factor = 0.8 + energy * 0.2;
+comp_63=`    ret = lerp(ret, 1.0 - ret, inversion_factor);
+comp_64=`    
+comp_65=`    // === COLOR GRADING ===
+comp_66=`    // Push toward cyan-magenta consciousness spectrum
+comp_67=`    ret.r *= 0.95;
+comp_68=`    ret.g *= 1.02;
+comp_69=`    ret.b *= 1.08;
+comp_70=`    
+comp_71=`    // Final clamp
+comp_72=`    ret = saturate(ret);
+comp_73=`}
