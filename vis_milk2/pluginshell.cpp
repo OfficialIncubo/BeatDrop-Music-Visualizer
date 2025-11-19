@@ -2268,7 +2268,7 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 		{
 			if (renderWindowHidden)
 			{
-				ShowWindow(hWnd, SW_SHOW);
+				ShowWindow(GetPluginWindow(), SW_SHOW);
 				UpdateTrayIconForShownWindow();
 			}
 		}

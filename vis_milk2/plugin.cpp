@@ -628,6 +628,7 @@ SPOUT :
 #include <cstdint>
 #include <fstream>
 #include "AutoCharFn.h"
+#include "Milkdrop2PcmVisualizer.h"
 #include "songtitlegetter.h"
 #include "AMDDetection.h"
 #include <random>
@@ -1518,7 +1519,8 @@ void CPlugin::MyWriteConfig()
 	//WritePrivateProfileIntW(m_bAlways3D, 			"bAlways3D",			pIni, "settings");
     //WritePrivateProfileFloat(m_fStereoSep,          "fStereoSep",           pIni, "settings");
 	//WritePrivateProfileIntW(m_bFixSlowText,		    "bFixSlowText",			pIni, "settings");
-	WritePrivateProfileIntW(m_bAlwaysOnTop,		    L"bAlwaysOnTop",			pIni, L"settings");
+    if (!fullscreen && !stretch)
+	    WritePrivateProfileIntW(m_bAlwaysOnTop,		    L"bAlwaysOnTop",			pIni, L"settings");
 	//WritePrivateProfileIntW(m_bWarningsDisabled,	    "bWarningsDisabled",	pIni, "settings");
 	WritePrivateProfileIntW(m_bWarningsDisabled2,	L"bWarningsDisabled2",	pIni, L"settings");
 	//WritePrivateProfileIntW(m_bAnisotropicFiltering,	"bAnisotropicFiltering",pIni, "settings");
@@ -11398,11 +11400,11 @@ void CPlugin::GenCompPShaderText(char *szShaderText, float brightness, float ve_
         p += sprintf(p, "    ret *= %.2f + %.2f*hue_shader; //old hue shader effect%c", 1-hue_shader, hue_shader, LF);
 
     if (bBrighten)
-        p += sprintf(p, "    ret = sqrt(ret); //brighten%c", LF);
+        p += sprintf(p, "    ret = 1 - (1-ret) * (1-ret); //brighten%c", LF);
     if (bDarken)
         p += sprintf(p, "    ret *= ret; //darken%c", LF);
     if (bSolarize)
-        p += sprintf(p, "    ret = ret*(1-ret)*4; //solarize%c", LF);
+        p += sprintf(p, "    ret = ret*(1-ret)*2; //solarize%c", LF);
     if (bInvert)
         p += sprintf(p, "    ret = 1 - ret; //invert%c", LF);
     //p += sprintf(p, "    ret.w = vDiffuse.w; // pass alpha along - req'd for preset blending%c", LF);

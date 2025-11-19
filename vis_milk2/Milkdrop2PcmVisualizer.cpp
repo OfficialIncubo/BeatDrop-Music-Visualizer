@@ -169,9 +169,7 @@ static D3DPRESENT_PARAMETERS d3dPp;
 static LONG lastWindowStyle = 0;
 static LONG lastWindowStyleEx = 0;
 
-static bool fullscreen = false;
-static bool stretch = false;
-static bool borderless = false;
+// Full-screen, stretch and borderless variables are moved to Milkdrop2PcmVisualizer.h.
 static RECT lastRect = { 0 };
 
 static HMODULE module = nullptr;
