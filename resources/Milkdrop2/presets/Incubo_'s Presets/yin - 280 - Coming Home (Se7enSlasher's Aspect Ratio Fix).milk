@@ -100,9 +100,9 @@ wave_0_per_point10=x=.5+(ox-.5)*t1-(oy-.5)*t2;
 wave_0_per_point11=y=.5+(ox-.5)*t2+(oy-.5)*t1; 
 wave_0_per_point12= 
 wave_0_per_point13= 
-wave_0_per_point14=r=1-.5*rand(100)/100; 
-wave_0_per_point15=g=1-.5*rand(100)/100; 
-wave_0_per_point16=b=1-.5*rand(100)/100; 
+wave_0_per_point14=r=1-.5*int(rand(100))/100; 
+wave_0_per_point15=g=1-.5*int(rand(100))/100; 
+wave_0_per_point16=b=1-.5*int(rand(100))/100; 
 wave_0_per_point17= 
 wave_0_per_point18=// hide occluded stars 
 wave_0_per_point19=fx=.5+.9*t4; 
@@ -129,7 +129,7 @@ wave_1_per_frame2=bass_vol=.93*bass_vol+.07*bass_att;
 wave_1_per_frame3=t4=min(bass_vol,1.351); 
 wave_1_per_frame4=clip=if(above(bass_vol,1.1),1,0); 
 wave_1_per_frame5=phase=(clip)*(1-lastcip)*frame+clip*lastclip*phase+(1-clip)*lastclip*0; 
-wave_1_per_frame6=t4=if(clip,t4*(.97+rand(20)/1000),t4); 
+wave_1_per_frame6=t4=if(clip,t4*(.97+int(rand(20))/1000),t4); 
 wave_1_per_frame7=t3=clip; 
 wave_1_per_frame8=t2=phase; 
 wave_1_per_frame9=lastclip=clip; 
@@ -231,7 +231,7 @@ wave_2_per_frame2=mid_vol=.93*mid_vol+.07*mid_att;
 wave_2_per_frame3=t4=min(mid_vol,1.351); 
 wave_2_per_frame4=clip=if(above(mid_vol,1.1),1,0); 
 wave_2_per_frame5=phase=(clip)*(1-lastcip)*frame+clip*lastclip*phase+(1-clip)*lastclip*0; 
-wave_2_per_frame6=t4=if(clip,t4*(.97+rand(20)/1000),t4); 
+wave_2_per_frame6=t4=if(clip,t4*(.97+int(rand(20))/1000),t4); 
 wave_2_per_frame7=t3=clip; 
 wave_2_per_frame8=t2=phase; 
 wave_2_per_frame9=lastclip=clip; 
@@ -333,7 +333,7 @@ wave_3_per_frame2=treb_vol=.93*treb_vol+.07*treb_att;
 wave_3_per_frame3=t4=min(treb_vol,1.351); 
 wave_3_per_frame4=clip=if(above(treb_vol,1.1),1,0); 
 wave_3_per_frame5=phase=(clip)*(1-lastcip)*frame+clip*lastclip*phase+(1-clip)*lastclip*0; 
-wave_3_per_frame6=t4=if(clip,t4*(.97+rand(20)/1000),t4); 
+wave_3_per_frame6=t4=if(clip,t4*(.97+int(rand(20))/1000),t4); 
 wave_3_per_frame7=t3=clip; 
 wave_3_per_frame8=t2=phase; 
 wave_3_per_frame9=lastclip=clip; 
@@ -988,7 +988,7 @@ per_frame_15=s=sin(q5);
 per_frame_16=q6=.5+(.2-.5)*s+(.05-.5)*c; 
 per_frame_17=q7=.5+(.5-.5)*s+(.1-.5)*c; 
 per_frame_18=q8=.5+(.8-.5)*s+(.05-.5)*c; 
-per_frame_19=sunx=if(equal(sunx,0),.25+rand(50)/100,sunx); 
+per_frame_19=sunx=if(equal(sunx,0),.25+int(rand(50))/100,sunx); 
 per_frame_20=sunx=sunx+.001*s*q4; 
 per_frame_21=sunx=if(equal(sunx,0),sign(s)*.001,sunx); 
 per_frame_22=q5=sunx; 
