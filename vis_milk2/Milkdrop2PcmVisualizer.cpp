@@ -552,13 +552,7 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                     else if (y > rect.bottom - rect.top - BORDERWIDTH)
                         return HTBOTTOM;
                 return HTCAPTION;
-            case WM_NCLBUTTONDBLCLK:
-            {
-            if (borderless)
-                 ToggleFullScreen(hWnd);
-                 break;
             }
-        }
             break;
         }
 
@@ -579,13 +573,28 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             }
             break;
         }
-    
+
         case WM_LBUTTONDBLCLK:
+        case WM_NCLBUTTONDBLCLK:
         {
+            bool ctrlHeld = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+            if (ctrlHeld)
+                if (!fullscreen && !stretch)
+                {
+                    ToggleBorderlessWindow(hWnd);
+                    return 0;
+                }
+
             ToggleFullScreen(hWnd);
-            break;
+            return 0;
         }
 
+        case WM_RBUTTONDBLCLK:
+        case WM_NCRBUTTONDBLCLK:
+        {
+            ToggleStretch(hWnd);
+            return 0;
+        }
 
         default:
             return g_plugin.PluginShellWindowProc(hWnd, uMsg, wParam, lParam);

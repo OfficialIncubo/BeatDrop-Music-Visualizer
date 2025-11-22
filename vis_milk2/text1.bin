@@ -2,7 +2,7 @@
 
    ESC                  exit BeatDrop / menus
    ALT + ENTER          toggle fullscreen (or double-click)
-   ALT + S              toggle multiple monitor stretch
+   ALT + S              toggle multiple monitor stretch (or double-right click)
    CTRL + Z             enable/disable spout output
    CTRL + W             hide render window (it pops up the icon on the taskbar tray icon when hidden; hover for tooltip)
    CTRL + D             toggle output/input audio device
@@ -37,7 +37,7 @@
    
  HOTKEYS:
 
-   F2                   toggle borderless window (untoggleable while on fullscreen or stretch mode)
+   F2                   toggle borderless window (or ctrl + double-click) (untoggleable while on fullscreen or stretch mode)
    F3                   toggle fps to 30/60/90/120/144/240/360/Unlimited
    F7                   always on top
    F11                  hardcut mode: normal/based of music
