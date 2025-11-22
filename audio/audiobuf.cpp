@@ -146,14 +146,14 @@ void SetAudioBuf(const BYTE *pData, const UINT32 nNumFramesToRead, const WAVEFOR
 
             // Get left channel sample
             int8_t sampleLeft = 0;
-            if (pwfx->nChannels >= 1) {
+            if (pData && pwfx->nChannels >= 1) {
                 sampleLeft = GetChannelSample(pData, blockOffset, 0, bInt16);
             }
             sumLeft += sampleLeft;
 
             // Get right channel sample (use left if mono)
             int8_t sampleRight = sampleLeft;
-            if (pwfx->nChannels >= 2) {
+            if (pData && pwfx->nChannels >= 2) {
                 sampleRight = GetChannelSample(pData, blockOffset, pwfx->wBitsPerSample / 8, bInt16);
             }
             sumRight += sampleRight;

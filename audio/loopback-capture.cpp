@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include "audiodevicehandler.h"
+#include <vector>
 
 extern bool GetCaptureMicFlag();
 
@@ -347,10 +348,13 @@ HRESULT LoopbackCapture(
                 return hr;
             }
 
-            if (bFirstPacket && AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY == dwFlags) {
+            const bool bSilentBuffer = (dwFlags & AUDCLNT_BUFFERFLAGS_SILENT) != 0;
+            DWORD dwFlagsWithoutSilent = dwFlags & ~AUDCLNT_BUFFERFLAGS_SILENT;
+
+            if (bFirstPacket && AUDCLNT_BUFFERFLAGS_DATA_DISCONTINUITY == dwFlagsWithoutSilent) {
                 //bErrorInAudioData = true;
                 LOG(L"%s", L"Probably spurious glitch reported on first packet");
-            } else if (0 != dwFlags) {
+            } else if (0 != dwFlagsWithoutSilent) {
                 bErrorInAudioData = true;
                 LOG(L"IAudioCaptureClient::GetBuffer set flags to 0x%08x on pass %u after %u frames", dwFlags, nPasses, *pnFrames);
                 //return E_UNEXPECTED;
@@ -368,8 +372,16 @@ HRESULT LoopbackCapture(
             }
             else
             {
+                // Ensure we have valid audio data even when WASAPI marks the buffer as silent
+                std::vector<BYTE> silentBuffer;
+                const BYTE* pDataForVisualizer = pData;
+                if (bSilentBuffer) {
+                    silentBuffer.assign(static_cast<size_t>(nNumFramesToRead) * nBlockAlign, 0);
+                    pDataForVisualizer = silentBuffer.data();
+                }
+
                 // Saving audio data for visualizer
-                SetAudioBuf(pData, nNumFramesToRead, pwfx, bInt16);
+                SetAudioBuf(pDataForVisualizer, nNumFramesToRead, pwfx, bInt16);
                 
                 if (NULL != hFile) {
                     // Writing the buffer captured to the output .wav file

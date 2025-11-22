@@ -4053,7 +4053,7 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
         {
             wchar_t temp[512];
             wasabiApiLangString(IDS_ERROR_CREATING_SHADER, temp, sizeof(temp));
-            dumpmsg(temp);
+            //dumpmsg(temp);
             if (bHardErrors)
                 MessageBoxW(GetPluginWindow(), temp, wasabiApiLangString(IDS_MILKDROP_ERROR, title, 64), MB_OK | MB_SETFOREGROUND | MB_TOPMOST);
             else {
