@@ -165,12 +165,12 @@ shapecode_0_border_g=1.000
 shapecode_0_border_b=1.000
 shapecode_0_border_a=0.000
 shape_0_init1=sidesin = 3 + 0|rand(8);
-shape_0_init2=t = rand(40)*.1;
-shape_0_init3=inneralpha = rand(100)*.01;
-shape_0_init4=outeralpha = rand(100)*.01;
-shape_0_init5=red = rand(100)*.1;
-shape_0_init6=green = rand(100)*.1;
-shape_0_init7=blue = rand(100)*.1;
+shape_0_init2=t = int(rand(40))*.1;
+shape_0_init3=inneralpha = int(rand(100))*.01;
+shape_0_init4=outeralpha = int(rand(100))*.01;
+shape_0_init5=red = int(rand(100))*.1;
+shape_0_init6=green = int(rand(100))*.1;
+shape_0_init7=blue = int(rand(100))*.1;
 shape_0_per_frame1=ang = ang + (time*t)+(bass);
 shape_0_per_frame2=sides = sidesin;
 shape_0_per_frame3=x = x+(bass*.01)*sin(time*(bass*5*sin(time*5)));

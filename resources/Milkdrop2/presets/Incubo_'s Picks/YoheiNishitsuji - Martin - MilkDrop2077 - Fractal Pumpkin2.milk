@@ -130,49 +130,51 @@ warp_6=`// Helper: 2D rotation matrix
 warp_7=`float2x2 rotate2D(float angle) {
 warp_8=`    float s = sin(angle);
 warp_9=`    float c = cos(angle);
-warp_10=`    return float2x2(c, -s, s, c);
+warp_10=`    return transpose(float2x2(c, -s, s, c));
 warp_11=`}
-warp_12=`
-warp_13=`// Helper: HSV to RGB
-warp_14=`float3 hsv(float h, float s, float v) {
-warp_15=`    float3 k = float3(1.0, 2.0/3.0, 1.0/3.0);
-warp_16=`    float3 p = abs(frac(h + k) * 6.0 - 3.0);
-warp_17=`    return v * lerp(float3(1,1,1), saturate(p - 1.0), s);
-warp_18=`}
-warp_19=`
-warp_20=`// Helper: mod (like GLSL)
-warp_21=`float mod(float a, float b) {
-warp_22=`    return a - b * floor(a / b);
-warp_23=`}
-warp_24=`
-warp_25=`shader_body
-warp_26=`{
-warp_27=`    uv = (uv_orig * aspect.xy - 0.5 * aspect.xy) / aspect.y;
-warp_28=`    uv.y = -uv.y;
-warp_29=`    float t = time / 3.0;
-warp_30=`    float3 col = float3(0.0, 0.0,0.0);
-warp_31=`    float g = 0.0;
-warp_32=`
-warp_33=`    for (float i = 0.0; i < 80.0; i++) {
-warp_34=`        float3 p = float3(uv * 1.5 * (cos(t * 0.3+q10) * 0.2 + 0.6), g - 0.4);
-warp_35=`        p.xz = mul(rotate2D(t * 0.5), p.xz);
-warp_36=`        float s = 1.0;
-warp_37=`        float e = 0.0;
-warp_38=`
-warp_39=`        for (int j = 0; j < 12; j++) {
-warp_40=`            e = max(1.01, 7.0 / dot(p, p));
-warp_41=`            p = abs(abs(p) * e - float3(4.6+q1/6, 2.0+q1/5, 1.2+q1/3));
-warp_42=`            p = float3(3.5, 5.0, 0.5) - p;
-warp_43=`            s *= e;
-warp_44=`        }
-warp_45=`
-warp_46=`        g += mod(length(p.zx), p.y) / s;
-warp_47=`        float final_s = log2(s) / g;
-warp_48=`        col += hsv(e, p.z, final_s / 1e4);
-warp_49=`    }
-warp_50=`
-warp_51=`    ret = float4(sqrt(col), 1.0);
-warp_52=`}
+warp_12=`// In GLSL is column-major order and in HLSL, row-major order,
+warp_13=`// So we transpose the matrix with transpose() to be the same as GLSL. 
+warp_14=`
+warp_15=`// Helper: HSV to RGB
+warp_16=`float3 hsv(float h, float s, float v) {
+warp_17=`    float3 k = float3(1.0, 2.0/3.0, 1.0/3.0);
+warp_18=`    float3 p = abs(frac(h + k) * 6.0 - 3.0);
+warp_19=`    return v * lerp(float3(1,1,1), saturate(p - 1.0), s);
+warp_20=`}
+warp_21=`
+warp_22=`// Helper: mod (like GLSL)
+warp_23=`float mod(float a, float b) {
+warp_24=`    return a - b * floor(a / b);
+warp_25=`}
+warp_26=`
+warp_27=`shader_body
+warp_28=`{
+warp_29=`    uv = (uv_orig * aspect.xy - 0.5 * aspect.xy) / aspect.y;
+warp_30=`    uv.y = -uv.y;
+warp_31=`    float t = time / 3.0;
+warp_32=`    float3 col = float3(0.0, 0.0,0.0);
+warp_33=`    float g = 0.0;
+warp_34=`
+warp_35=`    for (float i = 0.0; i < 80.0; i++) {
+warp_36=`        float3 p = float3(uv * 1.5 * (cos(t * 0.3+q10) * 0.2 + 0.6), g - 0.4);
+warp_37=`        p.xz = mul(rotate2D(t * 0.5), p.xz);
+warp_38=`        float s = 1.0;
+warp_39=`        float e = 0.0;
+warp_40=`
+warp_41=`        for (int j = 0; j < 12; j++) {
+warp_42=`            e = max(1.01, 7.0 / dot(p, p));
+warp_43=`            p = abs(abs(p) * e - float3(4.6+q1/6, 2.0+q1/5, 1.2+q1/3));
+warp_44=`            p = float3(3.5, 5.0, 0.5) - p;
+warp_45=`            s *= e;
+warp_46=`        }
+warp_47=`
+warp_48=`        g += mod(length(p.zx), p.y) / s;
+warp_49=`        float final_s = log2(s) / g;
+warp_50=`        col += hsv(e, p.z, final_s / 1e4);
+warp_51=`    }
+warp_52=`
+warp_53=`    ret = float4(sqrt(col), 1.0);
+warp_54=`}
 comp_1=`#define sat saturate
 comp_2=`float glow, tmp, lamp, dist, bdist, b2dist, dist_c, smask;
 comp_3=`float2 dz, uv1, uv3, uv4;

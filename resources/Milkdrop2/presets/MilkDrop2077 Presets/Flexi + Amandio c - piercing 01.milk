@@ -102,8 +102,8 @@ per_frame_init_1=
 per_frame_init_2=c_x = 0.5;
 per_frame_init_3=c_y = 0.5;
 per_frame_1=
-per_frame_2=sx=1+.01*(8*bass%8)*equal((time*1.4)%(int(24-2*bass)),0);
-per_frame_3=sy=1+.01*(8*mid%8) *equal((time*1.4)%(12+int(24-2*bass)),0);
+per_frame_2=sx=1+.01*((8*bass)%8)*equal((time*1.4)%(int(24-2*bass)),0);
+per_frame_3=sy=1+.01*((8*mid)%8) *equal((time*1.4)%(12+int(24-2*bass)),0);
 per_frame_4=
 per_frame_5=q1 = aspectx;
 per_frame_6=q2 = aspecty;

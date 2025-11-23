@@ -162,7 +162,7 @@ shapecode_0_border_b=0.000
 shapecode_0_border_a=0.000
 shape_0_init1=bob = 1.5;
 shape_0_init2=ro = 0;
-shape_0_init3=red = rand(20);
+shape_0_init3=red = int(rand(20));
 shape_0_per_frame1=x = instance/num_inst; x=x-int(x); y=0.95; a2*=(q11<5);
 shapecode_1_enabled=0
 shapecode_1_sides=14

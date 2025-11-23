@@ -150,7 +150,7 @@ shapecode_0_border_b=1.000
 shapecode_0_border_a=0.000
 shape_0_init1=bob = 1.5;
 shape_0_init2=ro = 0;
-shape_0_init3=red = rand(20);
+shape_0_init3=red = int(rand(20));
 shape_0_per_frame1=rad = 0.57 + 0.1*sin(q1*1.24);
 shape_0_per_frame2=
 shape_0_per_frame3=tex_zoom = 1.2+0.4*sin(q3);

@@ -456,14 +456,14 @@ comp_2=`{
 comp_3=`
 comp_4=`
 comp_5=`    float2 uv_echo2 = (uv - 0.5)*1.000*float2(-1,1) + 0.5;
-comp_6=`    float3 ret3 = tex2D(sampler_main, uv).xyz*+saturate(GetBlur2(uv)*2.8 - 0.13); 
-comp_7=`    float3 ret4 = tex2D(sampler_main, uv_echo2).xyz*+saturate(GetBlur2(uv_echo2)*2.8 - 0.13);
+comp_6=`    float3 ret3 = tex2D(sampler_main, uv).xyz*saturate(GetBlur2(uv)*2.8 - 0.13);
+comp_7=`    float3 ret4 = tex2D(sampler_main, uv_echo2).xyz*saturate(GetBlur2(uv_echo2)*2.8 - 0.13);
 comp_8=`    ret3 = abs(ret3-ret4);
 comp_9=`    ret3 *= sqrt(ret3); //darken
 comp_10=`    ret3 *= float3(.9,1.6,2.3);
 comp_11=`    ret3 *= 3; //gamma
 comp_12=`    ret3 = pow(ret3,1-ret3);
-comp_13=`   
+comp_13=`
 comp_14=`
 comp_15=`uv *=2 ;
 comp_16=`float2 m = floor(frac(uv*0.5)*2);
@@ -472,8 +472,8 @@ comp_18=`    uv = float2(rad,uv.y);
 comp_19=`
 comp_20=`
 comp_21=`    float2 uv_echo = (uv.yx - 0.5)*1.000*float2(-1,-1) + 0.5;
-comp_22=`    ret = tex2D(sampler_main, uv.yx).xyz*+saturate(GetBlur2(uv.yx)*2.8 - 0.13); 
-comp_23=`    float3 ret2 = tex2D(sampler_main, uv_echo).xyz*+saturate(GetBlur2(uv_echo)*2.8 - 0.13);
+comp_22=`    ret = tex2D(sampler_main, uv.yx).xyz*saturate(GetBlur2(uv.yx)*2.8 - 0.13);
+comp_23=`    float3 ret2 = tex2D(sampler_main, uv_echo).xyz*saturate(GetBlur2(uv_echo)*2.8 - 0.13);
 comp_24=`    ret = lerp(ret,ret2,.5);
 comp_25=`    ret *= ret; //darken
 comp_26=`    ret *= float3(.9,1.6,2.3);
