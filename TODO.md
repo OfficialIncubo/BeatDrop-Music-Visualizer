@@ -3,7 +3,6 @@
 - [ ] ImGui support for ease-of-use: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/35
 - [ ] Aero-like Effect (For example, Nomi's Video: (https://x.com/nomimugen/status/1789240101085557050))
 - [ ] Spout Input as Sprites (like NestDrop's Spout Sprites): https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/26
-- [ ] GIF Support for both Sprites and Textures: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/34
 - [ ] Reviving 3D toggle functionality from MilkDrop v1.04: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/6
 - [ ] Screensaver Support: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/16
 - [ ] Desktop Mode: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/20
@@ -17,11 +16,9 @@
 * New Hardcut Modes (0/2):
 - [ ] BPM (1/4/8/16/32 beats)
 - [ ] Improved Kinetronix (Visikord) Hardcut Mode (with BPM Algorithm)
-
-# Known wishlist feature (for re-releasing v1.4.1.1)
-
-- [x] Show/Hide render window (useful for VJs/DJs)
-
+- [ ] GIF Support for both Sprites and Textures: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/34
+- [ ] Video Support for both Sprites and Textures
+- [ ] Webcam Support, blending the visual: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/4
 
 
 There are more that it's unfeatured here. Let me know if you tell some features to be added here.
