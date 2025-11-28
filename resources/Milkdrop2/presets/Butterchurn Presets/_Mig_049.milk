@@ -3,7 +3,7 @@ PSVERSION=2
 PSVERSION_WARP=2
 PSVERSION_COMP=2
 [preset00]
-fRating=0.000000
+fRating=3.000000
 fGammaAdj=1.000000
 fDecay=1.000000
 fVideoEchoZoom=1.000000
@@ -22,7 +22,7 @@ bBrighten=0
 bDarken=1
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.001000
+fWaveAlpha=0.000000
 fWaveScale=0.535239
 fWaveSmoothing=0.000000
 fWaveParam=-0.480000

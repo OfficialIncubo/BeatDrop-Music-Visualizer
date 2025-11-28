@@ -3,7 +3,7 @@ PSVERSION=3
 PSVERSION_WARP=3
 PSVERSION_COMP=3
 [preset00]
-fRating=3.000
+fRating=3.000000
 fGammaAdj=1.140
 fDecay=1.000
 fVideoEchoZoom=1.000

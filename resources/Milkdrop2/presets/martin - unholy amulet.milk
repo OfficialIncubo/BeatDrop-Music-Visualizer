@@ -22,7 +22,7 @@ bBrighten=0
 bDarken=1
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.001000
+fWaveAlpha=0.000000
 fWaveScale=10.437056
 fWaveSmoothing=0.450000
 fWaveParam=0.080000
@@ -357,7 +357,6 @@ per_frame_33=q3 = -q2;
 per_frame_34=q4 = q1;
 per_frame_35=
 per_frame_36=q5 = q1 * bnot(index2);
-per_frame_37=
 per_pixel_1=rot = .04*q5*(sin(q22*4*(rad)));
 per_pixel_2=zoom = 1+.008 ;
 warp_1=`float2 uv2;

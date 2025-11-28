@@ -22,7 +22,7 @@ bBrighten=0
 bDarken=1
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.001000
+fWaveAlpha=0.000000
 fWaveScale=0.527429
 fWaveSmoothing=0.450000
 fWaveParam=0.000000
@@ -322,7 +322,6 @@ per_frame_39=
 per_frame_40=zoom = 1+q28/4;
 per_frame_41=warp = .0;
 per_frame_42=dx = .2*q2;
-per_frame_43=
 warp_1=`sampler sampler_worms;
 warp_2=`float3 color, mus;
 warp_3=`float dx,dy;

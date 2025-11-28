@@ -1,5 +1,5 @@
 [preset00]
-fRating=1.000000
+fRating=3.000000
 fGammaAdj=1.000000
 fDecay=0.898999
 fVideoEchoZoom=0.999993
@@ -18,7 +18,7 @@ bBrighten=0
 bDarken=0
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.001000
+fWaveAlpha=0.000000
 fWaveScale=0.411715
 fWaveSmoothing=0.900000
 fWaveParam=-0.180000

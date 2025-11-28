@@ -22,7 +22,7 @@ bBrighten=0
 bDarken=1
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.001
+fWaveAlpha=0.000
 fWaveScale=0.021
 fWaveSmoothing=0.450
 fWaveParam=0.000
@@ -500,7 +500,7 @@ per_frame_init_16=HLock = .1;     //force camera angle back into horizontal view
 per_frame_init_17=
 per_frame_init_18=//OTHER PARAMS
 per_frame_init_19=sharp = 40;    //sharpness of bass/treb triggered head direction changes
-per_frame_init_20=g0 = .12;      //gravitation
+per_frame_init_20=g0 = .02;      //gravitation
 per_frame_init_21=cw = 50;       //air drag
 per_frame_init_22=
 per_frame_init_23=//---------- END MAIN PARAMS -----------------
@@ -974,7 +974,7 @@ comp_61=`  rs1.xy = 0.5 + (1.0 - abs( frac( rs.xy * 0.5 ) * 2 - 1.0 )-.5); // Eo
 comp_62=`  back = tex2D (sampler_test,rs1.xy);;
 comp_63=`  lprof =  back.g;
 comp_64=`  tmp =  1-(saturate(1.8*lprof-.3*(2-m))); 
-comp_65=`  forest += back * saturate(lprof*1)*.25 ;
+comp_65=`  forest += back * saturate(lprof*1)*.15 ;
 comp_66=`  gnd += tmp/pow(rs.z,2)*.3; 
 comp_67=`}
 comp_68=`forest *= 1-noise.x+lprof;

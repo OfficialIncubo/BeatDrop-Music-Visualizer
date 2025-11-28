@@ -22,7 +22,7 @@ bBrighten=0
 bDarken=1
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.001000
+fWaveAlpha=0.000000
 fWaveScale=2.232543
 fWaveSmoothing=0.810000
 fWaveParam=0.280000
@@ -447,7 +447,6 @@ per_frame_34=dy = .01 * sin(time/7);;
 per_frame_35=dx = .01 * sin(time/4);;
 per_frame_36=zoom = 1.2;
 per_frame_37=
-per_frame_38=
 warp_1=`shader_body {
 warp_2=`float2 uv1 = float2(uv.x-0.5,uv.y-0.5)*aspect.xy;
 warp_3=`

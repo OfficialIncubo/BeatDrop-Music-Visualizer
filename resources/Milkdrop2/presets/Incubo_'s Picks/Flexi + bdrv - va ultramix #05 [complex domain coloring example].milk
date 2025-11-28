@@ -22,7 +22,7 @@ bBrighten=0
 bDarken=0
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.001
+fWaveAlpha=0.000
 fWaveScale=0.325
 fWaveSmoothing=0.900
 fWaveParam=1.000
@@ -430,7 +430,7 @@ comp_6=`uv = lerp(uv_orig,uv,0); // this is scaling the input motion from the pe
 comp_7=`uv = -(uv-0.5)*aspect.xy*q3 + float2(q1,q2);
 comp_8=`
 comp_9=`
-comp_10=`// f(uv) =(uv² - float2(1,0) )(uv - float2(2,1) )²/(uv² + float2(2,2) )
+comp_10=`// f(uv) =(uv? - float2(1,0) )(uv - float2(2,1) )?/(uv? + float2(2,2) )
 comp_11=`factorA = uv;
 comp_12=`factorB = uv;
 comp_13=`product = float2( factorA.x*factorB.x - factorA.y*factorB.y,   // the products real part

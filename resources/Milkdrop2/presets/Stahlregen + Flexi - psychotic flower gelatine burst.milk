@@ -85,7 +85,7 @@ wavecode_0_r=0.000
 wavecode_0_g=1.000
 wavecode_0_b=1.000
 wavecode_0_a=1.000
-wave_0_per_frame1=q1 = below(rand(100),4 + 10*(treb+mid+bass));
+wave_0_per_frame1=q1 = below(int(rand(100)),4 + 10*(treb+mid+bass));
 wave_0_per_point1=it = (it + 1)*above(sample,0)*below(it,53);
 wave_0_per_point2=ita = (ita + equal(it,0))*above(sample,0);
 wave_0_per_point3=
@@ -203,9 +203,9 @@ shapecode_0_border_r=1.000
 shapecode_0_border_g=1.000
 shapecode_0_border_b=1.000
 shapecode_0_border_a=0.000
-shape_0_per_frame1=x = rand(1000)/1000;
-shape_0_per_frame2=y = rand(1000)/1000;
-shape_0_per_frame3=ang = rand(150)/100;
+shape_0_per_frame1=x = int(rand(1000))/1000;
+shape_0_per_frame2=y = int(rand(1000))/1000;
+shape_0_per_frame3=ang = int(rand(150))/100;
 shapecode_1_enabled=1
 shapecode_1_sides=20
 shapecode_1_additive=0

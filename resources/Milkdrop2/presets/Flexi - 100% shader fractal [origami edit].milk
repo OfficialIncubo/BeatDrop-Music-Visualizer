@@ -22,7 +22,7 @@ bBrighten=0
 bDarken=0
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.001
+fWaveAlpha=0.000
 fWaveScale=0.010
 fWaveSmoothing=0.000
 fWaveParam=0.000
@@ -517,7 +517,7 @@ per_frame_43=itranslation_u = 0;
 per_frame_44=itranslation_v = 0;
 per_frame_45=
 per_frame_46=
-per_frame_47=// the möbius transformation
+per_frame_47=// the m?bius transformation
 per_frame_48=// z -> (az+b)/(cz-d); where a,b,c,d are complex numbers and z will be the uv-vector
 per_frame_49=// (az+b)/(cz-d) = a/c + mu/(cz+d), with mu = (bc-ad)/c
 per_frame_50=// so a/c and mu can be calculated outside of the shader

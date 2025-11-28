@@ -3,7 +3,7 @@ PSVERSION=3
 PSVERSION_WARP=3
 PSVERSION_COMP=3
 [preset00]
-fRating=3.000000
+fRating=4.000
 fGammaAdj=1.980
 fDecay=0.500
 fVideoEchoZoom=1.000
@@ -22,7 +22,7 @@ bBrighten=0
 bDarken=1
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.001
+fWaveAlpha=0.000
 fWaveScale=0.958
 fWaveSmoothing=0.450
 fWaveParam=0.000
@@ -234,19 +234,19 @@ per_frame_init_11=q30 = 1; //logarithmic Z-Dist storage; unused
 per_frame_init_12=q31 =128;
 per_frame_init_13=start = 1; travel = 0; RotZ = 0; look = 0; slow = 0; t0 = time+3; lampx = .5; lampy = .5;
 per_frame_init_14=cran0 = rand(1);
-per_frame_init_15=n = 0; loop (10000, gmegabuf(n)=0; n=n+1; );
-per_frame_init_16=n = 0; loop (10000,  megabuf(n)=0; n=n+1; );
+per_frame_init_15=n = 0; loop (10000, gmegabuf(n)=0; n=n+1; ); 
+per_frame_init_16=n = 0; loop (10000,  megabuf(n)=0; n=n+1; ); 
 per_frame_init_17=trelx = 0;  trely = 0; trelz = 0;
 per_frame_init_18=reg20 = 1; reg21 = 0; reg22 = 0; reg23 = 0; reg24 = 1; reg25 = 0; reg26 = 0; reg27 = 0; reg28 = 1;
 per_frame_init_19=
 per_frame_init_20=//Find random starting point
 per_frame_init_21=while (exec2(
 per_frame_init_22=  ran1 = rand(800)/100;  ran2 = rand(800)/100;  ran3 = rand(800)/100;
-per_frame_init_23=  PosX = rand(5)-2;   PosY = rand(5)-2;   PosZ = rand(5)-2;
+per_frame_init_23=  PosX = rand(5)-2;   PosY = rand(5)-2;   PosZ = rand(5)-2; 
 per_frame_init_24=
 per_frame_init_25=//  PosX = 3.3; PosY = 2; PosZ = -2; ran1 = 0; ran2 = 0; ran3 = 0; //#
 per_frame_init_26=
-per_frame_init_27=  c1 = cos(ran1); c2 = cos(ran2); c3 = cos(ran3);
+per_frame_init_27=  c1 = cos(ran1); c2 = cos(ran2); c3 = cos(ran3); 
 per_frame_init_28=  s1 = sin(ran1); s2 = sin(ran2); s3 = sin(ran3);
 per_frame_init_29=
 per_frame_init_30=  reg20 = c2*c1; reg21 = c2*s1; reg22 = -s2;
@@ -268,21 +268,21 @@ per_frame_init_45=      uvx = if (uvx > 1, 2-uvx, if(uvx < -1, -2-uvx, uvx));
 per_frame_init_46=      uvy = if (uvy > 1, 2-uvy, if(uvy < -1, -2-uvy, uvy));
 per_frame_init_47=      uvz = if (uvz > 1, 2-uvz, if(uvz < -1, -2-uvz, uvz));
 per_frame_init_48=      slen = uvx*uvx + uvy*uvy + uvz*uvz;
-per_frame_init_49=      uvx = if (slen < 0.25, uvx*4, if (slen < 1, uvx/slen, uvx)) *2.6 + uvx0;
-per_frame_init_50=      uvy = if (slen < 0.25, uvy*4, if (slen < 1, uvy/slen, uvy)) *2.6 + uvy0;
-per_frame_init_51=      uvz = if (slen < 0.25, uvz*4, if (slen < 1, uvz/slen, uvz)) *2.6 + uvz0;
+per_frame_init_49=      uvx = if (slen < 0.25, uvx*4, if (slen < 1, uvx/slen, uvx)) *2.6 + uvx0; 
+per_frame_init_50=      uvy = if (slen < 0.25, uvy*4, if (slen < 1, uvy/slen, uvy)) *2.6 + uvy0; 
+per_frame_init_51=      uvz = if (slen < 0.25, uvz*4, if (slen < 1, uvz/slen, uvz)) *2.6 + uvz0; 
 per_frame_init_52=    );
 per_frame_init_53=    len = sqrt(uvx*uvx + uvy*uvy + uvz*uvz);
 per_frame_init_54=    dist *= 1.05;
 per_frame_init_55=  ,(dist < 0.6)*(len > 30)));
 per_frame_init_56=,(dist < .06))); //end while
 per_frame_init_57=
-per_frame_1=fps_ = .0 * fps_ + 1*if(fps<=25,fps,25+.5*(fps-25));
+per_frame_1=fps_ = .0 * fps_ + 1*if(fps<=25,fps,25+.5*(fps-25)); 
 per_frame_2=dec_s = 1-.06*30/fps_;
 per_frame_3=beat = (time >  t0+3); t0 = if(beat, time, t0);
 per_frame_4=
 per_frame_5=speed = min(0.2,dist_-.02) * (1+2*avg) *(1-slow*.0)*.7/q7; //#
-per_frame_6=ds = ds * dec_s + (1-dec_s)*speed*.25/fps_;
+per_frame_6=ds = ds * dec_s + (1-dec_s)*speed*.25/fps_; 
 per_frame_7=RotZ = if (RotZ==0,beat*(rand(100)<20*travel)*(rand(10)/10-.3),
 per_frame_8=                   bnot(beat*(rand(100)<30))*RotZ);
 per_frame_9=slow = if (bnot(slow), beat*(rand(1000*avg)<6), bnot(beat*(rand(100)<50)));
@@ -295,9 +295,9 @@ per_frame_15=lampx = lampx * dec_s + (1-dec_s)*if (look,lx,0.5);
 per_frame_16=lampy = lampy * dec_s + (1-dec_s)*if (look,ly,0.5);
 per_frame_17=q1 = lampx; q2 = lampy;
 per_frame_18=
-per_frame_19=//Position
+per_frame_19=//Position 
 per_frame_20=DirX= reg26; DirY= reg27; DirZ = reg28;
-per_frame_21=PosX = PosX + ds*DirX ; PosY = PosY + ds*DirY; PosZ = PosZ + ds*DirZ;
+per_frame_21=PosX = PosX + ds*DirX ; PosY = PosY + ds*DirY; PosZ = PosZ + ds*DirZ; 
 per_frame_22=q4 = PosX; q5 = PosY; q6 = PosZ;
 per_frame_23=
 per_frame_24=angchg = (.2-dist_)*(dist_ < .2)*2;
@@ -307,9 +307,9 @@ per_frame_27=v2 = v2 *dec_s + (1-dec_s)*angchg *xslope/fps_;
 per_frame_28=v3 = v3 *dec_s + (1-dec_s)*(angchg *yslope/fps_ + 2*v1*sin(time*.1));
 per_frame_29=//v2 = .008;
 per_frame_30=//push old RotMat
-per_frame_31=reg30 =reg20; reg31 =reg21; reg32 =reg22;
-per_frame_32=reg33 =reg23; reg34 =reg24; reg35 =reg25;
-per_frame_33=reg36 =reg26; reg37 =reg27; reg38 =reg28;
+per_frame_31=reg30 =reg20; reg31 =reg21; reg32 =reg22; 
+per_frame_32=reg33 =reg23; reg34 =reg24; reg35 =reg25; 
+per_frame_33=reg36 =reg26; reg37 =reg27; reg38 =reg28; 
 per_frame_34=
 per_frame_35=n = 0; avg = 0;
 per_frame_36=loop (5,
@@ -318,16 +318,16 @@ per_frame_38=  //new Rot. Mat for infinitesimal angles
 per_frame_39=  ran1 = rand(100)/100;
 per_frame_40=  ran2 = rand(100)/200-.25;
 per_frame_41=  tx = cos(n*1.57+ran2) * (n <= 4)*ran1; ty = sin(n*1.57+ran2) * (n <= 4)*ran1;
-per_frame_42=  c1 = cos(v1); c2 = cos(v2+ty); c3 = cos(v3+tx);
+per_frame_42=  c1 = cos(v1); c2 = cos(v2+ty); c3 = cos(v3+tx); 
 per_frame_43=  s1 = sin(v1); s2 = sin(v2+ty); s3 = sin(v3+tx);
 per_frame_44=  reg10 = c2*c1; reg11 = c2*s1; reg12 = -s2;
 per_frame_45=  reg13 = s3*s2*c1 - c3*s1; reg14 = s3*s2*s1 + c3*c1; reg15 = s3*c2;
 per_frame_46=  reg16 = c3*s2*c1 + s3*s1; reg17 = c3*s2*s1 - s3*c1; reg18 = c3*c2;
 per_frame_47=
 per_frame_48=  //pop old RotMat
-per_frame_49=  reg20 =reg30; reg21 =reg31; reg22 =reg32;
-per_frame_50=  reg23 =reg33; reg24 =reg34; reg25 =reg35;
-per_frame_51=  reg26 =reg36; reg27 =reg37; reg28 =reg38;
+per_frame_49=  reg20 =reg30; reg21 =reg31; reg22 =reg32; 
+per_frame_50=  reg23 =reg33; reg24 =reg34; reg25 =reg35; 
+per_frame_51=  reg26 =reg36; reg27 =reg37; reg28 =reg38; 
 per_frame_52=
 per_frame_53=  //Multiply new RotMat by old one
 per_frame_54=  q20 = reg10*reg20 + reg11*reg23 + reg12*reg26;
@@ -359,9 +359,9 @@ per_frame_79=      uvx = if (uvx > 1, 2-uvx, if(uvx < -1, -2-uvx, uvx));
 per_frame_80=      uvy = if (uvy > 1, 2-uvy, if(uvy < -1, -2-uvy, uvy));
 per_frame_81=      uvz = if (uvz > 1, 2-uvz, if(uvz < -1, -2-uvz, uvz));
 per_frame_82=      slen = uvx*uvx + uvy*uvy + uvz*uvz;
-per_frame_83=      uvx = if (slen < 0.25, uvx*4, if (slen < 1, uvx/slen, uvx)) *2.6 + uvx0;
-per_frame_84=      uvy = if (slen < 0.25, uvy*4, if (slen < 1, uvy/slen, uvy)) *2.6 + uvy0;
-per_frame_85=      uvz = if (slen < 0.25, uvz*4, if (slen < 1, uvz/slen, uvz)) *2.6 + uvz0;
+per_frame_83=      uvx = if (slen < 0.25, uvx*4, if (slen < 1, uvx/slen, uvx)) *2.6 + uvx0; 
+per_frame_84=      uvy = if (slen < 0.25, uvy*4, if (slen < 1, uvy/slen, uvy)) *2.6 + uvy0; 
+per_frame_85=      uvz = if (slen < 0.25, uvz*4, if (slen < 1, uvz/slen, uvz)) *2.6 + uvz0; 
 per_frame_86=    );
 per_frame_87=    len = sqrt(uvx*uvx + uvy*uvy + uvz*uvz);
 per_frame_88=    dist *= 1.1;
@@ -378,7 +378,7 @@ per_frame_98=monitor = avg;
 per_frame_99=dist_ = dist_*dec_s + (1-dec_s)*dist;
 per_frame_100=
 per_frame_101=q10 = ds*q7; //compensation of lin. movement in GetDist and zoom uv
-per_frame_102=q14 = 1*abs(ds) + 2*(abs(v1) + abs(v2) + abs(v3)) + 1.0/255 + start*.05;
+per_frame_102=q14 = 1*abs(ds) + 2*(abs(v1) + abs(v2) + abs(v3)) + 1.0/255 + start*.05; 
 per_frame_103=q19 = .6 + .4*sin(time*.02+cran0*6); //brightness backgd
 per_frame_104=start = start * .9;
 per_frame_105=q11 = v1; q12 = v2; q13 = v3;
@@ -392,25 +392,25 @@ warp_4=`static const float3 CamPos = float3(q4,q5,q6);
 warp_5=`static const float sustain = .98 - q14, change = q14, ds = q10;
 warp_6=`static const float myzoom = q7, limit = 24, tele=q16;
 warp_7=`
-warp_8=`float GetDist(float2 uvi) {float2 tmp; tmp = tex2D (sampler_pc_main, uvi).gb;
+warp_8=`float GetDist(float2 uvi) {float2 tmp; tmp = tex2D (sampler_pc_main, uvi).gb; 
 warp_9=`  return 1-(tmp.y + 1.0/255*tmp.x + ds*.7);}
 warp_10=`
 warp_11=`float2 PutDist(float x) {float fg, fb; fg = modf((1-x)*255.0,fb);
 warp_12=`  return (float2(fg,fb/255.0));}
 warp_13=`
 warp_14=`
-warp_15=`float MinDist (float2 uvi)
+warp_15=`float MinDist (float2 uvi) 
 warp_16=`{
 warp_17=`   float tmp; float4 nb; float4 nb2; float2 pix;
 warp_18=`   pix = texsize.zw*(1.0+length(uvi-0.5)*8.0);
 warp_19=`   tmp = GetDist(uvi);
-warp_20=`   nb.x = GetDist(uvi+pix*float2(-1,-1));
+warp_20=`   nb.x = GetDist(uvi+pix*float2(-1,-1));  
 warp_21=`   nb.y = GetDist(uvi+pix*float2(1,-1));
-warp_22=`   nb.z = GetDist(uvi+pix*float2(1,1));
+warp_22=`   nb.z = GetDist(uvi+pix*float2(1,1));   
 warp_23=`   nb.w = GetDist(uvi+pix*float2(-1,1));
-warp_24=`   nb2.x = GetDist(uvi+pix*float2(0,-1));
+warp_24=`   nb2.x = GetDist(uvi+pix*float2(0,-1));  
 warp_25=`   nb2.y = GetDist(uvi+pix*float2(1,0));
-warp_26=`   nb2.z = GetDist(uvi+pix*float2(0,1));
+warp_26=`   nb2.z = GetDist(uvi+pix*float2(0,1));   
 warp_27=`   nb2.w = GetDist(uvi+pix*float2(-1,0));
 warp_28=`   //Eo.S. more efficient usage of min to get min value of all 8 GetDist() calls, removes 11ALU
 warp_29=`   nb = min( nb, nb2 );
@@ -434,10 +434,10 @@ warp_46=`shader_body {
 warp_47=`uv1 = (uv-.5)*aspect.xy*tele;
 warp_48=`uv = (uv-.5)*(1-ds/(GetDist(uv))) + .5;
 warp_49=`
-warp_50=`float3 noise = frac(8*tex2D (sampler_noise_lq,uv+rand_frame.yz));
+warp_50=`float3 noise = frac(8*tex2D (sampler_noise_lq,uv+rand_frame.yz)); 
 warp_51=`
 warp_52=`dist = noise.r;
-warp_53=`   if (noise.g > 0.2)
+warp_53=`   if (noise.g > 0.2) 
 warp_54=`   {
 warp_55=`       float3 noiseBiased = noise - float3( 0.4, 0.5, 0.5 );
 warp_56=`//Eo.S. combine the subtraction on noise to a single float3 to ensure compiler does the subtraction in a single ALU
@@ -452,8 +452,8 @@ warp_64=`len = (length(box.xyz));
 warp_65=`struc = length(box.xyw)/limit;
 warp_66=`float dec = log(1+len/limit)*.02*(1-GetDist(uv));
 warp_67=`if ((dist <= GetDist(uv)) && (len < limit) && (dist > 0.005)){
-warp_68=` ret.r = (1-sustain)*struc+sustain*(Get1(uv).r); ret.gb=  PutDist(dist); }
-warp_69=` else {ret = tex2D(sampler_fc_main,uv)*float3(sustain,0,1-dec)-float3(1.0/255,0,change/6);}
+warp_68=` ret.r = (1-sustain)*struc+sustain*(Get1(uv).r); ret.gb=  PutDist(dist); } 
+warp_69=` else {ret = tex2D(sampler_fc_main,uv)*float3(sustain,0,1-dec)-float3(1.0/255,0,change/6);} 
 warp_70=`}
 comp_1=`#define sat saturate
 comp_2=`static const float2 pix = texsize.zw;
@@ -499,7 +499,7 @@ comp_41=`//distant light
 comp_42=`ret += pow(1-GetBlurX(uv,.8).b,3)*(.5+.5*slow_roam_cos) *q19;
 comp_43=`
 comp_44=`//Lamp
-comp_45=`uv3 = uv1;
+comp_45=`uv3 = uv1; 
 comp_46=`lamp = saturate(1-4*length(uv3))*(struc)*saturate(1-2*bdist)*1.8;
 comp_47=`//ret += (1-lum(ret))*lamp;
 comp_48=`ret = 1-exp((-2)*ret);

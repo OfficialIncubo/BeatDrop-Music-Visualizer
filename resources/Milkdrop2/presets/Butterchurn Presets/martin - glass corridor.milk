@@ -22,7 +22,7 @@ bBrighten=0
 bDarken=1
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.001000
+fWaveAlpha=0.000000
 fWaveScale=1.740724
 fWaveSmoothing=0.450000
 fWaveParam=0.080000
@@ -193,7 +193,7 @@ wave_3_per_point40=my = ox*sin(zang) + oy*cos(zang);
 wave_3_per_point41=ox = mx;
 wave_3_per_point42=oy = my;
 wave_3_per_point43=mx = ox*cos(yang) + oz*sin(yang);
-wave_3_per_point44=mz = -ox*sin(yang) + oz*cos(yang);
+wave_3_per_point44=mz = - ox*sin(yang) + oz*cos(yang);
 wave_3_per_point45=ox = mx;
 wave_3_per_point46=oz = mz;
 wave_3_per_point47=my = oy*cos(xang) - oz*sin(xang);
@@ -314,7 +314,7 @@ per_frame_init_1=p3 = 0;
 per_frame_init_2=t_rel = 0;
 per_frame_1=dec_med = pow (0.9, 30/fps);
 per_frame_2=dec_slow = pow (0.99, 30/fps);
-per_frame_3=beat = max (max (bass, mid), treb);
+per_frame_3=beat = max (max (bass, mid), treb); 
 per_frame_4=avg = avg*dec_slow + beat*(1-dec_slow);
 per_frame_5=is_beat = above(beat, .5+avg+peak) * above (time, t0+.2);
 per_frame_6=t0 = is_beat*time + (1-is_beat)*t0;
@@ -410,7 +410,7 @@ warp_43=`noise *= (noise >= .9);
 warp_44=`ret1 += noise;
 warp_45=`
 warp_46=`
-warp_47=`ret = ret1;
+warp_47=`ret = ret1;    
 warp_48=`}
 comp_1=`float2 rs;
 comp_2=`sampler sampler_clouds2;
