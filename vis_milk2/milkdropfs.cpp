@@ -2991,13 +2991,13 @@ void CPlugin::DrawWave(float *fL, float *fR)
 
 				for (i=0; i<nVerts; i++)
 				{
-					float rad = 0.5f + 0.4f*fR[i+sample_offset] + fWaveParam2;
+					float rad = 0.5f + 0.4f*(fL[i+sample_offset]+fR[i+sample_offset])*0.5f + fWaveParam2;
 					float ang = (i)*inv_nverts_minus_one*6.28f + GetTime()*0.2f;
 					if (i < nVerts/10)
 					{
 						float mix = i/(nVerts*0.1f);
 						mix = 0.5f - 0.5f*cosf(mix * 3.1416f);
-						float rad_2 = 0.5f + 0.4f*fR[i + nVerts + sample_offset] + fWaveParam2;
+						float rad_2 = 0.5f + 0.4f*(fL[i + nVerts + sample_offset]+fR[i + nVerts + sample_offset])*0.5f + fWaveParam2;
 						rad = rad_2*(1.0f-mix) + rad*(mix);
 					}
 					if (m_bScreenDependentRenderMode)
@@ -3161,7 +3161,7 @@ void CPlugin::DrawWave(float *fL, float *fR)
 				for (i=0; i<nVerts; i++)
 				{
 					v[i].x = -1.0f + 2.0f*(i*inv_nverts) + fWavePosX;
-					v[i].y = fL[i+sample_offset]*0.47f + fWavePosY;//((pL[i] ^ 128) - 128)/270.0f;
+					v[i].y = 0.5f*(fL[i+sample_offset] + fR[i + sample_offset])*0.47f + fWavePosY;//((pL[i] ^ 128) - 128)/270.0f;
 					v[i].x += fR[i+25+sample_offset]*0.44f;//((pR[i+25] ^ 128) - 128)/290.0f;
 					//v[i].Diffuse = color;
 
@@ -3334,15 +3334,15 @@ void CPlugin::DrawWave(float *fL, float *fR)
 				if (wave == 6)
 					for (i=0; i<nVerts; i++)
 					{
-						v[i].x = edge_x[0] + dx*i + perp_dx*0.25f*fL[i + sample_offset];
-						v[i].y = edge_y[0] + dy*i + perp_dy*0.25f*fL[i + sample_offset];
+						v[i].x = edge_x[0] + dx*i + perp_dx*0.25f*(fL[i + sample_offset] + fR[i + sample_offset])*0.5f;
+						v[i].y = edge_y[0] + dy*i + perp_dy*0.25f*(fL[i + sample_offset] + fR[i + sample_offset])*0.5f;
 						//v[i].Diffuse = color;
 					}
 				else if (wave == 8)
 					//256 verts
 					for (i=0; i<nVerts; i++)
 					{
-						float f = 0.1f*logf(mysound.fSpecLeft[i*2] + mysound.fSpecLeft[i*2+1]);
+						float f = 0.1f*logf((mysound.fSpecLeft[i*2] + mysound.fSpecLeft[i*2+1] + mysound.fSpecRight[i*2] + mysound.fSpecRight[i*2+1])*0.5f);
 						v[i].x = edge_x[0] + dx*i + perp_dx*f;
 						v[i].y = edge_y[0] + dy*i + perp_dy*f;
 						//v[i].Diffuse = color;
@@ -3468,8 +3468,8 @@ void CPlugin::DrawWave(float *fL, float *fR)
 			
 				for (i = 0; i < nVerts; i++)
 				{
-					v[i].x = edge_x[0] + dx * i + perp_dx * 1.00f * fL[i + sample_offset];
-					v[i].y = edge_y[0] + dy * i + perp_dy * 1.00f * fL[i + sample_offset];
+					v[i].x = edge_x[0] + dx * i + perp_dx * 1.00f * (fL[i + sample_offset] + fR[i + sample_offset])*0.5f;
+					v[i].y = edge_y[0] + dy * i + perp_dy * 1.00f * (fL[i + sample_offset] + fR[i + sample_offset])*0.5f;
 					//v[i].Diffuse = color;
 				}
 			
@@ -3904,13 +3904,13 @@ void CPlugin::DrawWave(float *fL, float *fR)
 
 						for (i = 0; i < nVerts; i++)
 						{
-							float rad = 0.7f + 0.4f * fR[i + sample_offset] + fWaveParam2;
+							float rad = 0.7f + 0.4f * (fL[i + sample_offset] + fR[i + sample_offset])*0.5f + fWaveParam2;
 							float ang = (i)*inv_nverts_minus_one * 6.28f + GetTime() * 0.2f;
 							if (i < nVerts / rad)
 							{
 								float mix = i / (nVerts * 0.1f);
 								mix = 0.5f - 0.5f * cosf(mix * 3.1416f);
-								float rad_2 = 0.5f + 0.4f * fR[i + nVerts + sample_offset] + fWaveParam2;
+								float rad_2 = 0.5f + 0.4f * (fL[i + nVerts + sample_offset] + fR[i + nVerts + sample_offset])*0.5f + fWaveParam2;
 								rad = rad_2 * (1.0f - mix) + rad * (mix);
 							}
 							if (m_bScreenDependentRenderMode)
@@ -3952,7 +3952,7 @@ void CPlugin::DrawWave(float *fL, float *fR)
 
 						for (i = 0; i < nVerts; i++)
 						{
-							float rad = 0.7f + 0.7f * fR[i + sample_offset] + fWaveParam2;
+							float rad = 0.7f + 0.7f * (fL[i + sample_offset] + fR[i + sample_offset])*0.5f + fWaveParam2;
 							float ang = (i)*inv_nverts_minus_one * 6.28f + GetTime() * 0.2f;
 							ang == ang / 2;
 							rad == rad / 2;
@@ -3964,7 +3964,7 @@ void CPlugin::DrawWave(float *fL, float *fR)
 								//mix = 0.7f - 0.7f * cosf(mix*2 * 3.1416f); //flower, more leaves
 								mix = 0.7f - 0.7f * cosf(mix * 3.1416f);   //flower
 
-								float rad_2 = 0.7f + 0.7f * fR[i + nVerts + sample_offset] + fWaveParam2;
+								float rad_2 = 0.7f + 0.7f * (fL[i + nVerts + sample_offset] + fR[i + nVerts + sample_offset])*0.5f + fWaveParam2;
 								//rad = rad_2 * (1.0f - mix) + rad * (mix);
 									//rad = rad_2 * (1.0f - mix) + rad * (mix) /5; // div5 optional
 								rad = rad_2 * (1.0f - mix) + rad * (mix * 2) / 8;
@@ -4051,8 +4051,8 @@ void CPlugin::DrawWave(float *fL, float *fR)
 
 					for (i = 0; i < nVerts; i++)
 					{
-						float rad = 0.53f + 0.43f * fR[i] + fWaveParam2;
-						float ang = fL[i + 32] * 1.57f + GetTime() * 2.0f;
+						//float rad = 0.53f + 0.43f * fR[i] + fWaveParam2;	// unused
+						float ang = 0.5f*(fL[i + 32] + fR[i + 32]) * 1.57f + GetTime() * 2.0f;
 						float t = GetTime() / ang;
 						//ball
 						//v[i].x = cosf(ang* GetTime())*3 * m_fAspectY/3 + fWavePosX;// 0.75 = adj. for aspect ratio
@@ -4076,7 +4076,7 @@ void CPlugin::DrawWave(float *fL, float *fR)
 					nVerts /= 2;
 
 					float inverseSamplesMinusOne = 1.0f / static_cast<float>(nVerts);
-					float angleOffset = -(GetTime() * .2f);
+					float angleOffset = (GetTime() * .2f);
 
 					for (int i = 0; i < nVerts; i++)
 					{
@@ -4084,7 +4084,7 @@ void CPlugin::DrawWave(float *fL, float *fR)
 						float phi0 = (floor(progress * 3.0f) + .5f) / 3.0f * 6.28f + angleOffset;
 						float angle = (progress * 6.28f) + angleOffset;
 						float edgeDistance = cosf(angle - phi0);
-						float radius = (.7f + (edgeDistance * fR[i]) + fWaveParam2) / (2.0f * edgeDistance);
+						float radius = (.7f + (edgeDistance * (fL[i]+fR[i])*0.5f) + fWaveParam2) / (2.0f * edgeDistance);
 
 						if (m_bScreenDependentRenderMode)
 						{
@@ -4149,7 +4149,7 @@ void CPlugin::DrawWave(float *fL, float *fR)
 
 							// Particle distance from center (with some randomness)
 							float dist_var = 0.7f + 0.3f * (fmodf(rand_seed + i * 0.1f, 1.0f));
-							float dist = burst_size * dist_var * (0.5f + 0.5f * fR[(i * 3) % NUM_WAVEFORM_SAMPLES]) * audio_boost;
+							float dist = burst_size * dist_var * (0.5f + 0.5f * (fL[(i * 3) % NUM_WAVEFORM_SAMPLES] + fR[(i * 3) % NUM_WAVEFORM_SAMPLES])*0.5f) * audio_boost;
 
 							// Calculate position
 							float x = base_x + cosf(ang) * dist;
