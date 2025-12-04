@@ -110,7 +110,7 @@ To not break the listening sessions or DJ sessions, BeatDrop will no longer inte
 
 # BEFORE COMPILING THE CODE
 
-* First of all, [Visual Studio 2022](https://visualstudio.microsoft.com/vs) is now required.
+* First of all, [Visual Studio 2022 or above](https://visualstudio.microsoft.com/vs) is now required.
 * [DirectX SDK](https://www.microsoft.com/en-us/download/details.aspx?id=6812) is even required.
 * Workloads required before compiling:
 ![Workloads required to use with Visual Studio 2022](https://github.com/user-attachments/assets/3eeeccb3-c23a-4580-9315-7e1062cbc2ef)
@@ -149,7 +149,7 @@ Before this, [Git](https://git-scm.com) is required for cloning repositories.
 
 If you want to turn back on, do the same step, then change them to "Yes".
 
-2. Use [VS2022](https://visualstudio.microsoft.com/vs)'s terminal (View from toolbar -> Terminal) or PowerShell. Clone the repository as a local package.
+2. Use [Visual Studio](https://visualstudio.microsoft.com/vs)'s terminal (View from toolbar -> Terminal) or PowerShell. Clone the repository as a local package.
 ```
 git clone https://github.com/projectM-visualizer/projectm-eval.git
 cd projectm-eval
