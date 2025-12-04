@@ -6,16 +6,21 @@
 
 # BeatDrop Music Visualizer
 
-BeatDrop Music Visualizer is an improved standalone version of the [original inactive repository fork](https://github.com/mvsoft74/BeatDrop) based of the [Original MilkDrop2 Plug-in](https://www.geisswerks.com/milkdrop/) for [Winamp](https://winamp.com) that aims to add better features and bug fixes/optimizations for versatility, usability and amazing. This is also considered as MilkDrop improvement.
+BeatDrop Music Visualizer is a continued development of the [original inactive repository fork](https://github.com/mvsoft74/BeatDrop), a standalone music visualization based of the [Original MilkDrop2 Plug-in](https://www.geisswerks.com/milkdrop/) for [Winamp](https://winamp.com) that aims to add better features and bug fixes/optimizations for versatility, usability and amazing. This is also considered as an improvement of it.
 
 Highlights:
-- Based of the [Original MilkDrop Plug-in](https://www.geisswerks.com/milkdrop/).
+- Based of the [Original MilkDrop2 Plug-in](https://www.geisswerks.com/milkdrop/), compatible with all the MilkDrop presets (.milk).
 - Perfectly adjusted beat detection for better audio reaction (also configurable)
 - New waveforms and transitions
 - 16 custom shapes and waves limit
 - Shader Precaching or Caching for Instant Preset Loading
+- Fully supported Pixel Shader 4 (Shader Model 3) presets for AMD/ATI processor/graphic cards
 - [Spout](https://spout.zeal.co) integration
 - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library integration
+- Toggleable Speaker and Microphone Audio Source Modes
+- Our modified [loopback-capture](https://matthewvaneerde.wordpress.com/2008/12/16/sample-wasapi-loopback-capture-record-what-you-hear/) code, called BeatDrop-loopback, with above 92kHz sample rate (Hi-Res) support, intelligent default audio change and anti-stutter
+- Interact presets with Mouse and Keyboard (CTRL + Arrow Keys)
+- Extended preset, texture, transition and noise generation randomization limit using [Mersenne Twister Pseudo-Random Number Generator](https://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/emt.html)
 - Hard Cut Modes, Transparency Mode, Playback Controls, Startup Preset etc.
 - And so much more!
 
