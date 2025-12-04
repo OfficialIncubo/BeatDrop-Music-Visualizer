@@ -52,7 +52,7 @@ List of available apps here: https://spout.zeal.co
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## SCREEN-DEPENDENT RENDER MODE & PRESET PATCH FIXES
-Bring back the nostalgia from 2000s by fixing some old MilkDrop 1 presets behavior with Screen-Dependent Render Mode, making the visual way better. You are free to turn it off if you don't want it.
+Bring back the nostalgia from 2000s by fixing some old MilkDrop 1 presets behavior with Screen-Dependent Render Mode, making the visual way better. You are free to turn it off if you don't want.
 
 I've also manually patch fixed all the bugged presets to look very/almost identical to MilkDrop 1/2.0.
 
@@ -60,7 +60,7 @@ I've also manually patch fixed all the bugged presets to look very/almost identi
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## SHADER PRECACHING/CACHING
-Getting in stress if the visual is freezing while the shaders are compiling? Don't worry. I've got you! BeatDrop now supports shader precaching/caching for instant loading presets. Now you can experience 0 seconds compile time when you loaded the same preset that contains shaders! ;)
+Getting in stress if the visual is freezing while the shaders are compiling? Don't worry. I've got you! BeatDrop now supports shader precaching/caching for instant loading presets. Now you can experience 0 seconds compile time when you load the same preset that contains shaders! ;)
 
 Here is the comparison below!
 
