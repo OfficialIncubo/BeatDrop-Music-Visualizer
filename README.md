@@ -258,7 +258,7 @@ Use BeatDrop with your favourite:
 # Acknowledgements
 Special thanks to:
 
-* Ryan Geiss & Rovastar (John Baker) - [Official Milkdrop2 Source Code](https://sourceforge.net/projects/milkdrop2/)
+* Ryan Geiss & Rovastar (John Baker) - [Original MilkDrop2 Source Code](https://sourceforge.net/projects/milkdrop2/)
 * [oO-MrC-Oo](https://github.com/oO-MrC-Oo) - [XBMC Plug-in](https://github.com/oO-MrC-Oo/Milkdrop2-XBMC)
 * Casey Langen ([@clangen](https://github.com/clangen)) - [milkdrop2-musikcube](https://github.com/clangen/milkdrop2-musikcube)
 * Matthew van Eerde ([@mvaneerde](https://github.com/mvaneerde)) - [loopback-capture](https://github.com/mvaneerde/blog)
