@@ -13,6 +13,7 @@ Highlights:
 - Perfectly adjusted beat detection for better audio reaction (also configurable)
 - New waveforms and transitions
 - 16 custom shapes and waves limit
+- Drag, Drop & Load MilkDrop preset
 - Shader Precaching or Caching for Instant Preset Loading
 - Fully supported Pixel Shader 4 (Shader Model 3) presets for AMD/ATI processor/graphic cards
 - [Spout](https://spout.zeal.co) integration
