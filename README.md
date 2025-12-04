@@ -253,7 +253,7 @@ Use BeatDrop with your favourite:
 * WASAPI - compatible sound card
 * DirectX 9 or higher - compatible GPU
 * DirectX End-User [Runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=8109) (also included in the installer) contains the required 32-bit helper libraries d3dx9_43.dll and d3dx9_31.dll
-* [Microsoft Visual C++ 2015-2022 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=52685) ([Mirror](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)) or (optional) [Microsoft Visual C++ Redistributable All-in-One](https://www-techpowerup-com.cdn.ampproject.org/v/s/www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/?amp=&amp_gsa=1&amp_js_v=a9&usqp=mq331AQIUAKwASCAAgM%3D#amp_tf=De%20la%20%251%24s&aoh=17542342520002&referrer=https%3A%2F%2Fwww.google.com&ampshare=https%3A%2F%2Fwww.techpowerup.com%2Fdownload%2Fvisual-c-redistributable-runtime-package-all-in-one%2F)
+* [Microsoft Visual C++ 2015-2022 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=52685) ([Mirror](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)) or [Microsoft Visual C++ Redistributable All-in-One](https://www-techpowerup-com.cdn.ampproject.org/v/s/www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/?amp=&amp_gsa=1&amp_js_v=a9&usqp=mq331AQIUAKwASCAAgM%3D#amp_tf=De%20la%20%251%24s&aoh=17542342520002&referrer=https%3A%2F%2Fwww.google.com&ampshare=https%3A%2F%2Fwww.techpowerup.com%2Fdownload%2Fvisual-c-redistributable-runtime-package-all-in-one%2F) (optional)
 
 # Acknowledgements
 Special thanks to:
@@ -264,7 +264,7 @@ Special thanks to:
 * Matthew van Eerde ([@mvaneerde](https://github.com/mvaneerde)) - [loopback-capture](https://github.com/mvaneerde/blog)
 * projectM Team ([Kai Blaschke](https://github.com/kblaschke)) - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval), contributor
 * Lynn Jarvis ([@leadedge](https://github.com/leadedge)) - [BeatDrop for Spout](https://github.com/leadedge/BeatDrop), [Spout](https://spout.zeal.co), contributor
-* Patrick Pomerleau @ Nest Immersion ([@nestdome](https://www.instagram.com/nestdome)) - help, contributor, feature integrations to NestDrop
+* Patrick Pomerleau @ Nest Immersion ([@nestdome](https://www.instagram.com/nestdome)) - helper, contributor, feature integrations to NestDrop
 * [IkeC](https://github.com/IkeC) - contributor, [Milkwave](https://github.com/IkeC/Milkwave) Developer
 * [MilkDrop2077](https://github.com/milkdrop2077) - contributor
 * Me, [u/Decent-Tangerine4998](https://www.reddit.com/user/Decent-Tangerine4998) - Tester
