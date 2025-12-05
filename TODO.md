@@ -20,6 +20,10 @@
 - [ ] Video Support for both Sprites and Textures
 - [ ] Webcam Support, blending the visual: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/4
 
+# BETA Features
+- [ ] Drag, Drop & Load MilkDrop preset
+- [ ] Transparency Mode Fix for Windows 7, 8 and 8.1
+- [ ] Automatic/Manual Beat Sensetivity
 
 There are more that it's unfeatured here. Let me know if you tell some features to be added here.
 

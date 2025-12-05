@@ -6,16 +6,22 @@
 
 # BeatDrop Music Visualizer
 
-BeatDrop Music Visualizer is an improved standalone version of the [original inactive repository fork](https://github.com/mvsoft74/BeatDrop) based of the [Original MilkDrop2 Plug-in](https://www.geisswerks.com/milkdrop/) for [Winamp](https://winamp.com) that aims to add better features and bug fixes/optimizations for versatility, usability and amazing. This is also considered as MilkDrop improvement.
+BeatDrop Music Visualizer is a continued development of the [original inactive repository fork](https://github.com/mvsoft74/BeatDrop), a standalone music visualization based of the [Original MilkDrop2 Plug-in](https://www.geisswerks.com/milkdrop/) for [Winamp](https://winamp.com) that aims to add better features and bug fixes/optimizations for versatility, usability and amazing. This is also considered as an improvement of it.
 
 Highlights:
-- Based of the [Original MilkDrop Plug-in](https://www.geisswerks.com/milkdrop/).
+- Based of the [Original MilkDrop2 Plug-in](https://www.geisswerks.com/milkdrop/), compatible with all the MilkDrop presets (.milk).
 - Perfectly adjusted beat detection for better audio reaction (also configurable)
 - New waveforms and transitions
 - 16 custom shapes and waves limit
+- Drag, Drop & Load MilkDrop preset
 - Shader Precaching or Caching for Instant Preset Loading
+- Fully supported Pixel Shader 4 (Shader Model 3) presets for AMD/ATI processor/graphic cards
 - [Spout](https://spout.zeal.co) integration
 - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library integration
+- Toggleable Speaker and Microphone Audio Source Modes
+- Our modified [loopback-capture](https://matthewvaneerde.wordpress.com/2008/12/16/sample-wasapi-loopback-capture-record-what-you-hear/) code, called BeatDrop-loopback, with above 92kHz sample rate (Hi-Res) support, intelligent default audio change and anti-stutter
+- Interact presets with Mouse and Keyboard (CTRL + Arrow Keys)
+- Extended preset, texture, transition and noise generation randomization limit using [Mersenne Twister Pseudo-Random Number Generator](https://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/emt.html)
 - Hard Cut Modes, Transparency Mode, Playback Controls, Startup Preset etc.
 - And so much more!
 
@@ -38,7 +44,7 @@ Now you have more possibilities to create/edit some custom waves or shapes with 
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## INTEGRATED WITH [SPOUT](https://spout.zeal.co/) FOR SHARING VISUALS EVERYWHERE!
-Now you can send the BeatDrop's Visual Renderer via Spout to [OBS](https://obsproject.com) ([plug-in](https://obsproject.com/forum/resources/obs-spout-bi-directional-video-sharing-with-obs-studio-from-any-spout-program.1384) needed), [Resolume](https://www.resolume.com/software), [NestDrop](https://nestimmersion.ca/nestdrop.php), [TouchDesigner](https://derivative.ca), [MadMapper](https://madmapper.com), [Unity](https://unity.com) ([KlakSpout](https://github.com/keijiro/KlakSpout) needed), [HeavyM](https://www.heavym.net) and so much more that support it. Simply press CTRL + Z and you're good to go!
+Now you can send the BeatDrop's Visual Renderer via Spout to [OBS](https://obsproject.com) ([plug-in](https://obsproject.com/forum/resources/obs-spout-bi-directional-video-sharing-with-obs-studio-from-any-spout-program.1384) needed), [Resolume](https://www.resolume.com/software), [NestDrop](https://nestimmersion.ca/nestdrop.php), [TouchDesigner](https://derivative.ca), [MadMapper](https://madmapper.com), [Unity](https://unity.com) ([KlakSpout](https://github.com/keijiro/KlakSpout) needed), [HeavyM](https://www.heavym.net) and so much more that it supports. Simply press CTRL + Z and you're good to go!
 
 List of available apps here: https://spout.zeal.co
 
@@ -46,7 +52,7 @@ List of available apps here: https://spout.zeal.co
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## SCREEN-DEPENDENT RENDER MODE & PRESET PATCH FIXES
-Bring back the nostalgia from 2000s by fixing some old MilkDrop 1 presets behavior with Screen-Dependent Render Mode, making the visual way better. You are free to turn it off if you don't want it.
+Bring back the nostalgia from 2000s by fixing some old MilkDrop 1 presets behavior with Screen-Dependent Render Mode, making the visual way better. You are free to turn it off if you don't want.
 
 I've also manually patch fixed all the bugged presets to look very/almost identical to MilkDrop 1/2.0.
 
@@ -54,7 +60,7 @@ I've also manually patch fixed all the bugged presets to look very/almost identi
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## SHADER PRECACHING/CACHING
-Getting in stress if the visual is freezing while the shaders are compiling? Don't worry. I've got you! BeatDrop now supports shader precaching/caching for instant loading presets. Now you can experience 0 seconds compile time when you loaded the same preset that contains shaders! ;)
+Getting in stress if the visual is freezing while the shaders are compiling? Don't worry. I've got you! BeatDrop now supports shader precaching/caching for instant loading presets. Now you can experience 0 seconds compile time when you load the same preset that contains shaders! ;)
 
 Here is the comparison below!
 
@@ -104,7 +110,7 @@ To not break the listening sessions or DJ sessions, BeatDrop will no longer inte
 
 # BEFORE COMPILING THE CODE
 
-* First of all, [Visual Studio 2022](https://visualstudio.microsoft.com/vs) is now required.
+* First of all, [Visual Studio 2022 or above](https://visualstudio.microsoft.com/vs) is now required.
 * [DirectX SDK](https://www.microsoft.com/en-us/download/details.aspx?id=6812) is even required.
 * Workloads required before compiling:
 ![Workloads required to use with Visual Studio 2022](https://github.com/user-attachments/assets/3eeeccb3-c23a-4580-9315-7e1062cbc2ef)
@@ -143,7 +149,7 @@ Before this, [Git](https://git-scm.com) is required for cloning repositories.
 
 If you want to turn back on, do the same step, then change them to "Yes".
 
-2. Use [VS2022](https://visualstudio.microsoft.com/vs)'s terminal (View from toolbar -> Terminal) or PowerShell. Clone the repository as a local package.
+2. Use [Visual Studio](https://visualstudio.microsoft.com/vs)'s terminal (View from toolbar -> Terminal) or PowerShell. Clone the repository as a local package.
 ```
 git clone https://github.com/projectM-visualizer/projectm-eval.git
 cd projectm-eval
@@ -247,18 +253,18 @@ Use BeatDrop with your favourite:
 * WASAPI - compatible sound card
 * DirectX 9 or higher - compatible GPU
 * DirectX End-User [Runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=8109) (also included in the installer) contains the required 32-bit helper libraries d3dx9_43.dll and d3dx9_31.dll
-* [Microsoft Visual C++ 2015-2022 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=52685) or (optional) [Microsoft Visual C++ Redistributable All-in-One](https://www-techpowerup-com.cdn.ampproject.org/v/s/www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/?amp=&amp_gsa=1&amp_js_v=a9&usqp=mq331AQIUAKwASCAAgM%3D#amp_tf=De%20la%20%251%24s&aoh=17542342520002&referrer=https%3A%2F%2Fwww.google.com&ampshare=https%3A%2F%2Fwww.techpowerup.com%2Fdownload%2Fvisual-c-redistributable-runtime-package-all-in-one%2F)
+* [Microsoft Visual C++ 2015-2022 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=52685) ([Mirror](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)) or [Microsoft Visual C++ Redistributable All-in-One](https://www-techpowerup-com.cdn.ampproject.org/v/s/www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/?amp=&amp_gsa=1&amp_js_v=a9&usqp=mq331AQIUAKwASCAAgM%3D#amp_tf=De%20la%20%251%24s&aoh=17542342520002&referrer=https%3A%2F%2Fwww.google.com&ampshare=https%3A%2F%2Fwww.techpowerup.com%2Fdownload%2Fvisual-c-redistributable-runtime-package-all-in-one%2F) (optional)
 
 # Acknowledgements
 Special thanks to:
 
-* Ryan Geiss & Rovastar (John Baker) - [Official Milkdrop2 Source Code](https://sourceforge.net/projects/milkdrop2/)
+* Ryan Geiss & Rovastar (John Baker) - Original [MilkDrop](https://www.geisswerks.com/milkdrop/) visualization plug-in for [Winamp](https://winamparchive.org/) [(Source Code)](https://sourceforge.net/projects/milkdrop2/)
 * [oO-MrC-Oo](https://github.com/oO-MrC-Oo) - [XBMC Plug-in](https://github.com/oO-MrC-Oo/Milkdrop2-XBMC)
 * Casey Langen ([@clangen](https://github.com/clangen)) - [milkdrop2-musikcube](https://github.com/clangen/milkdrop2-musikcube)
 * Matthew van Eerde ([@mvaneerde](https://github.com/mvaneerde)) - [loopback-capture](https://github.com/mvaneerde/blog)
 * projectM Team ([Kai Blaschke](https://github.com/kblaschke)) - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval), contributor
 * Lynn Jarvis ([@leadedge](https://github.com/leadedge)) - [BeatDrop for Spout](https://github.com/leadedge/BeatDrop), [Spout](https://spout.zeal.co), contributor
-* Patrick Pomerleau @ Nest Immersion ([@nestdome](https://www.instagram.com/nestdome)) - help, contributor, feature integrations to NestDrop
+* Patrick Pomerleau @ Nest Immersion ([@nestdome](https://www.instagram.com/nestdome)) - helper, contributor, feature integrations to NestDrop
 * [IkeC](https://github.com/IkeC) - contributor, [Milkwave](https://github.com/IkeC/Milkwave) Developer
 * [MilkDrop2077](https://github.com/milkdrop2077) - contributor
 * Me, [u/Decent-Tangerine4998](https://www.reddit.com/user/Decent-Tangerine4998) - Tester
