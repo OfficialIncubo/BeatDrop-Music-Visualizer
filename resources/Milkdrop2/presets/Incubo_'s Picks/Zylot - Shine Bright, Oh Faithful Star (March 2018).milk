@@ -3,36 +3,36 @@ PSVERSION=4
 PSVERSION_WARP=4
 PSVERSION_COMP=4
 [preset00]
-fRating=3.000
-fGammaAdj=1.980
-fDecay=0.940
+fRating=4.000
+fGammaAdj=2.000
+fDecay=0.980
 fVideoEchoZoom=2.000
 fVideoEchoAlpha=0.000
 nVideoEchoOrientation=0
-nWaveMode=0
+nWaveMode=3
 bAdditiveWaves=0
 bWaveDots=0
 bWaveThick=0
 bModWaveAlphaByVolume=0
 bMaximizeWaveColor=1
-bTexWrap=1
+bTexWrap=0
 bDarkenCenter=0
 bRedBlueStereo=0
 bBrighten=0
-bDarken=1
+bDarken=0
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.000
-fWaveScale=2.988
-fWaveSmoothing=0.750
-fWaveParam=0.000
+fWaveAlpha=0.800
+fWaveScale=0.274
+fWaveSmoothing=0.720
+fWaveParam=1.000
 fModWaveAlphaStart=0.750
 fModWaveAlphaEnd=0.950
 fWarpAnimSpeed=1.000
 fWarpScale=1.000
 fZoomExponent=1.00000
-fShader=1.000
-zoom=1.00000
+fShader=0.000
+zoom=0.99996
 rot=0.00000
 cx=0.500
 cy=0.500
@@ -40,10 +40,10 @@ dx=0.00000
 dy=0.00000
 warp=1.00000
 sx=1.00000
-sy=1.00000
-wave_r=0.500
-wave_g=0.500
-wave_b=0.500
+sy=0.99983
+wave_r=0.600
+wave_g=0.490
+wave_b=0.190
 wave_x=0.500
 wave_y=0.500
 ob_size=0.010
@@ -72,28 +72,23 @@ b1x=1.000
 b2x=1.000
 b3x=1.000
 b1ed=0.250
-wavecode_0_enabled=1
+wavecode_0_enabled=0
 wavecode_0_samples=512
 wavecode_0_sep=0
-wavecode_0_bSpectrum=1
+wavecode_0_bSpectrum=0
 wavecode_0_bUseDots=0
 wavecode_0_bDrawThick=0
 wavecode_0_bAdditive=0
-wavecode_0_scaling=0.12032
+wavecode_0_scaling=1.00000
 wavecode_0_smoothing=0.50000
 wavecode_0_r=1.000
 wavecode_0_g=1.000
 wavecode_0_b=1.000
 wavecode_0_a=1.000
-wave_0_per_point1=x=sample;
-wave_0_per_point2=y=.3+pow(value1,.25);
-wave_0_per_point3=r=int(rand(10))*.1;
-wave_0_per_point4=g=int(rand(10))*.1;
-wave_0_per_point5=b=int(rand(10))*.1;
-wavecode_1_enabled=1
+wavecode_1_enabled=0
 wavecode_1_samples=512
 wavecode_1_sep=0
-wavecode_1_bSpectrum=1
+wavecode_1_bSpectrum=0
 wavecode_1_bUseDots=0
 wavecode_1_bDrawThick=0
 wavecode_1_bAdditive=0
@@ -103,11 +98,6 @@ wavecode_1_r=1.000
 wavecode_1_g=1.000
 wavecode_1_b=1.000
 wavecode_1_a=1.000
-wave_1_per_point1=x=sample;
-wave_1_per_point2=y=.9-pow(value2,.25);
-wave_1_per_point3=r=int(rand(10))*.1;
-wave_1_per_point4=g=int(rand(10))*.1;
-wave_1_per_point5=b=int(rand(10))*.1;
 wavecode_2_enabled=0
 wavecode_2_samples=512
 wavecode_2_sep=0
@@ -121,7 +111,6 @@ wavecode_2_r=1.000
 wavecode_2_g=1.000
 wavecode_2_b=1.000
 wavecode_2_a=1.000
-wave_2_init1=t1 = 0;
 wavecode_3_enabled=0
 wavecode_3_samples=512
 wavecode_3_sep=0
@@ -232,30 +221,22 @@ shapecode_3_border_g=1.000
 shapecode_3_border_b=1.000
 shapecode_3_border_a=0.100
 per_frame_1=warp = 0;
-per_pixel_1=dy = .01*sin(x*20+time*400);
-per_pixel_2=dy = if(above(bass,1.3),dy*2,if(below(bass,.5),0,dy));;
+per_frame_2=zoom = 1.4 + .1*sin(time*.55);
+per_pixel_1=zoom = zoom + (-rad) + bass*.2 + .15*sin(ang*5);
 warp_1=`shader_body
 warp_2=`{
 warp_3=`    // sample previous frame
-warp_4=`    ret = tex2D( sampler_main, uv ).xyz;
-warp_5=`
-warp_6=`    float dd = .2;
-warp_7=`    float du = .2;
-warp_8=`
-warp_9=`    ret = max(ret, tex2D( sampler_main, uv + float2(0,dd)*texsize.zw ).xyz);
-warp_10=`    ret = max(ret, tex2D( sampler_main, uv - float2(0,du)*texsize.zw ).xyz);
-warp_11=`    ret = max(ret, tex2D( sampler_main, uv + float2(dd,0)*texsize.zw ).xyz);
-warp_12=`    ret = max(ret, tex2D( sampler_main, uv - float2(du,0)*texsize.zw ).xyz);
-warp_13=`    
-warp_14=`    // darken (decay) over time
-warp_15=`    ret *= 0.92; //or try: ret -= 0.004;
-warp_16=`}
+warp_4=`    ret = tex2D( sampler_fc_main, uv ).xyz;
+warp_5=`    
+warp_6=`    // darken (decay) over time
+warp_7=`    ret *= 0.8; 
+warp_8=`    ret -= 0.004;
+warp_9=`}
 comp_1=`shader_body
 comp_2=`{
 comp_3=`    ret = tex2D(sampler_main, uv).xyz;
-comp_4=`    ret *= 1.98; //gamma
-comp_5=`    ret *= hue_shader; //old hue shader effect
-comp_6=`    ret *= ret; //darken
-comp_7=`
-comp_8=`    ret += GetBlur1(uv);
-comp_9=`}
+comp_4=`    ret *= 2.00; //gamma
+comp_5=`
+comp_6=`    ret += GetBlur1(uv);
+comp_7=`    ret += GetBlur2(uv);
+comp_8=`}
