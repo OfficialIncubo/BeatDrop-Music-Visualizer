@@ -620,7 +620,7 @@ SPOUT :
 #include "shell_defines.h"
 #include "wasabi.h"
 #include <assert.h>
-#include <locale.h>
+#include <cctype>
 #include <process.h>  // for beginthread, etc.
 #include <shellapi.h>
 #include <strsafe.h>
@@ -5882,47 +5882,53 @@ void ToggleWindowOpacity(HWND hwnd)
 
 void LoadPresetFilesViaDragAndDrop(WPARAM wParam)
 {
-
-    #ifdef UNICODE
-        TCHAR szDroppedPresetName[MAX_PATH]; // Unicode string
-    #else
-        TCHAR szDroppedPresetName[MAX_PATH]; // ANSI string
-    #endif
-
     //TCHAR szDroppedPresetName[MAX_PATH];
     HDROP hDrop = (HDROP)wParam;
 
-    int count = DragQueryFile(hDrop, 0xFFFFFFFF, szDroppedPresetName, 0);
+    int count = DragQueryFile(hDrop, 0xFFFFFFFF, NULL, 0);
+
+    // Check if it's more than one .milk preset file dropped in.
+    if (count > 1) {
+        g_plugin.AddErrorNotif(L"ERROR: Please drop only one .milk preset file at a time.");
+        DragFinish(hDrop);
+        return;
+    }
 
     //int len = MultiByteToWideChar(MB_PRECOMPOSED, 0, szDroppedPresetName, -1, NULL, 0);
     //wchar_t* wConvertedDroppedPresetName = new wchar_t[len];
     //MultiByteToWideChar(MB_PRECOMPOSED, 0, szDroppedPresetName, -1, wConvertedDroppedPresetName, len);
     //int len2 = lstrlenW(wConvertedDroppedPresetName);
 
-    for (int i = 0; i < count; i++)
-    {
-        DragQueryFile(hDrop, i, szDroppedPresetName, MAX_PATH);
-    }
+    // If only one file is dropped, proceed
+    if (count == 1) {
+        wchar_t szDroppedPresetName[MAX_PATH];
 
-    //ChatGPT
-    #ifdef UNICODE
-        // No conversion needed for Unicode build
-        const wchar_t* convertedFileName = szDroppedPresetName;
-    #else
-    // Convert ANSI string to Unicode
-        wchar_t convertedFileName[MAX_PATH];
-        MultiByteToWideChar(CP_ACP, 0, szDroppedPresetName, -1, convertedFileName, MAX_PATH);
-    #endif
+        // Use the wide character version directly
+        DragQueryFileW(hDrop, 0, szDroppedPresetName, MAX_PATH);
 
-    //if (MAX_PATH < 5 || wcsicmp(convertedFileName + MAX_PATH - 5, L".milk") != 0)
-    std::string GetFilename = szDroppedPresetName;
-    if (GetFilename.substr(GetFilename.find_last_of(".") + 1) == "milk") //from https://stackoverflow.com/a/51999
-        g_plugin.LoadPreset(convertedFileName, 0.0f);
-    else
-    {
-        wchar_t buf[1024], tmp[128];
-        swprintf(buf, L"Error: Failed to load dropped preset file: %s", convertedFileName, tmp, 128);
-        g_plugin.AddErrorNotif(buf);
+        std::wstring wFileName = szDroppedPresetName;
+
+        // Check if it's a .milk file (case-insensitive)
+        std::wstring lowerFileName = wFileName;
+        std::transform(lowerFileName.begin(), lowerFileName.end(), lowerFileName.begin(), ::towlower);
+
+        if (lowerFileName.length() >= 5 &&
+            lowerFileName.substr(lowerFileName.length() - 5) == L".milk")
+        {
+            // Pass the wide string directly to LoadPreset
+            g_plugin.LoadPreset(wFileName.c_str(), 0.0f);
+        }
+        else {
+            // Extract just the filename part for error message
+            const wchar_t* filenameOnly = wFileName.c_str();
+            const wchar_t* lastSlash = wcsrchr(filenameOnly, L'\\');
+            if (lastSlash)
+                filenameOnly = lastSlash + 1;
+
+            wchar_t buf[1024], tmp[128];
+            swprintf(buf, L"Error: Failed to load dropped preset file: %s", filenameOnly, tmp, 128);
+            g_plugin.AddErrorNotif(buf);
+        }
     }
     DragFinish(hDrop);
 }
