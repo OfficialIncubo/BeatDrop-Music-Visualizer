@@ -414,7 +414,7 @@ per_frame_46=difftime = if(above(difftime,2000),0, difftime);
 per_frame_47=
 per_frame_48=monitor = q1;
 per_frame_49=
-per_frame_50=rarr = rand(100)*0.01;
+per_frame_50=rarr = int(rand(100))*0.01;
 per_frame_51=
 per_frame_52=decay = 0.7 + 0.2*(abs(cos(difftime*1.56+rarr)));
 per_frame_53=

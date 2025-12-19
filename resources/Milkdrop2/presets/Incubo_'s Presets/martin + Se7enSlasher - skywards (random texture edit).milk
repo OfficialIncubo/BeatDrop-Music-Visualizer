@@ -228,8 +228,8 @@ wave_3_per_point10=med = 1.5 + .5*sin(time*.134);
 wave_3_per_point11=med = 5;
 wave_3_per_point12=amod = 3;
 wave_3_per_point13=
-wave_3_per_point14=vr = rand(10001)*.0001;
-wave_3_per_point15=rb = rb + rand(10001)*.0001*.1;
+wave_3_per_point14=vr = int(rand(10001))*.0001;
+wave_3_per_point15=rb = rb + int(rand(10001))*.0001*.1;
 wave_3_per_point16=
 wave_3_per_point17=a = vr;
 wave_3_per_point18=

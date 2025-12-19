@@ -89,8 +89,8 @@ per_frame_25=// level cycler
 per_frame_26=levccl=levccl+le;
 per_frame_27=q2=.1*levccl;
 per_frame_28=
-per_frame_29=mvx=if(pulse,rand(2)*rand(25),mvx);mv_x=mvx;
-per_frame_30=mvy=if(pulse,rand(2)*rand(19),mvy);mv_y=mvy;
+per_frame_29=mvx=if(pulse,int(rand(2))*int(rand(25)),mvx);mv_x=mvx;
+per_frame_30=mvy=if(pulse,int(rand(2))*int(rand(19)),mvy);mv_y=mvy;
 per_frame_31=
 per_frame_32=q3=.5+.2*sin(23*pcl)+.2*sin(.023*levccl);
 per_frame_33=wave_x=q3;

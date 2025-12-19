@@ -531,7 +531,7 @@ per_frame_45=
 per_frame_46=//fix a strange error
 per_frame_47=difftime = if(above(difftime,2000),0, difftime);
 per_frame_48=
-per_frame_49=rarr = rand(100)*0.01;
+per_frame_49=rarr = int(rand(100))*0.01;
 per_frame_50=
 per_frame_51=decay_r = 0.6 + 0.2*(abs(sin(diff+rarr)));
 per_frame_52=decay_g = 0.6 + 0.25*(abs(cos(diff+rarr)));

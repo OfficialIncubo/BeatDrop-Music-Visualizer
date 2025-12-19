@@ -1,0 +1,123 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.005
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99990
+rot=-0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=0.99990
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+warp_1=`shader_body {
+warp_2=`//ret = 1;
+warp_3=`}
+comp_1=`#define ITERATIONS 250
+comp_2=`#define SPEED 25.0
+comp_3=`#define DT 0.5
+comp_4=`
+comp_5=`float2 position(float z) {
+comp_6=`    return float2(
+comp_7=`        0.0 + sin(z * 0.1) * 1.0 + sin(cos(z * 0.031) * 4.0) * 1.0 + sin(sin(z * 0.0091) * 3.0) * 3.0,
+comp_8=`        0.0 + cos(z * 0.1) * 1.0 + cos(cos(z * 0.031) * 4.0) * 1.0 + cos(sin(z * 0.0091) * 3.0) * 3.0
+comp_9=`    ) * 1.0;
+comp_10=`}
+comp_11=`
+comp_12=`shader_body
+comp_13=`{
+comp_14=`    // Menormalkan koordinat UV
+comp_15=`    float2 p = (uv * 2.0 - 1.0) * float2(texsize.x/texsize.y, 1.0);
+comp_16=`    
+comp_17=`    float camZ = SPEED * time;
+comp_18=`    float2 cam = position(camZ);
+comp_19=`    
+comp_20=`    // Hitung turunan (dcam/dt)
+comp_21=`    float camZ2 = SPEED * (time + DT);
+comp_22=`    float2 cam2 = position(camZ2);
+comp_23=`    float2 dcamdt = (cam2 - cam) / DT;
+comp_24=`    
+comp_25=`    float3 f = float3(0.0, 0.0, 0.0);
+comp_26=`    
+comp_27=`    // Ulangi melalui 250 titik (dioptimalkan untuk MilkDrop)
+comp_28=`    for(int j = 1; j < ITERATIONS; j++) {
+comp_29=`        float i = float(j);
+comp_30=`        float realZ = floor(camZ) + i;
+comp_31=`        float screenZ = realZ - camZ;
+comp_32=`        float r = 1.0 / screenZ;
+comp_33=`        
+comp_34=`        // Hitung posisi titik di layar
+comp_35=`        float2 c = (position(realZ) - cam) * 10.0 / screenZ - dcamdt * 0.4;
+comp_36=`        
+comp_37=`        // Warna berdasarkan kedalaman
+comp_38=`        float3 color = (float3(sin(realZ * 0.07), sin(realZ * 0.1), sin(realZ * 0.08)) 
+comp_39=`                     + float3(1.0, 1.0, 1.0)) * 0.5;
+comp_40=`        
+comp_41=`        // Tambahkan efek bercahaya
+comp_42=`        f += color * 0.06 / screenZ / (abs(length(p - c) - r) + 0.01);
+comp_43=`    }
+comp_44=`    
+comp_45=`    ret = float4(f, 1.0);
+comp_46=`}

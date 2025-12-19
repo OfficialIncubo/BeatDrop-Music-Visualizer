@@ -308,17 +308,17 @@ per_frame_17=countertime = if(beat,time,countertime);
 per_frame_18=counter =-1*pow(min((time-countertime-1.5),0),9);
 per_frame_19=
 per_frame_20=
-per_frame_21=q7 = if(beat,0.001+0.0001*rand(40),oldq7);
+per_frame_21=q7 = if(beat,0.001+0.0001*int(rand(40)),oldq7);
 per_frame_22=oldq7=q7;
-per_frame_23=q6 = if(beat,0.001+0.0001*rand(40),oldq6);
+per_frame_23=q6 = if(beat,0.001+0.0001*int(rand(40)),oldq6);
 per_frame_24=oldq6=q6;
-per_frame_25=q5= if(beat,0.001+0.0001*rand(40),oldq5);
+per_frame_25=q5= if(beat,0.001+0.0001*int(rand(40)),oldq5);
 per_frame_26=oldq5=q5;
-per_frame_27=q4 = if(beat,0.001+0.0001*rand(40),oldq4);
+per_frame_27=q4 = if(beat,0.001+0.0001*int(rand(40)),oldq4);
 per_frame_28=oldq4=q4;
-per_frame_29=Flag = If(beat,if(Rand(2)-1,1,0),oldFlag);
+per_frame_29=Flag = If(beat,if(int(Rand(2))-1,1,0),oldFlag);
 per_frame_30=oldflag = flag;
-per_frame_31=Ratio = If(Beat,50+rand(100),oldRatio);
+per_frame_31=Ratio = If(Beat,50+int(rand(100)),oldRatio);
 per_frame_32=OldRatio = Ratio;
 per_frame_33=q1 = if(beat,if(flag,ratio,0.75*ratio),oldq1);
 per_frame_34=oldq1=q1;

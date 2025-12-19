@@ -102,7 +102,7 @@ per_frame_38=mv_r=.5*(ib_r+wave_r);mv_g=.5*(ib_g+wave_g);mv_b=.5*(ib_b+wave_b);
 per_frame_39=mv_a=.5*sqr(sin(.01*leccl+bccl));
 per_frame_40=
 per_frame_41=echo_alpha=.5+.2*cos(.07*leccl+.02*thccl);
-per_frame_42=eo=if(band(equal(bccl%3,0),beat),rand(4),eo);
+per_frame_42=eo=if(band(equal(bccl%3,0),beat),int(rand(4)),eo);
 per_frame_43=q3=(equal(eo,2)+equal(eo,1))*equal(bccl%2,0);
 per_frame_44=q4=(equal(eo,0)+equal(eo,3))*equal(bccl%2,0);
 per_frame_45=echo_orient=eo;

@@ -298,7 +298,7 @@ shapecode_3_border_r=0.500000
 shapecode_3_border_g=0.500000
 shapecode_3_border_b=0.500000
 shapecode_3_border_a=0.000000
-per_frame_init_1=p1 = rand(16);
+per_frame_init_1=p1 = int(rand(16));
 per_frame_init_2=p2 = p1;
 per_frame_1=dec_med = pow (0.96, 30/fps);
 per_frame_2=dec_slow = pow (0.99, 30/fps);

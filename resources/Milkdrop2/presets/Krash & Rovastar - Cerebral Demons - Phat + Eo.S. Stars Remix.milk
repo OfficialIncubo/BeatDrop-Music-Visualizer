@@ -120,8 +120,8 @@ wave_1_per_point11=
 wave_1_per_point12=xof=sin(tm) * sin(tm*3) * 0.4 + 0.5 + tx;
 wave_1_per_point13=yof=cos(tm*1.3) * sin(tm*5.4) * 0.4 + 0.5 + ty;
 wave_1_per_point14=
-wave_1_per_point15=xran=(rand(10) - 5) * 0.0005; xran=xran*sample;
-wave_1_per_point16=yran=(rand(10) - 5) * 0.0005; yran=yran*sample;
+wave_1_per_point15=xran=(int(rand(10)) - 5) * 0.0005; xran=xran*sample;
+wave_1_per_point16=yran=(int(rand(10)) - 5) * 0.0005; yran=yran*sample;
 wave_1_per_point17=
 wave_1_per_point18=x= xof + xran;
 wave_1_per_point19=y= (1-yof) + yran;
@@ -156,8 +156,8 @@ wave_2_per_point11=
 wave_2_per_point12=xof=sin(tm) * sin(tm*3) * 0.4 + 0.5 + tx;
 wave_2_per_point13=yof=cos(tm*1.3) * sin(tm*5.4) * 0.4 + 0.5 + ty;
 wave_2_per_point14=
-wave_2_per_point15=xran=(rand(10) - 5) * 0.0005; xran=xran*sample;
-wave_2_per_point16=yran=(rand(10) - 5) * 0.0005; yran=yran*sample;
+wave_2_per_point15=xran=(int(rand(10)) - 5) * 0.0005; xran=xran*sample;
+wave_2_per_point16=yran=(int(rand(10)) - 5) * 0.0005; yran=yran*sample;
 wave_2_per_point17=
 wave_2_per_point18=x= xof + xran;
 wave_2_per_point19=y= (1-yof) + yran;

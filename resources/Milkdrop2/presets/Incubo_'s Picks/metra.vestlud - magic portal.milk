@@ -85,8 +85,8 @@ wavecode_0_r=1.000
 wavecode_0_g=1.000
 wavecode_0_b=3.000
 wavecode_0_a=1.000
-wave_0_per_frame1=tm = rand(101)*.01*6.24;
-wave_0_per_frame2=dt = rand(101)*.01;
+wave_0_per_frame1=tm = int(rand(101))*.01*6.24;
+wave_0_per_frame2=dt = int(rand(101))*.01;
 wave_0_per_frame3=
 wave_0_per_frame4=
 wave_0_per_frame5=t1 = .5 + .5*sin(tm)*dt;
@@ -109,7 +109,7 @@ wave_0_per_point11=
 wave_0_per_point12=x = if(sw,bx,ax);
 wave_0_per_point13=y = if(sw,by,ay);
 wave_0_per_point14=
-wave_0_per_point15=a = if(sw,equal(rand(7),0)*.1,0);
+wave_0_per_point15=a = if(sw,equal(int(rand(7)),0)*.1,0);
 wave_0_per_point16=
 wave_0_per_point17=a = sw*.2;
 wavecode_1_enabled=1
@@ -125,8 +125,8 @@ wavecode_1_r=1.000
 wavecode_1_g=1.000
 wavecode_1_b=3.000
 wavecode_1_a=1.000
-wave_1_per_frame1=tm = rand(101)*.01*6.24;
-wave_1_per_frame2=dt = rand(101)*.01;
+wave_1_per_frame1=tm = int(rand(101))*.01*6.24;
+wave_1_per_frame2=dt = int(rand(101))*.01;
 wave_1_per_frame3=
 wave_1_per_frame4=
 wave_1_per_frame5=t1 = .5 + .5*sin(tm)*dt;
@@ -149,7 +149,7 @@ wave_1_per_point11=
 wave_1_per_point12=x = if(sw,bx,ax);
 wave_1_per_point13=y = if(sw,by,ay);
 wave_1_per_point14=
-wave_1_per_point15=a = if(sw,equal(rand(7),0)*.1,0);
+wave_1_per_point15=a = if(sw,equal(int(rand(7)),0)*.1,0);
 wave_1_per_point16=
 wave_1_per_point17=a = sw*.2;
 wavecode_2_enabled=1
@@ -165,8 +165,8 @@ wavecode_2_r=1.000
 wavecode_2_g=1.000
 wavecode_2_b=3.000
 wavecode_2_a=1.000
-wave_2_per_frame1=tm = rand(101)*.01*6.24;
-wave_2_per_frame2=dt = rand(101)*.01;
+wave_2_per_frame1=tm = int(rand(101))*.01*6.24;
+wave_2_per_frame2=dt = int(rand(101))*.01;
 wave_2_per_frame3=
 wave_2_per_frame4=t1 = .5 + .5*sin(tm)*dt;
 wave_2_per_frame5=t2 = .5 + .5*cos(tm)*dt;
@@ -186,7 +186,7 @@ wave_2_per_point9=
 wave_2_per_point10=x = if(sw,bx,ax);
 wave_2_per_point11=y = if(sw,by,ay);
 wave_2_per_point12=
-wave_2_per_point13=a = if(sw,equal(rand(7),0)*.1,0);
+wave_2_per_point13=a = if(sw,equal(int(rand(7)),0)*.1,0);
 wave_2_per_point14=
 wave_2_per_point15=a = sw*.2
 per_frame_init_1=mv_x=64;mv_y=48;
