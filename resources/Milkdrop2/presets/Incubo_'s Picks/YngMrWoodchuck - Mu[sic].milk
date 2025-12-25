@@ -1,0 +1,358 @@
+[preset00]
+fRating=5.000
+fGammaAdj=1.10
+fDecay=0.95
+
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+
+; --- Keep ONE global wave renderer (Vinyl Halo) ---
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+
+fWaveAlpha=0.90
+fWaveScale=0.65
+fWaveParam=0.000
+
+fWarpAnimSpeed=0.000
+fWarpScale=1.000
+fZoomExponent=1.000
+fShader=0.000
+
+zoom=1.000
+rot=0.000
+
+cx=0.500
+cy=0.500
+dx=0.000
+dy=0.000
+warp=0.000
+sx=1.000
+sy=1.000
+
+wave_x=0.500
+wave_y=0.500
+
+ob_size=0.000
+ib_size=0.000
+
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_a=0.000
+
+############################################################
+# VINYL HALO — reduced-sensitivity audio path (UNCHANGED)
+############################################################
+per_frame_7=sens = 1;
+
+per_frame_8=bass_s = bass * sens;
+per_frame_9=mid_s  = mid  * sens;
+per_frame_10=treb_s = treb * sens;
+
+per_frame_11=bass_f = bass_f*0.90 + bass_s*0.10;
+per_frame_12=mid_f  = mid_f *0.92 + mid_s *0.08;
+per_frame_13=treb_f = treb_f*0.94 + treb_s*0.06;
+
+; --- idle motion floor so the wave exists even with silence ---
+per_frame_14=idle = 0.02;                      // try 0.008-0.02
+per_frame_15=mid_f = max(mid_f, idle + 0.004*sin(time*0.7));
+per_frame_16=bass_f = max(bass_f, idle + 0.004*cos(time*0.6));
+per_frame_17=treb_f = max(treb_f, idle + 0.004*sin(time*0.9));
+
+per_frame_18=bass_outer_c = bass_f * 0.6 / (1 + bass_f * 0.6);
+per_frame_19=bass_outer   = min(bass_outer_c * 0.0025, 0.0015);
+
+per_frame_20=wave_mystery = -.15 + .15*mid_f;
+
+per_frame_21=energy = max(bass_s + mid_s + treb_s, 0.001);
+per_frame_22=//zoom = if(energy > 0.01, 1.00, 0.9985 - bass_outer);
+per_frame_23=//rot = if(energy > 0.01, 0.00, sin(time*0.05)*0.002);
+
+
+; Vinyl background wave (UNCHANGED)
+per_frame_1=wave_r = 0.78 + mid_f*0.7;
+per_frame_2=wave_g = 0.76 + mid_f*0.7;
+per_frame_3=wave_b = 0.70 + mid_f*0.7;
+per_frame_4=dec_m = pow(.94, 30/fps);
+per_frame_5=
+per_frame_6=//Volume
+
+
+############################################################
+# VINYL CENTER CIRCLE (UNCHANGED)
+############################################################
+shapecode_0_enabled=1
+shapecode_0_sides=512
+shapecode_0_additive=0
+shapecode_0_thickOutline=1
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.280
+shapecode_0_ang=0.000
+shapecode_0_tex_zoom=0.95
+
+shapecode_0_r=0.78
+shapecode_0_g=0.76
+shapecode_0_b=0.70
+shapecode_0_a=0.60
+
+shapecode_0_r2=0.72
+shapecode_0_g2=0.74
+shapecode_0_b2=0.78
+shapecode_0_a2=0.30
+
+shapecode_0_border_r=0.25
+shapecode_0_border_g=0.26
+shapecode_0_border_b=0.28
+shapecode_0_border_a=0.25
+
+shape_0_per_frame1=
+shape_0_per_frame2=rad = 0.280 + bass * 0.010;
+shape_0_per_frame3=a   = 0.55  + mid  * 0.09;
+shape_0_per_frame4=ang = time * 0.007;
+shape_0_per_frame5=target = 0.55 + ((bass + mid + treb)/6)*0.35;
+shape_0_per_frame6=lum = lum*0.30 + target*0.40;
+shape_0_per_frame7=r = lum;
+shape_0_per_frame8=g = lum;
+shape_0_per_frame9=b = lum;
+shape_0_per_frame10=lum = min(0.60, max(0.40, lum));
+
+############################################################
+# SPECTRUM DOTS — FFT capture into gmegabuf (NO GLOBAL OVERRIDES)
+# Key: this DOES NOT require nWaveMode=4.
+############################################################
+
+; Use a dedicated wavecode index to avoid collisions
+wavecode_10_enabled=1
+wavecode_10_samples=128
+wavecode_10_sep=40
+wavecode_10_bSpectrum=1
+wavecode_10_bUseDots=0
+wavecode_10_bDrawThick=0
+wavecode_10_bAdditive=0
+wavecode_10_scaling=0.5
+wavecode_10_smoothing=0.00000
+wavecode_10_r=0.000
+wavecode_10_g=0.600
+wavecode_10_b=1.000
+wavecode_10_a=0.000
+
+wave_10_per_frame1=t1=0;
+
+wave_10_per_point1=val=value1+value2;
+
+wave_10_per_point2=bass_w = if (t1 <= 3, 5, 1);
+wave_10_per_point3=vL = value1 * bass_w;
+wave_10_per_point4=vR = value2 * bass_w;
+wave_10_per_point5=vS = val    * bass_w;
+
+wave_10_per_point6=decL=if(vL>gmegabuf(t1),0.5,0.8);
+wave_10_per_point7=gmegabuf(t1)=gmegabuf(t1)*decL+(1-decL)*vL;
+
+wave_10_per_point8=decR=if(vR2>gmegabuf(t1+500),0.5,0.8);
+wave_10_per_point9=gmegabuf(t1+500)=gmegabuf(t1+500)*decR+(1-decR)*vR;
+
+wave_10_per_point10=decS=if(vS>gmegabuf(t1+1000),0.5,0.999);
+wave_10_per_point11=gmegabuf(t1+1000)=gmegabuf(t1+1000)*decS+(1-decS)*vS;
+
+wave_10_per_point12=t1=t1+1;
+
+
+############################################################
+# SPECTRUM DOT GRID SHAPE (renumbered to 10)
+############################################################
+shapecode_10_enabled=1
+shapecode_10_sides=4
+shapecode_10_additive=0
+shapecode_10_thickOutline=1
+shapecode_10_textured=0
+shapecode_10_num_inst=1600
+shapecode_10_x=0.500
+shapecode_10_y=0.500
+shapecode_10_rad=0.02210
+shapecode_10_ang=0.00000
+shapecode_10_tex_ang=0
+shapecode_10_tex_zoom=0
+
+shapecode_10_r=1.000
+shapecode_10_g=1.000
+shapecode_10_b=1.000
+shapecode_10_a=0.900
+shapecode_10_r2=1.000
+shapecode_10_g2=1.000
+shapecode_10_b2=1.000
+shapecode_10_a2=1.000
+
+shapecode_10_border_r=0.590
+shapecode_10_border_g=0.810
+shapecode_10_border_b=0.690
+shapecode_10_border_a=0.000
+
+shape_10_per_frame1=rad0 = 0.028;
+shape_10_per_frame2=ang = -rot;
+shape_10_per_frame3=fslot = int(instance/40);
+shape_10_per_frame4=row = instance%40;
+shape_10_per_frame5=x = 0.03 + fslot/39*0.92;
+shape_10_per_frame6=y = 0.02 + row*0.025;
+shape_10_per_frame7=lim = max(0,min(1,5*log(1+gmegabuf(fslot)*2)));
+shape_10_per_frame8=level = lim*8;
+shape_10_per_frame9=adec = 0.88;
+shape_10_per_frame10=gmegabuf(3000+fslot) = gmegabuf(3000+fslot)*adec + (1-adec)*level;
+shape_10_per_frame11=a = if(row < gmegabuf(3000+fslot), 0.5, 0);
+shape_10_per_frame12=a2 = a;
+shape_10_per_frame13=trel = time;
+shape_10_per_frame14=r = 0.5 + 0.5*sin(fslot/32*6 + trel);
+shape_10_per_frame15=g = 0.5 + 0.5*sin(fslot/32*6 + 2 + trel);
+shape_10_per_frame16=b = 0.5 + 0.5*sin(fslot/32*6 + 4 + trel);
+shape_10_per_frame17=r2 = r; g2 = g; b2 = b;
+shape_10_per_frame18=rad = rad0;
+
+############################################################
+# SPECTRUM DOT GRID SHAPE (renumbered to 11)
+############################################################
+shapecode_11_enabled=1
+shapecode_11_sides=4
+shapecode_11_additive=0
+shapecode_11_thickOutline=1
+shapecode_11_textured=0
+shapecode_11_num_inst=1600
+shapecode_11_x=0.500
+shapecode_11_y=0.500
+shapecode_11_rad=0.02210
+shapecode_11_ang=0.00000
+shapecode_11_tex_ang=0
+shapecode_11_tex_zoom=0
+
+shapecode_11_r=1.000
+shapecode_11_g=1.000
+shapecode_11_b=1.000
+shapecode_11_a=0.900
+shapecode_11_r2=1.000
+shapecode_11_g2=1.000
+shapecode_11_b2=1.000
+shapecode_11_a2=1.000
+
+shapecode_11_border_r=0.590
+shapecode_11_border_g=0.810
+shapecode_11_border_b=0.690
+shapecode_11_border_a=0.000
+
+shape_11_per_frame1=rad0 = 0.028;
+shape_11_per_frame2=ang = -rot;
+shape_11_per_frame3=fslot = int(instance/40);
+shape_11_per_frame4=row = instance%40;
+shape_11_per_frame5=x = 1 - 0.03 - fslot/39*0.92;
+shape_11_per_frame6=y = 1 - 0.02 - row*0.025;
+shape_11_per_frame7=lim = max(0,min(1,5*log(1+gmegabuf(fslot)*2)));
+shape_11_per_frame8=level = lim*8;
+shape_11_per_frame9=adec = 0.88;
+shape_11_per_frame10=gmegabuf(3000+fslot) = gmegabuf(3000+fslot)*adec + (1-adec)*level;
+shape_11_per_frame11=a = if(row < gmegabuf(3000+fslot), 0.5, 0);
+shape_11_per_frame12=a2 = a;
+shape_11_per_frame13=trel = time;
+shape_11_per_frame14=r = 0.5 + 0.5*sin(fslot/32*6 + trel);
+shape_11_per_frame15=g = 0.5 + 0.5*sin(fslot/32*6 + 2 + trel);
+shape_11_per_frame16=b = 0.5 + 0.5*sin(fslot/32*6 + 4 + trel);
+shape_11_per_frame17=r2 = r; g2 = g; b2 = b;
+shape_11_per_frame18=rad = rad0;
+
+############################################################
+# HORIZONTAL FUZZY AUDIO LINE — HARD SILENCE GATED (POLISHED)
+############################################################
+
+###############
+# LEFT HALF
+###############
+shapecode_12_enabled=1
+shapecode_12_sides=12
+shapecode_12_num_inst=156
+shapecode_12_thickOutline=0
+shapecode_12_textured=0
+shapecode_12_additive=0
+
+shapecode_12_r=0.72
+shapecode_12_g=0.74
+shapecode_12_b=0.78
+shapecode_12_a=0.30
+
+shapecode_12_r2=0.72
+shapecode_12_g2=0.74
+shapecode_12_b2=0.78
+shapecode_12_a2=0.30
+
+shape_12_per_frame1=raw=(gmegabuf(6)+gmegabuf(10)+gmegabuf(14))/3;
+shape_12_per_frame2=raw=raw*110;
+shape_12_per_frame3=energy=raw/(1+raw/1.125);
+shape_12_per_frame4=gate=(energy>0.05);
+shape_12_per_frame5=wave_amt=max(0,min(1,energy/0.95));
+shape_12_per_frame6=scatter_gate=max(0,min(1,(energy-0.95)*6));
+shape_12_per_frame7=x=0.055+(instance/156)*0.25;
+shape_12_per_frame8=flat_y=0.50;
+shape_12_per_frame9=pos=instance/155;
+shape_12_per_frame10=env=0.02 + (1-0.02)*pow(4*pos*(1-pos),2.2);
+shape_12_per_frame11=wave=sin(instance*0.40+time*(0.25+wave_amt*0.9))*wave_amt*0.05*env;
+shape_12_per_frame12=scatter=sin(instance*9.7+floor(time*3))*scatter_gate*0.04*env;
+shape_12_per_frame13=y=flat_y+gate*(wave+scatter);
+shape_12_per_frame14=rad=0.0014;
+shape_12_per_frame15=a=0.10+energy*0.15;
+shape_12_per_frame16=a2=a;
+
+
+###############
+# RIGHT HALF (MIRROR)
+###############
+shapecode_13_enabled=1
+shapecode_13_sides=12
+shapecode_13_num_inst=156
+shapecode_13_thickOutline=0
+shapecode_13_textured=0
+shapecode_13_additive=0
+
+shapecode_13_r=0.72
+shapecode_13_g=0.74
+shapecode_13_b=0.78
+shapecode_13_a=0.30
+
+shapecode_13_r2=0.72
+shapecode_13_g2=0.74
+shapecode_13_b2=0.78
+shapecode_13_a2=0.30
+
+shape_13_per_frame1=raw=(gmegabuf(506)+gmegabuf(510)+gmegabuf(514))/3;
+shape_13_per_frame2=raw=raw*110;
+shape_13_per_frame3=energy=raw/(1+raw/1.125);
+shape_13_per_frame4=gate=(energy>0.05);
+shape_13_per_frame5=wave_amt=max(0,min(1,energy/0.95));
+shape_13_per_frame6=scatter_gate=max(0,min(1,(energy-0.95)*6));
+shape_13_per_frame7=x=1-0.055-(instance/156)*0.25;
+shape_13_per_frame8=flat_y=0.50;
+shape_13_per_frame9=pos=instance/155;
+shape_13_per_frame10=env=0.02 + (1-0.02)*pow(4*pos*(1-pos),2.2);
+shape_13_per_frame11=wave=sin(instance*0.40+time*(0.25+wave_amt*0.9))*wave_amt*0.05*env;
+shape_13_per_frame12=scatter=sin(instance*9.7+floor(time*3))*scatter_gate*0.04*env;
+shape_13_per_frame13=y=flat_y+gate*(wave+scatter);
+shape_13_per_frame14=rad=0.0014;
+shape_13_per_frame15=a=0.10+energy*0.15;
+shape_13_per_frame16=a2=a;
+
+############################################################
+# IMPORTANT: do NOT include Spectrum's:
+# - second global header (zoom/warp/sx/sy/etc)
+# - per_frame_54 that sets warp=.3 and zoom=.98
+# - warp_1 / comp_1 shaders with uv scaling (0.52) that makes circles oblong
+############################################################

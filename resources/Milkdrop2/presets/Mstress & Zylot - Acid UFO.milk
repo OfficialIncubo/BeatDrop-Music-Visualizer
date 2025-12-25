@@ -77,8 +77,8 @@ per_frame_13=ob_g = if(equal(colorcounter,1),0, if(equal(colorcounter,2),sin(cou
 per_frame_14=ob_b = if(equal(colorcounter,1),sin(counter1+2.1), if(equal(colorcounter,2),0, if(equal(colorcounter,3),0, if(equal(colorcounter,4),0, if(equal(colorcounter,5),sin(counter1), if(equal(colorcounter,6),1,1))))));
 per_frame_15=
 per_frame_16=mbass=max(bass_att,3);
-per_frame_17=xmovn = 0.1*rand(10)*mbass*0.015*(1-2*above(rand(10),5));
-per_frame_18=ymovn = pow(pow(mbass*0.015,2)-pow(xmovn,2),1/2)*(1-2*above(rand(10),5));
+per_frame_17=xmovn = 0.1*int(rand(10))*mbass*0.015*(1-2*above(int(rand(10)),5));
+per_frame_18=ymovn = pow(pow(mbass*0.015,2)-pow(xmovn,2),1/2)*(1-2*above(int(rand(10)),5));
 per_frame_19=//ymovn=.05;
 per_frame_20=xmov = if(beat,xmovn,xmov*.9);
 per_frame_21=ymov = if(beat,ymovn,ymov*.9);

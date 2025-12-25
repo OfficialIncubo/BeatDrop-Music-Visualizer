@@ -1,0 +1,337 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.105
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.700
+ib_g=0.000
+ib_b=1.000
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=n = 0;
+per_frame_init_2=loop (100000,megabuf(n)=0;gmegabuf(n)=0;n += 1;);
+per_frame_init_3=
+per_frame_init_4=//rand chain
+per_frame_init_5=n = 90000; t=0; loop (5000, t+= (2+cos(n/21))/5; megabuf(n)= sin(t)*0.5; n+= 1);
+per_frame_init_6=
+per_frame_init_7=
+per_frame_init_8=fov = 1; reg05 = fov;
+per_frame_init_9=maxstrings = 150;
+per_frame_init_10=maxssize   = 37; //Pkte pro String
+per_frame_init_11=maxpts     = 1600;
+per_frame_init_12=maxshapes  = 300;
+per_frame_init_13=pfree = maxpts; //freie Pkte
+per_frame_init_14=sfree = maxstrings;  //freie Strings
+per_frame_init_15=
+per_frame_init_16=recsize = 8; reg01 = recsize; //pro Punkt
+per_frame_init_17=dist0 =  0.8; reg02 = dist0;
+per_frame_init_18=pi=$pi;
+per_frame_init_19=
+per_frame_init_20=
+per_frame_init_21=//bei 0 starten die String-Inforecords
+per_frame_init_22=//0 : Age
+per_frame_init_23=//1 : start index
+per_frame_init_24=//2 : Len
+per_frame_init_25=//3: Alive
+per_frame_init_26=//4,5,6: dx0,dy0,dz0
+per_frame_init_27=
+per_frame_init_28=//bei 5000 starten die Punkt-records
+per_frame_init_29=//es folgen die ppstring Punkte; pro punkt
+per_frame_init_30=  //0..2: Pos. x,y,z
+per_frame_init_31=// ende pro punkt
+per_frame_init_32=
+per_frame_init_33=//2D-Records in gmegabuf
+per_frame_init_34=  //0..2: Pos. x,y,z
+per_frame_init_35=  //3: rad
+per_frame_init_36=  //5: a
+per_frame_init_37=  //6: mask
+per_frame_init_38=
+per_frame_init_39=//Shape-Records in gmegabuf, optional
+per_frame_init_40=  //0..2: r0, theta, phi
+per_frame_init_41=  //3: speed
+per_frame_init_42=  //4,5,6: x,y,z
+per_frame_init_43=  //
+per_frame_init_44=sPtr = 0;
+per_frame_init_45=r01 = rand(12);
+per_frame_init_46=r02 = rand(12);
+per_frame_1=dt = 1/fps;
+per_frame_2=vol = sqrt (bass_att+mid_att+treb_att)/3; vol_ = vol_*0.9 + 0.1*vol; gf = 0.35*vol/maxssize;
+per_frame_3=prog += vol*30*dt;
+per_frame_4=
+per_frame_5=// Count sfree and pfree; pfree = len=0
+per_frame_6=s = 0; sfree = maxstrings; pfree = maxpts;
+per_frame_7=loop (maxstrings, ibase = s*recsize; if (megabuf(ibase+3) > 0, sfree -=1; pfree -=megabuf(ibase+2), 0); s+= 1);
+per_frame_8=
+per_frame_9=s = 0; loop (maxstrings, //NEW STRING ?
+per_frame_10=ibase = s*recsize;
+per_frame_11=if ((megabuf(ibase+3)==0) && (vol > vol_*1) && (rand(100) < 20),
+per_frame_12=sfree -= 1;
+per_frame_13=tht = rand(1)*(2.9 + (vol>vol_*1.7)); phi = (rand(1)-0.5)*4+pi/2;;
+per_frame_14=pbase = 5000 + (s*maxssize)*recsize; //erster Punkt startet bei 0
+per_frame_15=megabuf (ibase  ) = 0;//Age
+per_frame_16=megabuf (ibase+1) = 0;//start ind
+per_frame_17=megabuf (ibase+2) = 0;//len
+per_frame_18=megabuf (ibase+3) = 1;// am Leben
+per_frame_19=megabuf (ibase+4) = sin(tht)*cos(phi);
+per_frame_20=megabuf (ibase+5) = sin(tht)*sin(phi);
+per_frame_21=megabuf (ibase+6) = -abs(cos(tht));
+per_frame_22=,0); //END NEW STRING
+per_frame_23=s+=1;);
+per_frame_24=
+per_frame_25=s = 0; loop (maxstrings, //GROW and SHRINK
+per_frame_26=ibase = s*recsize;
+per_frame_27=if (megabuf(ibase+3) > 0, //am Leben ?
+per_frame_28=megabuf(ibase  ) += dt*rand(2) ; //Age
+per_frame_29=//EXPAND
+per_frame_30=age   = megabuf (ibase);
+per_frame_31=start = megabuf (ibase+1);
+per_frame_32=len   = megabuf (ibase+2);
+per_frame_33=newpts = int (5*vol*maxssize/40*(age < 0.7)) ;
+per_frame_34=newpts = max (0, min (newpts, min (pfree,maxssize-start-len)));
+per_frame_35=dx0 = megabuf (ibase+4);
+per_frame_36=dy0 = megabuf (ibase+5);
+per_frame_37=dz0 = megabuf (ibase+6);
+per_frame_38=p = start+len;
+per_frame_39=loop (newpts,
+per_frame_40=pbase  = 5000 + (p+s*maxssize)*recsize;
+per_frame_41=k1 = if (s%3==0, p, (p-start-len)*16)+3+s/16;
+per_frame_42=if (frame%5==0,k1 = 20*vol,0);
+per_frame_43=//k1 = max(k1,p);
+per_frame_44=megabuf (pbase) = k1*dx0*gf; megabuf (pbase+1) = k1*dy0*gf; megabuf (pbase+2) = k1*dz0*gf;
+per_frame_45=p+=1; );
+per_frame_46=megabuf(ibase +2) += newpts;  len   = megabuf (ibase+2);  pfree -= newpts;
+per_frame_47=//SHRINK
+per_frame_48=ivol = if (vol<0.35,3, if (vol<0.5,2,1));
+per_frame_49=delpts = min ((megabuf(ibase)>.7),len) * (frame%ivol==0);
+per_frame_50=megabuf(ibase+1) = (megabuf(ibase+1)+delpts);
+per_frame_51=megabuf(ibase+2) -= delpts;  pfree += delpts;
+per_frame_52=if (megabuf(ibase+2) <= 0, megabuf(ibase+3)=0, 0);
+per_frame_53=,0);
+per_frame_54=s+=1);
+per_frame_55=
+per_frame_56=//MOVE
+per_frame_57=s = 0; loop (maxstrings,
+per_frame_58=ibase = s*recsize;  start = megabuf (ibase+1); len = megabuf (ibase+2);
+per_frame_59=if (len > 0,
+per_frame_60=p=start; i=0;
+per_frame_61=loop (len,
+per_frame_62=pbase  = 5000 + (p%maxssize+s*maxssize)*recsize;
+per_frame_63=scale = pow(i/len,2)*0.005 ;
+per_frame_64=r1 = pow(megabuf(pbase),2)+pow(megabuf(pbase+1),2)+pow(megabuf(pbase+2),2);
+per_frame_65=scale *= min(sqrt(r1)*10,1) ; //##mit vol skalieren
+per_frame_66=p1 = 5000-int(3*p+prog);
+per_frame_67=megabuf (pbase)   += megabuf(90000+(p1+s*57)%5000)*scale;
+per_frame_68=megabuf (pbase+1) += megabuf(90000+(p1+s*91)%5000)*scale;
+per_frame_69=megabuf (pbase+2) += megabuf(90000+(p1+s*113)%5000)*scale;
+per_frame_70=p+=1; i+=1;   );
+per_frame_71=
+per_frame_72=//STRAIGHTEN
+per_frame_73=p=start+1; smooth = 8;
+per_frame_74=sz = 1/(1.93+smooth);
+per_frame_75=loop (len-2,
+per_frame_76=pbase  =  5000 + (p    +s*maxssize)*recsize;
+per_frame_77=pbase1  = 5000 + ((p-1)+s*maxssize)*recsize;
+per_frame_78=pbase2  = 5000 + ((p+1)+s*maxssize)*recsize;
+per_frame_79=megabuf (pbase  ) = (smooth*megabuf(pbase  ) +megabuf(pbase1  )+megabuf(pbase2 ))*sz;
+per_frame_80=megabuf (pbase+1) = (smooth*megabuf(pbase+1) +megabuf(pbase1+1)+megabuf(pbase2+1))*sz;
+per_frame_81=megabuf (pbase+2) = (smooth*megabuf(pbase+2) +megabuf(pbase1+2)+megabuf(pbase2+2))*sz;
+per_frame_82=p+=1; );
+per_frame_83=
+per_frame_84=,0);
+per_frame_85=s+=1);
+per_frame_86=
+per_frame_87=
+per_frame_88=
+per_frame_89=//Vol delay chain
+per_frame_90=tvol = tvol*0.8 + 0.2*(vol-vol_);
+per_frame_91=n = 50030; loop (30, gmegabuf (n) = gmegabuf (n-1); n -= 1; ); gmegabuf (50000) = tvol;
+per_frame_92=
+per_frame_93=dec = if (vol>pvol,0.5, 1-dt*40*0.05);
+per_frame_94=pvol = pvol*dec + vol*(1-dec);
+per_frame_95=q1 = pvol;
+per_frame_96=
+per_frame_97=q2 = gmegabuf(50000)+1;
+per_frame_98=q3 = gmegabuf(50005)+1;
+per_frame_99=
+per_frame_100=bal = min(0.85,max(0.15,bal+ dt*0.1 * atan(treb -bass - (bal-0.5)*0.1)));
+per_frame_101=q4 = bal;
+per_frame_102=q5 = vol;
+per_frame_103=
+warp_1=`// Shader by Jaenam97 https://x.com/Jaenam97
+warp_2=`// https://www.shadertoy.com/view/tfGyzt
+warp_3=`// Ported to MilkDrop by MilkDrop2077
+warp_4=`
+warp_5=`// 2D rotation function
+warp_6=`float2x2 rotate2D(float angle)
+warp_7=`{
+warp_8=`   float s = sin(angle);
+warp_9=`   float c = cos(angle);
+warp_10=`   return float2x2(c, -s, s, c);
+warp_11=`}
+warp_12=`
+warp_13=`shader_body
+warp_14=`{
+warp_15=`    float2 r = float2(texsize.x, texsize.y);
+warp_16=`    float2 FC = uv_orig * r;
+warp_17=`    float4 o = float4(0.0, 0.0, 0.0, 0.0);
+warp_18=`
+warp_19=`    // Process all three channels in a single outer loop
+warp_20=`    for(int channel = 0; channel < 3; channel++)
+warp_21=`    {
+warp_22=`        float Z = float(channel - 1); // -1 for red, 0 for green, 1 for blue
+warp_23=`        float channelValue = 0.0;
+warp_24=`        float skipFlag = 0.0;
+warp_25=`
+warp_26=`        for(float d = 0.0, i = 0.0; i < 80.0; i += 1.0)
+warp_27=`        {
+warp_28=`            float continueFlag = 1.0 - step(0.5, skipFlag);
+warp_29=`            float3 p = float3((FC * 2.0 - r) / r.y * d, d - 8.0);
+warp_30=`
+warp_31=`            // Check skip condition
+warp_32=`            float skipCondition = step(5.0, abs(p.x));
+warp_33=`            skipFlag = max(skipFlag, skipCondition * continueFlag);
+warp_34=`            float processFlag = 1.0 - step(0.5, skipFlag);
+warp_35=`            #ifdef mouse
+warp_36=`            float2 m = mouse.z > 0 ? (mouse.xy * M_PI) : float2(time / 2, time / 2);
+warp_37=`            #else
+warp_38=`            float2 m = time / 2;
+warp_39=`            #endif
+warp_40=`
+warp_41=`            if(processFlag > 0.5)
+warp_42=`            {
+warp_43=`                // Apply rotations
+warp_44=`                p.xz = mul(rotate2D(m.x), p.xz);
+warp_45=`                p.xy = mul(rotate2D(m.y * 2), p.xy);
+warp_46=`
+warp_47=`                // Grid calculations
+warp_48=`                float3 g = floor(p * 6.0);
+warp_49=`                float3 f = frac(p * 6.0) - 0.5;
+warp_50=`
+warp_51=`                // Random point selection
+warp_52=`                float rand1 = frac(sin(dot(g, float3(127.0, 312.0, 75.0))) * 43758.0);
+warp_53=`                float h = step(length(f), rand1 * 0.3 + 0.1);
+warp_54=`
+warp_55=`                // Random angle
+warp_56=`                float rand2 = frac(sin(dot(g, float3(44.0, 78.0, 123.0))) * 127.0);
+warp_57=`                float a = rand2 * (M_PI*2);
+warp_58=`
+warp_59=`                // SDF calculation for boxes
+warp_60=`                float e = 1.0;
+warp_61=`                float sc = 2.0;
+warp_62=`                for(int j = 0; j < 3; j++)
+warp_63=`                {
+warp_64=`                    float3 g2 = abs(frac(p * sc / 2.0) * 2.0 - 1.0);
+warp_65=`                    float m1 = max(g2.x, g2.y);
+warp_66=`                    float m2 = max(g2.y, g2.z);
+warp_67=`                    float m3 = max(g2.x, g2.z);
+warp_68=`                    e = min(e, min(m1, min(m2, m3)) / sc);
+warp_69=`                    sc *= 0.6;
+warp_70=`                }
+warp_71=`
+warp_72=`                // Combined SDF
+warp_73=`                float absX = abs(p.x);
+warp_74=`                float absY = abs(p.y);
+warp_75=`                float absZ = abs(p.z);
+warp_76=`                float dotAbs = dot(float3(absX, absY, absZ), float3(0.577, 0.577, 0.577)) * 0.9;
+warp_77=`                float c = max(max(max(absX, absY), absZ), dotAbs) - 3.0;
+warp_78=`
+warp_79=`                // Ray marching step
+warp_80=`                float sinC = length(sin(c));
+warp_81=`                float s = 0.01 + 0.15 * abs(max(max(c, e - 0.1), sinC - 0.3) + Z * 0.02 - i / 130.0);
+warp_82=`                d += s;
+warp_83=`
+warp_84=`                // Smooth step
+warp_85=`                float sf = smoothstep(0.02, 0.01, s);
+warp_86=`
+warp_87=`                // Color accumulation
+warp_88=`                channelValue += 1.6 / s * (0.5 + 0.5 * sin(i * 0.3 + Z * 5.0) +
+warp_89=`                                          sf * 4.0 * h * sin(a + i * 0.4 + Z * 5.0));
+warp_90=`            }
+warp_91=`            else
+warp_92=`            {
+warp_93=`                // Skip this iteration - increment distance based on skip condition
+warp_94=`                d += 1.0 * skipCondition;
+warp_95=`            }
+warp_96=`        }
+warp_97=`
+warp_98=`        // Assign to appropriate channel
+warp_99=`        if(channel == 0) o.r = channelValue;
+warp_100=`        else if(channel == 1) o.g = channelValue;
+warp_101=`        else o.b = channelValue;
+warp_102=`    }
+warp_103=`
+warp_104=`    // Final color processing
+warp_105=`    o = o * o / 1.0e7;
+warp_106=`    float4 exp2o = exp(2.0 * o);
+warp_107=`    o = (exp2o - 1.0) / (exp2o + 1.0);
+warp_108=`
+warp_109=`    ret = o;
+warp_110=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    ret = GetPixel(uv);
+comp_4=`}
