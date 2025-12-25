@@ -161,7 +161,7 @@ wave_10_per_frame1=t1=0;
 
 wave_10_per_point1=val=value1+value2;
 
-wave_10_per_point2=bass_w = if (t1 <= 3, 5, 1);
+wave_10_per_point2=bass_w = if (t1 <= 4, 5, 1);
 wave_10_per_point3=vL = value1 * bass_w;
 wave_10_per_point4=vR = value2 * bass_w;
 wave_10_per_point5=vS = val    * bass_w;
