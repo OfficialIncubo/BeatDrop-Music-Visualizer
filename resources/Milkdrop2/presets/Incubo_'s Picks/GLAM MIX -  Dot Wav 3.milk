@@ -145,8 +145,8 @@ per_frame_36=q3 = bass_avg;
 per_frame_37=
 per_frame_38=monitor = q5;
 per_frame_39=
-per_frame_40=mx = if(beat,rand(1001)*.001*.5 + rand(1001)*.001*.5,mx);
-per_frame_41=my = if(beat,rand(1001)*.001*.5 + rand(1001)*.001*.5,my);
+per_frame_40=mx = if(beat,int(rand(1001))*.001*.5 + int(rand(1001))*.001*.5,mx);
+per_frame_41=my = if(beat,int(rand(1001))*.001*.5 + int(rand(1001))*.001*.5,my);
 per_frame_42=cx = mx;
 per_frame_43=cy = my;
 per_frame_44=
