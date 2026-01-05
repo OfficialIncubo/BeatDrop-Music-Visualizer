@@ -80,7 +80,7 @@ per_pixel_1=zoom = if( equal(q1,1),1+rad*.08,if( equal(q1,2),.93+bass_att*.07,if
 per_pixel_2=dx = if(equal(q1,10),(int(rand(11))*.01)-.05,0);
 per_pixel_3=dy = if(equal(q1,10),(int(rand(11))*.01)-.05,0);
 per_frame_init_1=wavecolor = int(rand(5));
-per_frame_init_2=zoomeffect = int(rand(10));
+per_frame_init_2=zoomeffect = int(rand(11));
 per_frame_init_3=wavesize = int(rand(3));
 per_frame_init_4=othereffects = int(rand(4));
 per_frame_init_5=wavetype = int(rand(4));

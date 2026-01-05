@@ -87,11 +87,11 @@ wavecode_0_b=1.000
 wavecode_0_a=1.000
 wave_0_init1=t8 = 1;
 wave_0_init2=t1 = q5;
-wave_0_per_point1=x = rand(1001)*.001;
-wave_0_per_point2=y = rand(1001)*.001;
+wave_0_per_point1=x = int(rand(1001))*.001;
+wave_0_per_point2=y = int(rand(1001))*.001;
 wave_0_per_point3=
-wave_0_per_point4=//r = rand(1001)*.001;
-wave_0_per_point5=g=above(rand(1001)*.001,.9)*.5;
+wave_0_per_point4=//r = int(rand(1001))*.001;
+wave_0_per_point5=g=above(int(rand(1001))*.001,.9)*.5;
 wave_0_per_point6=b = 0;
 wave_0_per_point7=r = 0;
 wave_0_per_point8=
@@ -253,11 +253,11 @@ shapecode_0_border_b=1.000
 shapecode_0_border_a=0.000
 shape_0_init1=vx = 0;
 shape_0_init2=vy = 0;
-shape_0_per_frame1=x = rand(1001)/1000;
+shape_0_per_frame1=x = int(rand(1001))/1000;
 shape_0_per_frame2=//x = 
 shape_0_per_frame3=y = -.5;
 shape_0_per_frame4=
-shape_0_per_frame5=rad = rand(1001)/1000;
+shape_0_per_frame5=rad = int(rand(1001))/1000;
 shape_0_per_frame6=rad = .5 + rad*2;
 shapecode_1_enabled=0
 shapecode_1_sides=74

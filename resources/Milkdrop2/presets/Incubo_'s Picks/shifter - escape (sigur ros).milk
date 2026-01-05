@@ -87,11 +87,11 @@ wavecode_0_b=1.000
 wavecode_0_a=1.000
 wave_0_init1=t8 = 1;
 wave_0_init2=t1 = q5;
-wave_0_per_point1=x = rand(1001)*.001;
-wave_0_per_point2=y = rand(1001)*.001;
+wave_0_per_point1=x = int(rand(1001))*.001;
+wave_0_per_point2=y = int(rand(1001))*.001;
 wave_0_per_point3=
-wave_0_per_point4=//r = rand(1001)*.001;
-wave_0_per_point5=g=above(rand(1001)*.001,.9)*.5;
+wave_0_per_point4=//r = int(rand(1001))*.001;
+wave_0_per_point5=g=above(int(rand(1001))*.001,.9)*.5;
 wave_0_per_point6=b = 0;
 wave_0_per_point7=r = 0;
 wave_0_per_point8=
