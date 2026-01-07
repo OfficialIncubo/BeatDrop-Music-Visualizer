@@ -133,7 +133,5 @@ warp_24=`   ret *= mask;
 warp_25=`}
 comp_1=`shader_body
 comp_2=`{
-comp_3=`    ret = tex2D(sampler_main, uv).xyz;
-comp_4=`    ret *= 1.98; //gamma
-comp_5=`    ret *= ret; //darken
-comp_6=`}
+comp_3=`    ret = GetPixel(uv);
+comp_4=`}
