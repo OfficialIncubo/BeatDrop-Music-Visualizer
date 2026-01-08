@@ -1,0 +1,116 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+[preset00]
+fRating=3.000
+fGammaAdj=1.900
+fDecay=1.000
+fVideoEchoZoom=1.061
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=6
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=100.000
+fWaveScale=2.905
+fWaveSmoothing=0.360
+fWaveParam=0.000
+fModWaveAlphaStart=0.500
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=2.599
+fWarpScale=0.010
+fZoomExponent=0.99990
+fShader=0.000
+zoom=0.96050
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=-0.00000
+dy=-0.00000
+warp=0.01000
+sx=1.00000
+sy=1.00170
+wave_r=0.500
+wave_g=0.500
+wave_b=0.500
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=1.000
+ob_g=1.000
+ob_b=1.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=1.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=decay=0.1;
+per_frame_1=sx=1.000;
+per_frame_2=sy=1.000;
+per_frame_3=
+per_frame_4=//dy=0.0058;
+per_frame_5=
+per_frame_6=q4=.5+.05*cos(time*.52)*cos(time*.39);
+per_frame_7=q5=.5+.05*sin(time*.44)*cos(time*.71);
+per_pixel_1=zoom=zoom+.01+.75*rad*treb_att;
+warp_1=`sampler sampler_rand00;
+warp_2=`sampler sampler_rand01;
+warp_3=`sampler sampler_rand02;
+warp_4=`float3 ret1;
+warp_5=`
+warp_6=`shader_body
+warp_7=`{
+warp_8=`
+warp_9=`    //ret = tex2D(sampler_main, uv).xyz;
+warp_10=`    ret1 = tex2D(sampler_rand00, float2(uv.x, uv.y)).xyz;
+warp_11=`    
+warp_12=`    float3 fire = tex2D(sampler_rand02, float2(uv.x+q4, uv.y+q2)).xyz;
+warp_13=`fire-=roam_sin*roam_cos.wzy;
+warp_14=`    fire += tex2D(sampler_rand01, float2(uv.x+q5, uv.y+q3)).xyz; 
+warp_15=`    fire += tex2D(sampler_rand01, float2(uv.x+q6, uv.y+q1)).xyz;
+warp_16=`    
+warp_17=`    ret1 *= fire;
+warp_18=`    
+warp_19=`    ret1 *= (uv_orig.y + q11/2);
+warp_20=`
+warp_21=`    float dy = .02*lum(GetBlur1(uv_orig))/uv_orig;
+warp_22=`
+warp_23=`    ret = ret1*.3 + GetPixel(uv_orig+float2(0,dy))*.7;
+warp_24=`}
+comp_1=`sampler rand00;
+comp_2=`
+comp_3=`shader_body
+comp_4=`{
+comp_5=`    ret = tex2D(sampler_main, uv).xyz * 1.7; //Brighen up the main renderer a bit.
+comp_6=`    ret += 0.28*tex2D(rand00, uv).xyz; //New way of darkening textures. 
+comp_7=`    ret += GetBlur2(uv) * (q7*1.68);
+comp_8=`    ret *= 1.00; //gamma
+comp_9=`}

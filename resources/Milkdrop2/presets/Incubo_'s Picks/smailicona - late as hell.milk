@@ -1,0 +1,153 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=0
+[preset00]
+fRating=2.000
+fGammaAdj=1.000
+fDecay=0.900
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=7
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=1.850
+fWaveScale=7.858
+fWaveSmoothing=0.360
+fWaveParam=-0.000
+fModWaveAlphaStart=0.710
+fModWaveAlphaEnd=1.300
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=0.650
+wave_g=0.650
+wave_b=0.650
+wave_x=0.500
+wave_y=0.400
+ob_size=0.005
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.920
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=decay=.81;
+per_frame_2=dt=1/FPS;
+per_frame_3=contvol=max(.4, (1-.6*dt)*contvol+.2*dt*(bass+mid+treb) );
+per_frame_4=
+per_frame_5=
+per_frame_6=// q1 -> spiral density [0->no spiral, 3->dense]
+per_frame_7=// q2 -> W-based color fade factor, range:.5 to 3 [.5->inverse square, 2-> square, 3->cubical]
+per_frame_8=// q3 -> draw distance, range:.02 to .1 [.02->short, .1->long]
+per_frame_9=// q4 -> spiral radius
+per_frame_10=// q5 -> radius decay factor, range:0 to .5 [0->no decay, .5->maximum]
+per_frame_11=// q6 -> coloring mode, 0 or 1 [0->per distance based, 1->per angle]
+per_frame_12=// q7 -> color amount, range: above 1 [1->minimum]
+per_frame_13=// q8 -> speed [.01->very slow, .05->fast]
+per_frame_14=
+per_frame_15=// For draw distances > .06 (q3) you might want to disable waveform2 completely. It's almost invisible and it'll boost the preset by +10/+20 fps
+per_frame_16=
+per_frame_17=q1=2;
+per_frame_18=q2=4;
+per_frame_19=q3=.02;
+per_frame_20=q4=.06;
+per_frame_21=q5=.5;
+per_frame_22=q6=1;
+per_frame_23=q7=1;
+per_frame_24=q8=.03;
+warp_1=`float3 mus;
+warp_2=`float2 rs, uv1, uv6, uv7, uv8;
+warp_3=`float dx,dy;
+warp_4=`
+warp_5=`shader_body {
+warp_6=`uv = uv_orig;
+warp_7=`uv1 = (uv-.5) * aspect.xy;
+warp_8=`
+warp_9=`//BACKGROUND
+warp_10=`float z = 16*length(uv1*5)+time;
+warp_11=`float2 uvn =normalize(uv1);
+warp_12=`rs = clamp(tan(z)*uvn,-5,5)/2;
+warp_13=`
+warp_14=`//CRYSTAL
+warp_15=`float mult = q31*4;
+warp_16=`uv7 = sin(uv1*mult);
+warp_17=`uv8 = uv7;
+warp_18=`float dist = length(uv8);
+warp_19=`dist *= (abs(uv1.x) + abs(uv1.y))+ q32;
+warp_20=`
+warp_21=`float ang2 = atan2 (uv8.y,uv8.x);
+warp_22=`ang2 =  1*floor (1* ang2);
+warp_23=`float2 dir = .095*uv8+float2 (cos(ang2), sin(ang2));
+warp_24=`
+warp_25=`z = (1-cos(8*dist));
+warp_26=`z *= .200*saturate (lum(z));
+warp_27=`
+warp_28=`//ADD
+warp_29=`float mask = (z <= 1); //momentan beliebig
+warp_30=`rs = q28*rs + (1-q28)*rs.yx;
+warp_31=`uv += (1-mask)*3*(rs.yx) + .5*mask*z*normalize(z.x);
+warp_32=`
+warp_33=`//ZENTRALSTRAHL
+warp_34=`uv6 = mul (uv1*.8,float2x2(_qb*.150));
+warp_35=`mus = .3*abs(0.0225/(sqrt(uv6.x))/uv1.x)*(.5);
+warp_36=`
+warp_37=`//DOTS
+warp_38=`float2 uv2 = 10*uv1+.3*sin(uv1*16+4*float2 (q5,q6));
+warp_39=`uv2 *= 3;
+warp_40=`float3 dots = q26*saturate(.00065/(length(uv2)));
+warp_41=`float3 blur = GetBlur1(frac(uv));
+warp_42=`float3 crisp= GetPixel(uv);
+warp_43=`float3 diff = (crisp) - .5*blur;
+warp_44=`float3 ret1 = crisp + mus + dots;
+warp_45=`
+warp_46=`float3 mod = tex2D (sampler_noise_lq,50*uv+time*.1)-.25;
+warp_47=`mod = .98 - mod*diff;
+warp_48=`
+warp_49=`ret = (1-mask)*ret1*mod + mask*ret1*mod;
+warp_50=`ret *= float3(.89,.96,.965)+.05*tex2D(sampler_noise_lq,uv);
+warp_51=`ret *= 2*float3(.92,.835,.84)*lum(uv_orig);
+warp_52=`
+warp_53=`ret *= .98- .1;
+warp_54=`
+warp_55=`}
