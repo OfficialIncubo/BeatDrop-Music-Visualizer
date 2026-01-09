@@ -6,6 +6,7 @@
 - [ ] Reviving 3D toggle functionality from MilkDrop v1.04: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/6
 - [ ] Screensaver Support: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/16
 - [ ] Desktop Mode: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/20
+- [ ] Config Panel Program (GUI based)
 
 # For the next (or further) version of BeatDrop
 
@@ -19,6 +20,8 @@
 - [ ] GIF Support for both Sprites and Textures: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/34
 - [ ] Video Support for both Sprites and Textures
 - [ ] Webcam Support, blending the visual: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/4
+- [ ] A hotkey to disable animated song title (or real-time song title feature)
+- [ ] Re-precache shaders when it happened a crash (When BeatDrop crashes after loading presets while precaching shaders, the option from .ini file will still stay on and it needs re-precaching after the next run).
 
 # BETA Features
 - [x] Drag, Drop & Load MilkDrop preset
