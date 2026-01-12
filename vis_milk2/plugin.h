@@ -379,6 +379,7 @@ public:
         bool        m_bManualBeatSensitivityMode = false;
         bool        m_bShaderCaching = true;
         bool        m_bShaderPrecachingAtStartup = true;
+        bool        m_bNeedsShaderReprecacheAtStartup = true;
         bool        m_bClearShaderCacheAtExit = false;
         bool        m_bOneTimeClearShaderCache = false;
         bool        m_bCheckForDirectXAtStartup = true;

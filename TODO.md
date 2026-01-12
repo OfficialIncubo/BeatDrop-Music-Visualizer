@@ -21,7 +21,7 @@
 - [ ] Video Support for both Sprites and Textures
 - [ ] Webcam Support, blending the visual: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/4
 - [ ] A hotkey to disable animated song title (or real-time song title feature)
-- [ ] Re-precache shaders when it happened a crash (When BeatDrop crashes after loading presets while precaching shaders, the option from .ini file will still stay on and it needs re-precaching after the next run).
+- [x] Re-precache shaders when it happened a crash (When BeatDrop crashes after loading presets while precaching shaders, the option from .ini file will still stay on and it needs re-precaching after the next run).
 
 # BETA Features
 - [x] Drag, Drop & Load MilkDrop preset

@@ -866,11 +866,12 @@ unsigned __stdcall DoShaderPrecache(void* param) {
         //else
             //g_plugin.AddErrorNotif(L"Cannot create shadercache directory. Folder already exists or doesn't have permission to create.");
 
-        // Abort if compiled.txt already exists
-        if (std::filesystem::exists(compiledListPath)) {
-            std::cerr << "Shader cache already exists, skipping precompilation\n";
-            return -1;
-        }
+        // Abort if compiled.txt already exists, do this again if didn't precache shaders from precache.txt file accordingly.
+        if (!g_plugin.m_bNeedsShaderReprecacheAtStartup)
+            if (std::filesystem::exists(compiledListPath)) {
+                std::cerr << "Shader cache already exists, skipping precompilation\n";
+                return -1;
+            }
 
         // Open precompile.txt
         std::ifstream file("precache.txt");
@@ -948,6 +949,7 @@ unsigned __stdcall DoShaderPrecache(void* param) {
         wchar_t szMessage[256];
         wcsncpy_s(szMessage, message.c_str(), _TRUNCATE);
         g_plugin.AddNotif(szMessage, 5);
+        g_plugin.m_bNeedsShaderReprecacheAtStartup = false; // Finished precaching shaders, no need to reprecache again at startup.
     }
     return 0;
 }
