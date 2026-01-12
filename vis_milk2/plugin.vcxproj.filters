@@ -28,15 +28,12 @@
     <Filter Include="library\audio-headers">
       <UniqueIdentifier>{0108206f-3970-40e8-b386-eff3a3bdd667}</UniqueIdentifier>
     </Filter>
-    <Filter Include="audio">
+    <Filter Include="library\audio">
       <UniqueIdentifier>{a80939e4-d079-498f-bb43-482a4708d7d5}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Milkdrop2PcmVisualizer.cpp">
-      <Filter>audio</Filter>
-    </ClCompile>
     <ClCompile Include="textmgr.cpp">
       <Filter>library\sources</Filter>
     </ClCompile>
@@ -74,19 +71,19 @@
       <Filter>library\sources</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\guid.cpp">
-      <Filter>audio</Filter>
+      <Filter>library\audio</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\log.cpp">
-      <Filter>audio</Filter>
+      <Filter>library\audio</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\loopback-capture.cpp">
-      <Filter>audio</Filter>
+      <Filter>library\audio</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\prefs.cpp">
-      <Filter>audio</Filter>
+      <Filter>library\audio</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\audiobuf.cpp">
-      <Filter>audio</Filter>
+      <Filter>library\audio</Filter>
     </ClCompile>
     <ClCompile Include="..\spoutDX9\SpoutCopy.cpp">
       <Filter>spoutDX9</Filter>
@@ -113,7 +110,10 @@
       <Filter>library\sources</Filter>
     </ClCompile>
     <ClCompile Include="..\audio\audiodevicehandler.cpp">
-      <Filter>audio</Filter>
+      <Filter>library\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="Milkdrop2PcmVisualizer.cpp">
+      <Filter>library\sources</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
