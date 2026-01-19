@@ -37,6 +37,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "resource.h"
 #include <vector>
 #include <assert.h>
+#include <ctime>
 #include "wasabi.h"
 #include "AMDDetection.h"
 
@@ -897,6 +898,15 @@ bool CState::Export(const wchar_t *szIniFile)
 {
 	FILE *fOut = _wfopen(szIniFile, L"w");
 	if (!fOut) return false;
+
+	time_t timestamp = time(nullptr);
+	tm* local = localtime(&timestamp);
+
+	fprintf(fOut, "This preset has been created/edited using BeatDrop Music Visualizer v1.4.1.3 on %02d/%02d/%02d at %02d:%02d:%02d.\n", local->tm_mday, local->tm_mon + 1, local->tm_year + 1900, local->tm_hour, local->tm_min, local->tm_sec);
+	fprintf(fOut, "Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer\n");
+	fprintf(fOut, "Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.\n");
+	fprintf(fOut, "Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM\n");
+	fprintf(fOut, "###################################################################################################\n\n");
 
     // IMPORTANT: THESE MUST BE THE FIRST TWO LINES.  Otherwise it is assumed to be a MilkDrop 1-era preset.
     if (m_nMaxPSVersion > 0)

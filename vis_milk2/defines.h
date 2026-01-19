@@ -38,8 +38,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //   'output file name'.  Don't forget to do it for both Debug AND
 //   Release builds!
 #define SHORTNAME        "BeatDrop" // used as window caption for both MilkDrop and the config panel.  avoid numbers or punctuation; when 'integrate with winamp' option is enabled, these characters don't always work with all skins.
-#define LONGNAME         "BeatDrop v1.4" // appears at bottom of config panel
-#define LONGNAMEW        L"BeatDrop v1.4" // appears at bottom of config panel
+#define LONGNAME         "BeatDrop v1.4.1.3" // appears at bottom of config panel
+#define LONGNAMEW        L"BeatDrop v1.4.1.3" // appears at bottom of config panel
 
 // INT_VERSION is the major version #, multipled by 100 (ie. version 1.02
 // would be 102).  If the app goes to read in the INI file and sees that
