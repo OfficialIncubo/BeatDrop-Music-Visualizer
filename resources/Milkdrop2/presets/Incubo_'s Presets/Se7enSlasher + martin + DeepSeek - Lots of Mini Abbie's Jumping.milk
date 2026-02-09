@@ -178,11 +178,11 @@ per_frame_74=
 per_frame_75=wave_a = 0;
 per_frame_76=decay = 0;
 per_frame_77=
-per_frame_78=BPMScrollTime += smooth_BPM*.00015;
+per_frame_78=BPMScrollTime += smooth_BPM*.0001;
 per_frame_79=q5 = BPMScrollTime;
 per_frame_80=
-per_frame_81=dec = 1/fps;
-per_frame_82=smooth_BPM = smooth_BPM * (1-dec) + q1 * dec;
+per_frame_81=decscroll = 1/fps;
+per_frame_82=smooth_BPM = smooth_BPM * (1-decscroll) + q1 * decscroll;
 per_frame_83=
 per_frame_84=monitor = q1;
 per_frame_85=
