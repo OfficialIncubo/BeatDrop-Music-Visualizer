@@ -6,4 +6,4 @@ APPLICABLE LICENSES
 
 * Code from loopback-capture project used with permission.
 
-* BeatDrop is a free program that can be used for DJs, Parties and everywhere you want, but not for commercial use.
+* BeatDrop is a free program that can be used for DJs, Parties, Nightclubs and everywhere you want.
