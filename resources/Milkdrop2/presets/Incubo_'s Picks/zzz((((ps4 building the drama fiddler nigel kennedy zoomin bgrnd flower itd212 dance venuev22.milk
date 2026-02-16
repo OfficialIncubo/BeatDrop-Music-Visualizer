@@ -1,0 +1,1177 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=2
+[preset00]
+fRating=1.000
+fGammaAdj=1.000
+fDecay=0.970
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=3
+bAdditiveWaves=0
+bWaveDots=1
+bWaveThick=0
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.010
+fWaveSmoothing=0.000
+fWaveParam=0.000
+fModWaveAlphaStart=0.710
+fModWaveAlphaEnd=0.000
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99990
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=0.99990
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=1.000
+wave_y=1.000
+ob_size=0.000
+ob_r=0.000
+ob_g=0.100
+ob_b=1.000
+ob_a=1.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=3.000
+nMotionVectorsY=2.000
+mv_dx=0.020
+mv_dy=-0.020
+mv_l=0.150
+mv_r=0.490
+mv_g=0.480
+mv_b=0.300
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=1
+wavecode_0_samples=16
+wavecode_0_sep=70
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.50000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wave_0_per_point1=meanbass = 0.01*(meanbass*99+bass_att);
+wave_0_per_point2=meantreb = 0.01*(meantreb*99+treb_att);
+wave_0_per_point3=meanmid = 0.01*(meanmid*99+mid_att);
+wave_0_per_point4=bassdiff = (bass_att - meanbass)*15;
+wave_0_per_point5=trebdiff = (treb_att - meantreb)*15;
+wave_0_per_point6=middiff = (mid_att - meanmid)*15;
+wave_0_per_point7=ba = min(above(bassdiff,0)*bassdiff*.005,.11);
+wave_0_per_point8=tr = min(above(trebdiff,0)*trebdiff*.005,.11);
+wave_0_per_point9=mi = min(above(middiff,0)*middiff*.005,.11);
+wave_0_per_point10=baprg=baprg+ba*.3;
+wave_0_per_point11=trprg=trprg+tr*.2;
+wave_0_per_point12=miprg=miprg+tr*.2;
+wave_0_per_point13=
+wave_0_per_point14=
+wave_0_per_point15=dim =0.65+.3*sin(miprg); //Dancer dimensions
+wave_0_per_point16=xpos=0;//+.3*sin(baprg);//Dancer x position variation
+wave_0_per_point17=ypos=0;//+.2*sin(trprg);//Dancer y position variation
+wave_0_per_point18=
+wave_0_per_point19=
+wave_0_per_point20=//Position Stabilization
+wave_0_per_point21=xpos=xpos+(1-dim)/2;
+wave_0_per_point22=ypos=ypos+(1-dim)/2;
+wave_0_per_point23=
+wave_0_per_point24=meanbass = 0.01*(meanbass*99+bass);
+wave_0_per_point25=meantreb = 0.01*(meantreb*99+treb);
+wave_0_per_point26=meanmid = 0.01*(meanmid*99+mid);
+wave_0_per_point27=bassdiff = (bass - meanbass)*15;
+wave_0_per_point28=trebdiff = (treb - meantreb)*15;
+wave_0_per_point29=middiff = (mid - meanmid)*15;
+wave_0_per_point30=ba = min(above(bassdiff,0)*bassdiff*.005,.11);
+wave_0_per_point31=tr = min(above(trebdiff,0)*trebdiff*.005,.11);
+wave_0_per_point32=mi = min(above(middiff,0)*middiff*.005,.11);
+wave_0_per_point33=
+wave_0_per_point34=mi2_prg = mi2_prg+mi;
+wave_0_per_point35=gam = abs(gam-above(mi2_prg,5));
+wave_0_per_point36=mi2_prg= if(above(mi2_prg,5),0,mi2_prg);
+wave_0_per_point37=
+wave_0_per_point38=
+wave_0_per_point39=test=0+0.2*sin(time); tes2=0+0.2*cos(time); qw=1+test; wq=1+tes2; 
+wave_0_per_point40=//fg +=if(above(0.05,fg),-gr,if(above(fg,50),-gr,gr));
+wave_0_per_point41=vz=0.1/(value1-value2); vc=abs(vz)*wq; vb=abs(vc)/0.001;
+wave_0_per_point42=zxsimspe=int(60/(fps/3)); grnd=int(rand(zxsimspe)); gr=1/grnd; gr +=0.1*gr; gr +=0.02*gr;
+wave_0_per_point43=gr +=0.001*gr; gr +=0.0002*gr; gr +=0.00001*gr; gr +=0.000002*gr; gr +=0.0000001*gr; 
+wave_0_per_point44= gr +=0.00000002*gr; gr +=0.000000001*gr; gr +=0.00000000002*gr;
+wave_0_per_point45=fg =1/gr+fg; 
+wave_0_per_point46=larm=(abs(0.09+0.3*wq)*0.2)*wq-(abs(0.09+0.3*qw)*0.2)*qw +((fg/vb)*wq); 
+wave_0_per_point47=ralm=(abs(0.09+0.3*qw)*0.2)*qw-(abs(0.09-0.3*qw)*0.2)*qw +((fg/vb)*qw); 
+wave_0_per_point48=
+wave_0_per_point49=s = sample *section; section=0;
+wave_0_per_point50=//legs
+wave_0_per_point51=section +=1; isec=equal(int(s),section);
+wave_0_per_point52=
+wave_0_per_point53=x= if(isec,.492+((1/vc)*wq)*qw,.487+((1/vc)*qw)*qw)-((ba-tr)*.15)*gam;  //l foot
+wave_0_per_point54=y= if(isec,.182-((ba+tr)*.7)*gam,.182-((ba-tr)*.72)*gam);
+wave_0_per_point55=r= if(isec,1,r);
+wave_0_per_point56=g= if(isec,0,g);
+wave_0_per_point57=b= if(isec,0,b);
+wave_0_per_point58=a= if(isec,1,a);
+wave_0_per_point59=
+wave_0_per_point60=section +=1; isec=equal(int(s),section);
+wave_0_per_point61=
+wave_0_per_point62=x= if(isec,.52+sin(ba*100-vc)*.020*((1/vc)*wq)*wq,x); //inside leg
+wave_0_per_point63=y= if(isec,.43+0.02*wq,y);
+wave_0_per_point64=r= if(isec,0,r);
+wave_0_per_point65=g= if(isec,1,g);
+wave_0_per_point66=b= if(isec,0,b);
+wave_0_per_point67=a= if(isec,1,a);
+wave_0_per_point68=
+wave_0_per_point69=
+wave_0_per_point70=section +=1; isec=equal(int(s),section);
+wave_0_per_point71=
+wave_0_per_point72=x= if(isec,(.61+(1/(vc+bass_att))*(mid_att-qw))*qw,x); //r leg
+wave_0_per_point73=y= if(isec,.182-((ba)*.25)*(1-gam),y);
+wave_0_per_point74=r= if(isec,0,r);
+wave_0_per_point75=g= if(isec,1,g);
+wave_0_per_point76=b= if(isec,1,b);
+wave_0_per_point77=a= if(isec,0,a);
+wave_0_per_point78=
+wave_0_per_point79=
+wave_0_per_point80=section +=1; isec=equal(int(s),section);
+wave_0_per_point81=
+wave_0_per_point82=x= if(isec,.52+sin(ba*100+vc)*.018,x); //waist
+wave_0_per_point83=y= if(isec,.43,y);
+wave_0_per_point84=r= if(isec,1,r);
+wave_0_per_point85=g= if(isec,0,g);
+wave_0_per_point86=b= if(isec,1,b);
+wave_0_per_point87=a= if(isec,1,a);
+wave_0_per_point88=
+wave_0_per_point89=//Corpo
+wave_0_per_point90=
+wave_0_per_point91=section +=1; isec=equal(int(s),section);
+wave_0_per_point92=
+wave_0_per_point93=x= if(isec,.531-sin(ba*100-vc)*.035,x); //spine
+wave_0_per_point94=y= if(isec,.56,y);
+wave_0_per_point95=r= if(isec,0,r);
+wave_0_per_point96=g= if(isec,1,g);
+wave_0_per_point97=b= if(isec,1,b);
+wave_0_per_point98=a= if(isec,1,a);
+wave_0_per_point99=
+wave_0_per_point100=
+wave_0_per_point101=//Braccia
+wave_0_per_point102=
+wave_0_per_point103=section +=1; isec=equal(int(s),section);
+wave_0_per_point104=
+wave_0_per_point105=x= if(isec,.45-mi*abs(.39+0.85*wq),x); //screen left arm extension
+wave_0_per_point106=y= if(isec,.528+(1/vb)*wq+sin(ba*75-(13*wq))*.042,y); //screen left arm length
+wave_0_per_point107=r= if(isec,1,r);
+wave_0_per_point108=g= if(isec,0,g);
+wave_0_per_point109=b= if(isec,1,b);
+wave_0_per_point110=a= if(isec,1,a);
+wave_0_per_point111=
+wave_0_per_point112=section +=1; isec=equal(int(s),section);
+wave_0_per_point113=
+wave_0_per_point114=x= if(isec,(.558+(sin(ba*100)*wq)*.033),x); //arm return screen left
+wave_0_per_point115=y= if(isec,.586+0.05*(6/vb),y); //collar height
+wave_0_per_point116=r= if(isec,1,r);
+wave_0_per_point117=g= if(isec,1,g);
+wave_0_per_point118=b= if(isec,1,b);
+wave_0_per_point119=a= if(isec,1,a);
+wave_0_per_point120=
+wave_0_per_point121=section +=1; isec=equal(int(s),section);
+wave_0_per_point122=
+wave_0_per_point123=x= if(isec,(.51+abs(tr*0.4*qw)),x); //screen right arm extension
+wave_0_per_point124=y= if(isec,.55-(12/vb)*0.04,y);   //screen right arm length
+wave_0_per_point125=r= if(isec,0,r);
+wave_0_per_point126=g= if(isec,0,g);
+wave_0_per_point127=b= if(isec,0,b);
+wave_0_per_point128=a= if(isec,1,a);
+wave_0_per_point129=
+wave_0_per_point130=section +=1; isec=equal(int(s),section);
+wave_0_per_point131=
+wave_0_per_point132=x= if(isec,.62+(ba*0.129)*qw,x); //arm entry screen right hand pos
+wave_0_per_point133=y= if(isec,(.54-wq*(6/vb)-abs(sin(ba*100)*.015))*wq,y);
+wave_0_per_point134=r= if(isec,1,r);
+wave_0_per_point135=g= if(isec,0,g);
+wave_0_per_point136=b= if(isec,0,b);
+wave_0_per_point137=a= if(isec,1,a);
+wave_0_per_point138=
+wave_0_per_point139=//Testa
+wave_0_per_point140=
+wave_0_per_point141=section +=1; isec=equal(int(s),section);
+wave_0_per_point142=
+wave_0_per_point143=x= if(isec,.52+(ba*0.13)*qw,x); //collar
+wave_0_per_point144=y= if(isec,.57,y);
+wave_0_per_point145=r= if(isec,0,r);
+wave_0_per_point146=g= if(isec,1,g);
+wave_0_per_point147=b= if(isec,0,b);
+wave_0_per_point148=a= if(isec,1,a);
+wave_0_per_point149=
+wave_0_per_point150=section +=1; isec=equal(int(s),section);
+wave_0_per_point151=
+wave_0_per_point152=x= if(isec,.51+(ba*.23)*qw,x); // left side temple ear
+wave_0_per_point153=y= if(isec,(.591-ba*.13),y);
+wave_0_per_point154=r= if(isec,0,r);
+wave_0_per_point155=g= if(isec,1,g);
+wave_0_per_point156=b= if(isec,1,b);
+wave_0_per_point157=a= if(isec,1,a);
+wave_0_per_point158=
+wave_0_per_point159=
+wave_0_per_point160=section +=1; isec=equal(int(s),section);
+wave_0_per_point161=
+wave_0_per_point162=x= if(isec,.497-(ba*.19)*qw,x); // hairline l
+wave_0_per_point163=y= if(isec,.638-(ba*.13)*qw,y);
+wave_0_per_point164=r= if(isec,1,r);
+wave_0_per_point165=g= if(isec,0,g);
+wave_0_per_point166=b= if(isec,1,b);
+wave_0_per_point167=a= if(isec,1,a);
+wave_0_per_point168=
+wave_0_per_point169=section +=1; isec=equal(int(s),section);
+wave_0_per_point170=
+wave_0_per_point171=x= if(isec,.535-(ba*.21)*qw,x); // hairline r
+wave_0_per_point172=y= if(isec,.65+(ba*.13)*qw,y);
+wave_0_per_point173=r= if(isec,1,r);
+wave_0_per_point174=g= if(isec,0,g);
+wave_0_per_point175=b= if(isec,1,b);
+wave_0_per_point176=a= if(isec,1,a);
+wave_0_per_point177=
+wave_0_per_point178=section +=1; isec=equal(int(s),section);
+wave_0_per_point179=
+wave_0_per_point180=x= if(isec,.55-(ba*.18)*qw,x); // right side temple ear
+wave_0_per_point181=y= if(isec,.631,y);
+wave_0_per_point182=r= if(isec,0,r);
+wave_0_per_point183=g= if(isec,0,g);
+wave_0_per_point184=b= if(isec,1,b);
+wave_0_per_point185=a= if(isec,1,a);
+wave_0_per_point186=
+wave_0_per_point187=section +=1; isec=equal(int(s),section);
+wave_0_per_point188=
+wave_0_per_point189=x= if(isec,.53+(ba*0.13)*qw,x); //right face side chin
+wave_0_per_point190=y= if(isec,.591,y);
+wave_0_per_point191=r= if(isec,1,r);
+wave_0_per_point192=g= if(isec,0,g);
+wave_0_per_point193=b= if(isec,1,b);
+wave_0_per_point194=a= if(isec,1,a);
+wave_0_per_point195=
+wave_0_per_point196=//add process post section
+wave_0_per_point197=
+wave_0_per_point198=x=x-0.5; y=y-0.5; //use polar from here
+wave_0_per_point199=x=x*q28; //sign(var)
+wave_0_per_point200=
+wave_0_per_point201=
+wave_0_per_point202=
+wave_0_per_point203=x=(x+0.5)*dim+xpos;
+wave_0_per_point204=y=(y+0.5)*dim+ypos;
+wavecode_1_enabled=1
+wavecode_1_samples=16
+wavecode_1_sep=63
+wavecode_1_bSpectrum=1
+wavecode_1_bUseDots=1
+wavecode_1_bDrawThick=1
+wavecode_1_bAdditive=1
+wavecode_1_scaling=1.00000
+wavecode_1_smoothing=0.50000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=1.000
+wave_1_per_point1=meanbass = 0.01*(meanbass*99+bass_att);
+wave_1_per_point2=meantreb = 0.01*(meantreb*99+treb_att*value2);
+wave_1_per_point3=meanmid = 0.01*(meanmid*99+mid_att);
+wave_1_per_point4=bassdiff = (bass_att - meanbass)*15;
+wave_1_per_point5=trebdiff = (treb_att - meantreb)*15;
+wave_1_per_point6=middiff = (mid_att - meanmid)*15;
+wave_1_per_point7=ba = min(above(bassdiff,0)*bassdiff*.005,.11);
+wave_1_per_point8=tr = min(above(trebdiff,0)*trebdiff*.005,.11);
+wave_1_per_point9=mi = min(above(middiff,0)*middiff*.005,.11);
+wave_1_per_point10=baprg=baprg+ba*.3;
+wave_1_per_point11=trprg=trprg+tr*.4;
+wave_1_per_point12=miprg=miprg+tr*.3;
+wave_1_per_point13=
+wave_1_per_point14=
+wave_1_per_point15=dim =0.65+.3*sin(miprg); //Dancer dimensions
+wave_1_per_point16=xpos=0+.2*sin(baprg);//Dancer x position variation
+wave_1_per_point17=ypos=0+.02*sin(trprg);//Dancer y position variation
+wave_1_per_point18=
+wave_1_per_point19=
+wave_1_per_point20=//Position Stabilization
+wave_1_per_point21=xpos=xpos+(1-dim)/2;
+wave_1_per_point22=ypos=ypos+(1-dim)/2;
+wave_1_per_point23=
+wave_1_per_point24=meanbass = 0.01*(meanbass*99+bass);
+wave_1_per_point25=meantreb = 0.01*(meantreb*99+treb);
+wave_1_per_point26=meanmid = 0.01*(meanmid*99+mid);
+wave_1_per_point27=bassdiff = (bass - meanbass)*15;
+wave_1_per_point28=trebdiff = (treb - meantreb)*15;
+wave_1_per_point29=middiff = (mid - meanmid)*15;
+wave_1_per_point30=ba = min(above(bassdiff,0)*bassdiff*.005,.11);
+wave_1_per_point31=tr = min(above(trebdiff,0)*trebdiff*.005,.11);
+wave_1_per_point32=mi = min(above(middiff,0)*middiff*.005,.11);
+wave_1_per_point33=
+wave_1_per_point34=mi2_prg = mi2_prg+mi;
+wave_1_per_point35=gam = abs(gam-above(mi2_prg,5));
+wave_1_per_point36=mi2_prg= if(above(mi2_prg,5),0,mi2_prg);
+wave_1_per_point37=
+wave_1_per_point38=
+wave_1_per_point39=test=0+0.2*sin(time); tes2=0+0.2*cos(time); qw=1+test; wq=1+tes2; 
+wave_1_per_point40=fg +=if(above(0.05,fg),-gr,if(above(fg,50),-gr,gr));
+wave_1_per_point41=vz=0.1/(value1-value2); vc=abs(vz)*wq; vb=abs(vc)/0.001;
+wave_1_per_point42=zxsimspe=int(60/(fps/3)); grnd=int(rand(zxsimspe)); gr=1/grnd; gr +=0.1*gr; gr +=0.02*gr;
+wave_1_per_point43=gr +=0.001*gr; gr +=0.0002*gr; gr +=0.00001*gr; gr +=0.000002*gr; gr +=0.0000001*gr; 
+wave_1_per_point44=gr +=0.00000002*gr; gr +=0.000000001*gr; gr +=0.00000000002*gr;
+wave_1_per_point45=fg =1/gr+fg; 
+wave_1_per_point46=larm=(abs(0.09+0.3*wq)*0.2)*wq-(abs(0.09+0.3*qw)*0.2)*qw +((fg/vb)*wq); 
+wave_1_per_point47=ralm=(abs(0.09+0.3*qw)*0.2)*qw-(abs(0.09-0.3*qw)*0.2)*qw +((fg/vb)*qw); 
+wave_1_per_point48=
+wave_1_per_point49=s = sample *section; section=0;
+wave_1_per_point50=//legs
+wave_1_per_point51=section +=1; isec=equal(int(s),section);
+wave_1_per_point52=
+wave_1_per_point53=x= if(isec,.492+((1/vc)*wq)*qw,.487+((1/vc)*qw)*qw)-((ba-tr)*.15)*gam;  //l foot
+wave_1_per_point54=y= if(isec,.182-((ba+tr)*.7)*gam,.182-((ba-tr)*.72)*gam);
+wave_1_per_point55=r= if(isec,1,r);
+wave_1_per_point56=g= if(isec,0,g);
+wave_1_per_point57=b= if(isec,0,b);
+wave_1_per_point58=a= if(isec,1,a);
+wave_1_per_point59=
+wave_1_per_point60=section +=1; isec=equal(int(s),section);
+wave_1_per_point61=
+wave_1_per_point62=x= if(isec,.52+sin(ba*100-vc)*.020*((1/vc)*wq)*wq,x); //inside leg
+wave_1_per_point63=y= if(isec,.43+0.02*wq,y);
+wave_1_per_point64=r= if(isec,0,r);
+wave_1_per_point65=g= if(isec,1,g);
+wave_1_per_point66=b= if(isec,0,b);
+wave_1_per_point67=a= if(isec,1,a);
+wave_1_per_point68=
+wave_1_per_point69=
+wave_1_per_point70=section +=1; isec=equal(int(s),section);
+wave_1_per_point71=
+wave_1_per_point72=x= if(isec,(.61+(1/(vc+bass_att))*(mid_att-qw))*qw,x); //r leg
+wave_1_per_point73=y= if(isec,.182-((ba)*.25)*(1-gam),y);
+wave_1_per_point74=r= if(isec,0,r);
+wave_1_per_point75=g= if(isec,1,g);
+wave_1_per_point76=b= if(isec,1,b);
+wave_1_per_point77=a= if(isec,0,a);
+wave_1_per_point78=
+wave_1_per_point79=
+wave_1_per_point80=section +=1; isec=equal(int(s),section);
+wave_1_per_point81=
+wave_1_per_point82=x= if(isec,.52+sin(ba*100+vc)*.018,x); //waist
+wave_1_per_point83=y= if(isec,.43,y);
+wave_1_per_point84=r= if(isec,1,r);
+wave_1_per_point85=g= if(isec,0,g);
+wave_1_per_point86=b= if(isec,1,b);
+wave_1_per_point87=a= if(isec,1,a);
+wave_1_per_point88=
+wave_1_per_point89=//Corpo
+wave_1_per_point90=
+wave_1_per_point91=section +=1; isec=equal(int(s),section);
+wave_1_per_point92=
+wave_1_per_point93=x= if(isec,.531-sin(ba*100-vc)*.035,x); //spine
+wave_1_per_point94=y= if(isec,.56,y);
+wave_1_per_point95=r= if(isec,0,r);
+wave_1_per_point96=g= if(isec,1,g);
+wave_1_per_point97=b= if(isec,1,b);
+wave_1_per_point98=a= if(isec,1,a);
+wave_1_per_point99=
+wave_1_per_point100=
+wave_1_per_point101=//Braccia
+wave_1_per_point102=
+wave_1_per_point103=section +=1; isec=equal(int(s),section);
+wave_1_per_point104=
+wave_1_per_point105=x= if(isec,.45-mi*abs(.39+0.85*wq),x); //screen left arm extension
+wave_1_per_point106=y= if(isec,.528+(1/vb)*wq+sin(ba*75-(13*wq))*.042,y); //screen left arm length
+wave_1_per_point107=r= if(isec,1,r);
+wave_1_per_point108=g= if(isec,0,g);
+wave_1_per_point109=b= if(isec,1,b);
+wave_1_per_point110=a= if(isec,1,a);
+wave_1_per_point111=
+wave_1_per_point112=section +=1; isec=equal(int(s),section);
+wave_1_per_point113=
+wave_1_per_point114=x= if(isec,(.558+(sin(ba*100)*wq)*.033),x); //arm return screen left
+wave_1_per_point115=y= if(isec,.586+0.05*(6/vb),y); //collar height
+wave_1_per_point116=r= if(isec,1,r);
+wave_1_per_point117=g= if(isec,1,g);
+wave_1_per_point118=b= if(isec,1,b);
+wave_1_per_point119=a= if(isec,1,a);
+wave_1_per_point120=
+wave_1_per_point121=section +=1; isec=equal(int(s),section);
+wave_1_per_point122=
+wave_1_per_point123=x= if(isec,(.51+abs(tr*0.4*qw)),x); //screen right arm extension
+wave_1_per_point124=y= if(isec,.55-(12/vb)*0.04,y);   //screen right arm length
+wave_1_per_point125=r= if(isec,0,r);
+wave_1_per_point126=g= if(isec,0,g);
+wave_1_per_point127=b= if(isec,0,b);
+wave_1_per_point128=a= if(isec,1,a);
+wave_1_per_point129=
+wave_1_per_point130=section +=1; isec=equal(int(s),section);
+wave_1_per_point131=
+wave_1_per_point132=x= if(isec,.62+(ba*0.129)*qw,x); //arm entry screen right hand pos
+wave_1_per_point133=y= if(isec,(.54-wq*(6/vb)-abs(sin(ba*100)*.015))*wq,y);
+wave_1_per_point134=r= if(isec,1,r);
+wave_1_per_point135=g= if(isec,0,g);
+wave_1_per_point136=b= if(isec,0,b);
+wave_1_per_point137=a= if(isec,1,a);
+wave_1_per_point138=
+wave_1_per_point139=//Testa
+wave_1_per_point140=
+wave_1_per_point141=section +=1; isec=equal(int(s),section);
+wave_1_per_point142=
+wave_1_per_point143=x= if(isec,.52+(ba*0.13)*qw,x); //collar
+wave_1_per_point144=y= if(isec,.57,y);
+wave_1_per_point145=r= if(isec,0,r);
+wave_1_per_point146=g= if(isec,1,g);
+wave_1_per_point147=b= if(isec,0,b);
+wave_1_per_point148=a= if(isec,1,a);
+wave_1_per_point149=
+wave_1_per_point150=section +=1; isec=equal(int(s),section);
+wave_1_per_point151=
+wave_1_per_point152=x= if(isec,.51+(ba*.23)*qw,x); // left side temple ear
+wave_1_per_point153=y= if(isec,(.591-ba*.13),y);
+wave_1_per_point154=r= if(isec,0,r);
+wave_1_per_point155=g= if(isec,1,g);
+wave_1_per_point156=b= if(isec,1,b);
+wave_1_per_point157=a= if(isec,1,a);
+wave_1_per_point158=
+wave_1_per_point159=
+wave_1_per_point160=section +=1; isec=equal(int(s),section);
+wave_1_per_point161=
+wave_1_per_point162=x= if(isec,.497-(ba*.19)*qw,x); // hairline l
+wave_1_per_point163=y= if(isec,.638-(ba*.13)*qw,y);
+wave_1_per_point164=r= if(isec,1,r);
+wave_1_per_point165=g= if(isec,0,g);
+wave_1_per_point166=b= if(isec,1,b);
+wave_1_per_point167=a= if(isec,1,a);
+wave_1_per_point168=
+wave_1_per_point169=section +=1; isec=equal(int(s),section);
+wave_1_per_point170=
+wave_1_per_point171=x= if(isec,.535-(ba*.21)*qw,x); // hairline r
+wave_1_per_point172=y= if(isec,.65+(ba*.13)*qw,y);
+wave_1_per_point173=r= if(isec,1,r);
+wave_1_per_point174=g= if(isec,0,g);
+wave_1_per_point175=b= if(isec,1,b);
+wave_1_per_point176=a= if(isec,1,a);
+wave_1_per_point177=
+wave_1_per_point178=section +=1; isec=equal(int(s),section);
+wave_1_per_point179=
+wave_1_per_point180=x= if(isec,.55-(ba*.18)*qw,x); // right side temple ear
+wave_1_per_point181=y= if(isec,.631,y);
+wave_1_per_point182=r= if(isec,0,r);
+wave_1_per_point183=g= if(isec,0,g);
+wave_1_per_point184=b= if(isec,1,b);
+wave_1_per_point185=a= if(isec,1,a);
+wave_1_per_point186=
+wave_1_per_point187=section +=1; isec=equal(int(s),section);
+wave_1_per_point188=
+wave_1_per_point189=x= if(isec,.53+(ba*0.13)*qw,x); //right face side chin
+wave_1_per_point190=y= if(isec,.591,y);
+wave_1_per_point191=r= if(isec,1,r);
+wave_1_per_point192=g= if(isec,0,g);
+wave_1_per_point193=b= if(isec,1,b);
+wave_1_per_point194=a= if(isec,1,a);
+wave_1_per_point195=
+wave_1_per_point196=//add process post section
+wave_1_per_point197=
+wave_1_per_point198=x=x-0.5; y=y-0.5; //use polar from here
+wave_1_per_point199=x=x*q28; //sign(var)
+wave_1_per_point200=
+wave_1_per_point201=
+wave_1_per_point202=
+wave_1_per_point203=x=(x+0.5)*dim+xpos;
+wave_1_per_point204=y=(y+0.5)*dim+ypos;
+wavecode_2_enabled=1
+wavecode_2_samples=16
+wavecode_2_sep=100
+wavecode_2_bSpectrum=1
+wavecode_2_bUseDots=1
+wavecode_2_bDrawThick=1
+wavecode_2_bAdditive=1
+wavecode_2_scaling=1.00000
+wavecode_2_smoothing=0.50000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=1.000
+wavecode_2_a=1.000
+wave_2_per_point1=meanbass = 0.01*(meanbass*99+bass_att);
+wave_2_per_point2=meantreb = 0.01*(meantreb*99+treb_att*value1);
+wave_2_per_point3=meanmid = 0.01*(meanmid*99+mid_att);
+wave_2_per_point4=bassdiff = (bass_att - meanbass)*15;
+wave_2_per_point5=trebdiff = (treb_att - meantreb)*15;
+wave_2_per_point6=middiff = (mid_att - meanmid)*15;
+wave_2_per_point7=ba = min(above(bassdiff,0)*bassdiff*.005,.11);
+wave_2_per_point8=tr = min(above(trebdiff,0)*trebdiff*.005,.11);
+wave_2_per_point9=mi = min(above(middiff,0)*middiff*.005,.11);
+wave_2_per_point10=baprg=baprg+ba*.4;
+wave_2_per_point11=trprg=trprg+tr*.3;
+wave_2_per_point12=miprg=miprg+tr*.2;
+wave_2_per_point13=
+wave_2_per_point14=
+wave_2_per_point15=dim =0.65+.3*sin(miprg); //Dancer dimensions
+wave_2_per_point16=xpos=0+.2*sin(baprg);//Dancer x position variation
+wave_2_per_point17=ypos=0+.02*sin(trprg);//Dancer y position variation
+wave_2_per_point18=
+wave_2_per_point19=
+wave_2_per_point20=//Position Stabilization
+wave_2_per_point21=xpos=xpos+(1-dim)/2;
+wave_2_per_point22=ypos=ypos+(1-dim)/2;
+wave_2_per_point23=
+wave_2_per_point24=meanbass = 0.01*(meanbass*99+bass);
+wave_2_per_point25=meantreb = 0.01*(meantreb*99+treb);
+wave_2_per_point26=meanmid = 0.01*(meanmid*99+mid);
+wave_2_per_point27=bassdiff = (bass - meanbass)*15;
+wave_2_per_point28=trebdiff = (treb - meantreb)*15;
+wave_2_per_point29=middiff = (mid - meanmid)*15;
+wave_2_per_point30=ba = min(above(bassdiff,0)*bassdiff*.005,.11);
+wave_2_per_point31=tr = min(above(trebdiff,0)*trebdiff*.005,.11);
+wave_2_per_point32=mi = min(above(middiff,0)*middiff*.005,.11);
+wave_2_per_point33=
+wave_2_per_point34=mi2_prg = mi2_prg+mi;
+wave_2_per_point35=gam = abs(gam-above(mi2_prg,5));
+wave_2_per_point36=mi2_prg= if(above(mi2_prg,5),0,mi2_prg);
+wave_2_per_point37=
+wave_2_per_point38=
+wave_2_per_point39=test=0+0.2*sin(time); tes2=0+0.2*cos(time); qw=1+test; wq=1+tes2; 
+wave_2_per_point40=fg +=if(above(0.05,fg),-gr,if(above(fg,50),-gr,gr));
+wave_2_per_point41=vz=0.1/(value1-value2); vc=abs(vz)*wq; vb=abs(vc)/0.001;
+wave_2_per_point42=zxsimspe=int(60/(fps/3)); grnd=int(rand(zxsimspe)); gr=1/grnd; gr +=0.1*gr; gr +=0.02*gr;
+wave_2_per_point43=gr +=0.001*gr; gr +=0.0002*gr; gr +=0.00001*gr; gr +=0.000002*gr; gr +=0.0000001*gr; 
+wave_2_per_point44=gr +=0.00000002*gr; gr +=0.000000001*gr; gr +=0.00000000002*gr;
+wave_2_per_point45=fg =1/gr+fg; 
+wave_2_per_point46=larm=(abs(0.09+0.3*wq)*0.2)*wq-(abs(0.09+0.3*qw)*0.2)*qw +((fg/vb)*wq); 
+wave_2_per_point47=ralm=(abs(0.09+0.3*qw)*0.2)*qw-(abs(0.09-0.3*qw)*0.2)*qw +((fg/vb)*qw); 
+wave_2_per_point48=
+wave_2_per_point49=s = sample *section; section=0;
+wave_2_per_point50=//legs
+wave_2_per_point51=
+wave_2_per_point52=section +=1; isec=equal(int(s),section);
+wave_2_per_point53=
+wave_2_per_point54=x= if(isec,.492-((ba)*.125)*(gam)+(tr*0.12*wq),.487);  //l foot   +((1/vc)*wq)*qw    +((1/vc)*qw)*qw)-(abs(ba-tr)*.15)*gam
+wave_2_per_point55=y= if(isec,.192-((ba)*.15)*(gam)+(tr*0.12*qw)+larm,.188);   //-((ba+tr)*.7)*gam    -((ba-tr)*.72)*gam
+wave_2_per_point56=r= if(isec,1,r);
+wave_2_per_point57=g= if(isec,0,g);
+wave_2_per_point58=b= if(isec,0,b);
+wave_2_per_point59=a= if(isec,1,a);
+wave_2_per_point60=
+wave_2_per_point61=section +=1; isec=equal(int(s),section);
+wave_2_per_point62=
+wave_2_per_point63=x= if(isec,.523+(tr*0.12*qw),x); //inside leg +sin(ba*100-vc)*.020*((1/vc)*wq)*wq
+wave_2_per_point64=y= if(isec,.454+((ba)*.15)*(gam)+(tr*0.12*wq)+larm*0.3,y);   //    +0.02*wq*gam    *(gr-gam)
+wave_2_per_point65=r= if(isec,0,r);
+wave_2_per_point66=g= if(isec,1,g);
+wave_2_per_point67=b= if(isec,0,b);
+wave_2_per_point68=a= if(isec,1,a);
+wave_2_per_point69=
+wave_2_per_point70=
+wave_2_per_point71=section +=1; isec=equal(int(s),section);
+wave_2_per_point72=
+wave_2_per_point73=x= if(isec,.59-((ba)*.15)*(gam)+(tr*0.12*qw),x); //r leg    +(g/(vc+bass_att))*(mid_att-qw)*0.5)*qw,x);
+wave_2_per_point74=y= if(isec,.182-((ba)*.125)*(gam)+(tr*0.12*wq)-ralm,y);   //-((ba)*.25)*(gam)
+wave_2_per_point75=r= if(isec,0,r);
+wave_2_per_point76=g= if(isec,1,g);
+wave_2_per_point77=b= if(isec,1,b);
+wave_2_per_point78=a= if(isec,0,a);
+wave_2_per_point79=
+wave_2_per_point80=
+wave_2_per_point81=section +=1; isec=equal(int(s),section);
+wave_2_per_point82=
+wave_2_per_point83=x= if(isec,.52+(tr*0.16*qw),x+(tr*0.012*wq)); //waist   +sin(ba*100+vc)*.018
+wave_2_per_point84=y= if(isec,.453,y);   //
+wave_2_per_point85=r= if(isec,1,r);
+wave_2_per_point86=g= if(isec,0,g);
+wave_2_per_point87=b= if(isec,1,b);
+wave_2_per_point88=a= if(isec,1,a);
+wave_2_per_point89=
+wave_2_per_point90=//Corpo
+wave_2_per_point91=
+wave_2_per_point92=section +=1; isec=equal(int(s),section);
+wave_2_per_point93=
+wave_2_per_point94=x= if(isec,.531-sin(ba*100-vc)*.035,x); //spine
+wave_2_per_point95=y= if(isec,.56,y);
+wave_2_per_point96=r= if(isec,0,r);
+wave_2_per_point97=g= if(isec,1,g);
+wave_2_per_point98=b= if(isec,1,b);
+wave_2_per_point99=a= if(isec,1,a);
+wave_2_per_point100=
+wave_2_per_point101=
+wave_2_per_point102=//Braccia
+wave_2_per_point103=
+wave_2_per_point104=section +=1; isec=equal(int(s),section);
+wave_2_per_point105=
+wave_2_per_point106=x= if(isec,(.45-mi*abs(.39+0.85*wq)+fg*(cos(ba*100)*wq)*.00033),x); //screen left arm extension    -mi*abs(.39+0.85*wq)
+wave_2_per_point107=y= if(isec,.528+(1/vb)*wq+sin(ba*75-(13*wq))*.042,y); //screen left arm length   +(1/vb)*wq+sin(ba*75-(13*wq))*.042
+wave_2_per_point108=r= if(isec,1,r);
+wave_2_per_point109=g= if(isec,0,g);
+wave_2_per_point110=b= if(isec,1,b);
+wave_2_per_point111=a= if(isec,1,a);
+wave_2_per_point112=
+wave_2_per_point113=section +=1; isec=equal(int(s),section);
+wave_2_per_point114=
+wave_2_per_point115=x= if(isec,(.558+(sin(ba*100)*wq)*.033),x-(sin((ba*100)*gr)*.003)); //arm return screen left
+wave_2_per_point116=y= if(isec,.586+0.05*(6/vb),y); //collar height
+wave_2_per_point117=r= if(isec,1,r);
+wave_2_per_point118=g= if(isec,1,g);
+wave_2_per_point119=b= if(isec,1,b);
+wave_2_per_point120=a= if(isec,1,a);
+wave_2_per_point121=
+wave_2_per_point122=section +=1; isec=equal(int(s),section);
+wave_2_per_point123=
+wave_2_per_point124=x= if(isec,(.51+abs(tr*0.4*qw))+(ba*.13)*wq +abs(tr*0.4*wq),x); //screen right arm extension
+wave_2_per_point125=y= if(isec,.55 +(12/vb)*0.22,y);   //screen right arm length
+wave_2_per_point126=r= if(isec,0,r);
+wave_2_per_point127=g= if(isec,0,g);
+wave_2_per_point128=b= if(isec,0,b);
+wave_2_per_point129=a= if(isec,1,a);
+wave_2_per_point130=
+wave_2_per_point131=section +=1; isec=equal(int(s),section);
+wave_2_per_point132=
+wave_2_per_point133=x= if(isec,.62+abs(tr*0.4*wq),x+abs(tr*0.004*wq)); //arm entry screen right hand pos   +(ba*0.259)*qw +(12/(vb/gr))*wq
+wave_2_per_point134=y= if(isec,.55+(abs(0.09+0.3*wq)*0.2)*wq-(abs(0.09+0.3*qw)*0.2)*qw +((fg/vb)*wq),y);   //   
+wave_2_per_point135=r= if(isec,1,r);
+wave_2_per_point136=g= if(isec,0,g);
+wave_2_per_point137=b= if(isec,0,b);
+wave_2_per_point138=a= if(isec,1,a);
+wave_2_per_point139=
+wave_2_per_point140=//Testa
+wave_2_per_point141=
+wave_2_per_point142=section +=1; isec=equal(int(s),section);
+wave_2_per_point143=
+wave_2_per_point144=x= if(isec,.52,x); //collar  +(sin(ba*100)*wq)*.033)
+wave_2_per_point145=y= if(isec,.57,y);  //
+wave_2_per_point146=r= if(isec,0,r);
+wave_2_per_point147=g= if(isec,1,g);
+wave_2_per_point148=b= if(isec,0,b);
+wave_2_per_point149=a= if(isec,1,a);
+wave_2_per_point150=
+wave_2_per_point151=section +=1; isec=equal(int(s),section);
+wave_2_per_point152=
+wave_2_per_point153=x= if(isec,.51+(ba*.23)*qw,x); // left side temple ear
+wave_2_per_point154=y= if(isec,(.591-ba*.13),y);
+wave_2_per_point155=r= if(isec,0,r);
+wave_2_per_point156=g= if(isec,1,g);
+wave_2_per_point157=b= if(isec,1,b);
+wave_2_per_point158=a= if(isec,1,a);
+wave_2_per_point159=
+wave_2_per_point160=
+wave_2_per_point161=section +=1; isec=equal(int(s),section);
+wave_2_per_point162=
+wave_2_per_point163=x= if(isec,.497-(ba*.19)*qw,x); // hairline l
+wave_2_per_point164=y= if(isec,.638-(ba*.13)*qw,y);
+wave_2_per_point165=r= if(isec,1,r);
+wave_2_per_point166=g= if(isec,0,g);
+wave_2_per_point167=b= if(isec,1,b);
+wave_2_per_point168=a= if(isec,1,a);
+wave_2_per_point169=
+wave_2_per_point170=section +=1; isec=equal(int(s),section);
+wave_2_per_point171=
+wave_2_per_point172=x= if(isec,.535-(ba*.21)*qw,x); // hairline r
+wave_2_per_point173=y= if(isec, 0.65+(ba*.13)*qw,y); //  .65+(ba*.13)*qw
+wave_2_per_point174=r= if(isec,1,r);
+wave_2_per_point175=g= if(isec,0,g);
+wave_2_per_point176=b= if(isec,1,b);
+wave_2_per_point177=a= if(isec,1,a);
+wave_2_per_point178=
+wave_2_per_point179=section +=1; isec=equal(int(s),section);
+wave_2_per_point180=
+wave_2_per_point181=x= if(isec,.55-(ba*.18)*qw,x); // right side temple ear
+wave_2_per_point182=y= if(isec,.631,y);
+wave_2_per_point183=r= if(isec,0,r);
+wave_2_per_point184=g= if(isec,0,g);
+wave_2_per_point185=b= if(isec,1,b);
+wave_2_per_point186=a= if(isec,1,a);
+wave_2_per_point187=
+wave_2_per_point188=section +=1; isec=equal(int(s),section);
+wave_2_per_point189=
+wave_2_per_point190=x= if(isec,.53+(ba*0.13)*qw,x); //right face side chin
+wave_2_per_point191=y= if(isec,.591,y);
+wave_2_per_point192=r= if(isec,1,r);
+wave_2_per_point193=g= if(isec,0,g);
+wave_2_per_point194=b= if(isec,1,b);
+wave_2_per_point195=a= if(isec,1,a);
+wave_2_per_point196=
+wave_2_per_point197=//add process post section
+wave_2_per_point198=
+wave_2_per_point199=x=x-0.5; y=y-0.5; //use polar from here
+wave_2_per_point200=x=x*q28; //sign(var)
+wave_2_per_point201=
+wave_2_per_point202=
+wave_2_per_point203=
+wave_2_per_point204=x=(x+0.5)*dim+xpos;
+wave_2_per_point205=y=(y+0.5)*dim+ypos;
+wavecode_3_enabled=1
+wavecode_3_samples=16
+wavecode_3_sep=80
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=1
+wavecode_3_bDrawThick=1
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=1.000
+wave_3_per_frame1=
+wave_3_per_frame2=rx=at
+wave_3_per_point1=diff=value2-value1;
+wave_3_per_point2=meanbass = 0.01*(meanbass*99+bass_att*diff);
+wave_3_per_point3=meantreb = 0.01*(meantreb*99+treb_att);
+wave_3_per_point4=meanmid = 0.01*(meanmid*99+mid_att);
+wave_3_per_point5=bassdiff = (bass_att - meanbass)*15;
+wave_3_per_point6=trebdiff = (treb_att - meantreb)*15;
+wave_3_per_point7=middiff = (mid_att - meanmid)*15;
+wave_3_per_point8=ba = min(above(bassdiff,0)*bassdiff*.005,.11);
+wave_3_per_point9=tr = min(above(trebdiff,0)*trebdiff*.005,.11);
+wave_3_per_point10=mi = min(above(middiff,0)*middiff*.005,.11);
+wave_3_per_point11=baprg=baprg+ba*.2;
+wave_3_per_point12=trprg=trprg+tr*.4;
+wave_3_per_point13=miprg=miprg+tr*.4;
+wave_3_per_point14=
+wave_3_per_point15=
+wave_3_per_point16=dim =0.5+.3*sin(miprg); //Dancer dimensions
+wave_3_per_point17=xpos=0+.3*sin(baprg);//Dancer x position variation
+wave_3_per_point18=ypos=0+.02*sin(trprg);//Dancer y position variation
+wave_3_per_point19=
+wave_3_per_point20=
+wave_3_per_point21=//Position Stabilization
+wave_3_per_point22=xpos=xpos+(1-dim)/2;
+wave_3_per_point23=ypos=ypos+(1-dim)/2;
+wave_3_per_point24=
+wave_3_per_point25=meanbass = 0.01*(meanbass*99+bass);
+wave_3_per_point26=meantreb = 0.01*(meantreb*99+treb);
+wave_3_per_point27=meanmid = 0.01*(meanmid*99+mid);
+wave_3_per_point28=bassdiff = (bass - meanbass)*15;
+wave_3_per_point29=trebdiff = (treb - meantreb)*15;
+wave_3_per_point30=middiff = (mid - meanmid)*15;
+wave_3_per_point31=ba = min(above(bassdiff,0)*bassdiff*.005,.11);
+wave_3_per_point32=tr = min(above(trebdiff,0)*trebdiff*.005,.11);
+wave_3_per_point33=mi = min(above(middiff,0)*middiff*.005,.11);
+wave_3_per_point34=
+wave_3_per_point35=mi2_prg = mi2_prg+mi;
+wave_3_per_point36=gam = abs(gam-above(mi2_prg,5));
+wave_3_per_point37=mi2_prg= if(above(mi2_prg,5),0,mi2_prg);
+wave_3_per_point38=
+wave_3_per_point39=
+wave_3_per_point40=test=0+0.2*sin(time); tes2=0+0.2*cos(time); qw=1+test; wq=1+tes2; 
+wave_3_per_point41=//fg +=if(above(0.05,fg),-gr,if(above(fg,50),-gr,gr));
+wave_3_per_point42=vz=0.1/(value1-value2); vc=abs(vz)*wq; vb=abs(vc)/0.001;
+wave_3_per_point43=zxsimspe=int(60/(fps/3)); grnd=int(rand(zxsimspe)); gr=1/grnd; gr +=0.1*gr; gr +=0.02*gr;
+wave_3_per_point44=gr +=0.001*gr; gr +=0.0002*gr; gr +=0.00001*gr; gr +=0.000002*gr; gr +=0.0000001*gr; 
+wave_3_per_point45= gr +=0.00000002*gr; gr +=0.000000001*gr; gr +=0.00000000002*gr;
+wave_3_per_point46=fg =1/gr+fg; 
+wave_3_per_point47=larm=(abs(0.09+0.3*wq)*0.2)*wq-(abs(0.09+0.3*qw)*0.2)*qw +((fg/vb)*wq); 
+wave_3_per_point48=ralm=(abs(0.09+0.3*qw)*0.2)*qw-(abs(0.09-0.3*qw)*0.2)*qw +((fg/vb)*qw); 
+wave_3_per_point49=
+wave_3_per_point50=s = sample *section; section=0;
+wave_3_per_point51=//legs
+wave_3_per_point52=section +=1; isec=equal(int(s),section);
+wave_3_per_point53=
+wave_3_per_point54=x= if(isec,.492+((1/vc)*wq)*qw,.487+((1/vc)*qw)*qw)-((ba-tr)*.15)*gam;  //l foot
+wave_3_per_point55=y= if(isec,.182-((ba+tr)*.7)*gam,.182-((ba-tr)*.72)*gam);
+wave_3_per_point56=r= if(isec,1,r);
+wave_3_per_point57=g= if(isec,0,g);
+wave_3_per_point58=b= if(isec,0,b);
+wave_3_per_point59=a= if(isec,1,a);
+wave_3_per_point60=
+wave_3_per_point61=section +=1; isec=equal(int(s),section);
+wave_3_per_point62=
+wave_3_per_point63=x= if(isec,.52+sin(ba*100-vc)*.020*((1/vc)*wq)*wq,x); //inside leg
+wave_3_per_point64=y= if(isec,.43+0.02*wq,y);
+wave_3_per_point65=r= if(isec,0,r);
+wave_3_per_point66=g= if(isec,1,g);
+wave_3_per_point67=b= if(isec,0,b);
+wave_3_per_point68=a= if(isec,1,a);
+wave_3_per_point69=
+wave_3_per_point70=
+wave_3_per_point71=section +=1; isec=equal(int(s),section);
+wave_3_per_point72=
+wave_3_per_point73=x= if(isec,(.61+(1/(vc+bass_att))*(mid_att-qw))*qw,x); //r leg
+wave_3_per_point74=y= if(isec,.182-((ba)*.25)*(1-gam),y);
+wave_3_per_point75=r= if(isec,0,r);
+wave_3_per_point76=g= if(isec,1,g);
+wave_3_per_point77=b= if(isec,1,b);
+wave_3_per_point78=a= if(isec,0,a);
+wave_3_per_point79=
+wave_3_per_point80=
+wave_3_per_point81=section +=1; isec=equal(int(s),section);
+wave_3_per_point82=
+wave_3_per_point83=x= if(isec,.52+sin(ba*100+vc)*.018,x); //waist
+wave_3_per_point84=y= if(isec,.43,y);
+wave_3_per_point85=r= if(isec,1,r);
+wave_3_per_point86=g= if(isec,0,g);
+wave_3_per_point87=b= if(isec,1,b);
+wave_3_per_point88=a= if(isec,1,a);
+wave_3_per_point89=
+wave_3_per_point90=//Corpo
+wave_3_per_point91=
+wave_3_per_point92=section +=1; isec=equal(int(s),section);
+wave_3_per_point93=
+wave_3_per_point94=x= if(isec,.531-sin(ba*100-vc)*.035,x); //spine
+wave_3_per_point95=y= if(isec,.56,y);
+wave_3_per_point96=r= if(isec,0,r);
+wave_3_per_point97=g= if(isec,1,g);
+wave_3_per_point98=b= if(isec,1,b);
+wave_3_per_point99=a= if(isec,1,a);
+wave_3_per_point100=
+wave_3_per_point101=
+wave_3_per_point102=//Braccia
+wave_3_per_point103=
+wave_3_per_point104=section +=1; isec=equal(int(s),section);
+wave_3_per_point105=
+wave_3_per_point106=x= if(isec,.45-mi*abs(.39+0.85*wq),x); //screen left arm extension
+wave_3_per_point107=y= if(isec,.528+(1/vb)*wq+sin(ba*75-(13*wq))*.042,y); //screen left arm length
+wave_3_per_point108=r= if(isec,1,r);
+wave_3_per_point109=g= if(isec,0,g);
+wave_3_per_point110=b= if(isec,1,b);
+wave_3_per_point111=a= if(isec,1,a);
+wave_3_per_point112=
+wave_3_per_point113=section +=1; isec=equal(int(s),section);
+wave_3_per_point114=
+wave_3_per_point115=x= if(isec,(.558+(sin(ba*100)*wq)*.033),x); //arm return screen left
+wave_3_per_point116=y= if(isec,.586+0.05*(6/vb),y); //collar height
+wave_3_per_point117=r= if(isec,1,r);
+wave_3_per_point118=g= if(isec,1,g);
+wave_3_per_point119=b= if(isec,1,b);
+wave_3_per_point120=a= if(isec,1,a);
+wave_3_per_point121=
+wave_3_per_point122=section +=1; isec=equal(int(s),section);
+wave_3_per_point123=
+wave_3_per_point124=x= if(isec,(.51+abs(tr*0.4*qw)),x); //screen right arm extension
+wave_3_per_point125=y= if(isec,.55-(12/vb)*0.04,y);   //screen right arm length
+wave_3_per_point126=r= if(isec,0,r);
+wave_3_per_point127=g= if(isec,0,g);
+wave_3_per_point128=b= if(isec,0,b);
+wave_3_per_point129=a= if(isec,1,a);
+wave_3_per_point130=
+wave_3_per_point131=section +=1; isec=equal(int(s),section);
+wave_3_per_point132=
+wave_3_per_point133=x= if(isec,.62+(ba*0.129)*qw,x); //arm entry screen right hand pos
+wave_3_per_point134=y= if(isec,(.54-wq*(6/vb)-abs(sin(ba*100)*.015))*wq,y);
+wave_3_per_point135=r= if(isec,1,r);
+wave_3_per_point136=g= if(isec,0,g);
+wave_3_per_point137=b= if(isec,0,b);
+wave_3_per_point138=a= if(isec,1,a);
+wave_3_per_point139=
+wave_3_per_point140=//Testa
+wave_3_per_point141=
+wave_3_per_point142=section +=1; isec=equal(int(s),section);
+wave_3_per_point143=
+wave_3_per_point144=x= if(isec,.52+(ba*0.13)*qw,x); //collar
+wave_3_per_point145=y= if(isec,.57,y);
+wave_3_per_point146=r= if(isec,0,r);
+wave_3_per_point147=g= if(isec,1,g);
+wave_3_per_point148=b= if(isec,0,b);
+wave_3_per_point149=a= if(isec,1,a);
+wave_3_per_point150=
+wave_3_per_point151=section +=1; isec=equal(int(s),section);
+wave_3_per_point152=
+wave_3_per_point153=x= if(isec,.51+(ba*.23)*qw,x); // left side temple ear
+wave_3_per_point154=y= if(isec,(.591-ba*.13),y);
+wave_3_per_point155=r= if(isec,0,r);
+wave_3_per_point156=g= if(isec,1,g);
+wave_3_per_point157=b= if(isec,1,b);
+wave_3_per_point158=a= if(isec,1,a);
+wave_3_per_point159=
+wave_3_per_point160=
+wave_3_per_point161=section +=1; isec=equal(int(s),section);
+wave_3_per_point162=
+wave_3_per_point163=x= if(isec,.497-(ba*.19)*qw,x); // hairline l
+wave_3_per_point164=y= if(isec,.638-(ba*.13)*qw,y);
+wave_3_per_point165=r= if(isec,1,r);
+wave_3_per_point166=g= if(isec,0,g);
+wave_3_per_point167=b= if(isec,1,b);
+wave_3_per_point168=a= if(isec,1,a);
+wave_3_per_point169=
+wave_3_per_point170=section +=1; isec=equal(int(s),section);
+wave_3_per_point171=
+wave_3_per_point172=x= if(isec,.535-(ba*.21)*qw,x); // hairline r
+wave_3_per_point173=y= if(isec,.65+(ba*.13)*qw,y);
+wave_3_per_point174=r= if(isec,1,r);
+wave_3_per_point175=g= if(isec,0,g);
+wave_3_per_point176=b= if(isec,1,b);
+wave_3_per_point177=a= if(isec,1,a);
+wave_3_per_point178=
+wave_3_per_point179=section +=1; isec=equal(int(s),section);
+wave_3_per_point180=
+wave_3_per_point181=x= if(isec,.55-(ba*.18)*qw,x); // right side temple ear
+wave_3_per_point182=y= if(isec,.631,y);
+wave_3_per_point183=r= if(isec,0,r);
+wave_3_per_point184=g= if(isec,0,g);
+wave_3_per_point185=b= if(isec,1,b);
+wave_3_per_point186=a= if(isec,1,a);
+wave_3_per_point187=
+wave_3_per_point188=section +=1; isec=equal(int(s),section);
+wave_3_per_point189=
+wave_3_per_point190=x= if(isec,.53+(ba*0.13)*qw,x); //right face side chin
+wave_3_per_point191=y= if(isec,.591,y);
+wave_3_per_point192=r= if(isec,1,r);
+wave_3_per_point193=g= if(isec,0,g);
+wave_3_per_point194=b= if(isec,1,b);
+wave_3_per_point195=a= if(isec,1,a);
+wave_3_per_point196=
+wave_3_per_point197=//add process post section
+wave_3_per_point198=
+wave_3_per_point199=x=x-0.5; y=y-0.5; //use polar from here
+wave_3_per_point200=x=x*q28; //sign(var)
+wave_3_per_point201=
+wave_3_per_point202=
+wave_3_per_point203=
+wave_3_per_point204=x=(x+0.5)*dim+xpos;
+wave_3_per_point205=y=(y+0.5)*dim+ypos;
+shapecode_0_enabled=0
+shapecode_0_sides=100
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=1
+shapecode_0_num_inst=1
+shapecode_0_x=0.840
+shapecode_0_y=0.740
+shapecode_0_rad=0.28999
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=1.32129
+shapecode_0_r=0.100
+shapecode_0_g=0.500
+shapecode_0_b=0.500
+shapecode_0_a=1.000
+shapecode_0_r2=0.100
+shapecode_0_g2=0.500
+shapecode_0_b2=0.400
+shapecode_0_a2=1.000
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=0.000
+shape_0_per_frame1=meantreb = 0.01*(meantreb*99+treb);
+shape_0_per_frame2=trebdiff = (treb - meantreb)*15;
+shape_0_per_frame3=tr = min(above(trebdiff,0)*trebdiff*.005,.11);
+shape_0_per_frame4=
+shape_0_per_frame5=tr_prg= tr_prg+tr;
+shape_0_per_frame6=
+shape_0_per_frame7=tex_ang =-tr_prg;
+shapecode_1_enabled=0
+shapecode_1_sides=100
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=1
+shapecode_1_num_inst=1
+shapecode_1_x=0.150
+shapecode_1_y=0.730
+shapecode_1_rad=0.51133
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=1.36133
+shapecode_1_r=0.600
+shapecode_1_g=0.600
+shapecode_1_b=0.200
+shapecode_1_a=1.000
+shapecode_1_r2=0.600
+shapecode_1_g2=0.600
+shapecode_1_b2=0.210
+shapecode_1_a2=0.900
+shapecode_1_border_r=1.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=1.000
+shapecode_1_border_a=0.000
+shape_1_per_frame1=meanbass = 0.01*(meanbass*99+bass);
+shape_1_per_frame2=bassdiff = (bass - meanbass)*15;
+shape_1_per_frame3=ba = min(above(bassdiff,0)*bassdiff*.005,.11);
+shape_1_per_frame4=
+shape_1_per_frame5=
+shape_1_per_frame6=ba_prg= ba_prg+ba;
+shape_1_per_frame7=
+shape_1_per_frame8=tex_ang =-ba_prg;
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_num_inst=1
+shapecode_2_x=0.500
+shapecode_2_y=0.500
+shapecode_2_rad=0.10000
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=1.00000
+shapecode_2_r=1.000
+shapecode_2_g=0.000
+shapecode_2_b=0.000
+shapecode_2_a=1.000
+shapecode_2_r2=0.000
+shapecode_2_g2=1.000
+shapecode_2_b2=0.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=1.000
+shapecode_2_border_a=0.100
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=1
+shapecode_3_x=0.500
+shapecode_3_y=0.500
+shapecode_3_rad=0.10000
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.00000
+shapecode_3_r=1.000
+shapecode_3_g=0.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=1.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=1.000
+shapecode_3_border_b=1.000
+shapecode_3_border_a=0.100
+per_frame_init_1=
+per_frame_init_2=//******** INITIALIZATION *********
+per_frame_init_3=//---------- some global vars, do not change -------------
+per_frame_init_4=avg = 0.2;
+per_frame_init_5=q7 = .08; //MyZoom
+per_frame_init_6=
+per_frame_1=
+per_frame_2=//-----------------------------------------------------------------------
+per_frame_3=//Set Camera Position and viewing angle here
+per_frame_4=  PosX = .0; PosY =-.1; PosZ = -3; ran1 = 0.03*time; ran2 = 0.; ran3 = .81;
+per_frame_5=//-----------------------------------------------------------------------
+per_frame_6=
+per_frame_7=  c1 = cos(ran1); c2 = cos(ran2); c3 = cos(ran3); 
+per_frame_8=  s1 = sin(ran1); s2 = sin(ran2); s3 = sin(ran3);
+per_frame_9=
+per_frame_10=  q20 = c2*c1; q21 = c2*s1; q22 = -s2;
+per_frame_11=  q23 = s3*s2*c1 - c3*s1; q24 = s3*s2*s1 + c3*c1; q25 = s3*c2;
+per_frame_12=  q26 = c3*s2*c1 + s3*s1; q27 = c3*s2*s1 - s3*c1; q28 = c3*c2;
+per_frame_13=
+per_frame_14=  q4 = PosX; q5 = PosY; q6 = PosZ;
+warp_1=`sampler sampler_pw_noise_mq;
+warp_2=`float limit, dist, struc, len; float2 uv0, uv1; float3 uv2; float4 box;
+warp_3=`static const float3x3 RotMat = float3x3(q20,q21,q22,q23,q24,q25,q26,q27,q28);
+warp_4=`
+warp_5=`static const float3 CamPos = float3(q4,q5,q6);
+warp_6=`static const float myzoom = q7,  res = 128, res2 = 128, tele = q16;
+warp_7=`static const float change = q14, sustain =.96- change, ds = q10, tic8 = 1.0/255, ffac = q17;
+warp_8=`
+warp_9=`float2 fstep2 (float2 xy) {return 1.0/res*round(res*xy);}
+warp_10=`
+warp_11=`float GetDist(float2 uvi) {float2 tmp; tmp = fstep2(tex2D (sampler_pc_main, uvi).gb); 
+warp_12=`  return 1-(tmp.y + 1.0/res2*(tmp.x-.505));}
+warp_13=`
+warp_14=`float2 PutDist(float x) {float tmp; tmp = fstep2(1-x);
+warp_15=`  return (float2(res2*((1-x)-tmp)+.495,tmp));}
+warp_16=`
+warp_17=`float MinDist (float2 uvi) 
+warp_18=`{
+warp_19=`   float tmp; float4 nb; float4 nb2; float2 pix;
+warp_20=`   pix = texsize.zw*(1.0+length(uvi-0.5)*.0);   
+warp_21=`   nb.x = GetDist(uvi+pix*float2(-1,-1));   nb.y = GetDist(uvi+pix*float2(1,-1));
+warp_22=`   nb.z = GetDist(uvi+pix*float2(1,1));     nb.w = GetDist(uvi+pix*float2(-1,1));         
+warp_23=`   nb2.x = GetDist(uvi+pix*float2(0,-1));   nb2.y = GetDist(uvi+pix*float2(1,0));          
+warp_24=`   nb2.z = GetDist(uvi+pix*float2(0,1));    nb2.w = GetDist(uvi+pix*float2(-1,0));
+warp_25=`   //Eo.S. more efficient usage of min to get min value of all 8 GetDist() calls, removes 11ALU
+warp_26=`   nb = min( nb, nb2 );
+warp_27=`   nb.xy = min( nb.xy, nb.zw );
+warp_28=`   tmp =min( nb.x, nb.y );
+warp_29=`   return min(tmp, GetDist(uvi));
+warp_30=`}
+warp_31=`
+warp_32=`float3 Get1 (float2 uvi) {return lerp (GetPixel(uvi), GetBlur1(uvi),0);} 
+warp_33=`
+warp_34=`
+warp_35=`
+warp_36=`//----------------------------------------------------------------------------------------------
+warp_37=`float4 mbox (float3 uvi) {float3 zz, zz0; float tmp;
+warp_38=`  zz0 = uvi; zz = uvi * float3 (1,1,1); 
+warp_39=`
+warp_40=`  for (int n = 0; n <= 0; n++) 
+warp_41=`  {
+warp_42=`     zz = (tex3D (sampler_noisevol_lq,(zz/16 ))).x*3;
+warp_43=`//     zz = length(1+sin(zz.zx*4+1))*8 * cos(zz.y) ;
+warp_44=`  }
+warp_45=`   
+warp_46=`return float4(zz*limit,0);}
+warp_47=`//----------------------------------------------------------------------------------------------
+warp_48=`
+warp_49=`
+warp_50=`
+warp_51=`shader_body {uv0 = uv_orig;
+warp_52=`uv = (uv-.5)*(1-ds/(1-GetBlur1(uv).b)) + .5;
+warp_53=`uv1 = (uv0-.5)*aspect.xy*tele;
+warp_54=`float3 noise = frac(8*tex2D (sampler_noise_lq,uv+rand_frame.yz)); 
+warp_55=`   if (noise.g > .1) 
+warp_56=`   {
+warp_57=`       float3 noiseBiased = noise - float3( 0.5, 0.5, 0.5 );
+warp_58=`      //Eo.S. combine the subtraction on noise to a single float3 
+warp_59=`      //to ensure compiler does the subtraction in a single ALU
+warp_60=`      dist = MinDist( (noiseBiased.zy) * 0.0 +uv ) +  0.005 * (noiseBiased.x) * abs(noiseBiased.y);
+warp_61=`   }    
+warp_62=`   else {dist = noise.r;}
+warp_63=` dist = min(dist,GetDist(uv)) - ds*.8;
+warp_64=`
+warp_65=`limit = 10 ;
+warp_66=`float tdist = dist + pow(dist,3)*0;
+warp_67=`uv2 = mul(float3(uv1*tdist,tdist-.0)/myzoom,RotMat)+CamPos;
+warp_68=`uv2 = (frac(uv2/8.0+.5)-.5)*8.0;
+warp_69=`box = mbox (uv2);
+warp_70=`len = (length(box.xyz));
+warp_71=`struc = length(box.xyz)/limit;
+warp_72=`
+warp_73=`if ((len < limit) && (dist > 0.005)){
+warp_74=` ret.r = (1-sustain)*struc+sustain*(Get1(uv).r); ret.gb=  PutDist(dist); } 
+warp_75=` else {ret = tex2D(sampler_fc_main,uv)*float3(sustain,0,.99)-float3(1.0/255,0,4.0/255);} 
+warp_76=`//ret.r = struc;
+warp_77=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`
+comp_4=`float2 uv1 = (uv-.5)*aspect.xy;
+comp_5=`
+comp_6=`
+comp_7=`float3 ret1 = tex2D(sampler_main, uv) + GetBlur1(uv);
+comp_8=`
+comp_9=`float2 hor = float2 (.001,0);
+comp_10=`float2 ver = float2 (0,.001);
+comp_11=`float dx = GetPixel (uv-hor) - GetPixel (uv+hor);
+comp_12=`float dy = GetPixel (uv-ver) - GetPixel (uv+ver);
+comp_13=`float2 dz = float2 (dx,dy);
+comp_14=`
+comp_15=`uv1 = uv1*0+.3*cos(uv1*9) -dz;
+comp_16=`
+comp_17=`float dots = saturate(.04*bass_att/length(uv1));
+comp_18=`
+comp_19=`
+comp_20=`ret1 = (-.5*ret1) + dots + .2;
+comp_21=`
+comp_22=`ret = ret1*2;
+comp_23=`}

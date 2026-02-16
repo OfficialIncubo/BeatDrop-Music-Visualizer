@@ -4812,6 +4812,8 @@ void CPlugin::MyRenderUI(
         }
         if (m_bShowDebugInfo) //If show debug info is enabled, it entirely shows it, else it's hidden.
         {
+            swprintf(buf, L"BeatDrop v1.5 Developer Preview 1");
+            MyTextOut_Shadow(buf, MTO_LOWER_RIGHT);
             swprintf(buf, L"%s %d ", L"Time (s):", (int)(GetTime()));
             MyTextOut_Shadow(buf, MTO_LOWER_RIGHT);
         }
@@ -6204,6 +6206,12 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
     return 0;
     
      case WM_CREATE:
+         /*
+         After creating a window, ask if it needs reprecached, then delete shader cache directory (incl. cached shaders).
+         This will fix "Error creating shader" error.
+         */
+         if (g_plugin.m_bNeedsShaderReprecacheAtStartup)
+             DeleteShaderCacheDirectory();
          DragAcceptFiles(hWnd, TRUE);
      return 0;
 
