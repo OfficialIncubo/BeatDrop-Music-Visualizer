@@ -536,6 +536,7 @@ public:
         #define ERR_NOTIFY 4  // a simple notification - not an error at all. ("shuffle is now ON." etc.)
                               // NOTE: each NOTIFY msg clears all the old NOTIFY messages!
         #define ERR_SCANNING_PRESETS 5
+        #define ERR_SHADER_PRECACHE 6
         ErrorMsgList m_errors;
         void        AddNotif(wchar_t* szMsg);
         void        AddNotif(wchar_t* szMsg, float time);
