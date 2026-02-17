@@ -4219,7 +4219,7 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
 		m_indices_strip = NULL;
 	}
 
-    ClearErrors();
+    //ClearErrors();
 
     // This setting is closely tied to the modern skin "random" button.
     // The "random" state should be preserved from session to session.
