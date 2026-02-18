@@ -948,6 +948,7 @@ unsigned __stdcall DoShaderPrecache(void* param) {
 
         wchar_t szMessage[256];
         wcsncpy_s(szMessage, message.c_str(), _TRUNCATE);
+        g_plugin.ClearErrors(ERR_SHADER_PRECACHE);
         g_plugin.AddError(szMessage, 5, ERR_SHADER_PRECACHE, false);
         g_plugin.m_bNeedsShaderReprecacheAtStartup = false; // Finished precaching shaders, no need to reprecache again at startup.
     }
