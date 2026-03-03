@@ -5,6 +5,8 @@
 
 #define TARGET_SAMPLE_RATE 44100
 
+extern float g_fAudioSensitivity;
+
 // Reset audio buffer discarding stored audio data
 void ResetAudioBuf();
 

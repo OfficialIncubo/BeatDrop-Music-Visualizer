@@ -376,14 +376,13 @@ public:
         bool        m_bEnableSongTitlePoll;
         bool        m_bEnableSongTitlePollExplicit;
         bool        m_bScreenDependentRenderMode;
-        bool        m_bManualBeatSensitivityMode = false;
         bool        m_bShaderCaching = true;
         bool        m_bShaderPrecachingAtStartup = true;
         bool        m_bNeedsShaderReprecacheAtStartup = true;
         bool        m_bClearShaderCacheAtExit = false;
         bool        m_bOneTimeClearShaderCache = false;
         bool        m_bCheckForDirectXAtStartup = true;
-        float       m_nBeatSensitivity = 1;
+        float       m_nAudioSensitivity = 1;
         int         m_nTransitionBlendPattern = -1; // -1 for random, different values for any one chosen transition
         int         m_nAMDMode = 0; // 0 - Auto, 1 - Force AMD Mode, 2 - Force Non-AMD Mode (if you are using Intel)
         int         m_nBassStart = 0;

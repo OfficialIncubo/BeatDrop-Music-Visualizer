@@ -9,9 +9,9 @@
    CTRL + T             instantly reset time variable
    SHIFT + UP           increase window opacity
    SHIFT + DOWN         decrease window opacity
-   Q                    automatic/manual beat sensitivity mode
-   UP                   increase beat sensetivity (only manual mode)
-   DOWN                 decrease beat sensetivity (only manual mode)
+   Q                    reset audio sensitivity
+   UP                   increase audio sensitivity
+   DOWN                 decrease audio sensitivity
 
  PRESETS:
 

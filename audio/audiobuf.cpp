@@ -4,6 +4,8 @@
 
 #define SAMPLE_SIZE_LPB 576 // Max number of audio samples stored in circular buffer. Should be no less than SAMPLE_SIZE. Expected sampling rate is 44100 Hz or 48000 Hz (samples per second).
 
+float g_fAudioSensitivity = 1.0f;
+
 std::mutex pcmLpbMutex;
 unsigned char pcmLeftLpb[SAMPLE_SIZE_LPB]; // Circular buffer (left channel)
 unsigned char pcmRightLpb[SAMPLE_SIZE_LPB]; // Circular buffer (right channel)
@@ -52,6 +54,7 @@ void GetAudioBuf(unsigned char *pWaveL, unsigned char *pWaveR, int SamplesCount)
 }
 
 int8_t FltToInt(float flt) {
+    flt *= g_fAudioSensitivity;
     if (flt >= 1.0f) {
         return +127; // 0x7f
     }
@@ -84,7 +87,8 @@ int8_t GetChannelSample(const BYTE *pData, int BlockOffset, int ChannelOffset, c
         return FltToInt(sample.FltVar); //float [-1.0f .. +1.0f] range converted to int8_t [-128 .. +127] and later stored into uint8_t [0 .. 255]
     }
     else {
-        return (signed char)(sample.IntVar / 256); //int16_t [-32768 .. +32767] range converted to int8_t [-128 .. +127] and later stored into uint8_t [0..255]
+        float flt = ((int16_t)sample.IntVar) / 32768.0f;
+        return FltToInt(flt); //int16_t [-32768 .. +32767] range converted to int8_t [-128 .. +127] and later stored into uint8_t [0..255]
     }
 }
 
