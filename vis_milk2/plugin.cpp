@@ -6211,6 +6211,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
          */
          if (g_plugin.m_bNeedsShaderReprecacheAtStartup)
              DeleteShaderCacheDirectory();
+         g_fAudioSensitivity = m_nAudioSensitivity; // Sync audio sensitivity at startup
          DragAcceptFiles(hWnd, TRUE);
      return 0;
 
