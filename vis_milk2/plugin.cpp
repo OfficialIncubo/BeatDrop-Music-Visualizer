@@ -5892,7 +5892,7 @@ void LoadPresetFilesViaDragAndDrop(WPARAM wParam)
 
     // Check if it's more than one .milk preset file dropped in.
     if (count > 1) {
-        g_plugin.AddErrorNotif(L"ERROR: Please drop only one .milk preset file at a time.");
+        g_plugin.AddErrorNotif(L"ERROR: Please drop only one .milk preset file or directory at a time.");
         DragFinish(hDrop);
         return;
     }
@@ -5904,33 +5904,84 @@ void LoadPresetFilesViaDragAndDrop(WPARAM wParam)
 
     // If only one file is dropped, proceed
     if (count == 1) {
-        wchar_t szDroppedPresetName[MAX_PATH];
+        wchar_t szDroppedItem[MAX_PATH];
 
         // Use the wide character version directly
-        DragQueryFileW(hDrop, 0, szDroppedPresetName, MAX_PATH);
+        DragQueryFileW(hDrop, 0, szDroppedItem, MAX_PATH);
 
-        std::wstring wFileName = szDroppedPresetName;
+        // Check if it's a directory
+        DWORD attrib = GetFileAttributesW(szDroppedItem);
+        if (attrib != INVALID_FILE_ATTRIBUTES && (attrib & FILE_ATTRIBUTE_DIRECTORY)) {
+            // It's a directory - check for .milk files inside
+            std::wstring searchPath = std::wstring(szDroppedItem) + L"\\*.milk";
+            WIN32_FIND_DATAW findData;
+            HANDLE hFind = FindFirstFileW(searchPath.c_str(), &findData);
 
-        // Check if it's a .milk file (case-insensitive)
-        std::wstring lowerFileName = wFileName;
-        std::transform(lowerFileName.begin(), lowerFileName.end(), lowerFileName.begin(), ::towlower);
+            if (hFind != INVALID_HANDLE_VALUE) {
+                // Found at least one .milk file
+                FindClose(hFind);
 
-        if (lowerFileName.length() >= 5 &&
-            lowerFileName.substr(lowerFileName.length() - 5) == L".milk")
-        {
-            // Pass the wide string directly to LoadPreset
-            g_plugin.LoadPreset(wFileName.c_str(), 0.0f);
+                // Change preset directory to the dropped folder
+                wcscpy_s(g_plugin.m_szPresetDir, MAX_PATH, szDroppedItem);
+
+                // Ensure the path ends with a backslash
+                size_t len = wcslen(g_plugin.m_szPresetDir);
+                if (len > 0 && g_plugin.m_szPresetDir[len - 1] != L'\\') {
+                    wcscat_s(g_plugin.m_szPresetDir, MAX_PATH, L"\\");
+                }
+
+                // Save the new preset directory to config
+                WritePrivateProfileStringW(L"settings", L"szPresetDir",
+                    g_plugin.GetPresetDir(),
+                    g_plugin.GetConfigIniFile());
+
+                // Update preset list with the new directory
+                g_plugin.UpdatePresetList(true, true, false);
+
+                // Load the first preset from the new directory
+                if (g_plugin.m_nPresets > g_plugin.m_nDirs) {
+                    // Find the first actual preset (skip directories)
+                    for (int i = 0; i < g_plugin.m_nPresets; i++) {
+                        if (i >= g_plugin.m_nDirs) {
+                            g_plugin.m_nPresetListCurPos = i;
+                            std::wstring fullPath = std::wstring(g_plugin.m_szPresetDir) + L"\\" + g_plugin.m_presets[i].szFilename;
+                            g_plugin.LoadPreset(fullPath.c_str(), 0.0f);
+                            g_plugin.m_nCurrentPreset = 1;  // Also change the current preset indicator
+                            break;
+                        }
+                    }
+                }
+            }
+            else {
+                // No .milk files found in directory
+                g_plugin.AddErrorNotif(L"No valid presets were found in the dropped directory");
+            }
         }
         else {
-            // Extract just the filename part for error message
-            const wchar_t* filenameOnly = wFileName.c_str();
-            const wchar_t* lastSlash = wcsrchr(filenameOnly, L'\\');
-            if (lastSlash)
-                filenameOnly = lastSlash + 1;
 
-            wchar_t buf[1024], tmp[128];
-            swprintf(buf, L"Error: Failed to load dropped preset file: %s", filenameOnly, tmp, 128);
-            g_plugin.AddErrorNotif(buf);
+            std::wstring wFileName = szDroppedItem;
+
+            // Check if it's a .milk file (case-insensitive)
+            std::wstring lowerFileName = wFileName;
+            std::transform(lowerFileName.begin(), lowerFileName.end(), lowerFileName.begin(), ::towlower);
+
+            if (lowerFileName.length() >= 5 &&
+                lowerFileName.substr(lowerFileName.length() - 5) == L".milk")
+            {
+                // Pass the wide string directly to LoadPreset
+                g_plugin.LoadPreset(wFileName.c_str(), 0.0f);
+            }
+            else {
+                // Extract just the filename part for error message
+                const wchar_t* filenameOnly = wFileName.c_str();
+                const wchar_t* lastSlash = wcsrchr(filenameOnly, L'\\');
+                if (lastSlash)
+                    filenameOnly = lastSlash + 1;
+
+                wchar_t buf[1024], tmp[128];
+                swprintf(buf, L"Error: Failed to load dropped preset file: %s", filenameOnly, tmp, 128);
+                g_plugin.AddErrorNotif(buf);
+            }
         }
     }
     DragFinish(hDrop);
@@ -9961,8 +10012,11 @@ retry:
 			// skip "." directory
 			if (wcscmp(fd.cFileName, L".")==0)// || lstrlen(ffd.cFileName) < 1)
 				bSkip = true;
-			else
-				swprintf(szFilename, L"*%s", fd.cFileName);
+            else
+            {
+                swprintf(szFilename, L"*%s", fd.cFileName);
+                g_plugin.m_nCurrentPreset += 1;
+            }
 		}
 		else
 		{
