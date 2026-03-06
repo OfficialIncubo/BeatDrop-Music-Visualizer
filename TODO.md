@@ -24,6 +24,9 @@
 * \[x] Re-precache shaders when it happened a crash (When BeatDrop crashes after loading presets while precaching shaders, the option from .ini file will still stay on and it needs re-precaching after the next run).
 * \[ ] Save screenshot feature (CTRL + X)
 * \[x] Audio sensitivity
+* \[x] Allow drag & drop folder that contains .milk presets
+* \[ ] Screenshot Feature
+* \[ ] Revive color-based decay (decay_r, decay_g, decay_b)
 
 # BETA Features
 
