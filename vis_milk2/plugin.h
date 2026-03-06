@@ -56,7 +56,7 @@ typedef char* CHARPTR;
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 //#define MY_FFT_SAMPLES 512     // for old [pre-vms] milkdrop sound analysis
-#define MY_FFT_SAMPLES 2048
+#define MY_FFT_SAMPLES 1024
 #define MY_FFT_WINDOW MY_FFT_SAMPLES*2
 
 HRESULT DetectSampleRate();
