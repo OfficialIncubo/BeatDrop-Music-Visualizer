@@ -11311,22 +11311,17 @@ void CPlugin::DoCustomSoundAnalysis()
     // Beat Detection Configuration
     // Look at the start of line 10566 for the new beat detection splitting algorithm.
     
-    memcpy(mysound.fWave[0], m_sound.fWaveform[0], sizeof(float)*576);
-    memcpy(mysound.fWave[1], m_sound.fWaveform[1], sizeof(float)*576);
+    memcpy(mysound.fWave[0], m_sound.fWaveform[0], sizeof(float)*MY_FFT_WINDOW);
+    memcpy(mysound.fWave[1], m_sound.fWaveform[1], sizeof(float)*MY_FFT_WINDOW);
 
     // do our own [UN-NORMALIZED] fft
-    static float fWaveLeft[MY_FFT_WINDOW] = { 0 };
-    static float fWaveRight[MY_FFT_WINDOW] = { 0 };
+    float fWaveLeft[MY_FFT_WINDOW];
+    float fWaveRight[MY_FFT_WINDOW];
 
-    // Shift old samples back to make room for the new 576 samples
-    memmove(fWaveLeft, &fWaveLeft[576], sizeof(float) * (MY_FFT_WINDOW - 576));
-    memmove(fWaveRight, &fWaveRight[576], sizeof(float) * (MY_FFT_WINDOW - 576));
-
-    // Append the new 576 samples at the end of the sliding window
-    for (int i = 0; i < 576; i++)
+    for (int i = 0; i < MY_FFT_WINDOW; i++)
     {
-        fWaveLeft[MY_FFT_WINDOW - 576 + i] = m_sound.fWaveform[0][i]; //left channel
-        fWaveRight[MY_FFT_WINDOW - 576 + i] = m_sound.fWaveform[1][i]; //right channel
+        fWaveLeft[i] = m_sound.fWaveform[0][i]; //left channel
+        fWaveRight[i] = m_sound.fWaveform[1][i]; //right channel
     }
 
 	memset(mysound.fSpecLeft, 0, sizeof(float)*MY_FFT_SAMPLES);
