@@ -1248,7 +1248,7 @@ void CPlugin::MyPreInitialize()
     m_szUpdatePresetMask[0] = 0;
     //m_nRatingReadProgress = -1;
 
-    myfft.Init(576, MY_FFT_SAMPLES, -1);
+    myfft.Init(MY_FFT_WINDOW, MY_FFT_SAMPLES, -1);
 	memset(&mysound, 0, sizeof(mysound));
 
     for (int i=0; i<PRESET_HIST_LEN; i++)
@@ -11303,12 +11303,18 @@ void CPlugin::DoCustomSoundAnalysis()
     memcpy(mysound.fWave[1], m_sound.fWaveform[1], sizeof(float)*576);
 
     // do our own [UN-NORMALIZED] fft
-	float fWaveLeft[576];
-    float fWaveRight[576];
-for (int i=0;i<576;i++)
+    static float fWaveLeft[MY_FFT_WINDOW] = { 0 };
+    static float fWaveRight[MY_FFT_WINDOW] = { 0 };
+
+    // Shift old samples back to make room for the new 576 samples
+    memmove(fWaveLeft, &fWaveLeft[576], sizeof(float) * (MY_FFT_WINDOW - 576));
+    memmove(fWaveRight, &fWaveRight[576], sizeof(float) * (MY_FFT_WINDOW - 576));
+
+    // Append the new 576 samples at the end of the sliding window
+    for (int i = 0; i < 576; i++)
     {
-        fWaveLeft[i] = m_sound.fWaveform[0][i]; //left channel
-        fWaveRight[i] = m_sound.fWaveform[1][i]; //right channel
+        fWaveLeft[MY_FFT_WINDOW - 576 + i] = m_sound.fWaveform[0][i]; //left channel
+        fWaveRight[MY_FFT_WINDOW - 576 + i] = m_sound.fWaveform[1][i]; //right channel
     }
 
 	memset(mysound.fSpecLeft, 0, sizeof(float)*MY_FFT_SAMPLES);
