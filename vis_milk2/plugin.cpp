@@ -7265,6 +7265,18 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 		case 'X':
             if (m_UI_mode == UI_REGULAR)
             {
+                if ((GetKeyState(VK_CONTROL) & mask) != 0) {
+                    wchar_t filename[MAX_PATH];
+                    if (CaptureScreenshotWithFilename(filename, MAX_PATH)) {
+                        wchar_t msg[MAX_PATH + 32];
+                        swprintf_s(msg, MAX_PATH + 32, L"Saved screenshot to %s%s", SUBDIR, filename);
+                        AddNotif(msg);
+                    }
+                    else {
+                        AddErrorNotif(L"Failed to save screenshot.");
+                    }
+                    return 0;
+                }
                 keybd_event(VK_MEDIA_PLAY_PAUSE, 0, 0, 0);
                 keybd_event(VK_MEDIA_PLAY_PAUSE, 0, KEYEVENTF_KEYUP, 0);
                 /*
@@ -11751,6 +11763,117 @@ void CPlugin::ShowMissingDirectXMessage()
 bool GetCaptureMicFlag()
 {
     return g_plugin.m_bCaptureMic;
+}
+
+void CPlugin::CaptureScreenshot() {
+    wchar_t filename[MAX_PATH];
+    CaptureScreenshotWithFilename(filename, MAX_PATH);
+}
+
+bool CPlugin::CaptureScreenshotWithFilename(wchar_t* outFilename, size_t outFilenameSize) {
+    LPDIRECT3DDEVICE9EX pDevice = GetDevice();
+    if (!pDevice) {
+        OutputDebugStringW(L"[CaptureScreenshot] ERROR: Device not available\n");
+        return false;
+    }
+
+    // Lock the critical section to prevent the main render thread from 
+    // interfering with our render target while we generate the capture.
+    EnterCriticalSection(&g_cs);
+
+    // Redraw the current visualizer frame strictly without any UI.
+    // This cleanly isolates the renderer output on the render target.
+    PrepareFor2DDrawing(pDevice);
+    RenderFrame(1);
+
+    IDirect3DSurface9* pRenderTarget = nullptr;
+    HRESULT hr = pDevice->GetRenderTarget(0, &pRenderTarget);
+    if (FAILED(hr) || !pRenderTarget) {
+        wchar_t msg[256];
+        swprintf_s(msg, 256, L"CaptureScreenshot: Failed to get render target (HRESULT 0x%08X)", hr);
+        return false;
+    }
+
+    wchar_t presetName[MAX_PATH] = L"unknown";
+    if (m_szCurrentPresetFile[0]) {
+        wchar_t* filenameOnly = wcsrchr(m_szCurrentPresetFile, L'\\');
+        if (filenameOnly) {
+            filenameOnly++;
+        }
+        else {
+            filenameOnly = m_szCurrentPresetFile;
+        }
+
+        wcsncpy_s(presetName, MAX_PATH, filenameOnly, _TRUNCATE);
+
+        wchar_t* ext = wcsrchr(presetName, L'.');
+        if (ext) *ext = L'\0';
+
+        for (wchar_t* p = presetName; *p; p++) {
+            if (*p == L'/' || *p == L':' || *p == L'*' ||
+                *p == L'?' || *p == L'"' || *p == L'<' || *p == L'>' || *p == L'|') {
+                *p = L'_';
+            }
+        }
+    }
+
+    wchar_t captureDir[MAX_PATH];
+    swprintf_s(captureDir, MAX_PATH, L"%s%s", m_szBaseDir, SUBDIR L"screenshots\\");
+
+    wchar_t debugMsg[MAX_PATH + 50];
+    swprintf_s(debugMsg, MAX_PATH + 50, L"[CaptureScreenshot] BaseDir: %s\n", m_szBaseDir);
+    OutputDebugStringW(debugMsg);
+    swprintf_s(debugMsg, MAX_PATH + 50, L"[CaptureScreenshot] CaptureDir: %s\n", captureDir);
+    OutputDebugStringW(debugMsg);
+
+    CreateDirectoryW(captureDir, NULL);
+
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+
+    wchar_t justFilename[MAX_PATH];
+    swprintf_s(justFilename, MAX_PATH, L"BeatDrop-%02d%02d%04d-%02d%02d%02d-%s.png",
+        st.wDay, st.wMonth, st.wYear,
+        st.wHour, st.wMinute, st.wSecond,
+        presetName);
+
+    wchar_t fullPath[MAX_PATH];
+    swprintf_s(fullPath, MAX_PATH, L"%s%s", captureDir, justFilename);
+
+    hr = D3DXSaveSurfaceToFileW(fullPath, D3DXIFF_PNG, pRenderTarget, NULL, NULL);
+
+    wchar_t resultMsg[MAX_PATH + 100];
+    swprintf_s(resultMsg, MAX_PATH + 100, L"[CaptureScreenshot] D3DXSaveSurfaceToFileW result: 0x%08X\n", hr);
+    OutputDebugStringW(resultMsg);
+
+    pRenderTarget->Release();
+
+    // Capture succeeded, release render thread lock.
+    LeaveCriticalSection(&g_cs);
+
+    if (SUCCEEDED(hr)) {
+        wchar_t msg[512];
+        swprintf_s(msg, 512, L"Screenshot saved: %s", fullPath);
+
+        wchar_t successMsg[MAX_PATH + 50];
+        swprintf_s(successMsg, MAX_PATH + 50, L"[CaptureScreenshot] SUCCESS: %s\n", justFilename);
+        OutputDebugStringW(successMsg);
+
+        if (outFilename && outFilenameSize > 0) {
+            wcsncpy_s(outFilename, outFilenameSize, justFilename, _TRUNCATE);
+        }
+        return true;
+    }
+    else {
+        wchar_t msg[256];
+        swprintf_s(msg, 256, L"Failed to save screenshot: HRESULT 0x%08X", hr);
+
+        wchar_t errorMsg[100];
+        swprintf_s(errorMsg, 100, L"[CaptureScreenshot] FAILED: HRESULT 0x%08X\n", hr);
+        OutputDebugStringW(errorMsg);
+
+        return false;
+    }
 }
 
 // =========================================================

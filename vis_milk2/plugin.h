@@ -667,6 +667,8 @@ public:
 	    void		LaunchCustomMessage(int nMsgNum);
 	    void		ReadCustomMessages();
 	    void		LaunchSongTitleAnim();
+        void        CaptureScreenshot();
+        bool        CaptureScreenshotWithFilename(wchar_t* outFilename, size_t outFilenameSize);
 
 	    bool		RenderStringToTitleTexture();
 	    void		ShowSongTitleAnim(/*IDirect3DTexture9* lpRenderTarget,*/ int w, int h, float fProgress);

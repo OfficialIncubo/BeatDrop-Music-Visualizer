@@ -25,7 +25,7 @@
 * \[ ] Save screenshot feature (CTRL + X)
 * \[x] Audio sensitivity
 * \[x] Allow drag & drop folder that contains .milk presets
-* \[ ] Screenshot Feature
+* \[x] Screenshot Feature
 * \[ ] Revive color-based decay (decay_r, decay_g, decay_b)
 
 # BETA Features
