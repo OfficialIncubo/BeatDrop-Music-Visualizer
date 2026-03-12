@@ -615,6 +615,7 @@ SPOUT :
 #include "pluginshell.h"
 #include "utility.h"
 #include "support.h"
+#include "state.h"
 #include "resource.h"
 #include "defines.h"
 #include "shell_defines.h"
@@ -1249,6 +1250,7 @@ void CPlugin::MyPreInitialize()
     //m_nRatingReadProgress = -1;
 
     myfft.Init(MY_FFT_WINDOW, MY_FFT_SAMPLES, -1);
+    myfftshader.Init(MY_FFT_WINDOW, MY_FFT_SAMPLES, 0);
 	memset(&mysound, 0, sizeof(mysound));
 
     for (int i=0; i<PRESET_HIST_LEN; i++)
@@ -2321,6 +2323,9 @@ int CPlugin::AllocateMyDX9Stuff()
     m_fInvAspectX = 1.0f/m_fAspectX;
     m_fInvAspectY = 1.0f/m_fAspectY;
 
+    // Create FFT spectrum texture (512x2, R32F: row0=smoothed, row1=peak hold, updated each frame)
+    GetDevice()->CreateTexture(MY_FFT_SAMPLES, 2, 1, D3DUSAGE_DYNAMIC, D3DFMT_R32F, D3DPOOL_DEFAULT, &m_lpFFTTexture, NULL);
+
 
     // BUILD VERTEX LIST for final composite blit
 	//   note the +0.5-texel offset!
@@ -3370,6 +3375,14 @@ void CShaderParams::CacheParams(LPD3DXCONSTANTTABLE pCT, bool bHardErrors)
                     }
                 }
             #endif
+            else if (!wcscmp(L"fft", szRootName)) {
+                m_texture_bindings[cd.RegisterIndex].texptr = g_plugin.m_lpFFTTexture;
+                m_texcode[cd.RegisterIndex] = TEX_FFT;
+                if (!bWrapFilterSpecified) {
+                    m_texture_bindings[cd.RegisterIndex].bWrap = false;   // clamp
+                    m_texture_bindings[cd.RegisterIndex].bBilinear = true; // linear interpolation between bins
+                }
+            }
             else
             {
                 m_texcode[ cd.RegisterIndex ] = TEX_DISK;
@@ -4199,6 +4212,8 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
     //SafeRelease( m_pFragmentLinker );
 
     // 2. release stuff
+    SafeRelease(m_lpFFTTexture);
+    memset(m_fFFTSmoothed, 0, sizeof(m_fFFTSmoothed));
     SafeRelease(m_lpVS[0]);
     SafeRelease(m_lpVS[1]);
     SafeRelease(m_lpDDSTitle);
@@ -11355,6 +11370,85 @@ void CPlugin::DoCustomSoundAnalysis()
 	myfft.time_to_frequency_domain(fWaveLeft, mysound.fSpecLeft);
     myfft.time_to_frequency_domain(fWaveRight, mysound.fSpecRight);
 	//for (i=0; i<MY_FFT_SAMPLES; i++) fSpecLeft[i] = sqrtf(fSpecLeft[i]*fSpecLeft[i] + fSpecTemp[i]*fSpecTemp[i]);
+
+      // Apply FFT smoothing and upload to GPU texture for get_fft()/get_fft_hz() shader functions
+      // Compute clean (un-equalized) FFT for get_fft()/get_fft_hz() shader functions
+    float fShaderSpecLeft[MY_FFT_SAMPLES];
+    float fShaderSpecRight[MY_FFT_SAMPLES];
+    memset(fShaderSpecLeft, 0, sizeof(float) * MY_FFT_SAMPLES);
+    memset(fShaderSpecRight, 0, sizeof(float) * MY_FFT_SAMPLES);
+    myfftshader.time_to_frequency_domain(fWaveLeft, fShaderSpecLeft);
+    myfftshader.time_to_frequency_domain(fWaveRight, fShaderSpecRight);
+
+    // Apply FFT smoothing and upload to GPU texture
+    {
+        float attack = m_pState->m_fFFTAttack;  // Reads FFT Attack from state
+        float decay  = m_pState->m_fFFTDecay;   // Reads FFT Decay from state
+        const float kNoiseFloor = 0.025f;
+        //const float kVisibleFloor = 0.001f;
+        for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)
+        {
+            float mono = (fShaderSpecLeft[fi] + fShaderSpecRight[fi]) * 0.5f;
+            // Normalize: apply sqrt compression and scale so values land near [0..1]
+            // Raw FFT magnitudes are proportional to FFT size; 0.017f empirically tuned
+            // to match MilkDrop3's get_fft() range at typical listening volumes.
+            mono = mono * 0.000425f;
+
+            mono -= kNoiseFloor;
+            if (mono < 0.0f) mono = 0.0f;
+            // Attenuate low-frequency bins to reduce bass over-accentuation.
+            // Bins below ~215 Hz (bin ~5) are progressively reduced.
+            // The curve ramps from 0.15 at bin 0 to 1.0 at bin 5.
+            if (fi < 5)
+            {
+                float t = fi / 5.0f;
+                float lowcut = 0.15f + 0.85f * (t*t);
+                mono *= lowcut;
+            }
+            if (mono > m_fFFTSmoothed[fi])
+                m_fFFTSmoothed[fi] += (mono - m_fFFTSmoothed[fi]) * attack;
+            else
+            {
+                float decayFactor = (1.0f - decay) * (1.0f - decay);
+                m_fFFTSmoothed[fi] += (mono - m_fFFTSmoothed[fi]) * decayFactor;
+            }
+            /*
+            if (m_fFFTSmoothed[fi] < kVisibleFloor)
+                m_fFFTSmoothed[fi] = 0.0f;
+            */
+        }
+        // Update peak hold: hold for ~0.5 seconds then decay
+        for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)
+        {
+            if (m_fFFTSmoothed[fi] >= m_fFFTPeak[fi])
+            {
+                m_fFFTPeak[fi] = m_fFFTSmoothed[fi];
+                m_nFFTPeakHold[fi] = GetFps(); // FPS-independent; peaks starting to fall after 1 second
+            }
+            else if (m_nFFTPeakHold[fi] > 0)
+                m_nFFTPeakHold[fi]--;
+            else
+            {
+                m_fFFTPeak[fi] *= 0.97f; // ~3% drop per frame, creates that smooth gravity-fall effect
+                //if (m_fFFTPeak[fi] < kVisibleFloor) m_fFFTPeak[fi] = 0.0f;
+            }
+        }
+        if (m_lpFFTTexture)
+        {
+            D3DLOCKED_RECT r;
+            if (D3D_OK == m_lpFFTTexture->LockRect(0, &r, NULL, D3DLOCK_DISCARD))
+            {
+                float* row0 = (float*)r.pBits;
+                float* row1 = (float*)((BYTE*)r.pBits + r.Pitch);
+                for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)
+                {
+                    row0[fi] = m_fFFTSmoothed[fi];
+                    row1[fi] = m_fFFTPeak[fi];
+                }
+                m_lpFFTTexture->UnlockRect(0);
+            }
+        }
+    }
 
 	// DeepSeek - Update the sample rate (we don't need to check HRESULT every frame)
     static DWORD lastCheck = 0;

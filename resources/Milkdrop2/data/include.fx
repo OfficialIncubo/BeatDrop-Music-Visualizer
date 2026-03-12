@@ -118,6 +118,7 @@ float4x3 rot_rand4;
 #define mouse_x _c14.x
 #define mouse_y _c14.y
 #define mouse_pos _c14.xy
+#define mouse_clicked _c14.z
 #define GetMain(uv) (tex2D(sampler_main,uv).xyz)
 #define GetPixel(uv) (tex2D(sampler_main,uv).xyz)
 #define GetBlur1(uv) (tex2D(sampler_blur1,uv).xyz*_c5.x + _c5.y)
@@ -169,3 +170,29 @@ float4 texsize_noisevol_hq;
 sampler2D sampler_blur1;
 sampler2D sampler_blur2;
 sampler2D sampler_blur3;
+
+// FFT audio spectrum texture (512x2, R32F: row0=smoothed, row1=peak hold)
+sampler2D sampler_fft;
+#define texsize_fft float4(512, 2, 1/512, .5)
+#define HAS_FFT_PEAK 1
+
+// Get FFT magnitude at normalized position [0..1] in the spectrum
+// 0.0 = lowest frequency (DC), 1.0 = highest frequency (~22kHz)
+float get_fft(float pos) {
+    return sqrt(tex2D(sampler_fft, float2(saturate(pos), .25)).x);
+}
+
+// Get FFT magnitude at a specific frequency in Hz
+float get_fft_hz(float freq) {
+    return get_fft(freq / 22050.0);
+}
+
+// Get peak-hold FFT magnitude at normalized position [0..1]
+float get_fft_peak(float pos) {
+    return sqrt(tex2D(sampler_fft, float2(saturate(pos), 0.75)).x);
+}
+
+// Get peak-hold FFT magnitude at a specific frequency in Hz
+float get_fft_peak_hz(float freq) {
+    return get_fft_peak(freq / 22050.0);
+}

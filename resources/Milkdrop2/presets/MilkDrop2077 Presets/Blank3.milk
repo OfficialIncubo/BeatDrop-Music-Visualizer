@@ -3,6 +3,8 @@ PSVERSION=3
 PSVERSION_WARP=2
 PSVERSION_COMP=3
 [preset00]
+FFTAttack=0.500
+FFTDecay=0.500
 fRating=4.000
 fGammaAdj=1.460
 fDecay=0.935
@@ -23,7 +25,7 @@ bDarken=1
 bSolarize=0
 bInvert=0
 fWaveAlpha=0.520
-fWaveScale=0.140
+fWaveScale=0.570
 fWaveSmoothing=0.580
 fWaveParam=-0.090
 fModWaveAlphaStart=2.000

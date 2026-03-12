@@ -1,0 +1,191 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 11/03/2026 at 08:53:38.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.235
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`// MilkDrop3.com - Cosmic Iris Full-Range EQ
+warp_2=`
+warp_3=`sampler sampler_rand00;
+warp_4=`
+warp_5=`float3 hsv2rgb(float3 c) {
+warp_6=`    float4 K = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+warp_7=`    float3 p = abs(frac(c.xxx + K.xyz) * 6.0 - K.www);
+warp_8=`    return c.z * lerp(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+warp_9=`}
+warp_10=`
+warp_11=`shader_body
+warp_12=`{
+warp_13=`    float t = time * 0.15;
+warp_14=`    uv = uv_orig;
+warp_15=`
+warp_16=`    // Center coordinates and fix aspect ratio for a perfect circle
+warp_17=`    float2 aspect_texsize = float2(1, texsize.y/texsize.x);
+warp_18=`    float2 c_uv = uv - 0.5;
+warp_19=`    c_uv *= aspect_texsize;
+warp_20=`    
+warp_21=`    float radius = length(c_uv);
+warp_22=`    float angle = atan2(c_uv.y, c_uv.x); // -PI to PI
+warp_23=`    
+warp_24=`    // Normalize angle to 0..1 for symmetric FFT mapping
+warp_25=`    float norm_angle = abs(angle) / 3.14159265;
+warp_26=`    
+warp_27=`    // Map to full range, skipping the absolute highest extremes
+warp_28=`    float fft_pos = 0.02 + norm_angle * 0.90; 
+warp_29=`    
+warp_30=`    // Get active EQ and Peak values
+warp_31=`    float fft_val = get_fft(fft_pos);
+warp_32=`    #if HAS_FFT_PEAK
+warp_33=`    float peak_val = get_fft_peak(fft_pos);
+warp_34=`    #endif
+warp_35=`    
+warp_36=`    // 1. Dynamic Texture / Nebula Background
+warp_37=`    float2 tex_uv = uv * 1.5 + float2(sin(t), cos(t)) * 0.2;
+warp_38=`    float3 nebula = tex2D(sampler_rand00, tex_uv).rgb;
+warp_39=`    
+warp_40=`    // 2. The Iris / EQ Ring Math
+warp_41=`    float base_r = 0.18;
+warp_42=`    float eq_r = base_r + (pow(fft_val, 1.2) * 0.35); // Outward growth
+warp_43=`    #if HAS_FFT_PEAK
+warp_44=`    float peak_r = base_r + (pow(peak_val, 1.2) * 0.35); // Peak markers
+warp_45=`    #endif    
+warp_46=`
+warp_47=`    // Calculate glowing edge of the main ring
+warp_48=`    float ring = 0.008 / (abs(radius - eq_r) + 0.005);
+warp_49=`    
+warp_50=`    // Calculate peak lines
+warp_51=`    #if HAS_FFT_PEAK
+warp_52=`    float peak_ring = 0.003 / (abs(radius - peak_r) + 0.001);
+warp_53=`    peak_ring *= step(eq_r, peak_r); // Only show peaks outside the main ring
+warp_54=`    #endif    
+warp_55=`
+warp_56=`    // 3. Coloring
+warp_57=`    float hue = norm_angle * 1.5 + t; // Shifts color around the circle
+warp_58=`    float3 eq_color = hsv2rgb(float3(hue, 0.85, 1.0));
+warp_59=`    
+warp_60=`    float3 final_color = float3(0.0, 0.0, 0.0);
+warp_61=`    
+warp_62=`    // Combine nebula texture masked by the EQ energy
+warp_63=`    final_color += nebula * ring * eq_color * 1.8;
+warp_64=`    
+warp_65=`    // Add solid peak markers (bright white/cyan with a tint of the eq color)
+warp_66=`    #if HAS_FFT_PEAK
+warp_67=`    final_color += peak_ring * lerp(eq_color, float3(1.0, 1.0, 1.0), 0.7) * (0.5 + peak_val);
+warp_68=`    #endif    
+warp_69=`
+warp_70=`    // Add a pulsing core based on bass frequencies
+warp_71=`    float bassfft = get_fft(0.04);
+warp_72=`    float core = exp(-radius * (25.0 - bassfft * 15.0)) * bassfft;
+warp_73=`    final_color += eq_color * core * 1.5;
+warp_74=`    
+warp_75=`    // 4. Feedback / Motion Blur (Zooming outwards slightly)
+warp_76=`    float2 blur_uv = uv - c_uv * 0.035; 
+warp_77=`    float3 blur_color = tex2D(sampler_main, blur_uv).rgb;
+warp_78=`    
+warp_79=`    // Blend the current generative frame with the zoomed previous frame
+warp_80=`    final_color += blur_color * 0.88; 
+warp_81=`    
+warp_82=`    // Soft limit
+warp_83=`    final_color = saturate(final_color);
+warp_84=`    
+warp_85=`    ret = float4(final_color, 1.0);
+warp_86=`}
+warp_87=`
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    // MilkDrop3 Flip Mode
+comp_4=`    uv = 1.0 - uv;
+comp_5=`    
+comp_6=`    float3 col = tex2D(sampler_main, uv).xyz;
+comp_7=`    
+comp_8=`    // Apply Cinematic Chromatic Aberration
+comp_9=`    float2 d = uv - 0.5;
+comp_10=`    float r = length(d);
+comp_11=`    float amount = r * 0.015; // Distortion gets stronger at edges
+comp_12=`    
+comp_13=`    float3 ab;
+comp_14=`    ab.r = tex2D(sampler_main, uv + d * amount).r;
+comp_15=`    ab.g = col.g;
+comp_16=`    ab.b = tex2D(sampler_main, uv - d * amount).b;
+comp_17=`    
+comp_18=`    // Boost contrast slightly
+comp_19=`    ab = smoothstep(0.0, 0.95, ab);
+comp_20=`    
+comp_21=`    ret = ab * 1.25;
+comp_22=`}

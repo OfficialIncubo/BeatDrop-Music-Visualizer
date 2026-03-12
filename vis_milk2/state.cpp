@@ -556,6 +556,8 @@ void CState::Default(DWORD ApplyFlags)
     {
         m_fRating				= 3.0f;
 	    m_fDecay				= 0.98f;	// 1.0 = none, 0.95 = heavy decay
+		m_fFFTAttack			= 0.5f;
+		m_fFFTDecay				= 0.7f;
 	    m_fGammaAdj				= 2.0f;		// 1.0 = reg; +2.0 = double, +3.0 = triple...
 	    m_fVideoEchoZoom		= 2.0f;
 	    m_fVideoEchoAlpha		= 0.0f;
@@ -924,10 +926,12 @@ bool CState::Export(const wchar_t *szIniFile)
 	fprintf(fOut, "%s=%.3f\n", "fRating",                m_fRating);
 	fprintf(fOut, "%s=%.3f\n", "fGammaAdj",              m_fGammaAdj.eval(-1));
 	fprintf(fOut, "%s=%.3f\n", "fDecay",                 m_fDecay.eval(-1));
+	fprintf(fOut, "%s=%.3f\n", "FFTAttack",				 m_fFFTAttack);
+	fprintf(fOut, "%s=%.3f\n", "FFTDecay",				 m_fFFTDecay);
 	fprintf(fOut, "%s=%.3f\n", "fVideoEchoZoom",         m_fVideoEchoZoom.eval(-1));
 	fprintf(fOut, "%s=%.3f\n", "fVideoEchoAlpha",        m_fVideoEchoAlpha.eval(-1));
-	fprintf(fOut, "%s=%d\n", "nVideoEchoOrientation",  m_nVideoEchoOrientation);
 
+	fprintf(fOut, "%s=%d\n", "nVideoEchoOrientation",  m_nVideoEchoOrientation);
 	fprintf(fOut, "%s=%d\n", "nWaveMode",              m_nWaveMode);
 	fprintf(fOut, "%s=%d\n", "bAdditiveWaves",         m_bAdditiveWaves);
 	fprintf(fOut, "%s=%d\n", "bWaveDots",              m_bWaveDots);
@@ -1373,6 +1377,8 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
     {
         m_fRating				= GetFastFloat("fRating",m_fRating,f);
 	    m_fDecay                = GetFastFloat("fDecay",m_fDecay.eval(-1),f);
+		m_fFFTAttack			= GetFastFloat("FFTAttack", m_fFFTAttack, f);
+		m_fFFTDecay				= GetFastFloat("FFTDecay", m_fFFTDecay, f);
 	    m_fGammaAdj             = GetFastFloat("fGammaAdj" ,m_fGammaAdj.eval(-1),f);
 	    m_fVideoEchoZoom        = GetFastFloat("fVideoEchoZoom",m_fVideoEchoZoom.eval(-1),f);
 	    m_fVideoEchoAlpha       = GetFastFloat("fVideoEchoAlpha",m_fVideoEchoAlpha.eval(-1),f);

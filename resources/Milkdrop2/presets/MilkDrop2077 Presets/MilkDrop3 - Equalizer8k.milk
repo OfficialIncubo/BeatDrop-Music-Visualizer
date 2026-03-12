@@ -1,0 +1,201 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=2
+[preset00]
+FFTAttack=0.500
+FFTDecay=0.700
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.235
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=mv_r = mv_r + 0.2*( 0.60*sin(0.980*time) + 0.40*sin(1.047*time) );
+per_frame_2=mv_g = mv_g + 0.2*( 0.60*sin(0.835*time) + 0.40*sin(1.081*time) );
+per_frame_3=mv_b = mv_b + 0.2*( 0.60*sin(0.814*time) + 0.40*sin(1.011*time) );
+per_frame_4=q1 = (cx*2-1) + 0.6*( 0.60*sin(0.374*time) + 0.40*sin(0.294*time) );
+per_frame_5=q2 = (cy*2-1) + 0.6*( 0.60*sin(0.393*time) + 0.40*sin(0.223*time) );
+per_frame_6=ob_r = 1- 0.4*abs(q1);
+per_frame_7=ob_g = 0.3*abs(q2);
+per_frame_8=ob_b = 0.4*abs(q1);
+per_frame_9=wave_x = 1-abs(q2)-0.05;
+per_frame_10=wave_y = 1-abs(q1)-0.056;
+per_frame_11=wave_r = wave_r + 0.4*( 0.60*sin(0.514*time) + 0.40*sin(1.211*time) );
+per_frame_12=wave_b = wave_b + 0.4*( 0.60*sin(0.714*time) + 0.40*sin(q2) );
+per_frame_13=wave_g = wave_g + 0.4*( 0.60*sin(10*q1) + 0.40*sin(10*q2) );
+per_pixel_1=zoom = zoom + 0.06*sin(rad*12 + ang*3 + time*-3.4)*(1-rad);
+per_pixel_2=rot = rot * (1-rad);
+warp_1=`#define bar_width 0.1
+warp_2=`#define bar_spacing 0.005
+warp_3=`#define bar_height_scale 1.5
+warp_4=`#define num_bars 32.0
+warp_5=`#define num_blocks 64.0
+warp_6=`#define block_spacing 0.003
+warp_7=`#define glow_strength 0.015
+warp_8=`
+warp_9=`float3 hsv2rgb(float3 c) {
+warp_10=`    float4 K = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+warp_11=`    float3 p = abs(frac(c.xxx + K.xyz) * 6.0 - K.www);
+warp_12=`    return c.z * lerp(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+warp_13=`}
+warp_14=`
+warp_15=`shader_body
+warp_16=`{
+warp_17=`    float t = time * 0.5;
+warp_18=`    float2 fragCoord = uv_orig * texsize.xy;
+warp_19=`    // Use normalized 0-1 coordinates
+warp_20=`    uv = fragCoord.xy / texsize.xy;
+warp_21=`    float3 color = float3(0.0, 0.0, 0.0);
+warp_22=`    float3 glow = float3(0.0, 0.0, 0.0);
+warp_23=`
+warp_24=`    // Calculate bar width including spacing to fill the screen
+warp_25=`    float total_unit = 1.0 / num_bars;
+warp_26=`    float actual_bar_width = total_unit - bar_spacing;
+warp_27=`
+warp_28=`    // FFT range: skip first 5% and last 15% to avoid extremes
+warp_29=`    float fft_start = 0.05;
+warp_30=`    float fft_end = 0.85;
+warp_31=`    float fft_range = fft_end - fft_start;
+warp_32=`
+warp_33=`    // Block height calculations
+warp_34=`    float block_height = (1.0 / num_blocks) - block_spacing;
+warp_35=`
+warp_36=`    // Render each bar
+warp_37=`    for (float i = 0.0; i < num_bars; i += 1.0) {
+warp_38=`        float bar_x_start = i * total_unit + bar_spacing * 0.5;
+warp_39=`        float bar_x_end = bar_x_start + actual_bar_width;
+warp_40=`
+warp_41=`        // Map bar index to FFT range (avoiding extremes)
+warp_42=`        float fft_pos = fft_start + (i / num_bars) * fft_range;
+warp_43=`
+warp_44=`        // Get FFT value and scale it
+warp_45=`        float fft_val = get_fft(fft_pos);
+warp_46=`        float bar_h = fft_val * bar_height_scale;
+warp_47=`
+warp_48=`        // Calculate which blocks should be lit based on bar height
+warp_49=`        float num_lit_blocks = bar_h * num_blocks;
+warp_50=`
+warp_51=`        // Color for this bar
+warp_52=`        float hue = (i / num_bars) * 0.8 + t * 0.1;
+warp_53=`
+warp_54=`        // Check if pixel is inside bar horizontally
+warp_55=`        if (uv.x >= bar_x_start && uv.x < bar_x_end) {
+warp_56=`            // Render blocks from bottom to top
+warp_57=`            for (float b = 0.0; b < num_blocks; b += 1.0) {
+warp_58=`                float block_y_start = (b / num_blocks) + block_spacing * 0.5;
+warp_59=`                float block_y_end = block_y_start + block_height;
+warp_60=`
+warp_61=`                // Check if this block should be lit (from bottom up)
+warp_62=`                if (b < num_lit_blocks) {
+warp_63=`                    // Check if pixel is within this block (measured from bottom)
+warp_64=`                    if (uv.y >= block_y_start && uv.y < block_y_end) {
+warp_65=`                        // Vary brightness based on block height - much brighter
+warp_66=`                        float brightness = 0.85 + (b / num_blocks) * 0.15;
+warp_67=`
+warp_68=`                        // Maximum saturation for vivid colors
+warp_69=`                        color = hsv2rgb(float3(hue, 1.0, brightness));
+warp_70=`                    }
+warp_71=`                }
+warp_72=`            }
+warp_73=`        }
+warp_74=`
+warp_75=`        // Add glow effect around bars
+warp_76=`        if (num_lit_blocks > 0.0) {
+warp_77=`            // Calculate distance to bar center
+warp_78=`            float bar_x_center = (bar_x_start + bar_x_end) * 0.5;
+warp_79=`            float bar_top = (num_lit_blocks / num_blocks) + block_spacing * 0.5;
+warp_80=`
+warp_81=`            float dist_x = abs(uv.x - bar_x_center) - actual_bar_width * 0.5;
+warp_82=`            float dist_y = max(0.0, uv.y - bar_top);
+warp_83=`            float dist = sqrt(dist_x * dist_x + dist_y * dist_y);
+warp_84=`
+warp_85=`            // Create glow falloff
+warp_86=`            float glow_intensity = exp(-dist / glow_strength) * fft_val * 0.5;
+warp_87=`            glow_intensity = max(0.0, glow_intensity);
+warp_88=`
+warp_89=`            // Add glow color
+warp_90=`            glow += hsv2rgb(float3(hue, 1.0, 1.0)) * glow_intensity;
+warp_91=`        }
+warp_92=`    }
+warp_93=`
+warp_94=`    // Combine solid color and glow
+warp_95=`    color += glow;
+warp_96=`
+warp_97=`    // Apply gamma correction
+warp_98=`    if (length(color) > 0.0) {
+warp_99=`        color = pow(color, float3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));
+warp_100=`    }
+warp_101=`
+warp_102=`    float4 fragColor = float4(color, 1.0);
+warp_103=`    ret = fragColor;
+warp_104=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`//MilkDrop3 Flip Mode:
+comp_4=`uv = 1-uv;
+comp_5=`ret = tex2D(sampler_main, uv).xyz;
+comp_6=`}

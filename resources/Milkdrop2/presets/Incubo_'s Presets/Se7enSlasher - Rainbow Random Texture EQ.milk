@@ -1,0 +1,154 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 10/03/2026 at 19:50:39.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000
+fGammaAdj=1.500
+fDecay=0.950
+FFTAttack=1.000
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.500
+fWaveParam=0.000
+fModWaveAlphaStart=1.000
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`// Import the random noise texture
+warp_2=`sampler sampler_rand00;
+warp_3=`
+warp_4=`#define NUM_BARS 64.0
+warp_5=`#define BAR_SPACING 0.006
+warp_6=`#define FFT_START 0.02
+warp_7=`#define FFT_END 0.85
+warp_8=`#define HEIGHT_SCALE 1.6
+warp_9=`
+warp_10=`float3 hsv2rgb(float3 c) {
+warp_11=`    float4 K = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+warp_12=`    float3 p = abs(frac(c.xxx + K.xyz) * 6.0 - K.www);
+warp_13=`    return c.z * lerp(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+warp_14=`}
+warp_15=`
+warp_16=`shader_body
+warp_17=`{
+warp_18=`    uv = uv_orig;
+warp_19=`    float3 color = float3(0.0, 0.0, 0.0);
+warp_20=`
+warp_21=`    float total_unit = 1.0 / NUM_BARS;
+warp_22=`    float bar_coord = uv.x / total_unit;
+warp_23=`    float bar_index = floor(bar_coord);
+warp_24=`    float bar_local = frac(bar_coord);
+warp_25=`
+warp_26=`    // Symmetric bar spacing
+warp_27=`    float spacing_norm = BAR_SPACING / total_unit;
+warp_28=`    float is_bar = step(spacing_norm * 0.5, bar_local) * step(bar_local, 1.0 - spacing_norm * 0.5);
+warp_29=`
+warp_30=`    // Use the new MilkDrop3 FFT and Peak variables
+warp_31=`    float fft_pos = lerp(FFT_START, FFT_END, bar_index / NUM_BARS);
+warp_32=`    float fft_val = get_fft(fft_pos) * HEIGHT_SCALE;
+warp_33=`
+warp_34=`    #if HAS_FFT_PEAK
+warp_35=`    float peak_val = get_fft_peak(fft_pos) * HEIGHT_SCALE;
+warp_36=`    #endif
+warp_37=`
+warp_38=`    // Texture mapping for the "plasma" effect
+warp_39=`    float2 tex_uv = uv;
+warp_40=`    tex_uv.x = 1-tex_uv.x;
+warp_41=`    float3 rand_tex = tex2D(sampler_rand00, -tex_uv).rgb;
+warp_42=`
+warp_43=`    // Masks for shapes
+warp_44=`    float in_main = step(uv.y, fft_val);
+warp_45=`
+warp_46=`    #if HAS_FFT_PEAK
+warp_47=`    float peak_dist = abs(uv.y - peak_val);
+warp_48=`    float in_peak = step(peak_dist, 0.008); // Thickness of the peak line
+warp_49=`    #endif
+warp_50=`
+warp_51=`    // Rainbow hue shifted dynamically over time
+warp_52=`    float hue = (bar_index / NUM_BARS) * 0.8 + time * 0.15;
+warp_53=`    float3 base_color = hsv2rgb(float3(hue, 0.9, 1.0));
+warp_54=`
+warp_55=`    float mask_main = is_bar * in_main;
+warp_56=`
+warp_57=`    #if HAS_FFT_PEAK
+warp_58=`    float mask_peak = is_bar * in_peak;
+warp_59=`    #endif
+warp_60=`
+warp_61=`    // Combine base EQ with the random plasma texture
+warp_62=`    color += mask_main * base_color * (rand_tex.r * 1.8 + 0.2);
+warp_63=`    
+warp_64=`    #if HAS_FFT_PEAK
+warp_65=`    // Add bright, solid white peak indicators floating on top
+warp_66=`    color += mask_peak * float3(1.0, 1.0, 1.0);
+warp_67=`    #endif
+warp_68=`
+warp_69=`    ret = float4(color, 1.0);
+warp_70=`}
+comp_1=`shader_body
+comp_2=`{uv.y = 1-uv.y; ret = GetPixel(uv);}

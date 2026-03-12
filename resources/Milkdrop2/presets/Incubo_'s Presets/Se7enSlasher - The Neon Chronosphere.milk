@@ -1,0 +1,205 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 11/03/2026 at 09:07:59.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.000
+fWaveSmoothing=0.000
+fWaveParam=0.000
+fModWaveAlphaStart=0.000
+fModWaveAlphaEnd=0.000
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`sampler sampler_rand00;
+warp_2=`
+warp_3=`float3 hsv2rgb(float3 c) {
+warp_4=`    float4 K = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+warp_5=`    float3 p = abs(frac(c.xxx + K.xyz) * 6.0 - K.www);
+warp_6=`    return c.z * lerp(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+warp_7=`}
+warp_8=`
+warp_9=`shader_body {
+warp_10=`    float2 aspect_texsize = float2(1, texsize.y/texsize.x);
+warp_11=`    float t = time * 0.8;
+warp_12=`    float2 c_uv = (uv_orig - 0.5) * aspect_texsize;
+warp_13=`    float a = atan2(c_uv.y, c_uv.x);
+warp_14=`    float r = length(c_uv);
+warp_15=`    
+warp_16=`    // 1. Octagon Tunnel Math
+warp_17=`    float seg = 3.14159265 * 0.25; // 2PI / 8 sides
+warp_18=`    float r_oct = r * cos(floor(0.5 + a / seg) * seg - a);
+warp_19=`    
+warp_20=`    // 3D Depth Projection (z goes into the screen)
+warp_21=`    float z = 0.35 / r_oct;
+warp_22=`    
+warp_23=`    // --- BACKGROUND TUNNEL WALLS ---
+warp_24=`    // 1.2732 = 4/PI, maps the angle perfectly to an 8-column grid
+warp_25=`    float2 tun_uv = float2(a * 1.2732, z - t); 
+warp_26=`    
+warp_27=`    // Grid System
+warp_28=`    float2 id = floor(tun_uv * float2(4.0, 8.0)); // 8 total columns around, 8 depth chunks
+warp_29=`    float2 local = frac(tun_uv * float2(4.0, 8.0));
+warp_30=`    
+warp_31=`    // Frequency mapping based on the tunnel panel column (id.x)
+warp_32=`    float freq = clamp(abs(fmod(id.x, 8.0)) / 8.0, 0.02, 0.95);
+warp_33=`    float fft = get_fft(freq);
+warp_34=`    #if HAS_FFT_PEAK
+warp_35=`    float peak = get_fft_peak(freq);
+warp_36=`    #endif
+warp_37=`
+warp_38=`    // Panel Borders & Circuit Texture
+warp_39=`    float border = smoothstep(0.0, 0.05, local.x) * smoothstep(1.0, 0.95, local.x) *
+warp_40=`                   smoothstep(0.0, 0.05, local.y) * smoothstep(1.0, 0.95, local.y);
+warp_41=`    float3 circuit = tex2D(sampler_rand00, tun_uv * 0.5).rgb;
+warp_42=`    
+warp_43=`    // Base Wall Color
+warp_44=`    float hue = freq + t * 0.1;
+warp_45=`    float3 panel_col = hsv2rgb(float3(hue, 0.9, 1.0));
+warp_46=`    float3 final_col = panel_col * border * circuit * (0.2 + fft * 2.5);
+warp_47=`    
+warp_48=`    // --- FLOATING EQ BARS (3D Parallax Layer) ---
+warp_49=`    // We shift Z based on FFT to make the bars visually fly off the walls toward the camera
+warp_50=`    float z_float = z - fft * 1.5;
+warp_51=`    if (z_float > 0.0) {
+warp_52=`        float2 float_uv = float2(a * 1.2732, z_float - t);
+warp_53=`        float2 f_id = floor(float_uv * float2(4.0, 8.0));
+warp_54=`        float2 f_local = frac(float_uv * float2(4.0, 8.0));
+warp_55=`        
+warp_56=`        float f_freq = clamp(abs(fmod(f_id.x, 8.0)) / 8.0, 0.02, 0.95);
+warp_57=`        float f_fft = get_fft(f_freq);
+warp_58=`        
+warp_59=`        // Thinner floating boxes
+warp_60=`        float f_border = smoothstep(0.2, 0.3, f_local.x) * smoothstep(0.8, 0.7, f_local.x) *
+warp_61=`                         smoothstep(0.2, 0.3, f_local.y) * smoothstep(0.8, 0.7, f_local.y);
+warp_62=`        
+warp_63=`        // Only draw floating bars if they belong to an active frequency
+warp_64=`        if (f_fft > 0.15) {
+warp_65=`            final_col += hsv2rgb(float3(f_freq + t, 0.6, 1.0)) * f_border * f_fft * 4.0;
+warp_66=`        }
+warp_67=`    }
+warp_68=`    
+warp_69=`    // --- PEAK FLASH ---
+warp_70=`    // Creates a lightning-like strike on the panel when it hits its peak hold
+warp_71=`    #if HAS_FFT_PEAK
+warp_72=`    if (peak > 0.85) {
+warp_73=`        float flash = exp(-abs(local.y - 0.5) * 12.0);
+warp_74=`        final_col += float3(1.0, 1.0, 1.0) * border * flash * peak * 1.5;
+warp_75=`    }
+warp_76=`    #endif
+warp_77=`    
+warp_78=`    // Distance Fog (Fade to black deep in the tunnel)
+warp_79=`    final_col *= smoothstep(12.0, 2.0, z);
+warp_80=`    
+warp_81=`    // --- CENTRAL CORE ---
+warp_82=`    float bassfft = get_fft(0.01);
+warp_83=`    float core_glow = 0.01 / (r + 0.01);
+warp_84=`    float core_solid = smoothstep(0.08 + bassfft*0.05, 0.07 + bassfft*0.05, r);
+warp_85=`    float3 core_col = hsv2rgb(float3(t*0.2, 0.8, 1.0));
+warp_86=`    final_col += core_col * core_glow * bassfft;
+warp_87=`    final_col += float3(1.0, 1.0, 1.0) * core_solid * (0.5 + bassfft);
+warp_88=`    
+warp_89=`    // --- FEEDBACK TRAILS ---
+warp_90=`    // Zoom the previous frame slightly based on the bass drop to create speed lines
+warp_91=`    float2 blur_uv = uv_orig + (c_uv * 0.015 * bassfft); 
+warp_92=`    float3 prev = tex2D(sampler_main, blur_uv).rgb;
+warp_93=`    
+warp_94=`    // Dynamic trail clearing: Trails are long, but clear out instantly on heavy bass kicks
+warp_95=`    float trail_length = clamp(0.88 - bassfft * 0.3, 0.5, 0.9);
+warp_96=`    ret = saturate(final_col + prev * trail_length);
+warp_97=`}
+comp_1=`shader_body {
+comp_2=`    uv = 1.0 - uv; // MilkDrop3 standard flip fix
+comp_3=`    float2 c_uv = uv - 0.5;
+comp_4=`    float d = length(c_uv);
+comp_5=`    
+comp_6=`    // --- BASS-DRIVEN CHROMATIC ABERRATION ---
+comp_7=`    // Use the exact 60Hz frequency for perfect kick-drum detection
+comp_8=`    float kick = get_fft_hz(60.0);
+comp_9=`    
+comp_10=`    // Distortion gets stronger at the edges and flares heavily on the kick drum
+comp_11=`    float amount = d * (0.01 + kick * 0.06);
+comp_12=`    
+comp_13=`    float3 col;
+comp_14=`    col.r = tex2D(sampler_main, uv + c_uv * amount).r;
+comp_15=`    col.g = tex2D(sampler_main, uv).g;
+comp_16=`    col.b = tex2D(sampler_main, uv - c_uv * amount).b;
+comp_17=`    
+comp_18=`    // Smooth Vignette
+comp_19=`    col *= smoothstep(0.8, 0.2, d);
+comp_20=`    
+comp_21=`    // Cinematic Contrast Boost
+comp_22=`    col = smoothstep(0.0, 0.9, col);
+comp_23=`    col = pow(col, float3(0.8, 0.8, 0.8)) * 1.15;
+comp_24=`    
+comp_25=`    ret = float4(col, 1.0);
+comp_26=`}
