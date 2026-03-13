@@ -108,7 +108,7 @@ warp_25=`shader_body
 warp_26=`{
 warp_27=`    // Original UV for random sampling
 warp_28=`    float2 uv_orig_local = uv_orig;
-warp_29=`    uv_orig_local.y = 1-uv_orig_local.y;
+warp_29=`
 warp_30=`    
 warp_31=`    // Setup 3D perspective
 warp_32=`    float aspect = texsize.x / texsize.y;
@@ -225,10 +225,8 @@ warp_142=`    ret = float4(color, 1.0);
 warp_143=`}
 comp_1=`shader_body
 comp_2=`{
-comp_3=`    // Flip for MilkDrop3 compatibility
-comp_4=`    uv = 1.0 - uv;
-comp_5=`    ret = tex2D(sampler_main, uv).xyz;
-comp_6=`    
-comp_7=`    // Slight brightness boost
-comp_8=`    ret *= 1.2;
-comp_9=`}
+comp_3=`    ret = tex2D(sampler_main, uv).xyz;
+comp_4=`    
+comp_5=`    // Slight brightness boost
+comp_6=`    ret *= 1.2;
+comp_7=`}

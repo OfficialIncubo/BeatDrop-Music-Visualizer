@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 11/03/2026 at 12:07:14.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 12/03/2026 at 11:49:31.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -105,7 +105,7 @@ warp_22=`    // --- 2. 3D SUBWOOFER GENERATOR ---
 warp_23=`    // Define speaker radii
 warp_24=`    float frame_r = 0.20;
 warp_25=`    float surround_r = 0.20 + pump;
-warp_26=`    float cone_r = 0.15 + pump;
+warp_26=`    float cone_r = 0.15 + pump * .5;
 warp_27=`    float cap_r = 0.05 + pump * 1.15; // Dust cap moves the most
 warp_28=`
 warp_29=`    // Anti-aliased circle masks

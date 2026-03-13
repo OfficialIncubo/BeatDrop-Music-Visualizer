@@ -1,0 +1,417 @@
+<html><head><style>body {
+   color: black;
+}
+</style></head><body><h1 id="milkdrop-preset-expression-syntax">Milkdrop Preset Expression Syntax</h1>
+<p>This document contains a full writeup of the expression syntax in Milkdrop presets. It documents the general syntax,
+available operators and functions and also any specific, non-obvious behaviours. Any differences between Milkdrop&#39;s
+original parser and projectM&#39;s are also documented where applicable.</p>
+<p>This document does <em>not</em> cover the <code>warp_</code> and <code>comp_</code> shader code blocks. The shader code is written in DirectX HLSL,
+which is better explained by Microsoft&#39;s documentation in the MSDN.</p>
+<p>The document also doesn&#39;t cover the different code blocks, predefined variables and scope of the special t/q values.
+Please refer to the preset authoring guide for these.</p>
+<h2 id="general-syntax">General Syntax</h2>
+<p>The expression language only knows a few syntactic features:</p>
+<ul>
+<li>Numbers, with or without decimals. Can also contain a base 10 exponent using the <code>e[+-]n</code> notation.</li>
+<li>Variables to hold a single number, both user-defined and predefined. May contain characters a-z, 0-9 and the
+underscore (<code>_</code>), while 0-9 must not be the first letter.</li>
+<li>Special constants beginning with <code>$</code>.</li>
+<li>A single expression, separated from other expressions in the same list via semicolons (<code>;</code>), with the last semicolon
+being optional.</li>
+<li>Calls to built-in functions in the form <code>func(arg1, arg2, ...)</code>.</li>
+<li>Mathematical, assignment and other operators.</li>
+<li>Subscript access <code>[]</code> for megabuf/gmegabuf access.</li>
+<li>Parentheses (<code>()</code>) to group statements and override precedence.</li>
+<li>In-line comments starting with <code>//</code> until the end of the current line</li>
+<li>Multi-line comments starting with <code>/*</code> and ended with <code>*/</code>.</li>
+</ul>
+<h3 id="return-types">Return Types</h3>
+<p>Expressions can return either a numeric value or a reference to a variable or memory location. What is actually returned
+is determined by the function or operator that is executed last. If the expression only consists or a single token, then
+the following applies:</p>
+<ul>
+<li>If the expression token is a constant number (<code>1.0;</code>), the number is returned by value.</li>
+<li>If the expression token is a variable name (<code>x;</code>), a reference to the variable is returned.</li>
+</ul>
+<p>For most functions, the return type doesn&#39;t matter. If it&#39;s a reference, the value pointed to by the reference is used.
+References only behave differently when used on the left side of assignments or in the forst argument of the  <code>assign()</code>
+function. In this case, the variable or (g)megabuf location the reference points to is assigned a new value.</p>
+<h3 id="expression-result">Expression Result</h3>
+<p>Every expression returns its outermost result, as a value or reference as described above. When writing multiple
+expressions (separated by semicolon) in a list, the result of the <em>rightmost</em> (or last) expression is returned. The
+results of previous expressions are discarded.</p>
+<p>In general, each expression will be in the form <code>var = expression;</code>, assigning a value to the given variable (or
+megabuf index). Expressions will also always return a value, so when used as function arguments, this value will be
+used. For example, all the following statements will call the <code>sin()</code> function with the argument <code>4</code>:</p>
+<pre><code><span class="hljs-attribute">x</span> = sin(val = 2 * 2);
+<span class="hljs-attribute">y</span> = sin(2 + 2);
+<span class="hljs-attribute">z</span> = sin(4.0);
+</code></pre><h3 id="variable-and-function-names-limits">Variable and Function Names, Limits</h3>
+<p>Variable and function names are generally case-insensitve, making <code>variable</code> equivalent to <code>vArIaBlE</code>.</p>
+<p>Any text in expressions - starting with either a letter from a to z or an underscore, followed by more of these
+characters and also numbers from 0 to 9 - is first checked to be a built-in function. If it is not a function, the
+parser will interpret it as a variable.</p>
+<p>Functions always need to be followed by parentheses (<code>sin(expr)</code>), while variables must not.</p>
+<p>Milkdrop imposes a 16-character limit on variable names. projectm-eval does not have a hard limit, but it&#39;s advisable to
+not use more than 16 characters for Milkdrop compatibility.</p>
+<p>Milkdrop also has a limit of 64 user-defined variables, which also isn&#39;t applied by projectm-eval.</p>
+<h4 id="global-register-variables">Global &quot;Register&quot; Variables</h4>
+<p>In addition to gmegabuf, there are an additional 100 variables which can be used to store global values. These variables
+are named <code>reg00</code>, <code>reg01</code> etc. up to <code>reg99</code>. Values stored in those variables are available in al execution contexts,
+in the same way as gmegabuf.</p>
+<p>Note the index must always be written with two digits. <code>reg3</code> is <em>not</em> considered a global variable and will only have a
+local scope as any other variable. The same is true for more digits like <code>reg123</code>.</p>
+<p>Same as with gmegabuf, global variables are not necessarily <code>0</code> when a preset is initialized and they can change at any
+time when two presets using the same global variables are blended during a transition.</p>
+<h3 id="operator-precedence">Operator Precedence</h3>
+<p>Operator precedence is defined in a similar way as in C, with the expection of the <code>^</code> operator, which has a different
+meaning in Milkdrop presets (pow() instead of binary XOR).</p>
+<p>See the <a href="https://en.cppreference.com/w/c/language/operator_precedence">C precedence table on cppreference.com</a> for
+details. The pow operator is applied just after the unary plus/minus operators, having a slightly lower precedence.</p>
+<h3 id="subscript-access">Subscript Access</h3>
+<p>The subscript operator or &quot;array access operator&quot; has a slightly different meaning than in other programming languages.
+The Milkdrop expression syntax only knows a single data type, individual numbers, so there are no arrays.</p>
+<p>If any index value is not an integer, it is <em>rounded</em> to the nearest integer after calculating the final index (e.g.
+adding index and offset first, then rounding).</p>
+<p>The subscript operator is instead used to address memory locations in megabuf and gmegabuf. There are three possible
+syntax variants:</p>
+<h4 id="global-memory-access">Global Memory Access</h4>
+<p>Accessing the gmegabuf is possible by using the special keyword <code>gmem</code>, followed by an index in the subscript brackets.
+The following statement sets gmegabuf location 10.000 to the current value of <code>x</code>:</p>
+<pre><code><span class="hljs-attr">gmem[10000]</span> = x;
+</code></pre><p>Any memory index from 0 to 8.388.607 (= 128 * 65536) can be addressed.</p>
+<h4 id="local-memory-access">Local Memory Access</h4>
+<p>Accessing the current context memory buffer (megabuf) can be done by writing the index before a set of empty brackets.
+The following example is analogous to the above, but it sets index 10.000 of the local memory instead:</p>
+<pre><code><span class="hljs-attr">10000[]</span> = x;
+</code></pre><h4 id="local-memory-access-with-offset">Local Memory Access with Offset</h4>
+<p>An optional offset can be provided in the brackets, which is simply added to the index on the outside. The following
+example will set memory index 10.123 to the value of <code>x</code>:</p>
+<pre><code><span class="hljs-attr">10000[123]</span> = x;
+</code></pre><p>Both index and offset values can of course be calculated with expressions. So the following expression is valid:</p>
+<pre><code>if(x &gt; <span class="hljs-number">5</span>,<span class="hljs-number">5000</span>,<span class="hljs-number">1000</span>)[(sin(y) + <span class="hljs-number">1</span> * <span class="hljs-number">.5</span>) * <span class="hljs-number">1000</span>] = z;
+</code></pre><h3 id="using-parentheses">Using Parentheses</h3>
+<p>Parentheses can be used to specify a specific order in which operations are executed. Expressions inside parentheses are
+always evaluated, and the result of the evaluation is then uses to evaluate any outside expression.</p>
+<p>Inside parentheses, using expression lists is also valid. The result is, as described above, the value of the last
+expression in the list. For example, the following expression will use <code>5</code> as the return value:</p>
+<pre><code><span class="hljs-attr">x</span> = a * (b + c; d + e; <span class="hljs-number">2</span> + <span class="hljs-number">3</span>);
+</code></pre><p>The first two operations will do nothing, as they don&#39;t set a variable or memory value and the results are discarded.</p>
+<h3 id="comments">Comments</h3>
+<p>For more complex calculations, it might be a good idea to leave some comments in the expressions to describe what&#39;s done
+in a specific line or block. Comments can also be useful to quickly disable a line or block of code to try out things
+when writing a preset.</p>
+<p>Comments can be used as end-of-line or block variants:</p>
+<pre><code>x = sin(5); // This <span class="hljs-keyword">comment</span> <span class="hljs-keyword">is</span> <span class="hljs-keyword">only</span> valid <span class="hljs-keyword">until</span> the line ends
+y = <span class="hljs-keyword">sin</span>($<span class="hljs-keyword">PI</span> * <span class="hljs-number">.5</span>); <span class="hljs-comment">/* This comment
+spans
+multiple
+lines and the following expression is executed: */</span> z = 5;
+</code></pre><p>Comments can appear inside any expression, but <em>not</em> within a variable, function name, number or other constant.
+Writing <code>x = var/*comment*/iable;</code> is invalid (but <code>x = sin/*comment*/(variable);</code> is).</p>
+<h2 id="operators">Operators</h2>
+<p>The following operators can be used in expressions.</p>
+<h3 id="mathematical-operators">Mathematical Operators</h3>
+<p>These operators carry out basic mathematical operations.</p>
+<ul>
+<li><code>+</code>: Adds both operands.</li>
+<li><code>-</code>: Subtracts the right operand from the left.</li>
+<li><code>*</code>: Multiplies both operands.</li>
+<li><code>/</code>: Divides the left operand by the right. If the divisor is zero, the result of the operation is <code>0</code> instead
+of <code>Inf</code>.</li>
+<li><code>%</code>: Converts the operands to integers and returns the remainder of the left by the right operand.</li>
+<li><code>^</code>: Calculates the left operand to the power of the right operand.</li>
+</ul>
+<h3 id="equality-operators">Equality Operators</h3>
+<p>These operators check for equality or inequality of the operands and return a boolean result:</p>
+<ul>
+<li><code>==</code>: Equal. Returns <code>1</code> if both operands are equal, <code>0</code> if not.</li>
+<li><code>!=</code>: Not equal. Returns <code>1</code> if both operands are not equal, <code>0</code> if they are.</li>
+<li><code>&lt;</code>: Below. Returns <code>1</code> if the left operand is below the right operand, <code>0</code> otherwise.</li>
+<li><code>&gt;</code>: Above. Returns <code>1</code> if the left operand is above the right operand, <code>0</code> otherwise.</li>
+<li><code>&lt;=</code>: Below or equal. Returns <code>1</code> if the left operand is below or equal to the right operand, <code>0</code> otherwise.</li>
+<li><code>&gt;=</code>: Above or equal. Returns <code>1</code> if the left operand is above or equal to the right operand, <code>0</code> otherwise.</li>
+</ul>
+<h3 id="binary-arithmetic-operators">Binary Arithmetic Operators</h3>
+<p>The following operators allow to carry out bitwise operations on integer representations of the operands:</p>
+<ul>
+<li><code>&amp;</code>: Converts both arguments to integers and calculates the bitwise AND between the resulting operands.</li>
+<li><code>|</code>: Converts both arguments to integers and calculates the bitwise OR between the resulting operands.</li>
+</ul>
+<h3 id="boolean-operators">Boolean Operators</h3>
+<p>Boolean operators only check an operand to be zero or non-zero, then return the according result:</p>
+<ul>
+<li><code>&amp;&amp;</code>: Returns <code>1</code> if both operands are non-zero and <code>0</code> if any operand is zero.</li>
+<li><code>||</code>: Returns <code>1</code> if one or both operands are non-zero and <code>0</code> if both operands are zero.</li>
+<li><code>!</code>: Unary operator. Returns <code>1</code> if the operand is zero and <code>0</code> if the operand is non-zero.</li>
+<li><code>a ? b : c</code>: The ternary operator. Evaluates the <code>a</code> operand and evaluates and returns the <code>b</code> operand if the
+condition is non-zero. If the condition evaluates to zero, only the <code>c</code> operand is evaluated and returned.</li>
+</ul>
+<h3 id="assignment-operators">Assignment Operators</h3>
+<p>Assignment operators can simply assign the result of the right-hand side to a variable or megabuf index, or in case of
+compound operators <code>a OP= b</code> also carry out an additional operation equivalent to <code>a = a OP B</code>. All assignment operators
+return a reference to the left operand.</p>
+<ul>
+<li><code>=</code>: Assigns the value of the right operand to the left operand.</li>
+<li><code>+=</code>: Adds the value of the right operand to the left operand and assigns the result to the left operand.</li>
+<li><code>-=</code>: Subtracts the value of the right operand from the left operand and assigns the result to the left operand.</li>
+<li><code>*=</code>: Multiplies the value of the right operand with the left operand and assigns the result to the left operand.</li>
+<li><code>/=</code>: Divides the left operand by the value of the right operand and assigns the result to the left operand. If the
+divisor is zero, the result of the operation is <code>0</code> instead of <code>Inf</code>.</li>
+<li><code>%=</code>: Calculates the remainder of the rounded integer values of the left operand divided by the right operand and
+assigns the result to the left operand. If the divisor is <code>0</code>, the result will also be <code>0</code>.</li>
+<li><code>^=</code>: Calculates the left operand to the power of the right operand and assigns the result to the left operand.</li>
+<li><code>&amp;=</code>: Calculates the binary AND of the rounded integer values of the left and right operands and assigns the result to
+the left operand.</li>
+<li><code>|=</code>: Calculates the binary OR of the rounded integer values of the left and right operands and assigns the result to
+the left operand.</li>
+</ul>
+<h3 id="subscript-operator">Subscript Operator</h3>
+<p>The subscript - or index - operator <code>[]</code> is a special notation to access megabuf and gmegabuf. If the inside of the
+brackets is empty, it is interpreted as a <code>0</code>. For more details, see the &quot;Subscript Access&quot; section above.</p>
+<h2 id="built-in-functions">Built-in Functions</h2>
+<p>The following functions are built into the expression parser and can be used in all Milkdrop 2.x presets.</p>
+<h3 id="above-left-right-">above(left, right)</h3>
+<p>Returns <code>1</code> if <code>left</code> has a larger value than <code>right</code>, otherwise <code>0</code>.</p>
+<p>Same as the <code>&gt;</code> operator.</p>
+<h3 id="abs-val-">abs(val)</h3>
+<p>Returns the absolute (positive) value of <code>val</code>.</p>
+<h3 id="acos-val-">acos(val)</h3>
+<p>Calculates and returns the arc cosine (inverse cosine) of <code>val</code>. The angle is interpreted as radians.</p>
+<h3 id="asin-val-">asin(val)</h3>
+<p>Calculates and returns the arc sine (inverse sine) of <code>val</code>. The angle is interpreted as radians.</p>
+<h3 id="assign-dest-val-">assign(dest, val)</h3>
+<p>Assign <code>val</code> to the reference pointed by <code>dest</code> and return <code>dest</code>. If <code>dest</code> is not a reference, the result is the
+<em>value</em> of <code>val</code>.</p>
+<p>Same as the assignment operator <code>=</code>.</p>
+<h3 id="atan-val-">atan(val)</h3>
+<p>Calculates and returns the arc tangent (inverse tangent) of <code>val</code>. The angle is interpreted as radians.</p>
+<h3 id="atan2-x-y-">atan2(x, y)</h3>
+<p>Calculates and returns the polar coordinate angle associated with the coordinate represented by <code>x,y</code>. The angle is
+returned as radians.</p>
+<p>See the <a href="https://en.wikipedia.org/wiki/Atan2">Wikipedia definition of atan2</a> for details.</p>
+<h3 id="band-left-right-">band(left, right)</h3>
+<p>Evaluates both arguments and returns <code>1</code> if both arguments evaluate to a non-zero value and <code>0</code> if at least one argument
+is zero.</p>
+<p>Note: The boolean AND operator <code>&amp;&amp;</code> returns the same result, but only evaluates the second argument if the first one is
+not zero!</p>
+<h3 id="below-left-right-">below(left, right)</h3>
+<p>Returns <code>1</code> if <code>left</code> has a smaller value than <code>right</code>, otherwise <code>0</code>.</p>
+<p>Same as the <code>&lt;</code> operator.</p>
+<h3 id="bnot-val-">bnot(val)</h3>
+<p>Boolean NOT operator. Returns <code>1</code> if <code>val</code> is <code>0</code>, otherwise <code>0</code>.</p>
+<p>Same as the <code>!</code> operator.</p>
+<h3 id="bor-left-right-">bor(left, right)</h3>
+<p>Evaluates both arguments and returns <code>1</code> if at least one argument evaluates to a non-zero value and <code>0</code> if both
+arguments are zero.</p>
+<p>Note: The boolean OR operator <code>||</code> returns the same result, but only evaluates the second argument if the first one is
+zero!</p>
+<h3 id="ceil-val-">ceil(val)</h3>
+<p>Rounds the value of <code>val</code> to the next <em>larger</em> integer number in reference to <code>0</code>.</p>
+<h3 id="cos-val-">cos(val)</h3>
+<p>Calculates and returns the cosine of <code>val</code>. The angle is interpreted as radians.</p>
+<h3 id="equal-left-right-">equal(left, right)</h3>
+<p>Compares both values and returns <code>1</code> of they are equal or <code>0</code>if not.</p>
+<p>Same as the <code>==</code> operator.</p>
+<h3 id="exec2-expr1-expr2-">exec2(expr1, expr2)</h3>
+<p>Executes both expressions and returns the result of the second one.</p>
+<h3 id="exec3-expr1-expr2-expr3-">exec3(expr1, expr2, expr3)</h3>
+<p>Executes all three expressions in order and returns the result of the third one.</p>
+<h3 id="exp-val-">exp(val)</h3>
+<p>Exponential function with base <code>e</code> to the power of <code>val</code>.</p>
+<p>Equivalent to the expression <code>$E ^ val</code>.</p>
+<h3 id="floor-val-">floor(val)</h3>
+<p>Rounds the value of <code>val</code> to the next <em>smaller</em> integer number in reference to <code>0</code>.</p>
+<h3 id="freembuf-index-">freembuf(index)</h3>
+<p>Requests freeing all memory blocks in <code>megabuf</code> (NOT <code>gmegabuf</code>) beginning with the block <code>index</code> is in. This may result
+in memory being freed before the given index.</p>
+<p><strong>Note:</strong> This function is currently a no-op in both Milkdrop and projectM. It does <em>not</em> actually free any memory or
+reset the memory contents.</p>
+<p>Memory blocks are 65536 entries large, and there is a total of 128 blocks.</p>
+<h3 id="gmegabuf-index-">gmegabuf(index)</h3>
+<p>Returns a reference to the storage location of <code>index</code> in the global memory buffer.</p>
+<p>Any memory index from 0 to 8.388.607 (= 128 * 65536) can be addressed. Any index outside of this range will return the
+fixed <em>value</em> <code>0</code>, and no memory is changed when assigning another value to it.</p>
+<h3 id="if-cond-trueval-falseval-">if(cond, trueval, falseval)</h3>
+<p>Evaluates <code>cond</code>, and returns <code>trueval</code> if the result is non-zero. Otherwise, <code>falseval</code> is returned.</p>
+<p>If either <code>trueval</code> or <code>falseval</code> evaluate to a reference, the reference is passed through. Thus, assigning a value to
+the result of <code>if()</code> is possible:</p>
+<p><code>if(x &gt; 5, a, b) = 10;</code> will assign <code>10</code> to <code>a</code>  if <code>x &gt; 5</code> and to <code>b</code> if <code>x &lt;= 5</code>.</p>
+<h3 id="int-val-">int(val)</h3>
+<p>Truncates any decimals from <code>val</code>, effectively converting it into an integer.</p>
+<h3 id="invsqrt-val-">invsqrt(val)</h3>
+<p>Calculates the <a href="https://en.wikipedia.org/wiki/Fast_inverse_square_root">fast inverse square root</a> of <code>val</code>.</p>
+<h3 id="log-val-">log(val)</h3>
+<p>Calculates and returns the (&quot;natural&quot;) logarithm to base <code>e</code> of <code>val</code>.</p>
+<h3 id="log10">log10</h3>
+<p>Calculates and returns the logarithm to base 10 of <code>val</code>.</p>
+<h3 id="loop-count-expr-">loop(count, expr)</h3>
+<p>Executes <code>expr</code> exactly <code>count</code> times.</p>
+<p>As mentioned in the grammar section, <code>expr</code> can also consist of multiple expressions separated by semicolon. this is
+also true for <code>count</code>, but expressions in this argument are only evaluated once before the first loop iteration starts.</p>
+<p>The loop will always abort after 2^20 (~1 million) iterations.</p>
+<p>Be careful when nesting loops, as the loop count and associated run time will grow exponentially with each nesting
+level, which can hang up the application.</p>
+<h3 id="max-val1-val2-">max(val1, val2)</h3>
+<p>Returns the larger of the two <em>values</em> of <code>val1</code> and <code>val2</code>.</p>
+<h3 id="megabuf-index-">megabuf(index)</h3>
+<p>Returns a reference to the storage location of <code>index</code> in the local memory buffer.</p>
+<p>Any memory index from 0 to 8.388.607 (= 128 * 65536) can be addressed. Any index outside of this range will return the
+fixed <em>value</em> <code>0</code>, and no memory is changed when assigning another value to it.</p>
+<h3 id="memcpy-dest-src-count-">memcpy(dest, src, count)</h3>
+<p>Copies <code>count</code> values starting at <code>src</code> to <code>dest</code>.</p>
+<p>Memory areas are allowed to overlap.</p>
+<p>Any source or destination memory falls outside the allowed indices of 0 to 8.388.607, the range is trimmed accordingly
+and only a data block is copied that fits into both areas.</p>
+<h3 id="memset-dest-value-count-">memset(dest, value, count)</h3>
+<p>Fills <code>count</code> number of memory slots beginning at <code>dest</code> with <code>value</code>.</p>
+<p>If the range falls outside the allowed indices of 0 to 8.388.607, the range is trimmed accordingly.</p>
+<p>This function is <em>way</em> faster than setting individual values to 0 in a <code>loop()</code> and should be preferred if a larger
+memory block needs to be initialized or reset with a single number.</p>
+<h3 id="min-val1-val2-">min(val1, val2)</h3>
+<p>Returns the smaller of the two <em>values</em> of <code>val1</code> and <code>val2</code>.</p>
+<h3 id="pow-base-exp-">pow(base, exp)</h3>
+<p>Calculates <code>base</code> to the power of <code>exp</code> and returns the resulting value.</p>
+<h3 id="rand-max-">rand(max)</h3>
+<p>Calculates a pseudo-random number (using the Mersenne-Twister algorithm) between 0 and <code>max</code>.</p>
+<p><code>max</code> can be a floating-point value.</p>
+<h3 id="sigmoid-a-b-">sigmoid(a, b)</h3>
+<p>Calculates the logistic curve with an argument of <code>(-a * b)</code> and returns the result.</p>
+<p>This is equivalent to the expression <code>tmp = 1 + pow($E, (-a + b)); if(tmp &gt; 0.00001, 1 / tmp, 0);</code>.</p>
+<h3 id="sign-val-">sign(val)</h3>
+<p>Returns the signage of <code>val</code>, which is <code>-1</code> for negative values, <code>1</code> for positive values and <code>0</code> for <code>0</code>.</p>
+<h3 id="sin">sin</h3>
+<p>Calculates and returns the sine of <code>val</code>. The angle is interpreted as radians.</p>
+<h3 id="sqr-val-">sqr(val)</h3>
+<p>Calculates and returns the square of <code>val</code>.</p>
+<p>This is equivalent to the expression <code>val * val</code>.</p>
+<h3 id="sqrt-val-">sqrt(val)</h3>
+<p>Calculates and returns the square root of <code>val</code>.</p>
+<h3 id="tan-val-">tan(val)</h3>
+<p>Calculates and returns the tangent of <code>val</code>. The angle is interpreted as radians.</p>
+<h3 id="while-expr-">while(expr)</h3>
+<p>Executes <code>expr</code> at least once and loops until it returns <code>0</code>.</p>
+<p><code>expr</code> can be a semicolon-separated list of expressions. Only the return value of the last expression in the list is
+used to determine the loop abort condition.</p>
+<p>The loop will always abort after 2^20 (~1 million) iterations.</p>
+<p>Be careful when nesting loops, as the loop count and associated run time will grow exponentially with each nesting
+level, which can hang up the application.</p>
+<h3 id="internal-functions-and-aliases">Internal Functions and Aliases</h3>
+<p>The following functions are defined internally, some being aliases to the above functions, others being used as actual
+implementations of operators. Deoending on the operator being unary or binary, each function has one or two parameters.</p>
+<ul>
+<li>_aboeq =&gt; Operator <code>&gt;=</code></li>
+<li>_above =&gt; Operator <code>&gt;</code></li>
+<li>_add =&gt; Operator <code>+</code></li>
+<li>_addop =&gt; Operator <code>+=</code></li>
+<li>_and =&gt; Operator <code>&amp;&amp;</code></li>
+<li>_andop =&gt; Operator <code>&amp;=</code></li>
+<li>_beleq =&gt; Operator <code>&lt;=</code></li>
+<li>_below =&gt; Operator <code>&lt;</code></li>
+<li>_div =&gt; Operator <code>/</code></li>
+<li>_divop =&gt; Operator <code>/=</code></li>
+<li>_equal =&gt; Operator <code>==</code></li>
+<li>_gmem =&gt; Alias for <code>gmegabuf</code></li>
+<li>_if =&gt; Operator <code>?:</code>, alias for <code>if</code></li>
+<li>_mem =&gt; Alias for <code>megabuf</code></li>
+<li>_mod =&gt; Operator <code>%</code></li>
+<li>_modop =&gt; Operator <code>%=</code></li>
+<li>_mul =&gt; Operator <code>*</code></li>
+<li>_mulop =&gt; Operator <code>*=</code></li>
+<li>_neg =&gt; Negation operator <code>-</code></li>
+<li>_not =&gt; Operator <code>!</code></li>
+<li>_noteq =&gt; Operator <code>!=</code></li>
+<li>_or =&gt; Operator <code>||</code></li>
+<li>_orop =&gt; Operator <code>|=</code></li>
+<li>_powop =&gt; Operator <code>^=</code></li>
+<li>_set =&gt; Operator <code>=</code>, alias for <code>assign</code></li>
+<li>_sub =&gt; Operator <code>-</code></li>
+<li>_subop =&gt; Operator <code>-=</code></li>
+</ul>
+<h3 id="externally-defined-functions">Externally-defined Functions</h3>
+<p>Be aware that if this parser is used in other projects or non-Milkdrop-compatible presets, additional functions may be
+defined which can&#39;t be used as variable names. One example are the additional <code>getosc</code> and <code>getspec</code> functions defined
+in AVS.</p>
+<h2 id="memory-buffers">Memory Buffers</h2>
+<p>Each execution context has two associated memory buffers, a local buffer and a global buffer. Each buffer can hold up to
+2^23 (8.388.608) individual floating-point numbers which can be addressed via their zero-based index.</p>
+<p>The local buffer is only valid within the same execution context. In classic Milkdrop, there are these contexts, each of
+which having its own <code>megabuf</code>:</p>
+<ul>
+<li>The global per-frame context (<code>per_frame_init_</code> and <code>per_frame_</code>)</li>
+<li>The per-vertex/per-pixel mesh context (<code>per_pixel_</code>)</li>
+<li>The wave per-frame context, one per waveform (<code>wave_N_init</code> and <code>wave_N_per_frame</code>)</li>
+<li>The wave per-point context, one per waveform (<code>wave_N_per_point</code>)</li>
+<li>The shape per-frame context, one per shape (<code>shape_N_init</code> and <code>shape_N_per_frame</code>)</li>
+</ul>
+<p>The global memory buffer, referred to as <code>gmegabuf</code>, only exists once and is used for <em>all</em> execution contexts. It is
+even shared between different Milkdrop presets. Keep this in mind when using the buffer, as the contents may be changed
+by another preset during the transition phase!</p>
+<p>Local buffers always start empty and return zero for all indices when being accessed the first time. The global buffer
+will also start this way, but is never reset. Code using the global megabuf should initialize the required indices with
+known values.</p>
+<p>Memory is allocated in blocks of 64K (65.536) values each, with a total of 128 of such blocks per buffer. When using
+memory indices, ideally keep the indices close together to allocate only a minimum number of blocks and save the user&#39;s
+RAM resources.</p>
+<h3 id="setting-large-blocks-of-memory-to-a-certain-value">Setting Large Blocks of Memory to a Certain Value</h3>
+<p>If a larger memory region needs to be initialized with a single value, e.g. resetting a part of <code>gmegabuf</code>, assigning
+single values in a <code>loop</code> is time-consuming. The <code>memset</code> function can be used to achieve the same result in a very fast
+operation. Calling the following function will reset values 10.000 to 19.999 to <code>5</code>:</p>
+<pre><code>memset(<span class="hljs-number">10000</span>, <span class="hljs-number">5</span>, <span class="hljs-number">10000</span>);
+</code></pre><h3 id="copying-moving-a-range-of-data">Copying/Moving a Range of Data</h3>
+<p>Sometimes it&#39;s required to copy or move a continuous block of values, e.g. moving data from previous frames left and
+adding a new set of data points at the end. This can be done in a <code>loop</code>, but again is very time-consuming. The <code>memcpy</code>
+function is able to perform this operation in a single call. It also supports moving memory in overlapping areas - the
+original contents are first copied into a temporary buffer, then written to the new location. To move data forward in a
+1000-value large block by 100 indices, with the block starting at index 5000 looks like this:</p>
+<pre><code>memcpy(<span class="hljs-number">5000</span>, <span class="hljs-number">5100</span>, <span class="hljs-number">900</span>);
+</code></pre><p>The last 100 values will appear twice in the block, while the first 100 got overwritten.</p>
+<h2 id="caveats-and-tricks">Caveats and Tricks</h2>
+<p>For most uses, the expression language is quite straightforward to use. Due to the implementation, users can take
+advantage of some features while they need to be aware of a few details that may cause problems.</p>
+<h3 id="using-references">Using References</h3>
+<p>As mentioned in the sections above, some functions may or may not return variable or memory references. It is, in any
+case, valid to assign a value to any other value, even a constant. So while the following statement doesn&#39;t do anything
+useful, it is valid:</p>
+<pre><code>assign(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>);
+</code></pre><p>The function itself will return the value <code>2</code> as expected, but the actual assignment is discarded.</p>
+<p>Other constructs are more helpful, for example to choose between two or more variables to assign a value to. The
+following code will assign <code>10</code> to either <code>a</code>, <code>b</code> or <code>c</code> depending on the value of <code>x</code>:</p>
+<pre><code>assign(<span class="hljs-name">if</span>(<span class="hljs-name">x</span> &lt; <span class="hljs-number">0</span>, a, if(<span class="hljs-name">x</span> &gt; <span class="hljs-number">0</span>), c, b), <span class="hljs-number">10</span>)<span class="hljs-comment">;</span>
+</code></pre><p>This works because <code>if</code> will pass the result of the appropriate true/false expression, which can be a reference to a
+variable. In the above example, it would also be valid to return <code>0</code> instead of <code>b</code> is no assignment is wanted, but
+the <code>assign()</code> function should still return the value 10 in any case.</p>
+<p>The last example can also be written in the assignment form, with <code>if()</code> as the left operand:</p>
+<pre><code>if(<span class="hljs-name">x</span> &lt; <span class="hljs-number">0</span>, a, if(<span class="hljs-name">x</span> &gt; <span class="hljs-number">0</span>), c, b) = <span class="hljs-number">10</span><span class="hljs-comment">;</span>
+</code></pre><h3 id="conditions-in-if-and-while-">Conditions in <code>if</code> and <code>while</code></h3>
+<p>A few functions check a condition to execute a certain instruction. For example, <code>if</code> decides whether to use the true or
+false argument, and <code>while</code> uses the value of the last expression to check if the loop should abort.</p>
+<p>Due to how floating-point numbers work in computers, not all calculations may return exactly <code>0.0</code>, even when using
+simple constants. The reason is that some numbers can&#39;t be exactly represented by the binary number used by the CPU and
+needs to be slightly modified. Using such a number in math equations may even increase the error, and the result might
+never be exactly zero.</p>
+<p>To make the expression work as intended, one of the following approaches may be used, depending on what is required:</p>
+<ol>
+<li>If only the integer part of the value is of interest, use <code>int(val)</code> to truncate any decimals.</li>
+<li>Round the result to the nearest integer with <code>round(val)</code> if the error can be larger than <code>0.5</code>.</li>
+<li>Compare the absolute value of the number to be smaller/larger than the allowed error, e.g. <code>abs(val) &gt; 0.0001</code></li>
+</ol>
+<p>The boolean comparison operators (<code>&lt;</code>, <code>==</code> etc.) will always return either <code>0.0</code> or <code>1.0</code>, which don&#39;t need to be
+rounded and can be used directly for the condition check. Using those operators should always be preferred over directly
+passing a calculated variable value as the conditional.</p>
+<h3 id="performance">Performance</h3>
+<p>While execution of the compiled programs is generally quite fast, some functions and code constructs can heavily impact
+the performance, especially on low-end and embedded devices like the Raspberry Pi. To make presets available to a broad
+audience, keep the following considerations in mind:</p>
+<ul>
+<li>Keep code in the <code>per_pixel_</code> block small and fast. If possible, perform CPU-intensive work in the <code>per_frame_</code> block
+and store the result in the <code>q</code> variables (or <code>gmegabuf</code> if required).</li>
+<li>The same is true for instanced shape and waveform <code>per_point</code> code.</li>
+<li>Do not overuse <code>loop</code> and <code>while</code>, especially avoid nesting them. If they are required, make sure the abort condition
+on the <code>while</code> loop is not affected by rounding errors. Try not to calculate heavy stuff inside a loop.</li>
+<li>Some math functions, specifically trigonometrical ones like <code>sin</code> and also <code>sqrt</code>, are expensive. Try to cache and
+reuse values instead of recalculating them multiple times.</li>
+<li>Try not to use <code>megabuf</code> and <code>gmegabuf</code> for everything. Normal variables, including the global <code>regNN</code>, have less
+overhead, as they do not require the additional memory allocation checking and address calculation.</li>
+</ul>
+</body></html>
