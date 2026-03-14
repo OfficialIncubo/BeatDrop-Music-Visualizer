@@ -11391,6 +11391,18 @@ void CPlugin::DoCustomSoundAnalysis()
     myfftshader.time_to_frequency_domain(fWaveLeft, fShaderSpecLeft);
     myfftshader.time_to_frequency_domain(fWaveRight, fShaderSpecRight);
 
+    float fftScaling = 0.000425f;
+    float frameSum = 0;
+    for (int i = 0; i < MY_FFT_SAMPLES; i++)
+        frameSum += (fShaderSpecLeft[i] + fShaderSpecRight[i]) * 0.5f;
+    float frameAvg = (frameSum / MY_FFT_SAMPLES) * fftScaling;
+    static float s_fFFTAvgLoudness = 0.05f;
+    float l_speed = (frameAvg > s_fFFTAvgLoudness) ? 0.10f : 0.02f;
+    s_fFFTAvgLoudness += (frameAvg - s_fFFTAvgLoudness) * l_speed;
+    float dynamicGain = 0.07f / (s_fFFTAvgLoudness + 0.001f);
+    if (dynamicGain > 10.0) dynamicGain = 10.0f;
+    if (dynamicGain < 0.2f) dynamicGain = 0.2f;
+
     // Apply FFT smoothing and upload to GPU texture
     {
         float attack = m_pState->m_fFFTAttack;  // Reads FFT Attack from state
@@ -11403,7 +11415,7 @@ void CPlugin::DoCustomSoundAnalysis()
             // Normalize: apply sqrt compression and scale so values land near [0..1]
             // Raw FFT magnitudes are proportional to FFT size; 0.017f empirically tuned
             // to match MilkDrop3's get_fft() range at typical listening volumes.
-            mono = mono * 0.000425f;
+            mono = mono * fftScaling * dynamicGain;
 
             mono -= kNoiseFloor;
             if (mono < 0.0f) mono = 0.0f;
