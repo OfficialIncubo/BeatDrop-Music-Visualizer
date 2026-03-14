@@ -28,6 +28,7 @@ Highlights:
 # FOR MACOS USERS
 
 Sorry, I have not tested running BeatDrop on a MacOS, but you can try running it with [Parallels Desktop](https://www.parallels.com) or [similar virtualization tools](https://www.youtube.com/watch?v=dHnw-K1-Ui8), such as [UTM (known as Universal Turing Machine)](https://mac.getutm.app)
+
 ...or check the [MacOS Port fork](https://github.com/padresb/BeatDrop-Music-Visualizer-MacOS)
 
 # FEATURES
