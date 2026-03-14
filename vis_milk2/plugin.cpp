@@ -2323,9 +2323,11 @@ int CPlugin::AllocateMyDX9Stuff()
     m_fInvAspectX = 1.0f/m_fAspectX;
     m_fInvAspectY = 1.0f/m_fAspectY;
 
-    // Create FFT spectrum texture (512x2, R32F: row0=smoothed, row1=peak hold, updated each frame)
+    // Create FFT spectrum texture (FFT Samplesx2, R32F: row0=smoothed, row1=peak hold, updated each frame)
     GetDevice()->CreateTexture(MY_FFT_SAMPLES, 2, 1, D3DUSAGE_DYNAMIC, D3DFMT_R32F, D3DPOOL_DEFAULT, &m_lpFFTTexture, NULL);
 
+    // Create Waveform texture (Waveform Samplesx2, R32F: row0=left, row1=right, updated each frame)
+    GetDevice()->CreateTexture(NUM_WAVEFORM_SAMPLES, 2, 1, D3DUSAGE_DYNAMIC, D3DFMT_R32F, D3DPOOL_DEFAULT, &m_lpWaveTexture, NULL);
 
     // BUILD VERTEX LIST for final composite blit
 	//   note the +0.5-texel offset!
@@ -3383,6 +3385,14 @@ void CShaderParams::CacheParams(LPD3DXCONSTANTTABLE pCT, bool bHardErrors)
                     m_texture_bindings[cd.RegisterIndex].bBilinear = true; // linear interpolation between bins
                 }
             }
+            else if (!wcscmp(L"wave", szRootName)) {
+                m_texture_bindings[cd.RegisterIndex].texptr = g_plugin.m_lpWaveTexture;
+                m_texcode[cd.RegisterIndex] = TEX_WAVE;
+                if (!bWrapFilterSpecified) {
+                    m_texture_bindings[cd.RegisterIndex].bWrap = false;   // clamp
+                    m_texture_bindings[cd.RegisterIndex].bBilinear = true; // linear interpolation between samples
+                }
+            }
             else
             {
                 m_texcode[ cd.RegisterIndex ] = TEX_DISK;
@@ -4213,6 +4223,7 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
 
     // 2. release stuff
     SafeRelease(m_lpFFTTexture);
+    SafeRelease(m_lpWaveTexture);
     memset(m_fFFTSmoothed, 0, sizeof(m_fFFTSmoothed));
     SafeRelease(m_lpVS[0]);
     SafeRelease(m_lpVS[1]);
@@ -11446,6 +11457,25 @@ void CPlugin::DoCustomSoundAnalysis()
                     row1[fi] = m_fFFTPeak[fi];
                 }
                 m_lpFFTTexture->UnlockRect(0);
+            }
+        }
+
+        // Upload Waveform data to GPU texture
+        if (m_lpWaveTexture)
+        {
+            D3DLOCKED_RECT r;
+            if (D3D_OK == m_lpWaveTexture->LockRect(0, &r, NULL, D3DLOCK_DISCARD))
+            {
+                float* row0 = (float*)r.pBits;
+                float* row1 = (float*)((BYTE*)r.pBits + r.Pitch);
+                for (int wi = 0; wi < 512; wi++)
+                {
+                    // Raw waveform values from Winamp range from -128 to +127. 
+                    // We divide by 128.0f to normalize them to a nice [-1.0 ... 1.0] float range for shaders.
+                    row0[wi] = m_sound.fWaveform[0][wi] / 128.0f;
+                    row1[wi] = m_sound.fWaveform[1][wi] / 128.0f;
+                }
+                m_lpWaveTexture->UnlockRect(0);
             }
         }
     }

@@ -173,7 +173,6 @@ sampler2D sampler_blur3;
 
 // FFT audio spectrum texture (512x2, R32F: row0=smoothed, row1=peak hold)
 sampler2D sampler_fft;
-#define texsize_fft float4(512, 2, 1/512, .5)
 #define HAS_FFT_PEAK 1
 
 // Get FFT magnitude at normalized position [0..1] in the spectrum
@@ -195,4 +194,24 @@ float get_fft_peak(float pos) {
 // Get peak-hold FFT magnitude at a specific frequency in Hz
 float get_fft_peak_hz(float freq) {
     return get_fft_peak(freq / 22050.0);
+}
+
+// Waveform audio texture (Waveform Samplesx2, R32F: row0=left, row1=right)
+sampler2D sampler_wave;
+
+// Get mono waveform sample at normalized position [0..1]
+float get_wave(float pos) {
+    float left = tex2D(sampler_wave, float2(saturate(pos), 0.25)).x;
+    float right = tex2D(sampler_wave, float2(saturate(pos), 0.75)).x;
+    return (left + right) * 0.5;
+}
+
+// Get left channel waveform sample at normalized position [0..1]
+float get_wave_left(float pos) {
+    return tex2D(sampler_wave, float2(saturate(pos), 0.25)).x;
+}
+
+// Get right channel waveform sample at normalized position [0..1]
+float get_wave_right(float pos) {
+    return tex2D(sampler_wave, float2(saturate(pos), 0.75)).x;
 }

@@ -4880,6 +4880,8 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
             lpDevice->SetTexture(i, m_lpVS[0]);
 		else if (p->m_texcode[i] == TEX_FFT)
 			lpDevice->SetTexture(i, m_lpFFTTexture);
+		else if (p->m_texcode[i] == TEX_WAVE)
+			lpDevice->SetTexture(i, m_lpWaveTexture);
         else
             lpDevice->SetTexture(i, p->m_texture_bindings[i].texptr);
 

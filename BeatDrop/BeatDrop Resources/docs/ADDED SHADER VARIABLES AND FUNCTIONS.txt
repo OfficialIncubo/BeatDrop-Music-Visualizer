@@ -15,7 +15,12 @@ Note that both mouse coordinates return -1 when the pointer is outside the windo
 If you want to really use with mouse down/click events, just pass these per-frame variables mentioned above to q variables and then assign mouse.z or mouse.w with any q variable you assigned (e.g. mouse.z = (any q var);).
 
 FFT shader variables from MilkDrop3:
-get_fft() - Gets FFT of the normalized position [0...1]; 0.0 = lowest frequency (DC), 1.0 = highest frequency (~22kHz)
-get_fft_hz() - Gets FFT at the specified frequency in hz
-get_fft_peak() - Gets FFT peak hold of the normalized position [0...1]; 0.0 = lowest frequency (DC), 1.0 = highest frequency (~22kHz)
-get_fft_peak_hz() - Gets FFT peak hold at the specified frequency in hz
+get_fft() - Gets FFT data at a normalized position [0...1]; 0.0 = lowest frequency (DC), 1.0 = highest frequency (~22kHz)
+get_fft_hz() - Gets FFT data at the specified frequency in hz
+get_fft_peak() - Gets FFT peak hold data at a normalized position [0...1]; 0.0 = lowest frequency (DC), 1.0 = highest frequency (~22kHz)
+get_fft_peak_hz() - Gets FFT peak hold data at the specified frequency in hz
+
+Wave shader variables:
+get_wave() - Gets mono waveform data at a normalized position [0...1]
+get_wave_left() - Gets the left channel of the waveform data at a normalized position [0...1]
+get_wave_right() - Gets the right channel of the waveform data at a normalized position [0...1]
