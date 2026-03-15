@@ -564,6 +564,7 @@ public:
         CMilkMenu	  m_menuCustomShape;
         CMilkMenu	  m_menuMotion;
         CMilkMenu	  m_menuPost;
+        CMilkMenu     m_menuFFTShader;
         CMilkMenu    m_menuWavecode[MAX_CUSTOM_WAVES];
         CMilkMenu    m_menuShapecode[MAX_CUSTOM_SHAPES];
         bool         m_bShowShaderHelp;

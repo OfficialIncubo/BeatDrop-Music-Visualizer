@@ -8195,6 +8195,7 @@ void CPlugin::BuildMenus()
 	m_menuWave       .Init(wasabiApiLangString(IDS_DRAWING_SIMPLE_WAVEFORM));
 	m_menuAugment    .Init(wasabiApiLangString(IDS_DRAWING_BORDERS_MOTION_VECTORS));
 	m_menuPost       .Init(wasabiApiLangString(IDS_POST_PROCESSING_MISC));
+    m_menuFFTShader  .Init(wasabiApiLangString(IDS_MENU_FFT_SHADER));
     for (int i=0; i<MAX_CUSTOM_WAVES; i++)
     {
         swprintf(buf, wasabiApiLangString(IDS_CUSTOM_WAVE_X), i+1);
@@ -8216,6 +8217,7 @@ void CPlugin::BuildMenus()
     m_menuPreset.AddChildMenu(&m_menuWave);
     m_menuPreset.AddChildMenu(&m_menuAugment);
     m_menuPreset.AddChildMenu(&m_menuPost);
+    m_menuPreset.AddChildMenu(&m_menuFFTShader);
 
     for (i=0; i<MAX_CUSTOM_SHAPES; i++)
 	    m_menuCustomShape.AddChildMenu(&m_menuShapecode[i]);
@@ -8335,6 +8337,9 @@ void CPlugin::BuildMenus()
 	m_menuPost.AddItem(MEN_T(IDS_MENU_BLUR2_MAX_COLOR_VALUE),	&m_pState->m_fBlur2Max,			MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_BLUR2_MAX_COLOR_VALUE_TT), 0.0f, 1.0f);
 	m_menuPost.AddItem(MEN_T(IDS_MENU_BLUR3_MIN_COLOR_VALUE),	&m_pState->m_fBlur3Min,			MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_BLUR3_MIN_COLOR_VALUE_TT), 0.0f, 1.0f);
 	m_menuPost.AddItem(MEN_T(IDS_MENU_BLUR3_MAX_COLOR_VALUE),	&m_pState->m_fBlur3Max,			MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_BLUR3_MAX_COLOR_VALUE_TT), 0.0f, 1.0f);
+
+    m_menuFFTShader.AddItem(MEN_T(IDS_MENU_FFT_ATTACK),         &m_pState->m_fFFTAttack,        MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_FFT_ATTACK_TT), 0.0f, 1.0f);
+    m_menuFFTShader.AddItem(MEN_T(IDS_MENU_FFT_DECAY),          &m_pState->m_fFFTDecay,         MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_FFT_DECAY_TT), 0.0f, 1.0f);
 
     for (i=0; i<MAX_CUSTOM_WAVES; i++)
     {

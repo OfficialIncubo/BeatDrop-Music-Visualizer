@@ -142,7 +142,7 @@ BEGIN
     IDS_SAVE_TO_FILE        "Save to file:  [note: preset's wave scaling, as well as q1-q8, will not be exported]"
     IDS_ENTER_THE_NEW_STRING 
                             "Enter the new string; hit CTRL+ENTER to apply or ESC to cancel."
-    IDS_MILKDROP_ERROR      "MILKDROP ERROR"
+    IDS_MILKDROP_ERROR      "BEATDROP ERROR"
 END
 
 STRINGTABLE
@@ -453,6 +453,11 @@ BEGIN
     IDS_DRAWING_SIMPLE_WAVEFORM "--drawing: simple waveform"
     IDS_DRAWING_BORDERS_MOTION_VECTORS "--drawing: borders, motion vectors"
     IDS_POST_PROCESSING_MISC "--post-processing, misc."
+    IDS_MENU_FFT_SHADER     "--fft shader attack/decay"
+    IDS_MENU_FFT_ATTACK     "fft attack"
+    IDS_MENU_FFT_ATTACK_TT  "controls how the FFT reacts for shader functions like get_fft() and get_fft_hz() (0 = slow, 1 = instant)"
+    IDS_MENU_FFT_DECAY      "fft decay"
+    IDS_MENU_FFT_DECAY_TT   "controls how the FFT falls off for shader functions like get_fft() and get_fft_hz() (0 = quick, 1 = no fall)"
     IDS_CUSTOM_WAVE_X       "--custom wave %d"
     IDS_CUSTOM_SHAPE_X      "--custom shape %d"
     IDS_MENU_EDIT_PRESET_INIT_CODE "[ edit preset initialization code ]"
@@ -976,7 +981,7 @@ BEGIN
     IDS_USE_BOTTOM_SCREEN_ONLY "use bottom screen only"
     IDS_COULD_NOT_FIND_FILE_FOR_DESKTOP_MODE_X 
                             "Could not find the following file:\n\n     %s\n\n...which is required for this plug-in to work properly in Desktop Mode.\nPlease reinstall the plug-in."
-    IDS_MILKDROP_ERROR_FILE_MISSING "MILKDROP ERROR - FILE MISSING"
+    IDS_MILKDROP_ERROR_FILE_MISSING "BEATDROP ERROR - FILE MISSING"
     IDS_ERROR_CREATING_GDI_DESKTOP_FONT "Error creating GDI desktop font"
     IDS_ERROR_CREATING_DESKTOP_FONT "Error creating desktop font"
 END
