@@ -272,8 +272,8 @@ public:
 	CBlendableFloat		m_fDecay;			// 1.0 = none, 0.95 = heavy decay
 
 	// FFT shader - attack and decay
-	float				m_fFFTAttack = 0.5f;// (0...1)
-	float				m_fFFTDecay  = 0.7f;// (0...1)
+	CBlendableFloat		m_fFFTAttack;// (0...1)
+	CBlendableFloat		m_fFFTDecay;// (0...1)
 
 	// other:
 	int					m_nWaveMode;

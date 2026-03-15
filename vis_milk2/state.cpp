@@ -789,6 +789,8 @@ void CState::StartBlendFrom(CState *s_from, float fAnimTime, float fTimespan)
 	m_fVideoEchoZoom .StartBlendFrom(&s_from->m_fVideoEchoZoom , fAnimTime, fTimespan);
 	m_fVideoEchoAlpha.StartBlendFrom(&s_from->m_fVideoEchoAlpha, fAnimTime, fTimespan);
 	m_fDecay         .StartBlendFrom(&s_from->m_fDecay         , fAnimTime, fTimespan);
+	m_fFFTAttack     .StartBlendFrom(&s_from->m_fFFTAttack,      fAnimTime, fTimespan);
+	m_fFFTDecay      .StartBlendFrom(&s_from->m_fFFTDecay,       fAnimTime, fTimespan);
 	m_fWaveAlpha     .StartBlendFrom(&s_from->m_fWaveAlpha     , fAnimTime, fTimespan);
 	m_fWaveScale     .StartBlendFrom(&s_from->m_fWaveScale     , fAnimTime, fTimespan);
 	m_fWaveSmoothing .StartBlendFrom(&s_from->m_fWaveSmoothing , fAnimTime, fTimespan);
@@ -926,8 +928,8 @@ bool CState::Export(const wchar_t *szIniFile)
 	fprintf(fOut, "%s=%.3f\n", "fRating",                m_fRating);
 	fprintf(fOut, "%s=%.3f\n", "fGammaAdj",              m_fGammaAdj.eval(-1));
 	fprintf(fOut, "%s=%.3f\n", "fDecay",                 m_fDecay.eval(-1));
-	fprintf(fOut, "%s=%.3f\n", "FFTAttack",				 m_fFFTAttack);
-	fprintf(fOut, "%s=%.3f\n", "FFTDecay",				 m_fFFTDecay);
+	fprintf(fOut, "%s=%.3f\n", "FFTAttack",				 m_fFFTAttack.eval(-1));
+	fprintf(fOut, "%s=%.3f\n", "FFTDecay",				 m_fFFTDecay.eval(-1));
 	fprintf(fOut, "%s=%.3f\n", "fVideoEchoZoom",         m_fVideoEchoZoom.eval(-1));
 	fprintf(fOut, "%s=%.3f\n", "fVideoEchoAlpha",        m_fVideoEchoAlpha.eval(-1));
 
@@ -1263,7 +1265,7 @@ int  CShape::Import(FILE* f, const wchar_t* szFile, int i)
 	sprintf(buf, "shapecode_%d_%s", i, "additive"    ); additive     = GetFastInt  (buf, additive    , f2);
 	sprintf(buf, "shapecode_%d_%s", i, "thickOutline"); thickOutline = GetFastInt  (buf, thickOutline, f2);
 	sprintf(buf, "shapecode_%d_%s", i, "textured"    ); textured     = GetFastInt  (buf, textured    , f2);
-	sprintf(buf, "shapecode_%d_%s", i, "num_inst"   ); instances    = GetFastInt  (buf, instances   , f2);
+	sprintf(buf, "shapecode_%d_%s", i, "num_inst"    ); instances    = GetFastInt  (buf, instances   , f2);
 	sprintf(buf, "shapecode_%d_%s", i, "x"           ); x            = GetFastFloat(buf, x           , f2);
 	sprintf(buf, "shapecode_%d_%s", i, "y"           ); y            = GetFastFloat(buf, y           , f2);
 	sprintf(buf, "shapecode_%d_%s", i, "rad"         ); rad          = GetFastFloat(buf, rad         , f2);
@@ -1377,8 +1379,8 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
     {
         m_fRating				= GetFastFloat("fRating",m_fRating,f);
 	    m_fDecay                = GetFastFloat("fDecay",m_fDecay.eval(-1),f);
-		m_fFFTAttack			= GetFastFloat("FFTAttack", m_fFFTAttack, f);
-		m_fFFTDecay				= GetFastFloat("FFTDecay", m_fFFTDecay, f);
+		m_fFFTAttack			= GetFastFloat("FFTAttack", m_fFFTAttack.eval(-1), f);
+		m_fFFTDecay				= GetFastFloat("FFTDecay", m_fFFTDecay.eval(-1), f);
 	    m_fGammaAdj             = GetFastFloat("fGammaAdj" ,m_fGammaAdj.eval(-1),f);
 	    m_fVideoEchoZoom        = GetFastFloat("fVideoEchoZoom",m_fVideoEchoZoom.eval(-1),f);
 	    m_fVideoEchoAlpha       = GetFastFloat("fVideoEchoAlpha",m_fVideoEchoAlpha.eval(-1),f);

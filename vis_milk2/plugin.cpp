@@ -8338,8 +8338,8 @@ void CPlugin::BuildMenus()
 	m_menuPost.AddItem(MEN_T(IDS_MENU_BLUR3_MIN_COLOR_VALUE),	&m_pState->m_fBlur3Min,			MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_BLUR3_MIN_COLOR_VALUE_TT), 0.0f, 1.0f);
 	m_menuPost.AddItem(MEN_T(IDS_MENU_BLUR3_MAX_COLOR_VALUE),	&m_pState->m_fBlur3Max,			MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_BLUR3_MAX_COLOR_VALUE_TT), 0.0f, 1.0f);
 
-    m_menuFFTShader.AddItem(MEN_T(IDS_MENU_FFT_ATTACK),         &m_pState->m_fFFTAttack,        MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_FFT_ATTACK_TT), 0.0f, 1.0f);
-    m_menuFFTShader.AddItem(MEN_T(IDS_MENU_FFT_DECAY),          &m_pState->m_fFFTDecay,         MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_FFT_DECAY_TT), 0.0f, 1.0f);
+    m_menuFFTShader.AddItem(MEN_T(IDS_MENU_FFT_ATTACK),         &m_pState->m_fFFTAttack,        MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_FFT_ATTACK_TT), 0.0f, 1.0f);
+    m_menuFFTShader.AddItem(MEN_T(IDS_MENU_FFT_DECAY),          &m_pState->m_fFFTDecay,         MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_FFT_DECAY_TT), 0.0f, 1.0f);
 
     for (i=0; i<MAX_CUSTOM_WAVES; i++)
     {
@@ -11410,8 +11410,8 @@ void CPlugin::DoCustomSoundAnalysis()
 
     // Apply FFT smoothing and upload to GPU texture
     {
-        float attack = m_pState->m_fFFTAttack;  // Reads FFT Attack from state
-        float decay  = m_pState->m_fFFTDecay;   // Reads FFT Decay from state
+        float attack = m_pState->m_fFFTAttack.eval(GetTime());  // Reads FFT Attack from state
+        float decay  = m_pState->m_fFFTDecay.eval(GetTime());   // Reads FFT Decay from state
         const float kNoiseFloor = 0.025f;
         //const float kVisibleFloor = 0.001f;
         for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)
