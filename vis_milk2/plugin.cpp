@@ -11485,7 +11485,7 @@ void CPlugin::DoCustomSoundAnalysis()
             {
                 float* row0 = (float*)r.pBits;
                 float* row1 = (float*)((BYTE*)r.pBits + r.Pitch);
-                for (int wi = 0; wi < 512; wi++)
+                for (int wi = 0; wi < NUM_WAVEFORM_SAMPLES; wi++)
                 {
                     // Raw waveform values from Winamp range from -128 to +127. 
                     // We divide by 128.0f to normalize them to a nice [-1.0 ... 1.0] float range for shaders.
