@@ -29,7 +29,7 @@
 
 # MilkDrop BETA Feature Revival
 
-* \[ ] Revive color-based decay (decay_r, decay_g, decay_b) (Work in Progress; see the [new branch](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/tree/wip-color-based-decay) or [WIP Commit](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/commit/f2729112746ef7c04f7d4084fe366b37e57f9bbf)
+* \[ ] Revive color-based decay (decay_r, decay_g, decay_b) (Experimental; see the [new branch](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/tree/wip-color-based-decay) or [WIP Commit](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/commit/f2729112746ef7c04f7d4084fe366b37e57f9bbf)
 * \[ ] Revive tex_cx, tex_cy and tex_capture
 * \[ ] For more undocumented variables, check references below:
 - https://forums.winamp.com/forum/visualizations/milkdrop/milkdrop-development/213770-mini-update-beta-6-1
