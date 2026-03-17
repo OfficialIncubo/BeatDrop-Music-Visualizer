@@ -502,6 +502,9 @@ void CPlugin::LoadPerFrameEvallibVars(CState* pState)
 
 	// 2. vars that do NOT affect pixel motion: (eval at time==now)
 	*pState->var_pf_decay		= (double)pState->m_fDecay.eval(GetTime());
+	*pState->var_pf_decay_r     = (double)pState->m_fDecayR.eval(GetTime());
+	*pState->var_pf_decay_g     = (double)pState->m_fDecayG.eval(GetTime());
+	*pState->var_pf_decay_b     = (double)pState->m_fDecayB.eval(GetTime());
 	*pState->var_pf_wave_a		= (double)pState->m_fWaveAlpha.eval(GetTime());
 	*pState->var_pf_wave_r		= (double)pState->m_fWaveR.eval(GetTime());
 	*pState->var_pf_wave_g		= (double)pState->m_fWaveG.eval(GetTime());
@@ -681,6 +684,9 @@ void CPlugin::RunPerFrameEquations(int code)
 		*pState->var_pv_ctrlrt      = *pState->var_pf_ctrlrt;
 		*pState->var_pv_ctrldn      = *pState->var_pf_ctrldn;
 		*pState->var_pv_ctrlup      = *pState->var_pf_ctrlup;
+		*pState->var_pv_decay_r     = *pState->var_pf_decay_r;
+		*pState->var_pv_decay_g     = *pState->var_pf_decay_g;
+		*pState->var_pv_decay_b     = *pState->var_pf_decay_b;
         *pState->var_pv_meshx       = (double)m_nGridX;
         *pState->var_pv_meshy       = (double)m_nGridY;
         *pState->var_pv_pixelsx     = (double)GetWidth();
@@ -792,6 +798,10 @@ void CPlugin::RunPerFrameEquations(int code)
 		*m_pState->var_pf_mousey = mix * (*m_pState->var_pf_mousey) + mix2 * (*m_pOldState->var_pf_mousey);
 		*m_pState->var_pf_mousedown = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_mousedown : *m_pState->var_pf_mousedown;
 		*m_pState->var_pf_mouseclick = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_mouseclick : *m_pState->var_pf_mouseclick;
+		// added in BeatDrop v1.5:
+		*m_pState->var_pf_decay_r = mix * (*m_pState->var_pf_decay_r) + mix2 * (*m_pOldState->var_pf_decay_r);
+		*m_pState->var_pf_decay_g = mix * (*m_pState->var_pf_decay_g) + mix2 * (*m_pOldState->var_pf_decay_g);
+		*m_pState->var_pf_decay_b = mix * (*m_pState->var_pf_decay_b) + mix2 * (*m_pOldState->var_pf_decay_b);
     }
 }
 
@@ -1875,6 +1885,13 @@ void CPlugin::ComputeGridAlphaValues()
 		float fDY		= (float)(*pState->var_pf_dy);
 		float fSX		= (float)(*pState->var_pf_sx);
 		float fSY		= (float)(*pState->var_pf_sy);
+		float pf_decay  = (float)(*pState->var_pf_decay);
+		float pf_r = pf_decay * (float)(*pState->var_pf_decay_r);
+		float pf_g = pf_decay * (float)(*pState->var_pf_decay_g);
+		float pf_b = pf_decay * (float)(*pState->var_pf_decay_b);
+		float pv_r = pf_decay * (float)(*pState->var_pv_decay_r) * (float)(*pState->var_pf_decay_r);
+		float pv_g = pf_decay * (float)(*pState->var_pv_decay_g) * (float)(*pState->var_pf_decay_g);
+		float pv_b = pf_decay * (float)(*pState->var_pv_decay_b) * (float)(*pState->var_pf_decay_b);
 
 		int n = 0;
 
@@ -1936,7 +1953,36 @@ void CPlugin::ComputeGridAlphaValues()
 					fDY   = (float)(*pState->var_pv_dy);
 					fSX   = (float)(*pState->var_pv_sx);
 					fSY   = (float)(*pState->var_pv_sy);
+					pf_decay = (float)(*pState->var_pf_decay);
+					pf_r = pf_decay * (float)(*pState->var_pf_decay_r);
+					pf_g = pf_decay * (float)(*pState->var_pf_decay_g);
+					pf_b = pf_decay * (float)(*pState->var_pf_decay_b);
+					pv_r = pf_decay * (float)(*pState->var_pv_decay_r) * (float)(*pState->var_pf_decay_r);
+					pv_g = pf_decay * (float)(*pState->var_pv_decay_g) * (float)(*pState->var_pf_decay_g);
+					pv_b = pf_decay * (float)(*pState->var_pv_decay_b) * (float)(*pState->var_pf_decay_b);
 				}
+
+				float final_r = (pv_r != 0.0f) ? pv_r : pf_r;
+				float final_g = (pv_g != 0.0f) ? pv_g : pf_g;
+				float final_b = (pv_b != 0.0f) ? pv_b : pf_b;
+
+				if (m_n16BitGamma > 0 &&
+					(GetBackBufFormat() == D3DFMT_R5G6B5 || GetBackBufFormat() == D3DFMT_X1R5G5B5 || GetBackBufFormat() == D3DFMT_A1R5G5B5 || GetBackBufFormat() == D3DFMT_A4R4G4B4))
+				{
+					float limit = (32.0f - m_n16BitGamma)/32.0f;
+					if (final_r < 0.9999f) final_r = min(final_r, limit);
+					if (final_g < 0.9999f) final_g = min(final_g, limit);
+					if (final_b < 0.9999f) final_b = min(final_b, limit);
+				}
+
+				//final_r = max(0.0f, min(1.0f, final_r));
+				//final_g = max(0.0f, min(1.0f, final_g));
+				//final_b = max(0.0f, min(1.0f, final_b));
+
+				DWORD r_byte = (DWORD)(final_r * 255.0f);
+				DWORD g_byte = (DWORD)(final_g * 255.0f);
+				DWORD b_byte = (DWORD)(final_b * 255.0f);
+				DWORD decayColor = D3DCOLOR_XRGB(r_byte, g_byte, b_byte);
 
 				float fZoom2 = powf(fZoom, powf(fZoomExp, m_vertinfo[n].rad*2.0f - 1.0f));
 
@@ -2001,7 +2047,7 @@ void CPlugin::ComputeGridAlphaValues()
                     // UV's for m_pState
 					m_verts[n].tu = u;
 					m_verts[n].tv = v;
-					m_verts[n].Diffuse = 0xFFFFFFFF;
+					m_verts[n].Diffuse = 0xFF000000 | decayColor;
 				}
 				else
 				{
@@ -2013,7 +2059,7 @@ void CPlugin::ComputeGridAlphaValues()
 					m_verts[n].tu = m_verts[n].tu*(mix2) + u*(1-mix2);
 					m_verts[n].tv = m_verts[n].tv*(mix2) + v*(1-mix2);
                     // this sets the alpha values for blending between two presets:
-					m_verts[n].Diffuse = 0x00FFFFFF | (((DWORD)(mix2*255))<<24);
+					m_verts[n].Diffuse = decayColor | ((((DWORD)(mix2 * 255.0f)) << 24) & 0xFF000000);
 				}
 
 				n++;
@@ -2069,7 +2115,14 @@ void CPlugin::WarpedBlit_NoShaders(int nPass, bool bAlphaBlend, bool bFlipAlpha,
     lpDevice->SetSamplerState(0, D3DSAMP_ADDRESSW, texaddr);
 
 	// decay
-	float fDecay = (float)(*m_pState->var_pf_decay);
+	float fDecay  = (float)(*m_pState->var_pf_decay);
+	float fDecayR = (float)(*m_pState->var_pf_decay_r);
+	float fDecayG = (float)(*m_pState->var_pf_decay_g);
+	float fDecayB = (float)(*m_pState->var_pf_decay_b);
+
+	float fR = fDecay * fDecayR;
+	float fG = fDecay * fDecayG;
+	float fB = fDecay * fDecayB;
 
 	//if (m_pState->m_bBlending)
 	//	fDecay = fDecay*(fCosineBlend) + (1.0f-fCosineBlend)*((float)(*m_pOldState->var_pf_decay));
@@ -2078,10 +2131,14 @@ void CPlugin::WarpedBlit_NoShaders(int nPass, bool bAlphaBlend, bool bFlipAlpha,
         (GetBackBufFormat()==D3DFMT_R5G6B5 || GetBackBufFormat()==D3DFMT_X1R5G5B5 || GetBackBufFormat()==D3DFMT_A1R5G5B5 || GetBackBufFormat()==D3DFMT_A4R4G4B4) &&
         fDecay < 0.9999f)
     {
-		fDecay = min(fDecay, (32.0f - m_n16BitGamma)/32.0f);
+		float limit = (32.0f - m_n16BitGamma)/32.0f;
+		if (fDecay < 0.9999f) fDecay = min(fDecay, limit);
+		if (fR < 0.9999f) fR = min(fR, limit);
+		if (fG < 0.9999f) fG = min(fG, limit);
+		if (fB < 0.9999f) fB = min(fB, limit);
     }
 
-	D3DCOLOR cDecay = D3DCOLOR_RGBA_01(fDecay,fDecay,fDecay,1);
+	D3DCOLOR cDecay = D3DCOLOR_RGBA_01(fR,fG,fB,1);
 
 	// hurl the triangle strips at the video card
 	int poly;
@@ -2131,7 +2188,7 @@ void CPlugin::WarpedBlit_NoShaders(int nPass, bool bAlphaBlend, bool bFlipAlpha,
                 tempv[i++] = m_verts[ m_indices_list[src_idx++] ];
                 // don't forget to flip sign on Y and factor in the decay color!:
                 tempv[i-1].y *= -1;
-		        tempv[i-1].Diffuse = (cDecay & 0x00FFFFFF) | (tempv[i-1].Diffuse & 0xFF000000);
+				tempv[i-1].Diffuse = (tempv[i-1].Diffuse & 0xFF000000);
             }
             if (bCullTiles)
             {

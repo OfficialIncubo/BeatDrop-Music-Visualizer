@@ -8163,6 +8163,9 @@ void CPlugin::SetMenusForPresetVersion(int WarpPSVersion, int CompPSVersion)
     m_menuPreset.EnableItem(wasabiApiLangString(IDS_MENU_EDIT_WARP_SHADER), WarpPSVersion > 0);
 	m_menuPreset.EnableItem(wasabiApiLangString(IDS_MENU_EDIT_COMPOSITE_SHADER), CompPSVersion > 0);
 	m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_SUSTAIN_LEVEL), WarpPSVersion==0);
+    m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_SUSTAIN_LEVEL_R), WarpPSVersion==0);
+    m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_SUSTAIN_LEVEL_G), WarpPSVersion == 0);
+    m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_SUSTAIN_LEVEL_B), WarpPSVersion == 0);
 	m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_TEXTURE_WRAP), WarpPSVersion==0);
 	m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_GAMMA_ADJUSTMENT), CompPSVersion==0);
 	m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_HUE_SHADER), CompPSVersion==0);
@@ -8317,7 +8320,10 @@ void CPlugin::BuildMenus()
 	m_menuMotion.AddItem(MEN_T(IDS_MENU_SCALING_X),				&m_pState->m_fStretchX,			MENUITEMTYPE_LOGBLENDABLE, MEN_TT(IDS_MENU_SCALING_X_TT));
 	m_menuMotion.AddItem(MEN_T(IDS_MENU_SCALING_Y),				&m_pState->m_fStretchY,			MENUITEMTYPE_LOGBLENDABLE, MEN_TT(IDS_MENU_SCALING_Y_TT));
 
-	m_menuPost.AddItem(MEN_T(IDS_MENU_SUSTAIN_LEVEL),			&m_pState->m_fDecay,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_SUSTAIN_LEVEL_TT), 0.50f, 1.0f);
+	m_menuPost.AddItem(MEN_T(IDS_MENU_SUSTAIN_LEVEL),			&m_pState->m_fDecay,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_SUSTAIN_LEVEL_TT),   0.50f, 1.0f);
+    m_menuPost.AddItem(MEN_T(IDS_MENU_SUSTAIN_LEVEL_R),			&m_pState->m_fDecayR,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_SUSTAIN_LEVEL_R_TT), 0.50f, 1.0f);
+	m_menuPost.AddItem(MEN_T(IDS_MENU_SUSTAIN_LEVEL_G),			&m_pState->m_fDecayG,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_SUSTAIN_LEVEL_G_TT), 0.50f, 1.0f);
+	m_menuPost.AddItem(MEN_T(IDS_MENU_SUSTAIN_LEVEL_B),			&m_pState->m_fDecayB,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_SUSTAIN_LEVEL_B_TT), 0.50f, 1.0f);
 	m_menuPost.AddItem(MEN_T(IDS_MENU_DARKEN_CENTER),			&m_pState->m_bDarkenCenter,		MENUITEMTYPE_BOOL,      MEN_TT(IDS_MENU_DARKEN_CENTER_TT));
 	m_menuPost.AddItem(MEN_T(IDS_MENU_GAMMA_ADJUSTMENT),		&m_pState->m_fGammaAdj,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_GAMMA_ADJUSTMENT_TT), 1.0f, 8.0f);
 	m_menuPost.AddItem(MEN_T(IDS_MENU_HUE_SHADER),				&m_pState->m_fShader,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_HUE_SHADER_TT), 0.0f, 1.0f);
@@ -11584,7 +11590,7 @@ void CPlugin::DoCustomSoundAnalysis()
 	}
 }
 
-void CPlugin::GenWarpPShaderText(char *szShaderText, float decay, bool bWrap)
+void CPlugin::GenWarpPShaderText(char *szShaderText, float decay, float decay_r, float decay_g, float decay_b, bool bWrap)
 {
     // find the pixel shader body and replace it with custom code.
 
@@ -11603,7 +11609,10 @@ void CPlugin::GenWarpPShaderText(char *szShaderText, float decay, bool bWrap)
 	// p += sprintf(p, "    ret = tex2D( sampler%s_main, uv ).xyz;%c", bWrap ? L"" : L"_fc", LF);
     p += sprintf(p, "    %c", LF);
     p += sprintf(p, "    // darken (decay) over time%c", LF);
-    p += sprintf(p, "    ret *= %.2f; //or try: ret -= 0.004;%c", decay, LF);
+    if (decay_r == 1.0f && decay_g == 1.0f && decay_b == 1.0f)
+        p += sprintf(p, "    ret *= %.2f; //or try: ret -= 0.004;%c", decay, LF);
+    else
+        p += sprintf(p, "    ret *= float3(%.3f, %.3f, %.3f);%c", decay * decay_r, decay * decay_g, decay * decay_b, LF);
     //p += sprintf(p, "    %c", LF);
     //p += sprintf(p, "    ret.w = vDiffuse.w; // pass alpha along - req'd for preset blending%c", LF);
     p += sprintf(p, "}%c", LF);

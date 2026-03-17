@@ -270,6 +270,9 @@ public:
 
 	// fps-dependant:
 	CBlendableFloat		m_fDecay;			// 1.0 = none, 0.95 = heavy decay
+	CBlendableFloat		m_fDecayR;			// 1.0 = none, red channel decay
+	CBlendableFloat		m_fDecayG;			// 1.0 = none, green channel decay
+	CBlendableFloat		m_fDecayB;			// 1.0 = none, blue channel decay
 
 	// FFT shader - attack and decay
 	CBlendableFloat		m_fFFTAttack;// (0...1)
@@ -394,7 +397,7 @@ public:
 	double *var_pf_time, *var_pf_fps;
 	double *var_pf_bass, *var_pf_mid, *var_pf_treb, *var_pf_bass_att, *var_pf_mid_att, *var_pf_treb_att;
 	double *var_pf_wave_a, *var_pf_wave_r, *var_pf_wave_g, *var_pf_wave_b, *var_pf_wave_x, *var_pf_wave_y, *var_pf_wave_mystery, *var_pf_wave_mode;
-	double *var_pf_decay;
+	double *var_pf_decay, *var_pf_decay_r, *var_pf_decay_g, *var_pf_decay_b;
 	double *var_pf_frame;
 	//double *var_pf_q1, *var_pf_q2, *var_pf_q3, *var_pf_q4, *var_pf_q5, *var_pf_q6, *var_pf_q7, *var_pf_q8;
     double* var_pf_q[NUM_Q_VAR];
@@ -446,6 +449,8 @@ public:
 	// new in BeatDrop v1.4.1:
 	double *var_pv_mousex, *var_pv_mousey, *var_pv_mousedown, *var_pv_mouseclick;
 	double *var_pv_ctrllt, *var_pv_ctrlrt, *var_pv_ctrldn, *var_pv_ctrlup;
+	// new in BeatDrop v1.5:
+	double *var_pv_decay_r, *var_pv_decay_g, *var_pv_decay_b;
 
 	double q_values_after_init_code[NUM_Q_VAR];
     double monitor_after_init_code;
