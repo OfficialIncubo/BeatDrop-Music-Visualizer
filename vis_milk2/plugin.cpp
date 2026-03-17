@@ -7094,7 +7094,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 				// Don't close if esc pressed when vj window has focus
 				if (GetFocus() == GetPluginWindow()) {
 					// SPOUT - MessageBox to make sure
-					if (MessageBoxA(GetPluginWindow(), "Are you sure you want to exit BeatDrop?", "BeatDrop Music Visualizer", MB_YESNO | MB_TOPMOST) == IDYES) {
+					if (MessageBoxW(GetPluginWindow(), L"Are you sure you want to exit BeatDrop?", L"BeatDrop Music Visualizer", MB_YESNO | MB_TOPMOST) == IDYES) {
 						PostMessage(hWnd, WM_CLOSE, 0, 0);
 					}
 					return 0;

@@ -789,8 +789,8 @@ void CState::StartBlendFrom(CState *s_from, float fAnimTime, float fTimespan)
 	m_fVideoEchoZoom .StartBlendFrom(&s_from->m_fVideoEchoZoom , fAnimTime, fTimespan);
 	m_fVideoEchoAlpha.StartBlendFrom(&s_from->m_fVideoEchoAlpha, fAnimTime, fTimespan);
 	m_fDecay         .StartBlendFrom(&s_from->m_fDecay         , fAnimTime, fTimespan);
-	m_fFFTAttack     .StartBlendFrom(&s_from->m_fFFTAttack,      fAnimTime, fTimespan);
-	m_fFFTDecay      .StartBlendFrom(&s_from->m_fFFTDecay,       fAnimTime, fTimespan);
+	m_fFFTAttack     .StartBlendFrom(&s_from->m_fFFTAttack     , fAnimTime, fTimespan);
+	m_fFFTDecay      .StartBlendFrom(&s_from->m_fFFTDecay      , fAnimTime, fTimespan);
 	m_fWaveAlpha     .StartBlendFrom(&s_from->m_fWaveAlpha     , fAnimTime, fTimespan);
 	m_fWaveScale     .StartBlendFrom(&s_from->m_fWaveScale     , fAnimTime, fTimespan);
 	m_fWaveSmoothing .StartBlendFrom(&s_from->m_fWaveSmoothing , fAnimTime, fTimespan);
