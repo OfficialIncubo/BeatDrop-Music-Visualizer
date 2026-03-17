@@ -677,10 +677,10 @@ void CPlugin::RunPerFrameEquations(int code)
 		*pState->var_pv_mousey      = *pState->var_pf_mousey;
 		*pState->var_pv_mousedown   = *pState->var_pf_mousedown;
 		*pState->var_pv_mouseclick  = *pState->var_pf_mouseclick;
-		*pState->var_pf_ctrllt      = *pState->var_pf_ctrllt;
-		*pState->var_pf_ctrlrt      = *pState->var_pf_ctrlrt;
-		*pState->var_pf_ctrldn      = *pState->var_pf_ctrldn;
-		*pState->var_pf_ctrlup      = *pState->var_pf_ctrlup;
+		*pState->var_pv_ctrllt      = *pState->var_pf_ctrllt;
+		*pState->var_pv_ctrlrt      = *pState->var_pf_ctrlrt;
+		*pState->var_pv_ctrldn      = *pState->var_pf_ctrldn;
+		*pState->var_pv_ctrlup      = *pState->var_pf_ctrlup;
         *pState->var_pv_meshx       = (double)m_nGridX;
         *pState->var_pv_meshy       = (double)m_nGridY;
         *pState->var_pv_pixelsx     = (double)GetWidth();
