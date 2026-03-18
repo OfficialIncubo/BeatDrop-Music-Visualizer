@@ -4886,9 +4886,9 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
             lpDevice->SetTexture(i, p->m_texture_bindings[i].texptr);
 
         // also set up sampler stage, if anything is bound here...
-        if (p->m_texcode[i]==TEX_VS || p->m_texcode[i] == TEX_FFT || p->m_texture_bindings[i].texptr)
+        if (p->m_texcode[i]==TEX_VS || p->m_texcode[i] == TEX_FFT || p->m_texcode[i] == TEX_WAVE || p->m_texture_bindings[i].texptr)
         {
-            bool bAniso = false;
+            bool bAniso = m_bAnisotropicFiltering;
             DWORD HQFilter = bAniso ? D3DTEXF_ANISOTROPIC : D3DTEXF_LINEAR;
             DWORD wrap   = p->m_texture_bindings[i].bWrap ? D3DTADDRESS_WRAP : D3DTADDRESS_CLAMP;
             DWORD filter = p->m_texture_bindings[i].bBilinear ? HQFilter : D3DTEXF_POINT;
@@ -4898,7 +4898,8 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
             lpDevice->SetSamplerState(i, D3DSAMP_MAGFILTER, filter);
             lpDevice->SetSamplerState(i, D3DSAMP_MINFILTER, filter);
             lpDevice->SetSamplerState(i, D3DSAMP_MIPFILTER, filter);
-            //lpDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, bAniso ? 4 : 1);  //FIXME:ANISO
+			if (m_nMaxAnisotropy >= 1)
+				lpDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, bAniso ? m_nMaxAnisotropy : 1);
         }
 
         // finally, if it was a blur texture, note that

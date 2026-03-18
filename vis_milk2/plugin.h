@@ -328,6 +328,9 @@ public:
         int         m_nCanvasStretch;   // 0=Auto, 100=None, 125 = 1.25X, 133, 150, 167, 200, 300, 400 (4X).
         int			m_nTexSizeX;			// -1 = exact match to screen; -2 = nearest power of 2.
         int			m_nTexSizeY;
+        bool        m_bEnableTexSizeSnapping = 1;   // Enable 16x16 block snapping - 0 or 1. Enabled by default.
+        bool        m_bAnisotropicFiltering = 0;        // Enable anisotropic filtering - 0 or 1. Disabled by default.
+        int         m_nMaxAnisotropy = 8;           // Maximum anisotropy - MUST be the power of 2 (2, 4, 8, 16, 32...). Default is 8.
         float       m_fAspectX;
         float       m_fAspectY;
         float       m_fInvAspectX;

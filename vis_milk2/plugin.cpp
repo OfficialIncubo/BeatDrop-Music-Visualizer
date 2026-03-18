@@ -1419,7 +1419,10 @@ void CPlugin::MyReadConfig()
     m_nTexSizeY = -1; //m_nTexSizeX;
 	m_bTexSizeWasAutoPow2   = (m_nTexSizeX == -2);
 	m_bTexSizeWasAutoExact = (m_nTexSizeX == -1);
+    m_bEnableTexSizeSnapping = GetPrivateProfileIntW(L"settings", L"bEnableTexSizeSnapping", m_bEnableTexSizeSnapping, pIni);
 	m_nTexBitsPerCh = GetPrivateProfileIntW(L"settings", L"nTexBitsPerCh", m_nTexBitsPerCh, pIni);
+    m_bAnisotropicFiltering = GetPrivateProfileIntW(L"settings", L"bAnisotropicFiltering", m_bAnisotropicFiltering, pIni);
+    m_nMaxAnisotropy = GetPrivateProfileIntW(L"settings", L"nMaxAnisotropy", m_nMaxAnisotropy, pIni);
 	m_nGridX		= GetPrivateProfileIntW(L"settings",L"nMeshSize"   ,m_nGridX      ,pIni);
 	m_nGridY        = m_nGridX*3/4;
 
@@ -1526,7 +1529,8 @@ void CPlugin::MyWriteConfig()
 	    WritePrivateProfileIntW(m_bAlwaysOnTop,		    L"bAlwaysOnTop",			pIni, L"settings");
 	//WritePrivateProfileIntW(m_bWarningsDisabled,	    "bWarningsDisabled",	pIni, "settings");
 	WritePrivateProfileIntW(m_bWarningsDisabled2,	L"bWarningsDisabled2",	pIni, L"settings");
-	//WritePrivateProfileIntW(m_bAnisotropicFiltering,	"bAnisotropicFiltering",pIni, "settings");
+	WritePrivateProfileIntW(m_bAnisotropicFiltering,L"bAnisotropicFiltering",pIni, L"settings");
+    WritePrivateProfileIntW(m_nMaxAnisotropy,       L"nMaxAnisotropy", pIni, L"settings");
     WritePrivateProfileIntW(m_bPresetLockOnAtStartup,L"bPresetLockOnAtStartup",pIni,L"settings");
 	WritePrivateProfileIntW(m_bPreventScollLockHandling,L"m_bPreventScollLockHandling",pIni,L"settings");
     // note: this is also written @ exit of the visualizer
@@ -1535,6 +1539,7 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_bScreenDependentRenderMode, L"bScreenDependentRenderMode", pIni, L"settings");
     WritePrivateProfileIntW(m_nCanvasStretch,        L"nCanvasStretch",   	pIni, L"settings");
     //WritePrivateProfileIntW(m_nTexSizeX,			    L"nTexSize",				pIni, L"settings");
+    WritePrivateProfileIntW(m_bEnableTexSizeSnapping, L"bEnableTexSizeSnapping", pIni, L"settings");
 	WritePrivateProfileIntW(m_nTexBitsPerCh,         L"nTexBitsPerCh",        pIni, L"settings");
 	WritePrivateProfileIntW(m_nGridX, 				L"nMeshSize",			pIni, L"settings");
 	WritePrivateProfileIntW(m_nMaxPSVersion_ConfigPanel, L"MaxPSVersion",  	pIni, L"settings");
@@ -2170,9 +2175,12 @@ int CPlugin::AllocateMyDX9Stuff()
 			m_nTexSizeY = log2texsize;
 	    }
 
-        // snap to 16x16 blocks
-        m_nTexSizeX = ((m_nTexSizeX+15)/16)*16;
-        m_nTexSizeY = ((m_nTexSizeY+15)/16)*16;
+        // asks if the setting from .ini file is enabled, snap to 16x16 blocks
+        if (m_bEnableTexSizeSnapping)
+        {
+            m_nTexSizeX = ((m_nTexSizeX + 15) / 16) * 16;
+            m_nTexSizeY = ((m_nTexSizeY + 15) / 16) * 16;
+        }
 
 		// determine format for VS1/VS2
 		D3DFORMAT fmt;
