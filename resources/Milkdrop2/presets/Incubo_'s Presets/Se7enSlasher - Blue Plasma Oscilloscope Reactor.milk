@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 14/03/2026 at 19:31:40.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 17/03/2026 at 23:06:19.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -97,7 +97,7 @@ warp_12=`    trails.z = tex2D(sampler_main, uv_zoom - float2(0.002, 0.002)).z;
 warp_13=`    
 warp_14=`    // Slowly fade the trails and mix in a tiny bit of random tech noise
 warp_15=`    float3 noise = tex2D(sampler_rand00, uv + float2(sin(time*.3)/5, sin(time*.5)/5)).xyz;
-warp_16=`    ret = trails * 0.92 + (noise * 0.05);
+warp_16=`    ret = trails * 0.9 + (vol_att*.05) + (noise * 0.05);
 warp_17=`}
 comp_1=`sampler2D sampler_rand00;
 comp_2=`

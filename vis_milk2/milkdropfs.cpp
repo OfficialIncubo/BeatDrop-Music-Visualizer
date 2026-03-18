@@ -4889,6 +4889,12 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
         if (p->m_texcode[i]==TEX_VS || p->m_texcode[i] == TEX_FFT || p->m_texcode[i] == TEX_WAVE || p->m_texture_bindings[i].texptr)
         {
             bool bAniso = m_bAnisotropicFiltering;
+			/*
+			Prevent FFT and WAVE texture bindings from rendering anisotropic.
+			It could cause the spectrum bars looking "shredded" or strange, for example.
+			*/
+			if (p->m_texcode[i] == TEX_FFT || p->m_texcode[i] == TEX_WAVE)
+				bAniso = false;
             DWORD HQFilter = bAniso ? D3DTEXF_ANISOTROPIC : D3DTEXF_LINEAR;
             DWORD wrap   = p->m_texture_bindings[i].bWrap ? D3DTADDRESS_WRAP : D3DTADDRESS_CLAMP;
             DWORD filter = p->m_texture_bindings[i].bBilinear ? HQFilter : D3DTEXF_POINT;
