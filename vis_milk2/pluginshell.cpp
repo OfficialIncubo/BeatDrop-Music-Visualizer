@@ -2482,7 +2482,7 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 			// Incubo_ - The show render window is moved to WM_USER + 1, the custom system tray message handler
 			case 'w':
 			case 'W':
-				if (GetKeyState(VK_CONTROL) & 0x0800)
+				if (GetKeyState(VK_CONTROL) & 0x8000)
 				{
 					if (IsWindowVisible(GetPluginWindow()))
 					{
