@@ -7631,11 +7631,14 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 		break;
 
         case 'Q':
-            m_nAudioSensitivity = 1.0f;
-            g_fAudioSensitivity = m_nAudioSensitivity;
-            wchar_t buf[128];
-            swprintf(buf, 128, L"Audio Sensitivity: Reset to %.2f", m_nAudioSensitivity);
-            AddNotif(buf);
+            if (m_UI_mode == UI_REGULAR)
+            {
+                m_nAudioSensitivity = 1.0f;
+                g_fAudioSensitivity = m_nAudioSensitivity;
+                wchar_t buf[128];
+                swprintf(buf, 128, L"Audio Sensitivity: Reset to %.2f", m_nAudioSensitivity);
+                AddNotif(buf);
+            }
         break;
 
 		//case 'T':
