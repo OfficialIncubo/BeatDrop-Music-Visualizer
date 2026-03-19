@@ -1175,9 +1175,9 @@ void CPlugin::MyPreInitialize()
     m_nMaxBytes  = 2000000000;
 
     #ifdef _DEBUG
-        m_dwShaderFlags = D3DXSHADER_DEBUG|(1<<16);
+        m_dwShaderFlags = D3DXSHADER_DEBUG|D3DXSHADER_USE_LEGACY_D3DX9_31_DLL;
     #else
-        m_dwShaderFlags = (1<<16);//D3DXSHADER_SKIPOPTIMIZATION|D3DXSHADER_NO_PRESHADER;
+        m_dwShaderFlags = D3DXSHADER_USE_LEGACY_D3DX9_31_DLL;//D3DXSHADER_SKIPOPTIMIZATION|D3DXSHADER_NO_PRESHADER;
     #endif
     //m_pFragmentLinker = NULL;
     //m_pCompiledFragments = NULL;
