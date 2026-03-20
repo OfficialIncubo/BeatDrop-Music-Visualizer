@@ -354,6 +354,9 @@ public:
         
         // Revived preset keyboard interaction controls
         bool        m_CtrlLeft = 0, m_CtrlRight = 0, m_CtrlDown = 0, m_CtrlUp = 0;
+
+        // System time variables for init, per-frame and shaders.
+        float       m_year, m_month, m_day, m_weekday, m_hour, m_minute, m_second, m_milliseconds, m_totalSeconds;
         
         bool		m_bShowPressF1ForHelp;
         //char		m_szMonitorName[256];

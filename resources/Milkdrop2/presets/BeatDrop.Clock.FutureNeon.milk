@@ -1,0 +1,330 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 20/03/2026 at 17:02:32.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=0
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.000
+fDecay=0.960
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.500
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.000
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=smoothBlink = int(rand(2));
+per_frame_1=q1 = smoothBlink;
+comp_1=`shader_body
+comp_2=`{
+comp_3=`  // Flip coordinates
+comp_4=`  uv = 1-uv;
+comp_5=`  uv.x = 1-uv.x;
+comp_6=`
+comp_7=`  float PI = M_PI;
+comp_8=`  float TAU = M_PI_2;
+comp_9=`  float2 res = texsize.xy;
+comp_10=`  float aspect = res.x / res.y;
+comp_11=`  float2 p = (uv - 0.5) * float2(aspect, 1.0);
+comp_12=`
+comp_13=`  // System time
+comp_14=`  float totalSec = totalSeconds;
+comp_15=`  float hrs = fmod(totalSec / 3600.0, 12.0);
+comp_16=`  float mins = fmod(totalSec / 60.0, 60.0);
+comp_17=`  float secs = fmod(totalSec, 60.0);
+comp_18=`
+comp_19=`  // Audio
+comp_20=`  float bassR = bass_att;
+comp_21=`  float midR = mid_att;
+comp_22=`  float trebR = treb_att;
+comp_23=`  float volR = vol_att;
+comp_24=`
+comp_25=`  float r = length(p);
+comp_26=`  float angle = atan2(p.y, p.x);
+comp_27=`
+comp_28=`  // Neon background with grid (clamped to prevent whiteout)
+comp_29=`  float3 bgCol = float3(0.02, 0.01, 0.05);
+comp_30=`  float gridX = sin(p.x * 25.0) * sin(p.y * 25.0);
+comp_31=`  bgCol += float3(0.05, 0.02, 0.1) * abs(gridX) * 0.5;
+comp_32=`
+comp_33=`  // Main neon ring
+comp_34=`  float ringR = 0.45;
+comp_35=`  float ringDist = abs(r - ringR);
+comp_36=`  float ringGlow = exp(-ringDist * 60.0) * (0.5 + bassR * 1.5);
+comp_37=`  ringGlow = min(ringGlow, 0.9);
+comp_38=`  float3 ringCol = float3(0.2, 0.8, 1.0) * ringGlow;
+comp_39=`
+comp_40=`  // Inner glow ring
+comp_41=`  float innerRingDist = abs(r - 0.38);
+comp_42=`  float innerGlow = exp(-innerRingDist * 50.0) * (0.3 + midR);
+comp_43=`  innerGlow = min(innerGlow, 0.7);
+comp_44=`  float3 innerCol = float3(0.8, 0.3, 1.0) * innerGlow;
+comp_45=`
+comp_46=`  // Hour markers with neon spikes
+comp_47=`  float markerGlow = 0.0;
+comp_48=`  for (int i = 0; i < 12; i++) {
+comp_49=`    float mA = (float)i * TAU / 12.0 - PI;
+comp_50=`    float2 mD = float2(cos(mA), sin(mA));
+comp_51=`    float mDist = abs(angle - mA);
+comp_52=`    mDist = min(mDist, TAU - mDist);
+comp_53=`    float mIntensity = exp(-mDist * 25.0) * exp(-abs(r - 0.42) * 40.0);
+comp_54=`    markerGlow += mIntensity;
+comp_55=`  }
+comp_56=`  markerGlow = min(markerGlow, 0.8);
+comp_57=`  float3 markerCol = float3(0.3, 0.9, 1.0) * markerGlow * (0.7 + bassR);
+comp_58=`
+comp_59=`  // Second hand with neon trail
+comp_60=`  float sA = secs * TAU / 60.0;
+comp_61=`  float2 sD = float2(sin(sA), cos(sA));
+comp_62=`  float sLen = 0.41;
+comp_63=`  float sProj = saturate(dot(p, sD) / sLen);
+comp_64=`  float sDist = length(p - sD * sProj * sLen);
+comp_65=`  float sMask = step(0.001, dot(p, sD)) * step(sProj, 0.99);
+comp_66=`  float3 sCol = float3(1.0, 0.2, 0.5) * exp(-sDist * sDist / 0.00006) * sMask * (0.7 + trebR);
+comp_67=`
+comp_68=`  // Neon trail behind second hand
+comp_69=`  float trailAngle = fmod(-angle - sA - TAU * .75, TAU);
+comp_70=`  float trail = exp(-abs(trailAngle) * 8.0) * exp(-abs(r - 0.4) * 20.0);
+comp_71=`  trail = min(trail, 0.6);
+comp_72=`  float3 trailCol = float3(1.0, 0.4, 0.8) * trail * trebR;
+comp_73=`
+comp_74=`  // Minute hand
+comp_75=`  float mA = mins * TAU / 60.0;
+comp_76=`  float2 mD = float2(sin(mA), cos(mA));
+comp_77=`  float mLen = 0.35;
+comp_78=`  float mProj = saturate(dot(p, mD) / mLen);
+comp_79=`  float mDist = length(p - mD * mProj * mLen);
+comp_80=`  float mMask = step(0.001, dot(p, mD)) * step(mProj, 0.99);
+comp_81=`  float3 mCol = float3(0.2, 0.9, 0.5) * exp(-mDist * mDist / 0.0001) * mMask * (0.6 + midR);
+comp_82=`
+comp_83=`  // Hour hand
+comp_84=`  float hA = hrs * TAU / 12.0;
+comp_85=`  float2 hD = float2(sin(hA), cos(hA));
+comp_86=`  float hLen = 0.28;
+comp_87=`  float hProj = saturate(dot(p, hD) / hLen);
+comp_88=`  float hDist = length(p - hD * hProj * hLen);
+comp_89=`  float hMask = step(0.001, dot(p, hD)) * step(hProj, 0.99);
+comp_90=`  float3 hCol = float3(0.5, 0.3, 1.0) * exp(-hDist * hDist / 0.00015) * hMask;
+comp_91=`
+comp_92=`  // Center neon node
+comp_93=`  float centerGlow = exp(-r * r / 0.00012) * (0.8 + bassR * 0.5);
+comp_94=`  centerGlow = min(centerGlow, 0.9);
+comp_95=`  float3 centerCol = float3(0.9, 0.5, 1.0) * centerGlow;
+comp_96=`
+comp_97=`// --- AM/PM & 7-Segment Digital Display ---
+comp_98=`  int h12 = hrs;
+comp_99=`  if (h12 == 0) h12 = 12;
+comp_100=`  if (h12 > 12) h12 = h12 - 12;
+comp_101=`  
+comp_102=`  float hrs24 = fmod(totalSec / 3600.0, 24.0); 
+comp_103=`  int isPM = (hrs24 >= 12.0) ? 1 : 0;
+comp_104=`
+comp_105=`  int d1 = h12 / 10;          
+comp_106=`  int d2 = h12 % 10;          
+comp_107=`  int d3 = mins / 10;    
+comp_108=`  int d4 = mins % 10;    
+comp_109=`  int d5 = secs / 10;    
+comp_110=`  int d6 = secs % 10;    
+comp_111=`
+comp_112=`  float3 finalDigCol = 0;
+comp_113=`  float segGlow = 0;
+comp_114=`  float w = 0.0175; // Digit width
+comp_115=`  float h = 0.025; // Digit height
+comp_116=`  float thick = 0.000035; 
+comp_117=`
+comp_118=`  // Loop through 10 slots: 6 digits, 2 colons, and 2 AM/PM letters
+comp_119=`  for (int i = 0; i < 10; i++) {
+comp_120=`    float2 dCenter = float2(-0.31 + float(i) * 0.062, 0.1);
+comp_121=`    if (i > 1) dCenter.x += 0.015; // Colon 1 gap
+comp_122=`    if (i > 4) dCenter.x += 0.015; // Colon 2 gap
+comp_123=`    if (i > 7) dCenter.x += 0.025; // AM/PM gap
+comp_124=`    
+comp_125=`    float2 lp = p - dCenter; 
+comp_126=`    int n = -2; 
+comp_127=`    if (i == 0) n = (d1 == 0) ? -2 : d1; // Hide leading zero
+comp_128=`    if (i == 1) n = d2;
+comp_129=`    if (i == 2) n = -1; // Colon
+comp_130=`    if (i == 3) n = d3;
+comp_131=`    if (i == 4) n = d4;
+comp_132=`    if (i == 5) n = -1; // Colon
+comp_133=`    if (i == 6) n = d5;
+comp_134=`    if (i == 7) n = d6;
+comp_135=`    if (i == 8) n = (isPM == 1) ? 11 : 10; // P or A
+comp_136=`    if (i == 9) n = 12; // M
+comp_137=`
+comp_138=`    float dist = 100.0;
+comp_139=`    if (n >= 0) {
+comp_140=`      float2 pa, ba; float hh;
+comp_141=`      // Top (a) - Used by: Digits, A, P, M
+comp_142=`      if (n!=1 && n!=4 && n!=12) { 
+comp_143=`        pa = lp-float2(-w,h); ba = float2(w*2,0); hh = saturate(dot(pa,ba)/dot(ba,ba));
+comp_144=`        dist = min(dist, length(pa-ba*hh)); 
+comp_145=`      }
+comp_146=`      // Middle (g) - Used by: Digits, A, P
+comp_147=`      if (n!=0 && n!=1 && n!=7 && n!=12) {
+comp_148=`        pa = lp-float2(-w,0); ba = float2(w*2,0); hh = saturate(dot(pa,ba)/dot(ba,ba));
+comp_149=`        dist = min(dist, length(pa-ba*hh));
+comp_150=`      }
+comp_151=`      // Bottom (d) - Used by: Digits
+comp_152=`      if (n<10 && n!=1 && n!=4 && n!=7) {
+comp_153=`        pa = lp-float2(-w,-h); ba = float2(w*2,0); hh = saturate(dot(pa,ba)/dot(ba,ba));
+comp_154=`        dist = min(dist, length(pa-ba*hh));
+comp_155=`      }
+comp_156=`      // Top-Left (f) - Used by: Digits, A, P, M
+comp_157=`      if (n!=1 && n!=2 && n!=3 && n!=7) {
+comp_158=`        pa = lp-float2(-w,h); ba = float2(0,-h); hh = saturate(dot(pa,ba)/dot(ba,ba));
+comp_159=`        dist = min(dist, length(pa-ba*hh));
+comp_160=`      }
+comp_161=`      // Top-Right (b) - Used by: Digits, A, P, M
+comp_162=`      if (n!=5 && n!=6) {
+comp_163=`        pa = lp-float2(w,h); ba = float2(0,-h); hh = saturate(dot(pa,ba)/dot(ba,ba));
+comp_164=`        dist = min(dist, length(pa-ba*hh));
+comp_165=`      }
+comp_166=`      // Bottom-Left (e) - Used by: Digits, A, P, M
+comp_167=`      if (n==0 || n==2 || n==6 || n==8 || n>=10) {
+comp_168=`        pa = lp-float2(-w,0); ba = float2(0,-h); hh = saturate(dot(pa,ba)/dot(ba,ba));
+comp_169=`        dist = min(dist, length(pa-ba*hh));
+comp_170=`      }
+comp_171=`      // Bottom-Right (c) - Used by: Digits, A, M
+comp_172=`      if (n!=2 && n!=11) {
+comp_173=`        pa = lp-float2(w,0); ba = float2(0,-h); hh = saturate(dot(pa,ba)/dot(ba,ba));
+comp_174=`        dist = min(dist, length(pa-ba*hh));
+comp_175=`      }
+comp_176=`      // M
+comp_177=`      if (n == 12) {
+comp_178=`        // Left Side
+comp_179=`        pa = lp-float2(-w,h); ba = float2(0,-h*2); hh = saturate(dot(pa,ba)/dot(ba,ba));
+comp_180=`        dist = min(dist, length(pa-ba*hh));
+comp_181=`        // Right Side
+comp_182=`        pa = lp-float2(w,h); ba = float2(0,-h*2); hh = saturate(dot(pa,ba)/dot(ba,ba));
+comp_183=`        dist = min(dist, length(pa-ba*hh));
+comp_184=`        // Top Bar
+comp_185=`        pa = lp-float2(-w,h); ba = float2(w*2,0); hh = saturate(dot(pa,ba)/dot(ba,ba));
+comp_186=`        dist = min(dist, length(pa-ba*hh));
+comp_187=`        // Middle "V" or Leg (The Fix)
+comp_188=`        pa = lp-float2(0,h); ba = float2(0,-h); hh = saturate(dot(pa,ba)/dot(ba,ba));
+comp_189=`        dist = min(dist, length(pa-ba*hh));
+comp_190=`      }
+comp_191=`      segGlow += exp(-dist*dist/thick);
+comp_192=`    } 
+comp_193=`    else if (n == -1) {
+comp_194=`      float blink;
+comp_195=`      if (q1) blink = 0.5 + 0.5 * sin(totalSec * M_PI_2);
+comp_196=`      else blink = (sin(totalSec * M_PI_2) >= 0) ? 1 : 0;
+comp_197=`      segGlow += (exp(-dot(lp-float2(0,h*0.4), lp-float2(0,h*0.4))/0.00004) + 
+comp_198=`                  exp(-dot(lp-float2(0,-h*0.4), lp-float2(0,-h*0.4))/0.00004)) * blink;
+comp_199=`    }
+comp_200=`  }
+comp_201=`
+comp_202=`  float3 digCol = float3(0.3, 0.9, 1.0) * min(segGlow, 1.2) * (0.8 + midR * 0.4);
+comp_203=`
+comp_204=`  // Seconds ring (around the clock)
+comp_205=`  float secProgress = secs / 60.0;
+comp_206=`  float secRing = step(r, ringR + 0.02) * step(ringR - 0.02, r);
+comp_207=`  float secAngle = fmod((-angle+1.57) + TAU, TAU);
+comp_208=`  float secMatch = step(secProgress * TAU, secAngle);
+comp_209=`  float3 secRingCol = float3(1.0, 0.2, 0.3) * secRing * secMatch * (0.5 + trebR);
+comp_210=`
+comp_211=`  // Pulsing particles (audio reactive)
+comp_212=`  float pulseParticles = 0.0;
+comp_213=`  for (int j = 0; j < 16; j++) {
+comp_214=`    float pA = (float)j * TAU / 16.0 + totalSec * 3.0;
+comp_215=`    float pR = ringR - 0.03 + sin(totalSec * 8.0 + (float)j) * 0.01;
+comp_216=`    float2 pP = float2(cos(pA), sin(pA)) * pR;
+comp_217=`    float pDist = length(p - pP);
+comp_218=`    pulseParticles += exp(-pDist * pDist / 0.00015) * (0.2 + bassR);
+comp_219=`  }
+comp_220=`  pulseParticles = min(pulseParticles, 0.8);
+comp_221=`  float3 particleCol = float3(0.6, 0.2, 1.0) * pulseParticles;
+comp_222=`
+comp_223=`  // Combine everything with clamping to prevent whiteout
+comp_224=`  float3 col = bgCol;
+comp_225=`  col += ringCol;
+comp_226=`  col += innerCol;
+comp_227=`  col += markerCol;
+comp_228=`  col += mCol;
+comp_229=`  col += hCol;
+comp_230=`  col += sCol;
+comp_231=`  col += trailCol;
+comp_232=`  col += centerCol;
+comp_233=`  col += secRingCol;
+comp_234=`  col += particleCol;
+comp_235=`  col += digCol;
+comp_236=`
+comp_237=`  // Scanlines effect (subtle)
+comp_238=`  float scanline = sin(uv.y * res.y * 0.5 + totalSec * 20.0) * 0.1;
+comp_239=`  col += float3(0.1, 0.05, 0.2) * scanline;
+comp_240=`
+comp_241=`  // Vignette (darker edges)
+comp_242=`  float vignette = 1.0 - dot(uv - 0.5, uv - 0.5) * 0.8;
+comp_243=`  col *= max(vignette, 0.2);
+comp_244=`
+comp_245=`  ret = col;
+comp_246=`}

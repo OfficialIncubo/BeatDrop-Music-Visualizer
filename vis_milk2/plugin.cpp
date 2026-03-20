@@ -4565,6 +4565,25 @@ void CPlugin::MyRenderFn(int redraw)
     }
     //END
 
+    //Getting the system time and total seconds, in real-time.
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+    float totalSeconds = (float)st.wHour * 3600.0f + (float)st.wMinute * 60.0f + (float)st.wSecond + (float)st.wMilliseconds * .001f; // Use double for accurate floating point
+
+    /*
+    Now ready to pass vars from headers, then ready to use on init, per-frame and shaders.
+    SYSTEMTIME has WORD data type, which is a 16-bit unsigned integer.
+    */
+    m_year = st.wYear;
+    m_month = st.wMonth;
+    m_day = st.wDay;
+    m_weekday = (st.wDayOfWeek == 0 ? 7 : st.wDayOfWeek);
+    m_hour = st.wHour;
+    m_minute = st.wMinute;
+    m_second = st.wSecond;
+    m_milliseconds = st.wMilliseconds;
+    m_totalSeconds = totalSeconds;
+
     //Don't show the help message again when the "Press F1 for help" message is finished.
     //Useful when I press CTRL + T or when it reaches 250000 seconds, it shows the message again, so I did.
     if (GetTime() >= PRESS_F1_DUR)

@@ -577,6 +577,16 @@ void CPlugin::LoadPerFrameEvallibVars(CState* pState)
 	*pState->var_pf_ctrlrt        = m_CtrlRight ? 1.0 : 0.0;
 	*pState->var_pf_ctrldn        = m_CtrlDown ? 1.0 : 0.0;
 	*pState->var_pf_ctrlup        = m_CtrlUp ? 1.0 : 0.0;
+	// new in BeatDrop v1.5:
+	*pState->var_pf_year          = m_year;
+	*pState->var_pf_month         = m_month;
+	*pState->var_pf_day           = m_day;
+	*pState->var_pf_weekday       = m_weekday;
+	*pState->var_pf_hour          = m_hour;
+	*pState->var_pf_minute        = m_minute;
+	*pState->var_pf_second        = m_second;
+	*pState->var_pf_milliseconds  = m_milliseconds;
+	*pState->var_pf_totalseconds  = m_totalSeconds;
 }
 
 void CPlugin::RunPerFrameEquations(int code)
@@ -788,10 +798,20 @@ void CPlugin::RunPerFrameEquations(int code)
         *m_pState->var_pf_blur3max  = mix*(*m_pState->var_pf_blur3max ) + mix2*(*m_pOldState->var_pf_blur3max );
         *m_pState->var_pf_blur1_edge_darken = mix*(*m_pState->var_pf_blur1_edge_darken) + mix2*(*m_pOldState->var_pf_blur1_edge_darken);
 		// added in BeatDrop v1.4.1:
-		*m_pState->var_pf_mousex = mix * (*m_pState->var_pf_mousex) + mix2 * (*m_pOldState->var_pf_mousex);
-		*m_pState->var_pf_mousey = mix * (*m_pState->var_pf_mousey) + mix2 * (*m_pOldState->var_pf_mousey);
-		*m_pState->var_pf_mousedown = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_mousedown : *m_pState->var_pf_mousedown;
-		*m_pState->var_pf_mouseclick = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_mouseclick : *m_pState->var_pf_mouseclick;
+		*m_pState->var_pf_mousex       = mix * (*m_pState->var_pf_mousex) + mix2 * (*m_pOldState->var_pf_mousex);
+		*m_pState->var_pf_mousey       = mix * (*m_pState->var_pf_mousey) + mix2 * (*m_pOldState->var_pf_mousey);
+		*m_pState->var_pf_mousedown    = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_mousedown : *m_pState->var_pf_mousedown;
+		*m_pState->var_pf_mouseclick   = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_mouseclick : *m_pState->var_pf_mouseclick;
+		// added in BeatDrop v1.5:
+		*m_pState->var_pf_year         = mix*(*m_pState->var_pf_year) + mix2*(*m_pOldState->var_pf_year);
+		*m_pState->var_pf_month        = mix*(*m_pState->var_pf_month) + mix2*(*m_pOldState->var_pf_month);
+		*m_pState->var_pf_day          = mix*(*m_pState->var_pf_day) + mix2*(*m_pOldState->var_pf_day);
+		*m_pState->var_pf_weekday      = mix*(*m_pState->var_pf_weekday) + mix2*(*m_pOldState->var_pf_weekday);
+		*m_pState->var_pf_hour         = mix*(*m_pState->var_pf_hour) + mix2*(*m_pOldState->var_pf_hour);
+		*m_pState->var_pf_minute       = mix*(*m_pState->var_pf_minute) + mix2*(*m_pOldState->var_pf_minute);
+		*m_pState->var_pf_second       = mix*(*m_pState->var_pf_second) + mix2*(*m_pOldState->var_pf_second);
+		*m_pState->var_pf_milliseconds = mix*(*m_pState->var_pf_milliseconds) + mix2*(*m_pOldState->var_pf_milliseconds);
+		*m_pState->var_pf_totalseconds = mix*(*m_pState->var_pf_totalseconds) + mix2*(*m_pOldState->var_pf_totalseconds);
     }
 }
 
@@ -4974,6 +4994,9 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
     if (h[12]) pCT->SetVector( lpDevice, h[12], &D3DXVECTOR4( mip_x, mip_y, mip_avg, 0 ));
     if (h[13]) pCT->SetVector( lpDevice, h[13], &D3DXVECTOR4( blur_min[1], blur_max[1], blur_min[2], blur_max[2] ));
 	if (h[14]) pCT->SetVector( lpDevice, h[14], &D3DXVECTOR4( m_mouseX != -1 ? m_mouseX : -1, m_mouseY != -1 ? -m_mouseY + 1 : -1, m_mouseDown ? m_lastMouseX : -m_lastMouseX, m_mouseClicked > 0 ? m_lastMouseY : -m_lastMouseY ));
+	// System time variables are declared in plugin.h; loaded them from MyRenderFn()
+	if (h[15]) pCT->SetVector( lpDevice, h[15], &D3DXVECTOR4((float)m_hour, (float)m_minute, (float)m_second, m_totalSeconds) );
+	if (h[16]) pCT->SetVector( lpDevice, h[16], &D3DXVECTOR4((float)m_year, (float)m_month, (float)m_day, (float)m_weekday) );
 
     // write q vars
     int num_q_float4s = sizeof(p->q_const_handles)/sizeof(p->q_const_handles[0]);

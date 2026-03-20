@@ -16,6 +16,8 @@ float4   _c11;  // .xyzw ~= same, but using sin()
 float4   _c12;  // .xyz = mip info for main image (.x=#across, .y=#down, .z=avg); .w = unused
 float4   _c13;  //.xy = blur2_min,blur2_max; .zw = blur3_min, blur3_max.
 float4   _c14;  // mouse
+float4   _c15; // hour, minute, second, time converted to seconds
+float4   _c16; // year, month, day, weekday (as integer; 1-7).
 float4   _qa;  // q vars bank 1 [q1-q4]
 float4   _qb;  // q vars bank 2 [q5-q8]
 float4   _qc;  // q vars ...
@@ -119,6 +121,17 @@ float4x3 rot_rand4;
 #define mouse_y _c14.y
 #define mouse_pos _c14.xy
 #define mouse_clicked _c14.z
+#define mouse_released _c14.w
+#define sysTime _c15
+#define sysDate _c16
+#define hour _c15.x
+#define minute _c15.y
+#define second _c15.z
+#define totalSeconds _c15.w
+#define year _c16.x
+#define month _c16.y
+#define day _c16.z
+#define weekday _c16.w
 #define GetMain(uv) (tex2D(sampler_main,uv).xyz)
 #define GetPixel(uv) (tex2D(sampler_main,uv).xyz)
 #define GetBlur1(uv) (tex2D(sampler_blur1,uv).xyz*_c5.x + _c5.y)

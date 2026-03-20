@@ -1,4 +1,4 @@
-Added init/per-frame/per-vertex variables: mousex, mousey, mousedown, mouseclick
+Added init/per-frame/per-vertex variables: mousex, mousey, mousedown, mouseclick, ctrllt, ctrlrt, ctrlup, ctrldn, year, month, day, weekday, hour, minute, second, milliseconds, totalseconds
 
 Mouse controls:
 mouse_x - retrieves the X position of mouse
@@ -8,8 +8,8 @@ mouse_pos - retrieves the XY position of mouse
 You can also use:
 mouse.x - retrieves the X position of mouse
 mouse.y - retrieves the Y position of mouse
-mouse.z - retrieves if the left or right button of the mouse is down or not, getting X mouse coordinate (positive if held, otherwise negative)
-mouse.w - retrieves if the left or right button of the mouse is clicked (button up) or not, getting Y mouse coordinate (positive if clicked, otherwise negative)
+mouse.z (or mouse_clicked) - retrieves if the left or right button of the mouse is down or not, getting X mouse coordinate (positive if held, otherwise negative)
+mouse.w (or mouse_released) - retrieves if the left or right button of the mouse is clicked (button up) or not, getting Y mouse coordinate (positive if clicked, otherwise negative)
 
 Note that both mouse coordinates return -1 when the pointer is outside the window. Make sure you add statements while editing presets.
 If you want to really use with mouse down/click events, just pass these per-frame variables mentioned above to q variables and then assign mouse.z or mouse.w with any q variable you assigned (e.g. mouse.z = (any q var);).
@@ -24,3 +24,15 @@ Wave shader variables:
 get_wave() - Gets mono waveform data at a normalized position [0...1]
 get_wave_left() - Gets the left channel of the waveform data at a normalized position [0...1]
 get_wave_right() - Gets the right channel of the waveform data at a normalized position [0...1]
+
+System time shader variables:
+sysTime - Gets the system time in real-time (as float4(hour, minute, second, totalSecond))
+sysDate - Gets the system date in real-time (as float4(year, month, day, weekday))
+hour - Gets the actual hour from system time
+minute - Gets the actual minute from system time
+second - Gets the actual second from system time
+totalSeconds - Gets the converted seconds from hour, minute and seconds from system time
+year - Gets the actual year from system date
+month - Gets the actual month from system date
+day - Gets the actual day from system date
+weekday - Gets the day of the week from system date (1 - Monday, 2 - Tuesday, ..., 7 - Sunday)

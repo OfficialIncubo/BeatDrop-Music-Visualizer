@@ -429,6 +429,8 @@ public:
 	// new in BeatDrop v1.4.1:
 	double *var_pf_mousex, * var_pf_mousey, *var_pf_mousedown, *var_pf_mouseclick;
 	double *var_pf_ctrllt, *var_pf_ctrlrt, *var_pf_ctrldn, *var_pf_ctrlup;
+	// new in BeatDrop v1,5:
+	double *var_pf_year, *var_pf_month, *var_pf_day, *var_pf_weekday, *var_pf_hour, *var_pf_minute, *var_pf_second, *var_pf_milliseconds, *var_pf_totalseconds;
 
 	// for per-vertex expression evaluation:
 		NSEEL_VMCTX m_pv_eel;

@@ -146,6 +146,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <shellapi.h>
 #pragma comment(lib,"winmm.lib")    // for timeGetTime
 
+// Show/Hide Render Window Initializations
 NOTIFYICONDATA nid = {};
 bool renderWindowHidden = false;
 HWND g_hWnd = NULL;
