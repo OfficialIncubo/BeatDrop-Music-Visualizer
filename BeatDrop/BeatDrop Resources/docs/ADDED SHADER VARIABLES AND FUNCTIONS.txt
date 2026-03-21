@@ -28,11 +28,11 @@ get_wave_right() - Gets the right channel of the waveform data at a normalized p
 System time shader variables:
 sysTime - Gets the system time in real-time (as float4(hour, minute, second, totalSecond))
 sysDate - Gets the system date in real-time (as float4(year, month, day, weekday))
-hour - Gets the actual hour from system time
-minute - Gets the actual minute from system time
-second - Gets the actual second from system time
-totalSeconds - Gets the converted seconds from hour, minute and seconds from system time
-year - Gets the actual year from system date
-month - Gets the actual month from system date
-day - Gets the actual day from system date
-weekday - Gets the day of the week from system date (1 - Monday, 2 - Tuesday, ..., 7 - Sunday)
+sysTimeHour - Gets the actual hour from system time
+sysTimeMinute - Gets the actual minute from system time
+sysTimeSecond - Gets the actual second from system time
+sysTimeTotalSeconds - Gets the converted seconds from hour, minute and seconds from system time
+sysDateYear - Gets the actual year from system date
+sysDateMonth - Gets the actual month from system date
+sysDateDay - Gets the actual day from system date
+sysDateWeekday - Gets the day of the week from system date (1 - Monday, 2 - Tuesday, ..., 7 - Sunday)

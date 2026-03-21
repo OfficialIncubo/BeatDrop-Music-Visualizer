@@ -124,14 +124,14 @@ float4x3 rot_rand4;
 #define mouse_released _c14.w
 #define sysTime _c15
 #define sysDate _c16
-#define hour _c15.x
-#define minute _c15.y
-#define second _c15.z
-#define totalSeconds _c15.w
-#define year _c16.x
-#define month _c16.y
-#define day _c16.z
-#define weekday _c16.w
+#define sysTimeHour _c15.x
+#define sysTimeMinute _c15.y
+#define sysTimeSecond _c15.z
+#define sysTimeTotalSeconds _c15.w
+#define sysDateYear _c16.x
+#define sysDateMonth _c16.y
+#define sysDateDay _c16.z
+#define sysDateWeekday _c16.w
 #define GetMain(uv) (tex2D(sampler_main,uv).xyz)
 #define GetPixel(uv) (tex2D(sampler_main,uv).xyz)
 #define GetBlur1(uv) (tex2D(sampler_blur1,uv).xyz*_c5.x + _c5.y)

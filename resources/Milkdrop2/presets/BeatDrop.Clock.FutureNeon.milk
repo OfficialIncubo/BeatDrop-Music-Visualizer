@@ -95,7 +95,7 @@ comp_10=`  float aspect = res.x / res.y;
 comp_11=`  float2 p = (uv - 0.5) * float2(aspect, 1.0);
 comp_12=`
 comp_13=`  // System time
-comp_14=`  float totalSec = totalSeconds;
+comp_14=`  float totalSec = sysTimeTotalSeconds;
 comp_15=`  float hrs = fmod(totalSec / 3600.0, 12.0);
 comp_16=`  float mins = fmod(totalSec / 60.0, 60.0);
 comp_17=`  float secs = fmod(totalSec, 60.0);
