@@ -4965,7 +4965,7 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
     D3DXHANDLE* h = p->const_handles;
     if (h[0]) pCT->SetVector( lpDevice, h[0], &D3DXVECTOR4( aspect_x, aspect_y, 1.0f/aspect_x, 1.0f/aspect_y ));
     if (h[1]) pCT->SetVector( lpDevice, h[1], &D3DXVECTOR4(0, 0, 0, 0 ));
-    if (h[2]) pCT->SetVector( lpDevice, h[2], &D3DXVECTOR4(time_since_preset_start_wrapped, GetFps(), (float)GetFrame(), progress));
+    if (h[2]) pCT->SetVector( lpDevice, h[2], &D3DXVECTOR4(GetTime(), GetFps(), (float)GetFrame(), progress));
     if (h[3]) pCT->SetVector( lpDevice, h[3], &D3DXVECTOR4(mysound.imm_rel[0], mysound.imm_rel[1], mysound.imm_rel[2], 0.3333f*(mysound.imm_rel[0], mysound.imm_rel[1], mysound.imm_rel[2]) ));
     if (h[4]) pCT->SetVector( lpDevice, h[4], &D3DXVECTOR4(mysound.avg_rel[0], mysound.avg_rel[1], mysound.avg_rel[2], 0.3333f*(mysound.avg_rel[0], mysound.avg_rel[1], mysound.avg_rel[2]) ));
     if (h[5]) pCT->SetVector( lpDevice, h[5], &D3DXVECTOR4( blur_max[0]-blur_min[0], blur_min[0], blur_max[1]-blur_min[1], blur_min[1] ));
