@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 20/03/2026 at 17:02:32.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 20/03/2026 at 22:49:13.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -171,7 +171,7 @@ comp_86=`  float hLen = 0.28;
 comp_87=`  float hProj = saturate(dot(p, hD) / hLen);
 comp_88=`  float hDist = length(p - hD * hProj * hLen);
 comp_89=`  float hMask = step(0.001, dot(p, hD)) * step(hProj, 0.99);
-comp_90=`  float3 hCol = float3(0.5, 0.3, 1.0) * exp(-hDist * hDist / 0.00015) * hMask;
+comp_90=`  float3 hCol = float3(0.5, 0.3, 1.0) * exp(-hDist * hDist / 0.00015) * hMask * (0.5 + bassR);
 comp_91=`
 comp_92=`  // Center neon node
 comp_93=`  float centerGlow = exp(-r * r / 0.00012) * (0.8 + bassR * 0.5);

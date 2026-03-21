@@ -4875,8 +4875,6 @@ void CPlugin::MyRenderUI(
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
             swprintf(buf, L"%s %s %6.4f ", ((double)mysound.imm_rel[2] >= 1.3) ? L"+" : L" ", L"treb:", (float)(*m_pState->var_pf_treb));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-            swprintf(buf, L"");
-            MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
         }
         if (m_bShowDebugInfo == 2) // Page 2
         {

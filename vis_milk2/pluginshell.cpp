@@ -146,6 +146,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <shellapi.h>
 #pragma comment(lib,"winmm.lib")    // for timeGetTime
 
+extern CPlugin g_plugin;
+
 // Show/Hide Render Window Initializations
 NOTIFYICONDATA nid = {};
 bool renderWindowHidden = false;
@@ -1721,10 +1723,18 @@ void CPluginShell::DoTime()
 
 	m_time += 1.0f/m_fps;
 	if (m_time >= m_dTimeVariableResetDelay)
+	{
 		m_time = 0; // Reset the time variable after 250000 seconds.
+		g_plugin.m_fPresetStartTime = GetTime();
+		g_plugin.m_fNextPresetTime = -1.0f;		// flags UpdateTime() to recompute this
+	}
 
 	if ((GetKeyState(VK_CONTROL) & 0x8000) && (GetKeyState('T') & 0x8000))
+	{
 		m_time = 0;
+		g_plugin.m_fPresetStartTime = GetTime();
+		g_plugin.m_fNextPresetTime = -1.0f;		// flags UpdateTime() to recompute this
+	}
 
 	// timekeeping goals:
 	//    1. keep 'm_time' increasing SMOOTHLY: (smooth animation depends on it)
