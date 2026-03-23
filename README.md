@@ -223,6 +223,10 @@ If you want to have all the MilkDrop presets in your own, just download [this Me
 [<img src="https://static.vecteezy.com/system/resources/previews/042/148/611/non_2x/new-twitter-x-logo-twitter-icon-x-social-media-icon-free-png.png" alt="X" style="width:10%; height:75%;">](https://x.com/BeatDropVis)
 [<img src="https://static.vecteezy.com/system/resources/previews/018/930/718/non_2x/discord-logo-discord-icon-transparent-free-png.png" alt="Discord (Join server)" style="width:10%; height:75%;">](https://discord.gg/rp5cBDtGuM)
 
+# STAR HISTORY
+
+[![Star History Chart](https://api.star-history.com/svg?repos=OfficialIncubo/BeatDrop-Music-Visualizer&type=Date)](https://star-history.com/#OfficialIncubo/BeatDrop-Music-Visualizer&Date)
+
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
 # ORIGINAL REPOSITORY DESCRIPTION
