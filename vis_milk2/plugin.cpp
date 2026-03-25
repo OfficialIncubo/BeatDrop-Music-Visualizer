@@ -11424,56 +11424,62 @@ void CPlugin::DoCustomSoundAnalysis()
     myfftshader.time_to_frequency_domain(fWaveLeft, fShaderSpecLeft);
     myfftshader.time_to_frequency_domain(fWaveRight, fShaderSpecRight);
 
-    float fftScaling = 0.000425f;
-    float frameSum = 0;
+    // RMS normalization
+    // Sum all the bins and take a square mono calculated FFT.
+    float fftSumSq = 0;
     for (int i = 0; i < MY_FFT_SAMPLES; i++)
-        frameSum += (fShaderSpecLeft[i] + fShaderSpecRight[i]) * 0.5f;
-    float frameAvg = (frameSum / MY_FFT_SAMPLES) * fftScaling;
-    static float s_fFFTAvgLoudness = 0.05f;
-    float l_speed = (frameAvg > s_fFFTAvgLoudness) ? 0.10f : 0.02f;
-    s_fFFTAvgLoudness += (frameAvg - s_fFFTAvgLoudness) * l_speed;
-    float dynamicGain = 0.07f / (s_fFFTAvgLoudness + 0.001f);
-    if (dynamicGain > 10.0) dynamicGain = 10.0f;
-    if (dynamicGain < 0.2f) dynamicGain = 0.2f;
+    {
+        float mono = (fShaderSpecLeft[i] + fShaderSpecRight[i]) * .5f;
+        fftSumSq += mono * mono;
+    }
+    float fftRMS = sqrtf(fftSumSq / MY_FFT_SAMPLES);    // Calculate RMS from square mono calculated FFT.
+    if (fftRMS < 1e-5f) fftRMS = 1e-5f; // PREVENT DIVISION BY ZERO ERROR, is it neccesary?
+
+    // Smoothing RMS with simple low-pass
+    static float s_fftRMS;
+    float fps = GetFps();
+    if (fps < 1e-8f) fps = 1e-8f;   // PREVENT DIVISION BY ZERO ERROR
+    const float tauRMS = 2.5f; // smoothing time constant (2..3 seconds or any seconds you want).
+    float RMSDecay = expf(-1 / GetFps() / tauRMS);
+    s_fftRMS = s_fftRMS * RMSDecay + fftRMS * (1-RMSDecay);
+    
+    float fftScaling = 0.175f;   // Modify FFT scaling in your needs.
 
     // Apply FFT smoothing and upload to GPU texture
     {
         float attack = m_pState->m_fFFTAttack.eval(GetTime());  // Reads FFT Attack from state
         float decay  = m_pState->m_fFFTDecay.eval(GetTime());   // Reads FFT Decay from state
-        const float kNoiseFloor = 0.025f;
+        const float kNoiseFloor = 0.03f;
+        float decayFactor = (1.0f - decay) * (1.0f - decay);
         //const float kVisibleFloor = 0.001f;
         for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)
         {
             float mono = (fShaderSpecLeft[fi] + fShaderSpecRight[fi]) * 0.5f;
-            // Normalize: apply sqrt compression and scale so values land near [0..1]
-            // Raw FFT magnitudes are proportional to FFT size; 0.017f empirically tuned
-            // to match MilkDrop3's get_fft() range at typical listening volumes.
-            mono = mono * fftScaling * dynamicGain;
+            // Normalize FFT with RMS.
+            mono = (mono / s_fftRMS) * fftScaling;
 
             mono -= kNoiseFloor;
             if (mono < 0.0f) mono = 0.0f;
             // Attenuate low-frequency bins to reduce bass over-accentuation.
-            // Bins below ~215 Hz (bin ~5) are progressively reduced.
-            // The curve ramps from 0.15 at bin 0 to 1.0 at bin 5.
-            if (fi < 5)
+            // Bins below ~2000 Hz (bin ~24) are progressively reduced.
+            // The curve ramps from 0.15 at bin 0 to 1.0 at bin 24.
+            const int kBassRampEnd = 24;
+            if (fi < kBassRampEnd)
             {
-                float t = fi / 5.0f;
+                float t = (float)fi / (float)kBassRampEnd;
                 float lowcut = 0.15f + 0.85f * (t*t);
                 mono *= lowcut;
             }
             if (mono > m_fFFTSmoothed[fi])
                 m_fFFTSmoothed[fi] += (mono - m_fFFTSmoothed[fi]) * attack;
             else
-            {
-                float decayFactor = (1.0f - decay) * (1.0f - decay);
                 m_fFFTSmoothed[fi] += (mono - m_fFFTSmoothed[fi]) * decayFactor;
-            }
             /*
             if (m_fFFTSmoothed[fi] < kVisibleFloor)
                 m_fFFTSmoothed[fi] = 0.0f;
             */
         }
-        // Update peak hold: hold for ~0.5 seconds then decay
+        // Update peak hold: hold for 1 second then decay
         for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)
         {
             if (m_fFFTSmoothed[fi] >= m_fFFTPeak[fi])
@@ -11485,8 +11491,9 @@ void CPlugin::DoCustomSoundAnalysis()
                 m_nFFTPeakHold[fi]--;
             else
             {
-                m_fFFTPeak[fi] *= 0.97f; // ~3% drop per frame, creates that smooth gravity-fall effect
+                m_fFFTPeak[fi] *= .97f; // ~3% drop per frame, creates that smooth gravity-fall effect
                 //if (m_fFFTPeak[fi] < kVisibleFloor) m_fFFTPeak[fi] = 0.0f;
+                if (m_fFFTPeak[fi] < 0.0f) m_fFFTPeak[fi] = 0.0f;
             }
         }
         if (m_lpFFTTexture)
