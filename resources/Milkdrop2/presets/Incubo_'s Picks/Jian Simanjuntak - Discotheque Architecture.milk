@@ -223,12 +223,12 @@ shapecode_3_border_a=0.000
 shape_3_per_frame1=x = int(rand(11))*.1;
 shape_3_per_frame2=y = int(rand(11))*.13;
 shape_3_per_frame3=
-shape_3_per_frame5=r = 0.5 + 0.5*sin(1.6*time);
-shape_3_per_frame6=g = 0.5 + 0.5*sin(4.1*time);
-shape_3_per_frame7=b = -1 + (1-r + 1-g);
-shape_3_per_frame8=r2 = 0.5 + 0.5*sin(1.6*time);
-shape_3_per_frame9=g2 = 0.5 + 0.5*sin(4.1*time);
-shape_3_per_frame10=b2 = -1 + (1-r + 1-g);
+shape_3_per_frame4=r = 0.5 + 0.5*sin(1.6*time);
+shape_3_per_frame5=g = 0.5 + 0.5*sin(4.1*time);
+shape_3_per_frame6=b = -1 + (1-r + 1-g);
+shape_3_per_frame7=r2 = 0.5 + 0.5*sin(1.6*time);
+shape_3_per_frame8=g2 = 0.5 + 0.5*sin(4.1*time);
+shape_3_per_frame9=b2 = -1 + (1-r + 1-g);
 per_frame_1=
 per_frame_2=warp = 0.6;
 per_frame_3=
