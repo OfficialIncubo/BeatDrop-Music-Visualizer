@@ -1,0 +1,268 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 26/03/2026 at 22:13:24.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.005
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99990
+rot=-0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=0.99990
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_1=// SOUND SPECTRUM FLOOR - Fixed for MilkDrop3 //
+per_frame_2=
+per_frame_3=// COMPOSITE SHADER, WARP SHADER CONTROL //
+per_frame_4=vol = (bass_att + mid_att + treb_att) * .25;
+per_frame_5=vol = vol*vol;
+per_frame_6=mtime = mtime + vol*0.6;
+per_frame_7=q3=mtime * 2.5;
+per_frame_8=// END //
+warp_1=`// SOUND SPECTRUM FLOOR - Warp Shader
+warp_2=`// Converted from ShaderToy GLSL to MilkDrop3 HLSL
+warp_3=`// Uses get_fft() from MilkDrop3 (no frac() with get_fft per limitation)
+warp_4=`// Original: https://www.shadertoy.com/view/WdfSDr
+warp_5=`
+warp_6=`#define BEATMOVE 1
+warp_7=`
+warp_8=`static const float FREQ_RANGE = 128.0;
+warp_9=`static const float PI = M_PI;
+warp_10=`static const float RADIUS = 0.5;
+warp_11=`static const float BRIGHTNESS = 0.15;
+warp_12=`static const float SPEED = 0.5;
+warp_13=`
+warp_14=`// Convert HSV to RGB (HLSL)
+warp_15=`float3 hsv2rgb(float3 color) {
+warp_16=`    float4 k = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+warp_17=`    float3 p = abs(frac(color.xxx + k.xyz) * 6.0 - k.www);
+warp_18=`    return color.z * lerp(k.xxx, clamp(p - k.xxx, 0.0, 1.0), color.y);
+warp_19=`}
+warp_20=`
+warp_21=`float luma(float3 color) {
+warp_22=`    return dot(color, float3(0.299, 0.587, 0.5));
+warp_23=`}
+warp_24=`
+warp_25=`// getFrequency: sample FFT at a normalized band index [0..1]
+warp_26=`// Maps x into FREQ_RANGE discrete bins using floor only (no frac on get_fft).
+warp_27=`float getFrequency(float x) {
+warp_28=`    float bin = floor(x * FREQ_RANGE + 1.0) / FREQ_RANGE;
+warp_29=`    return get_fft(saturate(bin)) + 0.06;
+warp_30=`}
+warp_31=`
+warp_32=`// Smooth interpolation between two adjacent FFT bins.
+warp_33=`// frac() is used only on a plain float (x * FREQ_RANGE), NOT on get_fft() itself.
+warp_34=`float getFrequency_smooth(float x) {
+warp_35=`    float fi      = floor(x * FREQ_RANGE);
+warp_36=`    float binA    = fi / FREQ_RANGE;
+warp_37=`    float binB    = (fi + 1.0) / FREQ_RANGE;
+warp_38=`    float t       = frac(x * FREQ_RANGE);   // frac on plain float, safe
+warp_39=`    float valA    = get_fft(saturate(binA)) + 0.06;
+warp_40=`    float valB    = get_fft(saturate(binB)) + 0.06;
+warp_41=`    return lerp(valA, valB, smoothstep(0.0, 1.0, t));
+warp_42=`}
+warp_43=`
+warp_44=`float getFrequency_blend(float x) {
+warp_45=`    return lerp(getFrequency(x), getFrequency_smooth(x), 0.5);
+warp_46=`}
+warp_47=`
+warp_48=`float3 circleIllumination(float2 fragment, float radius) {
+warp_49=`    float dist  = length(fragment);
+warp_50=`    // Use a fixed low-frequency sample for the ring offset (no frac on get_fft)
+warp_51=`    float ringOffset = getFrequency_smooth(0.0) / 4.50;
+warp_52=`    float ring  = 1.0 / max(abs(dist - radius - ringOffset), 0.001);
+warp_53=`    float3 color = float3(0.0, 0.0, 0.0);
+warp_54=`    float angle  = atan2(fragment.x, fragment.y);
+warp_55=`    color += hsv2rgb(float3((angle + time * 2.5) / (PI * 2.0), 1.0, 1.0)) * ring * BRIGHTNESS;
+warp_56=`    float frequency = max(getFrequency_blend(abs(angle / PI)) - 0.02, 0.0);
+warp_57=`    color *= frequency;
+warp_58=`    return color;
+warp_59=`}
+warp_60=`
+warp_61=`float3 doLine(float2 fragment, float radius, float x) {
+warp_62=`    float3 col  = hsv2rgb(float3(x * 0.23 + time * 0.12, 1.0, 1.0));
+warp_63=`    float freq  = abs(fragment.x * 0.5);
+warp_64=`    col *= (1.0 / max(abs(fragment.y), 0.001)) * BRIGHTNESS * getFrequency(saturate(freq));
+warp_65=`    col  = col * smoothstep(radius, radius * 1.8, abs(fragment.x));
+warp_66=`    return col;
+warp_67=`}
+warp_68=`
+warp_69=`shader_body
+warp_70=`{
+warp_71=`    // Reconstruct aspect-correct centered NDC coords from MilkDrop UV
+warp_72=`    // uv is [0..1] per-pixel; texsize.xy = (width, height)
+warp_73=`    float aspectRatio = texsize.x / texsize.y;
+warp_74=`    float2 fragPos = (uv.xy - 0.5) * 2.0;
+warp_75=`    fragPos.x *= aspectRatio;
+warp_76=`
+warp_77=`    float3 color = float3(0.0, 0.0, 0.0);
+warp_78=`    color += circleIllumination(fragPos, RADIUS);
+warp_79=`
+warp_80=`    float c  = cos(time * SPEED * q2);
+warp_81=`    float s  = sin(time * SPEED * q2);
+warp_82=`    // HLSL 2x2 matrix rotation: float2x2, multiply with mul()
+warp_83=`    float2x2 rotMat = float2x2(c, s, -s, c);
+warp_84=`    float2 rot = mul(rotMat, fragPos);
+warp_85=`    color += doLine(rot, RADIUS, rot.x);
+warp_86=`
+warp_87=`    float c1 = sin(time * SPEED);
+warp_88=`    float s1 = cos(time * SPEED);
+warp_89=`    float2x2 rotMat1 = float2x2(c1, s1, -s1, c1);
+warp_90=`    float2 rot1 = mul(rotMat1, fragPos);
+warp_91=`    color += doLine(rot1, RADIUS, rot1.y);
+warp_92=`
+warp_93=`    color += max(luma(color) - 1.0, 0.0);
+warp_94=`
+warp_95=`    ret = float4(color, 1.0);
+warp_96=`}
+comp_1=`// SOUND SPECTRUM FLOOR - Comp Shader
+comp_2=`// Converted from ShaderToy GLSL to MilkDrop3 HLSL
+comp_3=`// Floor/ceiling raycaster; samples the warp output as the floor texture.
+comp_4=`// Original: https://www.shadertoy.com/view/MtjBRK
+comp_5=`
+comp_6=`static const float floorHeight  = -32.0;
+comp_7=`static const float ceilHeight   =  32.0;
+comp_8=`static const float textureRes   = 128.0;
+comp_9=`static const float fogDensity   = 128.0;
+comp_10=`
+comp_11=`float3 floorCast(float3 o, float3 d, float planeHeight)
+comp_12=`{
+comp_13=`    // Ray-plane intersection: t = (planeHeight - o.y) / d.y
+comp_14=`    // Guard against near-zero d.y to avoid divide-by-zero
+comp_15=`    float t = (planeHeight - o.y) / (abs(d.y) > 0.0001 ? d.y : 0.0001);
+comp_16=`    return o + d * t;
+comp_17=`}
+comp_18=`
+comp_19=`shader_body
+comp_20=`{
+comp_21=`    // Proper screen UV: uv_lhs is the per-pixel [0..1] UV in the comp shader
+comp_22=`    float2 uv0 = uv.xy;
+comp_23=`
+comp_24=`    // Centered UV in [-1..1] with aspect correction
+comp_25=`    float2 uvCentered = uv0 * 2.0 - float2(1.0, 1.0);
+comp_26=`
+comp_27=`    // Camera moves forward over time, driven by q2 (beat-synced)
+comp_28=`    float3 camPos = float3(0.0, 0.0, q3);
+comp_29=`
+comp_30=`    // Ray direction: horizontal FOV wider than vertical (x1.0 vs x0.5)
+comp_31=`    float3 rayDir = float3(uvCentered.x, uvCentered.y * 0.5, 1.0);
+comp_32=`
+comp_33=`    // Build yaw/pitch rotation matrices using float3x3 (HLSL; no mat3)
+comp_34=`    // radians() unavailable in HLSL d3d9 — use multiply by (PI/180)
+comp_35=`    float PI2 = M_PI;
+comp_36=`    float yaw   = sin(time) * 20.0 * (PI2 / 180.0);
+comp_37=`    float pitch = cos(time) * 20.0 * (PI2 / 180.0);
+comp_38=`
+comp_39=`    float cy = cos(yaw);   float sy = sin(yaw);
+comp_40=`    float cp = cos(pitch); float sp = sin(pitch);
+comp_41=`
+comp_42=`    // Yaw rotation around Y axis
+comp_43=`    float3x3 rotYaw = float3x3(
+comp_44=`         cy,  0.0,  sy,
+comp_45=`        0.0,  1.0, 0.0,
+comp_46=`        -sy,  0.0,  cy
+comp_47=`    );
+comp_48=`
+comp_49=`    // Pitch rotation around X axis
+comp_50=`    float3x3 rotPitch = float3x3(
+comp_51=`        1.0, 0.0, 0.0,
+comp_52=`        0.0,  cp,  sp,
+comp_53=`        0.0, -sp,  cp
+comp_54=`    );
+comp_55=`
+comp_56=`    // Combined rotation: apply yaw first, then pitch
+comp_57=`    rayDir = normalize(mul(rotPitch, mul(rotYaw, rayDir)));
+comp_58=`
+comp_59=`    // Floor/ceiling intersection and texture lookup
+comp_60=`    float4 color = float4(1.0, 1.0, 1.0, 1.0);
+comp_61=`    float3 projection = float3(0.0, 0.0, 0.0);
+comp_62=`
+comp_63=`    if (rayDir.y <= 0.0)
+comp_64=`    {
+comp_65=`        // Ray hits floor: sample the warp output (previous frame = spectrum visuals)
+comp_66=`        projection = floorCast(camPos, rayDir, floorHeight);
+comp_67=`        color = float4(tex2D(sampler_main, frac(projection.xz / textureRes)).xyz, 1.0);
+comp_68=`    }
+comp_69=`    else
+comp_70=`    {
+comp_71=`        // Ray hits ceiling: use a slightly different tiling offset for variety
+comp_72=`        projection = floorCast(camPos, rayDir, ceilHeight);
+comp_73=`        color = float4(tex2D(sampler_main, frac(projection.xz / textureRes + 0.5)).xyz, 1.0);
+comp_74=`    }
+comp_75=`
+comp_76=`    // Distance fog: attenuate by squared distance from camera
+comp_77=`    float3 diff = projection.xyz - camPos;
+comp_78=`    float distSq = dot(diff, diff);
+comp_79=`    color.xyz /= clamp(distSq / (fogDensity * 64.0), 1.0, 50.0);
+comp_80=`
+comp_81=`    ret = float4(clamp(color.xyz, 0.0, 1.0), 1.0);
+comp_82=`}
