@@ -7,6 +7,7 @@
 * \[ ] Screensaver Support: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/16
 * \[ ] Desktop Mode: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/20
 * \[ ] Config Panel Program (GUI based)
+* \[ ] TCP relay support + Android/iOS Remote
 
 # For the next (or further) version of BeatDrop
 
