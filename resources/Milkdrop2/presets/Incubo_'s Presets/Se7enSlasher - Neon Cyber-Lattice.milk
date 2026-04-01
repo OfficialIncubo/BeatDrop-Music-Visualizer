@@ -1,0 +1,152 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 30/03/2026 at 21:24:08.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000
+fGammaAdj=1.000
+fDecay=0.960
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.010
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=// Dynamic rotation and kaleidoscope complexity
+per_frame_2=q1 = time * 0.2 + (bass * 0.05); 
+per_frame_3=q2 = 4 + floor(bass_att * 2); // Slices change with bass impact
+per_frame_4=q3 = 0.5 + (0.1 * sin(time * 0.3)); // Oscillating scale factor
+per_frame_5=
+per_frame_6=// Pass mouse data to Q variables for shader use [cite: 3]
+per_frame_7=q4 = mouse_x;
+per_frame_8=q5 = mouse_y;
+warp_1=`sampler2D sampler_rand00;
+warp_2=`shader_body
+warp_3=`{
+warp_4=`    float2 center = float2(0.5, 0.5);
+warp_5=`    float2 uv_centered = uv - center;
+warp_6=`    
+warp_7=`    // Create high-velocity radial blur trails
+warp_8=`    float3 blur = 0;
+warp_9=`    float samples = 6.0;
+warp_10=`    for(float i=0; i<samples; i++) {
+warp_11=`        float scale = 1.0 - (i * 0.01 * bass_att);
+warp_12=`        blur += tex2D(sampler_main, uv_centered * scale + center).xyz;
+warp_13=`    }
+warp_14=`    blur /= samples;
+warp_15=`
+warp_16=`    // Audio-reactive random texture displacement
+warp_17=`    float3 noise = tex2D(sampler_rand00, uv + float2(sin(time*.3)/5, sin(time*.5)/5)).xyz;
+warp_18=`    float2 uv_noise = uv + (noise.xy - 0.5) * 0.05 * treb_att;
+warp_19=`    
+warp_20=`    // Combine blur with noise-driven feedback
+warp_21=`    ret = blur * 0.95 - 0.004 + (noise * 0.05 * bass_att);
+warp_22=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float2 uv_k = (uv - 0.5) * float2(1, texsize.y/texsize.x);
+comp_4=`    
+comp_5=`    // 1. DYNAMIC KALEIDOSCOPE
+comp_6=`    float angle = atan2(uv_k.y, uv_k.x) + q1;
+comp_7=`    float radius = length(uv_k);
+comp_8=`    float slice = (M_PI * 2.0) / q2;
+comp_9=`    angle = fmod(angle, slice) - (slice / 2.0);
+comp_10=`    angle = abs(angle);
+comp_11=`    
+comp_12=`    // Map back to mirrored Cartesian space
+comp_13=`    float2 uv_p = float2(cos(angle), sin(angle)) * radius;
+comp_14=`
+comp_15=`    // 2. NEW WAVE FUNCTION INTEGRATION [cite: 26, 27]
+comp_16=`    float wave_h = get_wave_left(abs(uv_p.x)); 
+comp_17=`    float wave_v = get_wave_right(abs(uv_p.y));
+comp_18=`    float wave_c = get_wave(radius); 
+comp_19=`
+comp_20=`    // 3. DRAWING THE GRID
+comp_21=`    // Create glowing neon lines based on wave positions
+comp_22=`    float line_h = 0.002 / abs(uv_p.y - wave_h * 0.2 - 0.2);
+comp_23=`    float line_v = 0.002 / abs(uv_p.x - wave_v * 0.2 - 0.2);
+comp_24=`    float ring = 0.004 / abs(radius - 0.4 - wave_c * 0.1);
+comp_25=`
+comp_26=`    // 4. EPIC COLORS
+comp_27=`    float3 col_cyan = float3(0.0, 0.8, 1.0) * line_h;
+comp_28=`    float3 col_pink = float3(1.0, 0.2, 0.7) * line_v;
+comp_29=`    float3 col_gold = float3(1.0, 0.8, 0.2) * ring;
+comp_30=`    
+comp_31=`    float3 final_ui = col_cyan + col_pink + col_gold;
+comp_32=`
+comp_33=`    // 5. FINAL BLEND
+comp_34=`    // Blend the neon grid with the radial trails from the warp shader
+comp_35=`    float3 background = tex2D(sampler_main, uv).xyz;
+comp_36=`    ret = final_ui + background * 0.6;
+comp_37=`    
+comp_38=`    // Subtle vignette
+comp_39=`    ret *= 1.0 - radius * 0.5;
+comp_40=`}

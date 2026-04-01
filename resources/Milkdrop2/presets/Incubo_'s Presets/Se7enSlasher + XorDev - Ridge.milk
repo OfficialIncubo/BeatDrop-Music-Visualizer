@@ -1,0 +1,126 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 21/03/2026 at 10:03:26.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+FFTAttack=0.700
+FFTDecay=0.720
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.235
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`//Original shader made with FragCoord.xyz by XorDev: https://fragcoord.xyz/s/l8onharn
+warp_2=`//Shader converted to MilkDrop (HLSL) with new get_fft() or get_fft_hz() using Gemini Pro 3.1 model by Incubo_
+warp_3=`
+warp_4=`shader_body
+warp_5=`{
+warp_6=`    uv.y = 1-uv.y;
+warp_7=`    float2 aspect_texsize = float2(1, texsize.y/texsize.x);
+warp_8=`    float2 uv_adj = (uv - 0.5) * 2.0;
+warp_9=`    
+warp_10=`    // Optional: Approximate standard 16:9 aspect ratio correction 
+warp_11=`    // (u_resolution.x / u_resolution.y)
+warp_12=`    uv_adj.x *= 1.7778;
+warp_13=`
+warp_14=`    float a = 0.2 * time;
+warp_15=`    float2x2 rot = transpose(float2x2(
+warp_16=`        cos(a), -sin(a),
+warp_17=`        sin(a),  cos(a)
+warp_18=`    ));
+warp_19=`
+warp_20=`    float3 color = float3(0.0, 0.0, 0.0);
+warp_21=`
+warp_22=`    for (float i = 1.0; i <= 100.0; i += 1.0)
+warp_23=`    {
+warp_24=`        // Calculate coordinate offset for this iteration
+warp_25=`        float2 offset = float2(0.0, (i - 50.0) * 0.3);
+warp_26=`        float2 c = (uv_adj * 40.0 - offset) * float2(1.0, 2.0);
+warp_27=`        
+warp_28=`        // Apply rotation (equivalent to GLSL's c * mat2)
+warp_29=`        c = mul(c, rot);
+warp_30=`        
+warp_31=`        float fft_pos = saturate(abs(c.x / 512.0));
+warp_32=`        float fft_val = get_fft(fft_pos);
+warp_33=`        
+warp_34=`        float target = sqrt(i / 100.0);
+warp_35=`        float denom = exp(abs(100.0 * fft_val / (1.0 + abs(c.y) / 10.0) - i));
+warp_36=`        
+warp_37=`        color += (target - color) / denom;
+warp_38=`    }
+warp_39=`
+warp_40=`    // Output final color
+warp_41=`    ret = color;
+warp_42=`}
+comp_1=`shader_body
+comp_2=`{ ret = GetPixel(uv); }

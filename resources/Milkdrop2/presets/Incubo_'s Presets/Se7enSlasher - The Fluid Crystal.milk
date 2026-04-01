@@ -1,0 +1,138 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 30/03/2026 at 21:21:31.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=2
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.500
+fDecay=0.980
+FFTAttack=0.300
+FFTDecay=0.750
+fVideoEchoZoom=2.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=q1 = time * 0.5; // Slow rotation base
+per_frame_2=q2 = 0.5 + 0.2 * bass; // Pulse scale
+per_frame_3=q3 = totalseconds; // From source 
+per_frame_4=q4 = mid_att * 0.1; // Frequency intensity
+warp_1=`sampler sampler_rand00;
+warp_2=`
+warp_3=`shader_body
+warp_4=`{
+warp_5=`    // Use the new get_fft() to scale the noise intensity 
+warp_6=`    float noise_scale = get_fft(0.1)*1.5; 
+warp_7=`    float3 noise = tex2D(sampler_rand00, uv).xyz * noise_scale;
+warp_8=`    
+warp_9=`    // Zoom in slightly for feedback growth
+warp_10=`    float2 uv_warp = (uv - 0.5) * 0.99 + 0.5;
+warp_11=`    
+warp_12=`    ret = tex2D(sampler_main, uv_warp).xyz;
+warp_13=`    ret += noise * 0.05; // Inject the reactive texture
+warp_14=`    ret *= .97;
+warp_15=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    // 1. Setup Coordinates (Polar for Kaleidoscope)
+comp_4=`    float2 uvn = (uv - 0.5) * float2(1, texsize.y/texsize.x);
+comp_5=`    float angle = atan2(uvn.y, uvn.x);
+comp_6=`    float radius = length(uvn);
+comp_7=`
+comp_8=`    // 2. Rhythmic Kaleidoscope
+comp_9=`    // We repeat the angle 6 times and use 'abs' to mirror it
+comp_10=`    float slices = 6.0;
+comp_11=`    angle = abs( ( (angle / M_PI_2) * slices ) % 1.0 - 0.5 );
+comp_12=`    float2 uv_k = float2(cos(angle * M_PI_2), sin(angle * M_PI_2)) * radius;
+comp_13=`
+comp_14=`    // 3. Multi-Tap Radial Blur
+comp_15=`    // Sampling the texture at different scales based on the audio waveform 
+comp_16=`    float blur_dist = get_wave(radius) * 0.1; 
+comp_17=`    float3 col = GetPixel(uv_k + 0.5).xyz;
+comp_18=`    col += GetPixel(uv_k * (1.0 + blur_dist) + 0.5).xyz;
+comp_19=`    col += GetPixel(uv_k * (1.0 - blur_dist) + 0.5).xyz;
+comp_20=`    col /= 3.0;
+comp_21=`
+comp_22=`    // 4. Epic Colors & Wave Distortion
+comp_23=`    // Using left/right channels to shift the RGB balance [cite: 6, 12]
+comp_24=`    float shift_r = get_wave_left(radius);
+comp_25=`    float shift_b = get_wave_right(radius);
+comp_26=`    
+comp_27=`    ret = col;
+comp_28=`    ret.r += shift_r * 0.3;
+comp_29=`    ret.b += shift_b * 0.3;
+comp_30=`    
+comp_31=`    // Use system time for a slow color cycle 
+comp_32=`    float color_cycle = q3 * 0.1;
+comp_33=`    ret = lerp(ret, ret.gbr, sin(color_cycle) * 0.5 + 0.5);
+comp_34=`
+comp_35=`    // High contrast punch
+comp_36=`    ret *= 1.5; 
+comp_37=`}

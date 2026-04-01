@@ -1,0 +1,142 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 30/03/2026 at 16:56:40.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000
+fGammaAdj=1.000
+fDecay=0.960
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=// Rotation logic for the kaleidoscope [cite: 10]
+per_frame_2=q1 = time * 0.2 + (bass * 0.1); 
+per_frame_3=// Audio-reactive intensity for the random texture
+per_frame_4=q2 = bass_att * 0.4;
+per_frame_5=// Color shifting variables
+per_frame_6=q3 = 0.5 + 0.5*sin(time*0.3); // Red shift
+per_frame_7=q4 = 0.5 + 0.5*sin(time*0.5); // Green shift
+per_frame_8=q5 = 0.5 + 0.5*sin(time*0.7); // Blue shift
+warp_1=`sampler2D sampler_rand00;
+warp_2=`shader_body
+warp_3=`{
+warp_4=`    // RADIAL BLUR LOGIC
+warp_5=`    // Zoom slightly into the center for infinite tunnel effect [cite: 11]
+warp_6=`    float2 uv_zoom = (uv - 0.5) * 0.97 + 0.5;
+warp_7=`    
+warp_8=`    // Sample main texture with slight offsets for "epic" motion blur
+warp_9=`    float3 feedback = tex2D(sampler_main, uv_zoom).xyz;
+warp_10=`    feedback += tex2D(sampler_main, (uv - 0.5) * 0.95 + 0.5).xyz;
+warp_11=`    feedback *= 0.48; // Dampen feedback
+warp_12=`    
+warp_13=`    // Add subtle tech noise from random sampler [cite: 15]
+warp_14=`    float3 noise = tex2D(sampler_rand00, uv + float2(sin(time*.3)/5, sin(time*.5)/5)).xyz * 0.02;
+warp_15=`    
+warp_16=`    ret = feedback + noise;
+warp_17=`}
+comp_1=`sampler2D sampler_rand00;
+comp_2=`shader_body
+comp_3=`{
+comp_4=`    // 1. KALEIDOSCOPE MATH [cite: 18, 19]
+comp_5=`    float2 uv_k = (uv - 0.5) * float2(1, texsize.y/texsize.x);
+comp_6=`    float angle = atan2(uv_k.y, uv_k.x) + q1;
+comp_7=`    float radius = length(uv_k);
+comp_8=`    
+comp_9=`    // 8-fold symmetry logic [cite: 22, 23]
+comp_10=`    float slice = M_PI / 4.0;
+comp_11=`    angle = fmod(angle + M_PI, slice);
+comp_12=`    angle = abs(angle - slice / 2.0);
+comp_13=`    
+comp_14=`    // Return to cartesian [cite: 25]
+comp_15=`    float2 uv_mirrored = float2(cos(angle), sin(angle)) * radius;
+comp_16=`    
+comp_17=`    // 2. AUDIO-REACTIVE WAVEFORMS [cite: 4, 26]
+comp_18=`    // Map left and right waves to UV coordinates [cite: 27]
+comp_19=`    float wave_L = get_wave_left(uv_mirrored.x); 
+comp_20=`    float wave_R = get_wave_right(uv_mirrored.y);
+comp_21=`    
+comp_22=`    // 3. GLOWING OSCILLOSCOPE LINES [cite: 29, 30]
+comp_23=`    float line_L = 0.004 / (abs(uv_mirrored.y - wave_L * 0.2) + 0.002);
+comp_24=`    float line_R = 0.004 / (abs(uv_mirrored.x - wave_R * 0.2) + 0.002);
+comp_25=`    
+comp_26=`    // 4. COLOR AND NOISE MIXING [cite: 35-38]
+comp_27=`    float3 wave_color = line_L * float3(q3, 0.4, 1.0) + line_R * float3(1.0, q4, q5);
+comp_28=`    
+comp_29=`    // Reactive random texture overlay [cite: 39]
+comp_30=`    float3 tech_overlay = tex2D(sampler_rand00, uv_mirrored).xyz * q2;
+comp_31=`    
+comp_32=`    // 5. FINAL BLEND
+comp_33=`    float3 base_texture = tex2D(sampler_main, uv).xyz;
+comp_34=`    ret = (wave_color + tech_overlay) + (base_texture * 0.6);
+comp_35=`}
