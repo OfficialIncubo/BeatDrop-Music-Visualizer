@@ -1,0 +1,181 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 02/04/2026 at 17:41:31.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.235
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`// Original shader made with ShaderToy by kishimisu: https://www.shadertoy.com/view/dtl3Dr
+warp_2=`// Shader converted to MilkDrop (HLSL) with new get_fft() or get_fft_hz() using Gemini Pro 3.1 model and modifications by Incubo_
+warp_3=`// BeatDrop or MilkDrop3 are required to run this preset.
+warp_4=`
+warp_5=`// --- Helper Functions ---
+warp_6=`
+warp_7=`float getLevel(float x)
+warp_8=`{
+warp_9=`    return get_fft(saturate(x));
+warp_10=`}
+warp_11=`
+warp_12=`float st_md(float t1, float t2, float v1, float v2, float t) {
+warp_13=`    return lerp(v1, v2, smoothstep(t1, t2, t));
+warp_14=`}
+warp_15=`
+warp_16=`float light_md(float d, float att) {
+warp_17=`    return 1.0 / (1.0 + pow(abs(d * att), 1.3));
+warp_18=`}
+warp_19=`
+warp_20=`float logX_md(float x, float a, float c) {
+warp_21=`    return 1.0 / (exp(-a * (x - c)) + 1.0);
+warp_22=`}
+warp_23=`
+warp_24=`float logisticAmp_md(float amp, float t) {
+warp_25=`    float c = st_md(0.0, 10.0, 0.8, 1.0, t);
+warp_26=`    float a = 20.0;
+warp_27=`    return (logX_md(amp, a, c) - logX_md(0.0, a, c)) / (logX_md(1.0, a, c) - logX_md(0.0, a, c));
+warp_28=`}
+warp_29=`
+warp_30=`// Adapted Pitch using get_fft()
+warp_31=`float getPitch_md(float freq, float octave, float t) {
+warp_32=`    freq = pow(2.0, freq) * 261.0;
+warp_33=`    freq = pow(2.0, octave) * freq / 12000.0;
+warp_34=`    // get_fft input must be 0...1 [cite: 5]
+warp_35=`    // Avoid frac() here as per instructions to prevent "sat not permitted" errors
+warp_36=`    float amp = getLevel(freq); 
+warp_37=`    return logisticAmp_md(amp, t);
+warp_38=`}
+warp_39=`
+warp_40=`float getVol_md(float samples) {
+warp_41=`    float avg = 0.0;
+warp_42=`    for (int i = 0; i < samples; i++)
+warp_43=`        avg += getLevel(i/samples);
+warp_44=`    return avg / samples;
+warp_45=`}
+warp_46=`
+warp_47=`float sdBox_md(float3 p, float3 b) {
+warp_48=`    float3 q = abs(p) - b;
+warp_49=`    return length(max(q, 0.0)) + min(max(q.x, max(q.y, q.z)), 0.0);
+warp_50=`}
+warp_51=`
+warp_52=`float hash13_md(float3 p3) {
+warp_53=`    // Standard hash without frac() where possible, 
+warp_54=`    // or using the hlsl 'fract' equivalent if supported, 
+warp_55=`    // but here we use the provided logic:
+warp_56=`    p3  = frac(p3 * 0.1031);
+warp_57=`    p3 += dot(p3, p3.zyx + 31.32);
+warp_58=`    return frac((p3.x + p3.y) * p3.z);
+warp_59=`}
+warp_60=`
+warp_61=`// --- Main Shader ---
+warp_62=`shader_body{
+warp_63=`    // Center UVs: MilkDrop uv is 0..1, transform to -1..1 relative to aspect ratio
+warp_64=`    uv.y = 1-uv.y;
+warp_65=`    float2 uv_centered = ((uv - 0.5) * 2.0) * float2(1, texsize.y/texsize.x);
+warp_66=`    uv_centered.x *= aspect.x; // Maintain aspect ratio
+warp_67=`
+warp_68=`    float3 col = float3(0,0,0);
+warp_69=`    float volume = getVol_md(.8);
+warp_70=`    float t_march = 0.0;
+warp_71=`
+warp_72=`    // Raymarching Loop (MilkDrop 3 supports loops, but 'break' is forbidden)
+warp_73=`    // We use a fixed iteration count.
+warp_74=`    for (int i = 0; i < 30; i++) {
+warp_75=`        float3 p = t_march * normalize(float3(uv_centered, 1.0));
+warp_76=`        
+warp_77=`        float3 id = floor(abs(p));
+warp_78=`        // Use frac() only on simple variables to avoid instruction errors 
+warp_79=`        float3 q = frac(p) - 0.5; 
+warp_80=`        
+warp_81=`        float boxRep = sdBox_md(q, float3(0.3, 0.3, 0.3));
+warp_82=`        float boxCtn = sdBox_md(p, float3(7.5, 6.5, 16.5));
+warp_83=`
+warp_84=`        float dst = max(boxRep, abs(boxCtn) - volume * 0.2);     
+warp_85=`        float freq = smoothstep(16, 0, id.z) * 3.0 + hash13_md(id) * 1.5;
+warp_86=`       
+warp_87=`        // Coloring and Pitch-reactive lighting
+warp_88=`        float3 colorScale = (cos(id * 0.4 + float3(0,1,2) + time) + 2.0);
+warp_89=`        col += float3(0.8, 0.6, 1.0) * colorScale 
+warp_90=`             * light_md(dst, 10.0 - volume) 
+warp_91=`             * getPitch_md(freq, 1.0, time);
+warp_92=`        
+warp_93=`        t_march += dst;
+warp_94=`    }
+warp_95=`    
+warp_96=`    ret = float4(col, 1.0);
+warp_97=`}
+comp_1=`shader_body
+comp_2=`{ ret = GetPixel(uv); }
