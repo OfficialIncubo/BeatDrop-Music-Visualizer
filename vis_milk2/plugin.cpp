@@ -5862,16 +5862,14 @@ void ToggleTransparency(HWND hwnd)
 
     LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
 
-    // Enable the layered window attribute without affecting other styles
-    exStyle |= WS_EX_LAYERED;
-    SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
-
     SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_DRAWFRAME | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED); // Redraws the window to fix the transparency mode issue for Windows 7, 8 and 8.1.
     if (TranspaMode)
     {
         if (dwmEnabled)
             DwmEnableComposition(DWM_EC_DISABLECOMPOSITION); //Disable Aero Composition
-        //SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
+        // Enable the layered window attribute without affecting other styles
+        exStyle |= WS_EX_LAYERED;
+        SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, LWA_COLORKEY);
         OpacityControl = 10; //Reverts the window opacity back to 100%
         DragAcceptFiles(hwnd, TRUE);
@@ -5880,8 +5878,9 @@ void ToggleTransparency(HWND hwnd)
     {
         if (!dwmEnabled)
             DwmEnableComposition(DWM_EC_ENABLECOMPOSITION); //Reenable Aero Composition
-        //SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, LWA_ALPHA);
+        // Disable layered style
+        exStyle &= ~WS_EX_LAYERED;
+        SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
         DragAcceptFiles(hwnd, TRUE);
     }
 }
