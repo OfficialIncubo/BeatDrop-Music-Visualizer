@@ -11419,8 +11419,8 @@ void CPlugin::DoCustomSoundAnalysis()
     myfft.time_to_frequency_domain(fWaveRight, mysound.fSpecRight);
 	//for (i=0; i<MY_FFT_SAMPLES; i++) fSpecLeft[i] = sqrtf(fSpecLeft[i]*fSpecLeft[i] + fSpecTemp[i]*fSpecTemp[i]);
 
-      // Apply FFT smoothing and upload to GPU texture for get_fft()/get_fft_hz() shader functions
-      // Compute clean (un-equalized) FFT for get_fft()/get_fft_hz() shader functions
+    // Apply FFT smoothing and upload to GPU texture for get_fft()/get_fft_hz() shader functions
+    // Compute clean (un-equalized) FFT for get_fft()/get_fft_hz() shader functions
     float fShaderSpecLeft[MY_FFT_SAMPLES];
     float fShaderSpecRight[MY_FFT_SAMPLES];
     memset(fShaderSpecLeft, 0, sizeof(float) * MY_FFT_SAMPLES);
@@ -11454,7 +11454,7 @@ void CPlugin::DoCustomSoundAnalysis()
         float attack = m_pState->m_fFFTAttack.eval(GetTime());  // Reads FFT Attack from state
         float decay  = m_pState->m_fFFTDecay.eval(GetTime());   // Reads FFT Decay from state
         float decayFactor = (1.0f - decay) * (1.0f - decay);
-        //const float kVisibleFloor = 0.001f;
+        const float kVisibleFloor = 5e-8f;
         for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)
         {
             float mono = (fShaderSpecLeft[fi] + fShaderSpecRight[fi]) * 0.5f;
@@ -11477,10 +11477,8 @@ void CPlugin::DoCustomSoundAnalysis()
                 m_fFFTSmoothed[fi] += (mono - m_fFFTSmoothed[fi]) * attack;
             else
                 m_fFFTSmoothed[fi] += (mono - m_fFFTSmoothed[fi]) * decayFactor;
-            /*
             if (m_fFFTSmoothed[fi] < kVisibleFloor)
                 m_fFFTSmoothed[fi] = 0.0f;
-            */
         }
         // Update peak hold: hold for 1 second then decay
         for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)

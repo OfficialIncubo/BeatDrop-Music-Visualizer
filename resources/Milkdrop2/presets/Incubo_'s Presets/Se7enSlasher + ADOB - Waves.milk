@@ -5,9 +5,9 @@ Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord
 ###################################################################################################
 
 MILKDROP_PRESET_VERSION=201
-PSVERSION=4
-PSVERSION_WARP=4
-PSVERSION_COMP=4
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=2
 [preset00]
 fRating=5.000
 fGammaAdj=1.460
@@ -86,7 +86,7 @@ warp_3=`Converted from ShaderToy to MilkDrop by me (No AI)
 warp_4=`This preset will not work with various codebases, like projectM, NestDrop, MilkDrop3 etc.
 warp_5=`Perhaps MilkDrop2077 (serge000) will make wave shader functions for MilkDrop3.
 warp_6=`BeatDrop is required to run this preset.
-warp_7=`Otiginal ShaderToy shader link: https://www.shadertoy.com/view/4ljGD1
+warp_7=`Original ShaderToy shader link: https://www.shadertoy.com/view/4ljGD1
 warp_8=`*/
 warp_9=`
 warp_10=`float squared(float value) { return value * value; }
