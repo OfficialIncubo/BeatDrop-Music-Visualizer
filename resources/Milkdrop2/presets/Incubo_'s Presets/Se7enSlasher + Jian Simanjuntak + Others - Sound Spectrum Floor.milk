@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 26/03/2026 at 22:13:24.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 03/04/2026 at 13:26:54.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -80,14 +80,12 @@ b1x=1.000
 b2x=1.000
 b3x=1.000
 b1ed=0.000
-per_frame_1=// SOUND SPECTRUM FLOOR - Fixed for MilkDrop3 //
-per_frame_2=
-per_frame_3=// COMPOSITE SHADER, WARP SHADER CONTROL //
-per_frame_4=vol = (bass_att + mid_att + treb_att) * .25;
-per_frame_5=vol = vol*vol;
-per_frame_6=mtime = mtime + vol*0.6;
-per_frame_7=q3=mtime * 2.5;
-per_frame_8=// END //
+per_frame_1=// COMPOSITE SHADER, WARP SHADER CONTROL //
+per_frame_2=vol = (bass_att + mid_att + treb_att) * .25;
+per_frame_3=vol = vol*vol;
+per_frame_4=mtime = mtime + vol*0.6;
+per_frame_5=q3=mtime;
+per_frame_6=// END //
 warp_1=`// SOUND SPECTRUM FLOOR - Warp Shader
 warp_2=`// Converted from ShaderToy GLSL to MilkDrop3 HLSL
 warp_3=`// Uses get_fft() from MilkDrop3 (no frac() with get_fft per limitation)
@@ -167,8 +165,8 @@ warp_76=`
 warp_77=`    float3 color = float3(0.0, 0.0, 0.0);
 warp_78=`    color += circleIllumination(fragPos, RADIUS);
 warp_79=`
-warp_80=`    float c  = cos(time * SPEED * q2);
-warp_81=`    float s  = sin(time * SPEED * q2);
+warp_80=`    float c  = cos(time * SPEED);
+warp_81=`    float s  = sin(time * SPEED);
 warp_82=`    // HLSL 2x2 matrix rotation: float2x2, multiply with mul()
 warp_83=`    float2x2 rotMat = float2x2(c, s, -s, c);
 warp_84=`    float2 rot = mul(rotMat, fragPos);
@@ -186,83 +184,94 @@ warp_95=`    ret = float4(color, 1.0);
 warp_96=`}
 comp_1=`// SOUND SPECTRUM FLOOR - Comp Shader
 comp_2=`// Converted from ShaderToy GLSL to MilkDrop3 HLSL
-comp_3=`// Floor/ceiling raycaster; samples the warp output as the floor texture.
-comp_4=`// Original: https://www.shadertoy.com/view/MtjBRK
-comp_5=`
-comp_6=`static const float floorHeight  = -32.0;
-comp_7=`static const float ceilHeight   =  32.0;
-comp_8=`static const float textureRes   = 128.0;
-comp_9=`static const float fogDensity   = 128.0;
-comp_10=`
-comp_11=`float3 floorCast(float3 o, float3 d, float planeHeight)
-comp_12=`{
-comp_13=`    // Ray-plane intersection: t = (planeHeight - o.y) / d.y
-comp_14=`    // Guard against near-zero d.y to avoid divide-by-zero
-comp_15=`    float t = (planeHeight - o.y) / (abs(d.y) > 0.0001 ? d.y : 0.0001);
-comp_16=`    return o + d * t;
-comp_17=`}
-comp_18=`
-comp_19=`shader_body
-comp_20=`{
-comp_21=`    // Proper screen UV: uv_lhs is the per-pixel [0..1] UV in the comp shader
-comp_22=`    float2 uv0 = uv.xy;
-comp_23=`
-comp_24=`    // Centered UV in [-1..1] with aspect correction
-comp_25=`    float2 uvCentered = uv0 * 2.0 - float2(1.0, 1.0);
+comp_3=`// Original: https://www.shadertoy.com/view/MtjBRK
+comp_4=`
+comp_5=`// Custom JPG tile texture
+comp_6=`sampler2D sampler_disco_lights;
+comp_7=`
+comp_8=`static const float floorHeight   = -32.0;
+comp_9=`static const float ceilHeight    =  32.0;
+comp_10=`static const float textureRes    = 128.0;
+comp_11=`static const float fogDensity    = 128.0;
+comp_12=`// Tile density: higher = more/smaller JPG tiles across the floor
+comp_13=`static const float jpgTileScale  = 4.0;
+comp_14=`// Brightness of the disco JPG on the floor (boost if it looks too dark)
+comp_15=`static const float jpgBrightness = 2;
+comp_16=`// Transparency threshold: JPG pixels darker than this reveal the bg
+comp_17=`// 0.0 = only pure black is transparent; 0.3 = dark greys too
+comp_18=`static const float blackThreshold = 0;
+comp_19=`
+comp_20=`float3 floorCast(float3 o, float3 d, float planeHeight)
+comp_21=`{
+comp_22=`    float denom = (abs(d.y) > 0.0001) ? d.y : (d.y >= 0.0 ? 0.0001 : -0.0001);
+comp_23=`    float t = (planeHeight - o.y) / denom;
+comp_24=`    return o + d * t;
+comp_25=`}
 comp_26=`
-comp_27=`    // Camera moves forward over time, driven by q2 (beat-synced)
-comp_28=`    float3 camPos = float3(0.0, 0.0, q3);
-comp_29=`
-comp_30=`    // Ray direction: horizontal FOV wider than vertical (x1.0 vs x0.5)
-comp_31=`    float3 rayDir = float3(uvCentered.x, uvCentered.y * 0.5, 1.0);
-comp_32=`
-comp_33=`    // Build yaw/pitch rotation matrices using float3x3 (HLSL; no mat3)
-comp_34=`    // radians() unavailable in HLSL d3d9 — use multiply by (PI/180)
-comp_35=`    float PI2 = M_PI;
-comp_36=`    float yaw   = sin(time) * 20.0 * (PI2 / 180.0);
-comp_37=`    float pitch = cos(time) * 20.0 * (PI2 / 180.0);
-comp_38=`
-comp_39=`    float cy = cos(yaw);   float sy = sin(yaw);
-comp_40=`    float cp = cos(pitch); float sp = sin(pitch);
-comp_41=`
-comp_42=`    // Yaw rotation around Y axis
-comp_43=`    float3x3 rotYaw = float3x3(
-comp_44=`         cy,  0.0,  sy,
-comp_45=`        0.0,  1.0, 0.0,
-comp_46=`        -sy,  0.0,  cy
-comp_47=`    );
-comp_48=`
-comp_49=`    // Pitch rotation around X axis
-comp_50=`    float3x3 rotPitch = float3x3(
-comp_51=`        1.0, 0.0, 0.0,
-comp_52=`        0.0,  cp,  sp,
-comp_53=`        0.0, -sp,  cp
-comp_54=`    );
-comp_55=`
-comp_56=`    // Combined rotation: apply yaw first, then pitch
+comp_27=`shader_body
+comp_28=`{
+comp_29=`    uv.x = 1-uv.x;
+comp_30=`    float2 uv0 = 1 - uv.xy;
+comp_31=`
+comp_32=`    // ---- LAYER 1: Spectrum background (sampler_main fullscreen) ----
+comp_33=`    float3 bgColor = tex2D(sampler_main, uv.xy).xyz;
+comp_34=`
+comp_35=`    // ---- Raycaster setup ----
+comp_36=`    float2 uvCentered = uv0 * 2.0 - float2(1.0, 1.0);
+comp_37=`    float3 camPos = float3(0.0, 0.0, (time*50)+q3);
+comp_38=`    float3 rayDir = float3(uvCentered.x, uvCentered.y * 0.5, 1.0);
+comp_39=`
+comp_40=`    float PI2 = M_PI;
+comp_41=`    float yaw   = sin(time) * 20.0 * (PI2 / 180.0);
+comp_42=`    float pitch = cos(time) * 20.0 * (PI2 / 180.0);
+comp_43=`
+comp_44=`    float cy = cos(yaw);   float sy = sin(yaw);
+comp_45=`    float cp = cos(pitch); float sp = sin(pitch);
+comp_46=`
+comp_47=`    float3x3 rotYaw = transpose(float3x3(
+comp_48=`         cy,  0.0,  sy,
+comp_49=`        0.0,  1.0, 0.0,
+comp_50=`        -sy,  0.0,  cy
+comp_51=`    ));
+comp_52=`    float3x3 rotPitch = transpose(float3x3(
+comp_53=`        1.0, 0.0, 0.0,
+comp_54=`        0.0,  cp,  sp,
+comp_55=`        0.0, -sp,  cp
+comp_56=`    ));
 comp_57=`    rayDir = normalize(mul(rotPitch, mul(rotYaw, rayDir)));
 comp_58=`
-comp_59=`    // Floor/ceiling intersection and texture lookup
-comp_60=`    float4 color = float4(1.0, 1.0, 1.0, 1.0);
-comp_61=`    float3 projection = float3(0.0, 0.0, 0.0);
+comp_59=`    // ---- LAYER 2: Disco JPG floor/ceiling ----
+comp_60=`    float3 projection = float3(0.0, 0.0, 0.0);
+comp_61=`    float3 jpgColor   = float3(0.0, 0.0, 0.0);
 comp_62=`
 comp_63=`    if (rayDir.y <= 0.0)
 comp_64=`    {
-comp_65=`        // Ray hits floor: sample the warp output (previous frame = spectrum visuals)
+comp_65=`        // Floor
 comp_66=`        projection = floorCast(camPos, rayDir, floorHeight);
-comp_67=`        color = float4(tex2D(sampler_main, frac(projection.xz / textureRes)).xyz, 1.0);
-comp_68=`    }
-comp_69=`    else
-comp_70=`    {
-comp_71=`        // Ray hits ceiling: use a slightly different tiling offset for variety
-comp_72=`        projection = floorCast(camPos, rayDir, ceilHeight);
-comp_73=`        color = float4(tex2D(sampler_main, frac(projection.xz / textureRes + 0.5)).xyz, 1.0);
-comp_74=`    }
-comp_75=`
-comp_76=`    // Distance fog: attenuate by squared distance from camera
-comp_77=`    float3 diff = projection.xyz - camPos;
-comp_78=`    float distSq = dot(diff, diff);
-comp_79=`    color.xyz /= clamp(distSq / (fogDensity * 64.0), 1.0, 50.0);
-comp_80=`
-comp_81=`    ret = float4(clamp(color.xyz, 0.0, 1.0), 1.0);
-comp_82=`}
+comp_67=`        float2 jpgUV = frac(projection.xz / textureRes * jpgTileScale);
+comp_68=`        jpgColor = tex2D(sampler_disco_lights, jpgUV).xyz * jpgBrightness;
+comp_69=`    }
+comp_70=`    else
+comp_71=`    {
+comp_72=`        // Ceiling: same JPG, dimmer, offset tiling
+comp_73=`        projection = floorCast(camPos, rayDir, ceilHeight);
+comp_74=`        float2 jpgUV = frac(projection.xz / textureRes * jpgTileScale);
+comp_75=`        jpgColor = tex2D(sampler_disco_lights, jpgUV).xyz * jpgBrightness;
+comp_76=`    }
+comp_77=`
+comp_78=`    // Distance fog on the JPG layer
+comp_79=`    float3 diff  = projection.xyz - camPos;
+comp_80=`    float distSq = dot(diff, diff);
+comp_81=`    jpgColor /= clamp(distSq / (fogDensity * 64.0), 1.0, 50.0);
+comp_82=`    jpgColor  = clamp(jpgColor, 0.0, 1.0);
+comp_83=`
+comp_84=`    // Black-to-transparent: derive alpha from JPG brightness.
+comp_85=`    // Pixels at or below blackThreshold are fully transparent (bg shows through).
+comp_86=`    float jpgLuma = dot(jpgColor, float3(0.299, 0.587, 0.114));
+comp_87=`    float jpgAlpha = saturate((jpgLuma - blackThreshold) / max(1.0 - blackThreshold, 0.001));
+comp_88=`
+comp_89=`    // ---- COMPOSITE: alpha-blend disco tile over spectrum background ----
+comp_90=`    float3 finalColor = lerp(bgColor, jpgColor, jpgAlpha);
+comp_91=`
+comp_92=`    ret = float4(clamp(finalColor, 0.0, 1.0), 1.0);
+comp_93=`}
