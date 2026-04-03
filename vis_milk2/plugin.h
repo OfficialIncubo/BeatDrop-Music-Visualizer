@@ -399,6 +399,8 @@ public:
         int         m_nMidEnd = 4000;
         int         m_nTrebStart = 4000;
         int         m_nTrebEnd = 20000;
+        float       m_nFFTShaderScaling = .175;
+        float       m_nFFTShaderNoiseFloor = .03;
         bool        m_bCaptureMic = false; // false = default output (speaker), true = default input (microphone)
         bool        m_IsAMD = false;
 

@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 02/04/2026 at 17:41:31.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 02/04/2026 at 21:37:10.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -12,7 +12,7 @@ PSVERSION_COMP=4
 fRating=5.000
 fGammaAdj=1.460
 fDecay=0.935
-FFTAttack=0.500
+FFTAttack=0.700
 FFTDecay=0.700
 fVideoEchoZoom=1.007
 fVideoEchoAlpha=0.500
@@ -88,7 +88,7 @@ warp_5=`// --- Helper Functions ---
 warp_6=`
 warp_7=`float getLevel(float x)
 warp_8=`{
-warp_9=`    return get_fft(saturate(x));
+warp_9=`    return get_fft(x)*1.5;
 warp_10=`}
 warp_11=`
 warp_12=`float st_md(float t1, float t2, float v1, float v2, float t) {
@@ -142,13 +142,13 @@ warp_59=`}
 warp_60=`
 warp_61=`// --- Main Shader ---
 warp_62=`shader_body{
-warp_63=`    // Center UVs: MilkDrop uv is 0..1, transform to -1..1 relative to aspect ratio
-warp_64=`    uv.y = 1-uv.y;
-warp_65=`    float2 uv_centered = ((uv - 0.5) * 2.0) * float2(1, texsize.y/texsize.x);
-warp_66=`    uv_centered.x *= aspect.x; // Maintain aspect ratio
+warp_63=`    int depth = 4;
+warp_64=`    // Center UVs: MilkDrop uv is 0..1, transform to -1..1 relative to aspect ratio
+warp_65=`    uv.y = 1-uv.y;
+warp_66=`    float2 uv_centered = ((uv - .5) * depth) * float2(1, texsize.y/texsize.x);
 warp_67=`
 warp_68=`    float3 col = float3(0,0,0);
-warp_69=`    float volume = getVol_md(.8);
+warp_69=`    float volume = getVol_md(8);
 warp_70=`    float t_march = 0.0;
 warp_71=`
 warp_72=`    // Raymarching Loop (MilkDrop 3 supports loops, but 'break' is forbidden)

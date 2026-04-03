@@ -1435,6 +1435,8 @@ void CPlugin::MyReadConfig()
     m_nMidEnd = GetPrivateProfileIntW(L"settings", L"MidEnd", m_nMidEnd, pIni);
     m_nTrebStart = GetPrivateProfileIntW(L"settings", L"TrebStart", m_nTrebStart, pIni);
     m_nTrebEnd = GetPrivateProfileIntW(L"settings", L"TrebEnd", m_nTrebEnd, pIni);
+    m_nFFTShaderScaling = GetPrivateProfileFloatW(L"settings", L"nFFTShaderScaling", m_nFFTShaderScaling, pIni);
+    m_nFFTShaderNoiseFloor = GetPrivateProfileFloatW(L"settings", L"nFFTShaderNoiseFloor", m_nFFTShaderNoiseFloor, pIni);
     m_dTimeVariableResetDelay = GetPrivateProfileIntW(L"settings", L"dTimeVariableResetDelay", m_dTimeVariableResetDelay, pIni);
     m_nTransitionBlendPattern = GetPrivateProfileIntW(L"settings", L"nTransitionBlendPattern", m_nTransitionBlendPattern, pIni);
     m_nAMDMode = GetPrivateProfileIntW(L"settings", L"nAMDMode", m_nAMDMode, pIni);
@@ -1551,6 +1553,8 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_nMidEnd, L"MidEnd", pIni, L"settings");
     WritePrivateProfileIntW(m_nTrebStart, L"TrebStart", pIni, L"settings");
     WritePrivateProfileIntW(m_nTrebEnd, L"TrebEnd", pIni, L"settings");
+    WritePrivateProfileFloatW(m_nFFTShaderScaling, L"nFFTShaderScaling", pIni, L"settings");
+    WritePrivateProfileFloatW(m_nFFTShaderNoiseFloor, L"nFFTShaderNoiseFloor", pIni, L"settings");
     WritePrivateProfileIntW(m_dTimeVariableResetDelay, L"dTimeVariableResetDelay", pIni, L"settings");
     WritePrivateProfileIntW(m_nAMDMode, L"nAMDMode", pIni, L"settings");
     WritePrivateProfileIntW(m_bShaderCaching, L"bShaderCaching", pIni, L"settings");
@@ -11439,17 +11443,16 @@ void CPlugin::DoCustomSoundAnalysis()
     static float s_fftRMS;
     float fps = GetFps();
     if (fps < 1e-8f) fps = 1e-8f;   // PREVENT DIVISION BY ZERO ERROR
-    const float tauRMS = 2.5f; // smoothing time constant (2..3 seconds or any seconds you want).
+    const float tauRMS = 5; // smoothing time constant (2..3 seconds or any seconds you want).
     float RMSDecay = expf(-1 / GetFps() / tauRMS);
     s_fftRMS = s_fftRMS * RMSDecay + fftRMS * (1-RMSDecay);
     
-    float fftScaling = 0.175f;   // Modify FFT scaling in your needs.
+    float fftScaling = m_nFFTShaderScaling;   // FFT scaling is now controlled via .ini setting file.
 
     // Apply FFT smoothing and upload to GPU texture
     {
         float attack = m_pState->m_fFFTAttack.eval(GetTime());  // Reads FFT Attack from state
         float decay  = m_pState->m_fFFTDecay.eval(GetTime());   // Reads FFT Decay from state
-        const float kNoiseFloor = 0.03f;
         float decayFactor = (1.0f - decay) * (1.0f - decay);
         //const float kVisibleFloor = 0.001f;
         for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)
@@ -11458,7 +11461,7 @@ void CPlugin::DoCustomSoundAnalysis()
             // Normalize FFT with RMS.
             mono = (mono / s_fftRMS) * fftScaling;
 
-            mono -= kNoiseFloor;
+            mono -= m_nFFTShaderNoiseFloor;
             if (mono < 0.0f) mono = 0.0f;
             // Attenuate low-frequency bins to reduce bass over-accentuation.
             // Bins below ~2000 Hz (bin ~24) are progressively reduced.
@@ -11485,13 +11488,13 @@ void CPlugin::DoCustomSoundAnalysis()
             if (m_fFFTSmoothed[fi] >= m_fFFTPeak[fi])
             {
                 m_fFFTPeak[fi] = m_fFFTSmoothed[fi];
-                m_nFFTPeakHold[fi] = GetFps(); // FPS-independent; peaks starting to fall after 1 second
+                m_nFFTPeakHold[fi] = GetFps() * (.25 + (decay*.75)); // FPS-independent; decay-controllable peak falling
             }
             else if (m_nFFTPeakHold[fi] > 0)
                 m_nFFTPeakHold[fi]--;
             else
             {
-                m_fFFTPeak[fi] *= .97f; // ~3% drop per frame, creates that smooth gravity-fall effect
+                m_fFFTPeak[fi] *= exp(-1/fps/.3); // ~3% drop per frame, creates that smooth gravity-fall effect, FPS independent
                 //if (m_fFFTPeak[fi] < kVisibleFloor) m_fFFTPeak[fi] = 0.0f;
                 if (m_fFFTPeak[fi] < 0.0f) m_fFFTPeak[fi] = 0.0f;
             }
