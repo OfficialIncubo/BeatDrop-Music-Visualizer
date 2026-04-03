@@ -11439,10 +11439,13 @@ void CPlugin::DoCustomSoundAnalysis()
     if (fftRMS < 1e-5f) fftRMS = 1e-5f; // PREVENT DIVISION BY ZERO ERROR, is it neccesary?
 
     // Smoothing RMS with simple low-pass
-    static float s_fftRMS;
+    static float s_fftRMS = .1f; // Initialize with a sensible default
     float fps = GetFps();
     if (fps < 1e-8f) fps = 1e-8f;   // PREVENT DIVISION BY ZERO ERROR
-    const float tauRMS = 5; // smoothing time constant (2..3 seconds or any seconds you want).
+    float tauRMS; // smoothing time constant
+    if (fftRMS > s_fftRMS)
+        tauRMS = 2; // Fast adaption for loud environment
+    else tauRMS = 5; // Slowly decreases for quiet parts
     float RMSDecay = expf(-1 / GetFps() / tauRMS);
     s_fftRMS = s_fftRMS * RMSDecay + fftRMS * (1-RMSDecay);
     
