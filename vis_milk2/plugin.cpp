@@ -4236,7 +4236,6 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
     // 2. release stuff
     SafeRelease(m_lpFFTTexture);
     SafeRelease(m_lpWaveTexture);
-    memset(m_fFFTSmoothed, 0, sizeof(m_fFFTSmoothed));
     SafeRelease(m_lpVS[0]);
     SafeRelease(m_lpVS[1]);
     SafeRelease(m_lpDDSTitle);
