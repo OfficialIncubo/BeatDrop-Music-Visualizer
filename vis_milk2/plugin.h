@@ -307,6 +307,13 @@ public:
 	unsigned int g_Height;
 	HWND g_hwnd;
 	HDC g_hdc;
+    bool m_bDesktopMode = false;
+    bool TranspaMode = false;
+    int OpacityControl = 10;                 // Default is 100% window opacity.
+    RECT m_desktop_lastRect = { 0 };
+    LONG_PTR m_desktop_lastStyle = 0;
+    LONG_PTR m_desktop_lastStyleEx = 0;
+    void ToggleDesktopMode(HWND hwnd);
 	wchar_t	m_szSavedSongTitle[512]; // for saving song tile with Spout on or off
 	// =========================================================
 

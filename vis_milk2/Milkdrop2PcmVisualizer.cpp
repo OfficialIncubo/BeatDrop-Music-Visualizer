@@ -154,6 +154,10 @@ HINSTANCE api_orig_hinstance = nullptr;
 _locale_t g_use_C_locale;
 char keyMappings[8];
 
+bool fullscreen = false;
+bool stretch = false;
+bool borderless = false;
+
 // SPOUT
 // ===============================================
 static int nBeatDrops = 0; // Number of beatdrop instances already running
@@ -450,7 +454,7 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	switch(uMsg) {
 
         case WM_CLOSE: {
-            if (!fullscreen && !stretch)
+            if (!fullscreen && !stretch && !g_plugin.m_bDesktopMode)
                 g_plugin.SaveWindowSizeAndPosition(hWnd);
             if (g_plugin.m_bClearShaderCacheAtExit)
             {

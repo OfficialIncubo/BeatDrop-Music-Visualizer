@@ -285,6 +285,7 @@ private:
     int  GetCanvasMarginY();     // returns the # of pixels that exist on the canvas, on each side, that the user will never see.  Mainly here for windowed mode, where sometimes, up to 15 pixels get cropped at edges of the screen.
 public:
     void DrawDarkTranslucentBox(RECT* pr);
+    void ToggleDesktopMode(HWND hwnd);
 
 protected:
     void RenderPlaylist();

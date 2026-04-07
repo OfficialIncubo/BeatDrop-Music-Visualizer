@@ -652,8 +652,6 @@ float timetick = 0;
 float timetick2 = 0;
 float TimeToAutoLockPreset = 0;
 int beatcount;
-bool TranspaMode = false;
-int OpacityControl = 10;                 // Default is 100% window opacity.
 int NumTotalPresetsLoaded = 0;
 bool AutoLockedPreset = false;
 //bool ShowPresetOnTitle = 0;
@@ -4561,6 +4559,22 @@ void CPlugin::MyRenderFn(int redraw)
         m_mouseY = -1;
     }
 
+    if (m_bDesktopMode)
+    {
+        bool isLDown = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+        bool isRDown = (GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0;
+
+        if ((isLDown || isRDown) && !m_mouseDown) {
+            m_mouseDown = 1;
+            m_mouseClicked = 2;
+            m_lastMouseX = m_mouseX;
+            m_lastMouseY = -m_mouseY + 1;
+        }
+        else if (!isLDown && !isRDown && m_mouseDown) {
+            m_mouseDown = 0;
+        }
+    }
+
 	//Duration of the click called from WM_LBUTTONDOWN
     if (m_mouseClicked > 0)
     {
@@ -5863,7 +5877,7 @@ void ToggleTransparency(HWND hwnd)
     LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
 
     SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_DRAWFRAME | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED); // Redraws the window to fix the transparency mode issue for Windows 7, 8 and 8.1.
-    if (TranspaMode)
+    if (g_plugin.TranspaMode)
     {
         if (dwmEnabled)
             DwmEnableComposition(DWM_EC_DISABLECOMPOSITION); //Disable Aero Composition
@@ -5871,7 +5885,7 @@ void ToggleTransparency(HWND hwnd)
         exStyle |= WS_EX_LAYERED;
         SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, LWA_COLORKEY);
-        OpacityControl = 10; //Reverts the window opacity back to 100%
+        g_plugin.OpacityControl = 10; //Reverts the window opacity back to 100%
         DragAcceptFiles(hwnd, TRUE);
     }
     else
@@ -5894,71 +5908,71 @@ void ToggleWindowOpacity(HWND hwnd)
     int width = rect.right - rect.left;
     int height = rect.bottom - rect.top;
 
-    if (OpacityControl >= 11)
-        OpacityControl = 10;
-    else if (OpacityControl == 10)
+    if (g_plugin.OpacityControl >= 11)
+        g_plugin.OpacityControl = 10;
+    else if (g_plugin.OpacityControl == 10)
     {
         SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, LWA_ALPHA);
         DragAcceptFiles(hwnd, TRUE);
     }
-    else if (OpacityControl == 9)
+    else if (g_plugin.OpacityControl == 9)
     {
         SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 230, LWA_ALPHA);
-        TranspaMode = false; //Automatically turns off the transparency mode when you are toggling the window opacity!
+        g_plugin.TranspaMode = false; //Automatically turns off the transparency mode when you are toggling the window opacity!
         DragAcceptFiles(hwnd, TRUE);
     }
-    else if (OpacityControl == 8)
+    else if (g_plugin.OpacityControl == 8)
     {
         SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 205, LWA_ALPHA);
         DragAcceptFiles(hwnd, TRUE);
     }
-    else if (OpacityControl == 7)
+    else if (g_plugin.OpacityControl == 7)
     {
         SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 179, LWA_ALPHA);
         DragAcceptFiles(hwnd, TRUE);
     }
-    else if (OpacityControl == 6)
+    else if (g_plugin.OpacityControl == 6)
     {
         SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 154, LWA_ALPHA);
         DragAcceptFiles(hwnd, TRUE);
     }
-    else if (OpacityControl == 5)
+    else if (g_plugin.OpacityControl == 5)
     {
         SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 128, LWA_ALPHA);
         DragAcceptFiles(hwnd, TRUE);
     }
-    else if (OpacityControl == 4)
+    else if (g_plugin.OpacityControl == 4)
     {
         SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 102, LWA_ALPHA);
         DragAcceptFiles(hwnd, TRUE);
     }
-    else if (OpacityControl == 3)
+    else if (g_plugin.OpacityControl == 3)
     {
         SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 77, LWA_ALPHA);
         DragAcceptFiles(hwnd, TRUE);
     }
-    else if (OpacityControl == 2)
+    else if (g_plugin.OpacityControl == 2)
     {
         SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 51, LWA_ALPHA);
         DragAcceptFiles(hwnd, TRUE);
     }
-    else if (OpacityControl == 1)
+    else if (g_plugin.OpacityControl == 1)
     {
         SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 26, LWA_ALPHA);
         DragAcceptFiles(hwnd, TRUE);
     }
-    else if (OpacityControl <= 0)
-        OpacityControl = 1;
+    else if (g_plugin.OpacityControl <= 0)
+        g_plugin.OpacityControl = 1;
 }
 
 void LoadPresetFilesViaDragAndDrop(WPARAM wParam)
@@ -6485,16 +6499,19 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
             #endif
             return 0; // we processed (or absorbed) the key
         case VK_F12:
-            TranspaMode = !TranspaMode;
-        if (TranspaMode)
+            if (!m_bDesktopMode) // Prevent transparency mode on desktop mode.
             {
-                ToggleTransparency(hWnd);
-                AddNotif(L"Transparency Mode ON");
-            }
-        else
-            {
-                ToggleTransparency(hWnd);
-                AddNotif(L"Transparency Mode OFF");
+                g_plugin.TranspaMode = !g_plugin.TranspaMode;
+                if (g_plugin.TranspaMode)
+                {
+                    ToggleTransparency(hWnd);
+                    AddNotif(L"Transparency Mode ON");
+                }
+                else
+                {
+                    ToggleTransparency(hWnd);
+                    AddNotif(L"Transparency Mode OFF");
+                }
             }
         return 0; // we processed (or absorbed) the key
         //case VK_F2:
@@ -7156,62 +7173,62 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 			}
             else if (bShiftHeldDown)
             {
-                OpacityControl++;
-                if (OpacityControl == 10)
+                g_plugin.OpacityControl++;
+                if (g_plugin.OpacityControl == 10)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 100%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 9)
+                else if (g_plugin.OpacityControl == 9)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 90%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 8)
+                else if (g_plugin.OpacityControl == 8)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 80%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 7)
+                else if (g_plugin.OpacityControl == 7)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 70%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 6)
+                else if (g_plugin.OpacityControl == 6)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 60%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 5)
+                else if (g_plugin.OpacityControl == 5)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 50%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 4)
+                else if (g_plugin.OpacityControl == 4)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 40%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 3)
+                else if (g_plugin.OpacityControl == 3)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 30%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 2)
+                else if (g_plugin.OpacityControl == 2)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 20%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 1)
+                else if (g_plugin.OpacityControl == 1)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 10%%", tmp, 64);
@@ -7258,62 +7275,62 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 			}
             else if (bShiftHeldDown)
             {
-                OpacityControl--;
-                if (OpacityControl == 10)
+                g_plugin.OpacityControl--;
+                if (g_plugin.OpacityControl == 10)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 100%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 9)
+                else if (g_plugin.OpacityControl == 9)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 90%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 8)
+                else if (g_plugin.OpacityControl == 8)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 80%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 7)
+                else if (g_plugin.OpacityControl == 7)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 70%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 6)
+                else if (g_plugin.OpacityControl == 6)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 60%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 5)
+                else if (g_plugin.OpacityControl == 5)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 50%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 4)
+                else if (g_plugin.OpacityControl == 4)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 40%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 3)
+                else if (g_plugin.OpacityControl == 3)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 30%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 2)
+                else if (g_plugin.OpacityControl == 2)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 20%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 1)
+                else if (g_plugin.OpacityControl == 1)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 10%%", tmp, 64);
@@ -12071,6 +12088,182 @@ bool CPlugin::CaptureScreenshotWithFilename(wchar_t* outFilename, size_t outFile
         OutputDebugStringW(errorMsg);
 
         return false;
+    }
+}
+
+extern void UpdateTrayIconForDesktopMode();
+extern void UpdateTrayIconForShownWindow();
+HWND g_hWorkerW = NULL;
+
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
+    HWND hShellDefView = FindWindowExW(hwnd, NULL, L"SHELLDLL_DefView", NULL);
+    if (hShellDefView == NULL)
+        return TRUE;
+
+    g_hWorkerW = FindWindowExW(NULL, hwnd, L"WorkerW", NULL);
+
+    if (g_hWorkerW == NULL)
+        g_hWorkerW = FindWindowExW(hwnd, NULL, L"WorkerW", NULL);
+    return FALSE;
+}
+
+void CPlugin::ToggleDesktopMode(HWND hwnd)
+{
+    if (!m_bDesktopMode)
+    {
+        // Auto-exit full-screen or stretch mode after entering desktop mode.
+        if (fullscreen) ToggleFullScreen(hwnd);
+        if (stretch) ToggleStretch(hwnd);
+
+        // Revert transparency mode and opacity control to its normal state.
+        g_plugin.TranspaMode = false;
+        int OpacityControl = 10;
+
+        // ----------------------------------------------------------------
+        // Ask Progman to spawn the background WorkerW.
+        // The 0x052C message is an undocumented shell message. Sending it
+        // to Progman causes the shell to create a new WorkerW window that
+        // sits *behind* the SHELLDLL_DefView (icon list-view) layer.
+        // We send it twice with slightly different params for compatibility
+        // across Win 10 builds and Win 11.
+        // ----------------------------------------------------------------
+        // 1. Send the undocumented message to Progman to spawn the background WorkerW
+        HWND progman = FindWindowW(L"Progman", NULL);
+        if (progman)
+        {
+            SendMessageTimeout(progman, 0x052C, 0xD, 0x1, SMTO_NORMAL, 1000, NULL);
+            SendMessageTimeout(progman, 0x052C, 0xD, 0x0, SMTO_NORMAL, 1000, NULL);
+            SendMessageTimeout(progman, 0x052C, 0,   0,   SMTO_NORMAL, 1000, NULL);
+        }
+
+        // ----------------------------------------------------------------
+        // Find the background WorkerW via EnumWindows.
+        // EnumWindowsProc sets g_hWorkerW to the WorkerW that is a sibling
+        // of the window owning SHELLDLL_DefView — i.e., the layer that sits
+        // *behind* the desktop icons.
+        // ----------------------------------------------------------------
+        g_hWorkerW = NULL;
+        EnumWindows(EnumWindowsProc, 0);
+
+        if (g_hWorkerW == NULL)
+        {
+            OutputDebugStringW(L"ToggleDesktopMode: WorkerW not found.\n");
+            AddErrorNotif(L"Error: Failed to initialize Desktop Mode.");
+            return;
+        }
+
+        //Save current window state.
+        GetWindowRect(hwnd, &m_desktop_lastRect);
+        m_desktop_lastStyle = GetWindowLongPtr(hwnd, GWL_STYLE);
+        m_desktop_lastStyleEx = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+
+        // ----------------------------------------------------------------
+        // Reparent into WorkerW and apply child-window styles.
+        // WS_CHILD is mandatory when parenting into another window.
+        // WS_EX_TRANSPARENT makes all mouse input fall through to whatever
+        // is visually underneath (the icon list-view / desktop).
+        // WS_EX_LAYERED is required by SetLayeredWindowAttributes.
+        // WS_EX_NOACTIVATE prevents focus theft.
+        // Do NOT use WS_EX_TOOLWINDOW here — that can interfere with D3D
+        // presentation when the window is a child of WorkerW.
+        // ----------------------------------------------------------------
+
+        LONG_PTR newStyle = WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS;
+        LONG_PTR newStyleEx = WS_EX_TRANSPARENT | WS_EX_NOACTIVATE | WS_EX_LAYERED;
+
+
+        SetWindowLongPtr(hwnd, GWL_STYLE, newStyle);
+        SetWindowLongPtr(hwnd, GWL_EXSTYLE, newStyleEx);
+
+        // Transparent logic to prevent clicking to visualizer
+        SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
+
+        SetParent(hwnd, g_hWorkerW);
+
+        // ----------------------------------------------------------------
+        // Size and position the window.
+        //
+        // KEY FIX: We are now a child of WorkerW. Within WorkerW's child
+        // Z-order, we want to be at the TOP (HWND_TOP) — WorkerW itself
+        // is already behind the icon layer in the top-level Z-order, so
+        // being on top within WorkerW is correct and harmless.
+        //
+        // Using HWND_BOTTOM here was the original bug: it pushed the
+        // visualizer below other children of WorkerW but WorkerW's own
+        // position relative to SHELLDLL_DefView is unchanged, meaning the
+        // visualizer ended up covering the icons while still being
+        // click-through — icons invisible but clickable.
+        // ----------------------------------------------------------------
+
+        int x = GetSystemMetrics(SM_XVIRTUALSCREEN);
+        int y = GetSystemMetrics(SM_YVIRTUALSCREEN);
+        int cx = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+        int cy = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+
+        // Map Virtual Screen to WorkerW local coordinates
+        POINT pt = { x, y };
+        ScreenToClient(g_hWorkerW, &pt);
+
+        SetWindowPos(hwnd, HWND_BOTTOM, pt.x, pt.y, cx, cy, SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_SHOWWINDOW);
+
+        // STEP 6: Force the icon list-view to repaint itself on top.
+        HWND hShellDefView = NULL;
+
+        // Try direct child of Progman first (new Win 11 25H2 layout)
+        if (progman)
+            hShellDefView = FindWindowExW(progman, NULL, L"SHELLDLL_DefView", NULL);
+
+        // Fallback: enumerate for older layouts where DefView is under a WorkerW
+        if (!hShellDefView)
+        {
+            EnumWindows([](HWND h, LPARAM lp) -> BOOL {
+                HWND dv = FindWindowExW(h, NULL, L"SHELLDLL_DefView", NULL);
+                if (dv) { *reinterpret_cast<HWND*>(lp) = dv; return FALSE; }
+                return TRUE;
+                }, reinterpret_cast<LPARAM>(&hShellDefView));
+        }
+
+        if (hShellDefView)
+        {
+            HWND hListView = FindWindowExW(hShellDefView, NULL, L"SysListView32", NULL);
+            if (hListView)
+            {
+                LRESULT itemCount = SendMessage(hListView, LVM_GETITEMCOUNT, 0, 0);
+                if (itemCount > 0)
+                    PostMessage(hListView, LVM_REDRAWITEMS, 0, itemCount - 1);
+            }
+            InvalidateRect(hShellDefView, NULL, TRUE);
+            UpdateWindow(hShellDefView);
+        }
+
+        m_bDesktopMode = true;
+        UpdateTrayIconForDesktopMode();
+        //AddNotif(L"Desktop Mode ON");
+    }
+    else
+    {
+        // Exit Desktop Mode: un-parent and restore saved state.
+        SetParent(hwnd, NULL);
+
+        SetWindowLongPtr(hwnd, GWL_STYLE,   m_desktop_lastStyle);
+        SetWindowLongPtr(hwnd, GWL_EXSTYLE, m_desktop_lastStyleEx);
+
+        int w = m_desktop_lastRect.right  - m_desktop_lastRect.left;
+        int h = m_desktop_lastRect.bottom - m_desktop_lastRect.top;
+
+        SetWindowPos(hwnd, HWND_TOP, m_desktop_lastRect.left, m_desktop_lastRect.top, w, h, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+
+        // Remove the layered attribute so it doesn't linger.
+        // (Clearing WS_EX_LAYERED via SetWindowLongPtr already did this,
+        //  but a belt-and-braces call doesn't hurt on Vista/7.)
+        SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
+
+        m_bDesktopMode = false;
+        UpdateTrayIconForShownWindow();
+        //AddNotif(L"Desktop Mode OFF");
+
+        // Force the wallpaper/desktop to refresh, clearing any WorkerW visual artifacts
+        SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, NULL, SPIF_SENDCHANGE);
     }
 }
 

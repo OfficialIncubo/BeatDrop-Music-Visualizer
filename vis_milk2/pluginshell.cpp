@@ -139,7 +139,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "shell_defines.h"
 #include "resource.h"
 #include "wasabi.h"
-#include <multimon.h>
+#include <WinUser.h>
+#include "Milkdrop2PcmVisualizer.h"
 #include "AutoCharFn.h"
 #include <mmsystem.h>
 #include "plugin.h"
@@ -178,6 +179,13 @@ void UpdateTrayIconForShownWindow()
 {
 	Shell_NotifyIcon(NIM_DELETE, &nid);
 	renderWindowHidden = false;
+}
+
+void UpdateTrayIconForDesktopMode()
+{
+	lstrcpy(nid.szTip, TEXT("BeatDrop Music Visualizer - Desktop Mode ON\nLeft click to restore. Right click to exit visualizer."));
+	Shell_NotifyIcon(NIM_ADD, &nid);
+	Shell_NotifyIcon(NIM_MODIFY, &nid);
 }
 
 // Function to remove tray icon (call this when closing)
@@ -2282,6 +2290,11 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 				ShowWindow(GetPluginWindow(), SW_SHOW);
 				UpdateTrayIconForShownWindow();
 			}
+			else if (g_plugin.m_bDesktopMode)
+			{
+				g_plugin.m_mouseDown = 0;
+				g_plugin.ToggleDesktopMode(GetPluginWindow());
+			}
 		}
 		else if (lParam == WM_RBUTTONUP)
 			PostMessage(hWnd, WM_CLOSE, 0, 0);
@@ -2506,6 +2519,8 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 					to show the render window. Check WM_USER + 1.
 					*/
 				}
+				else if (GetKeyState(VK_SHIFT) & 0x8000)
+						g_plugin.ToggleDesktopMode(GetPluginWindow());
 				return 0;
 
 		    case VK_ESCAPE:
