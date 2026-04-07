@@ -5,7 +5,7 @@
 * \[ ] Spout Input as Sprites (like NestDrop's Spout Sprites): https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/26 (HIGH PRIORITY)
 * \[ ] Reviving 3D toggle functionality from MilkDrop v1.04: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/6
 * \[ ] Screensaver Support: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/16
-* \[ ] Desktop Mode: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/20
+* \[x] Desktop Mode: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/20
 * \[ ] Config Panel Program (GUI based)
 * \[ ] TCP relay support + Android/iOS Remote
 
