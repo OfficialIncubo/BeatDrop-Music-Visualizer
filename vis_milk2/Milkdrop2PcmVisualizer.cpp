@@ -286,6 +286,9 @@ void DeinitD3d() {
 
 //Multiple monitor stretch - Credit to @milkdropper for the code!
 void ToggleStretch(HWND hwnd) {
+    if (g_plugin.m_bDesktopMode)
+        g_plugin.ToggleDesktopMode(hwnd, false);
+
     if (!stretch) {
 
         if (!g_plugin.m_bShowCursorOnFullscreenOrStretch)
@@ -350,6 +353,9 @@ void ToggleStretch(HWND hwnd) {
 }
 
 void ToggleFullScreen(HWND hwnd) {
+    if (g_plugin.m_bDesktopMode)
+        g_plugin.ToggleDesktopMode(hwnd, false);
+
     if (!fullscreen) {
 
         if (!g_plugin.m_bShowCursorOnFullscreenOrStretch)
