@@ -4950,11 +4950,10 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
     float mip_avg = 0.5f*(mip_x + mip_y);
     float aspect_x = 1;
     float aspect_y = 1;
-	if (!m_bScreenDependentRenderMode)
-		if (GetWidth() > GetHeight())
-			aspect_y = GetHeight()/(float)GetWidth();
-		else
-			aspect_x = GetWidth()/(float)GetHeight();
+	if (GetWidth() > GetHeight())
+		aspect_y = GetHeight()/(float)GetWidth();
+	else
+		aspect_x = GetWidth()/(float)GetHeight();
 
     float blur_min[3], blur_max[3];
     GetSafeBlurMinMax(pState, blur_min, blur_max);
