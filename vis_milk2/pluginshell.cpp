@@ -148,6 +148,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma comment(lib,"winmm.lib")    // for timeGetTime
 
 extern CPlugin g_plugin;
+static UINT WM_TASKBARCREATED = 0;
+#define TIMER_DESKTOP_REFRESH 1024
 
 // Show/Hide Render Window Initializations
 NOTIFYICONDATA nid = {};
@@ -2237,11 +2239,41 @@ LRESULT CALLBACK CPluginShell::WindowProc(HWND hWnd, unsigned uMsg, WPARAM wPara
 
 LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lParam)
 {
+	if (WM_TASKBARCREATED == 0)
+		WM_TASKBARCREATED = RegisterWindowMessageW(L"TaskbarCreated");
+
 	USHORT mask = 1 << (sizeof(SHORT)*8 - 1);
 	//bool bShiftHeldDown = (GetKeyState(VK_SHIFT) & mask) != 0;
 	bool bCtrlHeldDown  = (GetKeyState(VK_CONTROL) & mask) != 0;
 	//bool bAltHeldDown: most keys come in under WM_SYSKEYDOWN when ALT is depressed.
 	RECT rect;
+
+	// Catch Explorer restarts
+	if (uMsg == WM_TASKBARCREATED)
+	{
+		if (g_plugin.m_bDesktopMode)
+		{
+			// IMPORTANT: Set parent to NULL immediately to stop being a "child" 
+			// of a potentially zombie WorkerW process.
+			SetParent(hWnd, NULL);
+			// Give Explorer 2 seconds to fully rebuild the Desktop layers
+			SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 500, NULL);
+		}
+	}
+	// Catch Monitor/Resolution changes
+	else if (uMsg == WM_SETTINGCHANGE || uMsg == WM_DISPLAYCHANGE)
+	{
+		if (g_plugin.m_bDesktopMode)
+			SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 250, NULL); // Fast refresh for wallpaper
+	}
+	// Execute the smooth refresh after the OS finishes its animations
+	else if (uMsg == WM_TIMER && wParam == TIMER_DESKTOP_REFRESH)
+	{
+		KillTimer(hWnd, TIMER_DESKTOP_REFRESH);
+		if (g_plugin.m_bDesktopMode)
+			// Trigger the refresh (pass 'true' to avoid saving bad window coordinates)
+			g_plugin.ToggleDesktopMode(hWnd, true);
+	}
 
 	switch (uMsg)
 	{

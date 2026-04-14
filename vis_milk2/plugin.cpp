@@ -12107,113 +12107,72 @@ BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
     return FALSE;
 }
 
-void CPlugin::ToggleDesktopMode(HWND hwnd)
+void CPlugin::ToggleDesktopMode(HWND hwnd, bool isRefresh /*= false*/)
 {
-    if (!m_bDesktopMode)
+    if (!m_bDesktopMode || isRefresh)
     {
-        // Auto-exit full-screen or stretch mode after entering desktop mode.
-        if (fullscreen) ToggleFullScreen(hwnd);
-        if (stretch) ToggleStretch(hwnd);
+        if (!isRefresh)
+        {
+            // Auto-exit full-screen or stretch mode after entering desktop mode.
+            if (fullscreen) ToggleFullScreen(hwnd);
+            if (stretch) ToggleStretch(hwnd);
 
-        // Revert transparency mode and opacity control to its normal state.
-        g_plugin.TranspaMode = false;
-        int OpacityControl = 10;
+            // Revert transparency mode and opacity control to its normal state.
+            // g_plugin.TranspaMode = false;
+            // int OpacityControl = 10;
 
-        // ----------------------------------------------------------------
-        // Ask Progman to spawn the background WorkerW.
-        // The 0x052C message is an undocumented shell message. Sending it
-        // to Progman causes the shell to create a new WorkerW window that
-        // sits *behind* the SHELLDLL_DefView (icon list-view) layer.
-        // We send it twice with slightly different params for compatibility
-        // across Win 10 builds and Win 11.
-        // ----------------------------------------------------------------
-        // 1. Send the undocumented message to Progman to spawn the background WorkerW
+            // Save current window state ONLY on first toggle, not on refresh
+            GetWindowRect(hwnd, &m_desktop_lastRect);
+            m_desktop_lastStyle = GetWindowLongPtr(hwnd, GWL_STYLE);
+            m_desktop_lastStyleEx = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+        }
+
+        // 1. Send the undocumented message to Progman to spawn/refresh WorkerW
         HWND progman = FindWindowW(L"Progman", NULL);
         if (progman)
         {
             SendMessageTimeout(progman, 0x052C, 0xD, 0x1, SMTO_NORMAL, 1000, NULL);
             SendMessageTimeout(progman, 0x052C, 0xD, 0x0, SMTO_NORMAL, 1000, NULL);
-            SendMessageTimeout(progman, 0x052C, 0,   0,   SMTO_NORMAL, 1000, NULL);
+            SendMessageTimeout(progman, 0x052C, 0, 0, SMTO_NORMAL, 1000, NULL);
         }
 
-        // ----------------------------------------------------------------
-        // Find the background WorkerW via EnumWindows.
-        // EnumWindowsProc sets g_hWorkerW to the WorkerW that is a sibling
-        // of the window owning SHELLDLL_DefView — i.e., the layer that sits
-        // *behind* the desktop icons.
-        // ----------------------------------------------------------------
+        // 2. Find the active background WorkerW
         g_hWorkerW = NULL;
         EnumWindows(EnumWindowsProc, 0);
 
         if (g_hWorkerW == NULL)
         {
             OutputDebugStringW(L"ToggleDesktopMode: WorkerW not found.\n");
-            AddErrorNotif(L"Error: Failed to initialize Desktop Mode.");
+            if (!isRefresh) {
+                AddErrorNotif(L"Error: Failed to initialize Desktop Mode.");
+            }
             return;
         }
 
-        //Save current window state.
-        GetWindowRect(hwnd, &m_desktop_lastRect);
-        m_desktop_lastStyle = GetWindowLongPtr(hwnd, GWL_STYLE);
-        m_desktop_lastStyleEx = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
-
-        // ----------------------------------------------------------------
-        // Reparent into WorkerW and apply child-window styles.
-        // WS_CHILD is mandatory when parenting into another window.
-        // WS_EX_TRANSPARENT makes all mouse input fall through to whatever
-        // is visually underneath (the icon list-view / desktop).
-        // WS_EX_LAYERED is required by SetLayeredWindowAttributes.
-        // WS_EX_NOACTIVATE prevents focus theft.
-        // Do NOT use WS_EX_TOOLWINDOW here — that can interfere with D3D
-        // presentation when the window is a child of WorkerW.
-        // ----------------------------------------------------------------
-
+        // 3. Setup window styles
         LONG_PTR newStyle = WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS;
         LONG_PTR newStyleEx = WS_EX_TRANSPARENT | WS_EX_NOACTIVATE | WS_EX_LAYERED;
-
-
         SetWindowLongPtr(hwnd, GWL_STYLE, newStyle);
         SetWindowLongPtr(hwnd, GWL_EXSTYLE, newStyleEx);
-
-        // Transparent logic to prevent clicking to visualizer
         SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
 
+        // 4. Reparent directly (doing this smoothly prevents visual flickering)
         SetParent(hwnd, g_hWorkerW);
 
-        // ----------------------------------------------------------------
-        // Size and position the window.
-        //
-        // KEY FIX: We are now a child of WorkerW. Within WorkerW's child
-        // Z-order, we want to be at the TOP (HWND_TOP) — WorkerW itself
-        // is already behind the icon layer in the top-level Z-order, so
-        // being on top within WorkerW is correct and harmless.
-        //
-        // Using HWND_BOTTOM here was the original bug: it pushed the
-        // visualizer below other children of WorkerW but WorkerW's own
-        // position relative to SHELLDLL_DefView is unchanged, meaning the
-        // visualizer ended up covering the icons while still being
-        // click-through — icons invisible but clickable.
-        // ----------------------------------------------------------------
-
+        // 5. Size and position the window locally to WorkerW
         int x = GetSystemMetrics(SM_XVIRTUALSCREEN);
         int y = GetSystemMetrics(SM_YVIRTUALSCREEN);
         int cx = GetSystemMetrics(SM_CXVIRTUALSCREEN);
         int cy = GetSystemMetrics(SM_CYVIRTUALSCREEN);
-
-        // Map Virtual Screen to WorkerW local coordinates
         POINT pt = { x, y };
         ScreenToClient(g_hWorkerW, &pt);
+        SetWindowPos(hwnd, HWND_TOP, pt.x, pt.y, cx, cy, SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_SHOWWINDOW);
 
-        SetWindowPos(hwnd, HWND_BOTTOM, pt.x, pt.y, cx, cy, SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_SHOWWINDOW);
-
-        // STEP 6: Force the icon list-view to repaint itself on top.
+        // 6. Force the icon list-view to repaint itself on top
         HWND hShellDefView = NULL;
-
-        // Try direct child of Progman first (new Win 11 25H2 layout)
         if (progman)
             hShellDefView = FindWindowExW(progman, NULL, L"SHELLDLL_DefView", NULL);
 
-        // Fallback: enumerate for older layouts where DefView is under a WorkerW
         if (!hShellDefView)
         {
             EnumWindows([](HWND h, LPARAM lp) -> BOOL {
@@ -12237,32 +12196,31 @@ void CPlugin::ToggleDesktopMode(HWND hwnd)
         }
 
         m_bDesktopMode = true;
-        UpdateTrayIconForDesktopMode();
-        //AddNotif(L"Desktop Mode ON");
+
+        if (!isRefresh) {
+            UpdateTrayIconForDesktopMode();
+            // AddNotif(L"Desktop Mode ON");
+        }
     }
     else
     {
         // Exit Desktop Mode: un-parent and restore saved state.
         SetParent(hwnd, NULL);
 
-        SetWindowLongPtr(hwnd, GWL_STYLE,   m_desktop_lastStyle);
+        SetWindowLongPtr(hwnd, GWL_STYLE, m_desktop_lastStyle);
         SetWindowLongPtr(hwnd, GWL_EXSTYLE, m_desktop_lastStyleEx);
 
-        int w = m_desktop_lastRect.right  - m_desktop_lastRect.left;
+        int w = m_desktop_lastRect.right - m_desktop_lastRect.left;
         int h = m_desktop_lastRect.bottom - m_desktop_lastRect.top;
 
         SetWindowPos(hwnd, HWND_TOP, m_desktop_lastRect.left, m_desktop_lastRect.top, w, h, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
-
-        // Remove the layered attribute so it doesn't linger.
-        // (Clearing WS_EX_LAYERED via SetWindowLongPtr already did this,
-        //  but a belt-and-braces call doesn't hurt on Vista/7.)
         SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
 
         m_bDesktopMode = false;
         UpdateTrayIconForShownWindow();
-        //AddNotif(L"Desktop Mode OFF");
+        // AddNotif(L"Desktop Mode OFF");
 
-        // Force the wallpaper/desktop to refresh, clearing any WorkerW visual artifacts
+        // Force the wallpaper/desktop to refresh
         SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, NULL, SPIF_SENDCHANGE);
     }
 }

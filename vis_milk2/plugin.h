@@ -313,7 +313,7 @@ public:
     RECT m_desktop_lastRect = { 0 };
     LONG_PTR m_desktop_lastStyle = 0;
     LONG_PTR m_desktop_lastStyleEx = 0;
-    void ToggleDesktopMode(HWND hwnd);
+    void ToggleDesktopMode(HWND hwnd, bool isRefresh = false);
 	wchar_t	m_szSavedSongTitle[512]; // for saving song tile with Spout on or off
 	// =========================================================
 
