@@ -1,0 +1,519 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=2
+[preset00]
+fRating=1.000
+fGammaAdj=1.280
+fDecay=0.700
+fVideoEchoZoom=1.010
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=2
+nWaveMode=4
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=1
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.009
+fWaveSmoothing=0.500
+fWaveParam=-0.400
+fModWaveAlphaStart=0.500
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99990
+rot=0.00000
+cx=0.500
+cy=0.860
+dx=0.00001
+dy=0.00001
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=0.500
+wave_g=0.500
+wave_b=0.500
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=1.000
+ib_size=0.002
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.000
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.300
+b3n=0.200
+b1x=0.520
+b2x=0.500
+b3x=0.600
+b1ed=0.950
+wavecode_0_enabled=0
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=60.80387
+wavecode_0_smoothing=0.70000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=0.400
+wavecode_1_enabled=0
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=1
+wavecode_1_bUseDots=1
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=0
+wavecode_1_scaling=67.16520
+wavecode_1_smoothing=0.70000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=1.000
+wavecode_2_enabled=0
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=1
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.00000
+wavecode_2_smoothing=0.50000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=0.000
+wavecode_2_a=1.000
+wavecode_3_enabled=1
+wavecode_3_samples=512
+wavecode_3_sep=90
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=1
+wavecode_3_bAdditive=1
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.00000
+wavecode_3_r=0.700
+wavecode_3_g=0.700
+wavecode_3_b=1.000
+wavecode_3_a=0.600
+wave_3_per_frame1=samples=reg28/2;t8=samples;
+wave_3_per_point1=//num_inst=256+t6+(time-t7)/fps;
+wave_3_per_point2=//num_inst=int(num_inst/162)*162;t8=num_inst;
+wave_3_per_point3=//num_inst=t8;
+wave_3_per_point4=bal=value2-value1;
+wave_3_per_point5=qx=x-.5+bal;qy=y-.5;
+wave_3_per_point6=rr=atan2(-qx,-qy);
+wave_3_per_point7=dd=sqrt(sqr(qx)+sqr(qy));
+wave_3_per_point8=pie=q23; tau=q26;
+wave_3_per_point9=i=int(sample*t8);   num=t8/2;
+wave_3_per_point10=sa=1-(sample);     
+wave_3_per_point11=qnums=num/162;
+wave_3_per_point12=qgroups=(num/6);        
+wave_3_per_point13=sa1=((i/qgroups)%6)/qnums;   t1=tau*sa1 + q1 ;         //// circle of 6 cubes on zplane
+wave_3_per_point14=z1=.1+.07*sin(.3*q1) + i/num*.6;;
+wave_3_per_point15=x1 = z1*sin(t1)*sin(.5*q1);    y1 = z1*cos(t1*1.1);     
+wave_3_per_point16=w=atan2(y1,x1) + q3*.32;
+wave_3_per_point17=
+wave_3_per_point18=vz=(num/6/6/3/3);vy=(num/6/6/3); vx=(num/6/6);
+wave_3_per_point19=x20=((i/6)%vx)/vx;   y20=((i/6)%vy)/vy;     z20=((i/6)%vz)/vz;       ///// 3x3x3 mesh
+wave_3_per_point20=x2 =  .4*x20 -  y20 +  .7*z20;
+wave_3_per_point21=y2 =  1.2*sin(time)*x20 - 1.3*cos(time*.4)*y20 - 1.7*sin(time*1.2)*z20;     
+wave_3_per_point22=t2=w;   
+wave_3_per_point23=mx2=x2*sin(t2)+y2*cos(t2);    
+wave_3_per_point24=my2=y2*sin(t2)-x2*cos(t2);
+wave_3_per_point25=z2=.7*z1;      
+wave_3_per_point26=x2=mx2*z2;    y2=my2*z2;
+wave_3_per_point27=
+wave_3_per_point28=
+wave_3_per_point29=t3 = (num/6)*tau*sa +.5*sa +q1 ;               //// cubes made of 6 triangles
+wave_3_per_point30=z3 = .13*z2;
+wave_3_per_point31=x3 = z3*sin(t3);    y3 = z3*cos(t3);     
+wave_3_per_point32=
+wave_3_per_point33=
+wave_3_per_point34=
+wave_3_per_point35=x=.5 + (x1+x2+x3)/q6;    y=.5 + (y1+y2+y3); 
+wave_3_per_point36=
+wave_3_per_point37=rad = 2*z3;     ang=pie/4+t3;
+wave_3_per_point38=
+wave_3_per_point39=t1=.5+.4*sin(1.57*3*y20); 
+wave_3_per_point40=
+wave_3_per_point41=//r=x3*1-(qx-qy*(.5*(1-dd+.5)));// r=max(r*x3,x3*(1-r));
+wave_3_per_point42=r=rad*(rr-dd*(qx+qy+.5))*qx+(.5*x/i);
+wave_3_per_point43=//r*=abs(x3)+qy+qx-x3*2;
+wave_3_per_point44=r*=(i/2)%3; r-=int(r);r=max(1-r,r);
+wave_3_per_point45=
+wave_3_per_point46=g=r*(.4+.02*((rr-ang)/(tau+ang-pie)))*abs(r-(dd*max(qx,qy)));                      
+wave_3_per_point47=b=r*dd+(.3*g)-ang/rr; //a=g-max(g*b,r*g)*.2;
+wave_3_per_point48=//
+wave_3_per_point49=r2=abs(r);g2=abs(g);b2=abs(b);
+wave_3_per_point50=r2-=int(r2);g2-=int(g2);b2-=int(b2);
+wave_3_per_point51=r=r2;g=g2;b=b2;
+wave_3_per_point52=//r=r;border_g=g;border_b=b;
+wave_3_per_point53=a=rad*(1/(ang-r-g+sample));//a2=1;border_a=1-above(g,(b+r)/2);
+wave_3_per_point54=//g*=1-border_a;
+wave_3_per_point55=//tex_ang-=ang;
+wave_3_per_point56=//tex_zoom=tex_zoom+rad*1.2;
+wave_3_per_point57=reg88=q28;
+wave_3_per_point58=
+wave_3_per_point59=
+wave_3_per_point60=x+=5+bal;y+=5+value1+value2;x-=int(x);y-=int(y);
+shapecode_0_enabled=1
+shapecode_0_sides=3
+shapecode_0_additive=0
+shapecode_0_thickOutline=1
+shapecode_0_textured=1
+shapecode_0_num_inst=1024
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=2.01033
+shapecode_0_ang=0.25133
+shapecode_0_tex_ang=6.28319
+shapecode_0_tex_zoom=0.96097
+shapecode_0_r=1.000
+shapecode_0_g=1.000
+shapecode_0_b=0.000
+shapecode_0_a=1.000
+shapecode_0_r2=1.000
+shapecode_0_g2=1.000
+shapecode_0_b2=0.000
+shapecode_0_a2=1.000
+shapecode_0_border_r=0.400
+shapecode_0_border_g=0.400
+shapecode_0_border_b=0.400
+shapecode_0_border_a=0.000
+shape_0_init1=pdiv=pow(70,3); pie=1077566.28/pdiv; pi2=pie*2;q23=pie;q26=pi2;
+shape_0_init2=t7=time;t6=int(rand(256))+128+(128*(above(mid,treb)*2-1));
+shape_0_per_frame1=num_inst=256+t6+(time-t7)/fps;
+shape_0_per_frame2=num_inst=int(num_inst/162)*162;t8=num_inst;
+shape_0_per_frame3=//num_inst=t8;
+shape_0_per_frame4=qx=x-.5;qy=y-.5;
+shape_0_per_frame5=rr=atan2(-qx,-qy);
+shape_0_per_frame6=dd=sqrt(sqr(qx)+sqr(qy));
+shape_0_per_frame7=pie=q23; tau=q26;
+shape_0_per_frame8=i=instance;   num=t8;
+shape_0_per_frame9=sa=1-(i/num);     
+shape_0_per_frame10=qnums=num/162;
+shape_0_per_frame11=qgroups=(num/6);        
+shape_0_per_frame12=sa1=((i/qgroups)%6)/qnums;   t1=tau*sa1 + q1 ;         //// circle of 6 cubes on zplane
+shape_0_per_frame13=z1=.1+.07*sin(.3*q1) + i/num*.6;;
+shape_0_per_frame14=x1 = z1*sin(t1)*sin(.5*q1);    y1 = z1*cos(t1*1.1);     
+shape_0_per_frame15=w=atan2(y1,x1) + q3*.32;
+shape_0_per_frame16=
+shape_0_per_frame17=vz=(num/6/6/3/3);vy=(num/6/6/3); vx=(num/6/6);
+shape_0_per_frame18=x20=((i/6)%vx)/vx;   y20=((i/6)%vy)/vy;     z20=((i/6)%vz)/vz;       ///// 3x3x3 mesh
+shape_0_per_frame19=x2 =  .4*x20 -  y20 +  .7*z20;
+shape_0_per_frame20=y2 =  1.2*sin(time)*x20 - 1.3*cos(time*.4)*y20 - 1.7*sin(time*1.2)*z20;     
+shape_0_per_frame21=t2=w;   
+shape_0_per_frame22=mx2=x2*sin(t2)+y2*cos(t2);    
+shape_0_per_frame23=my2=y2*sin(t2)-x2*cos(t2);
+shape_0_per_frame24=z2=.7*z1;      
+shape_0_per_frame25=x2=mx2*z2;    y2=my2*z2;
+shape_0_per_frame26=
+shape_0_per_frame27=
+shape_0_per_frame28=t3 = (num/6)*tau*sa +.5*sa +q1 ;               //// cubes made of 6 triangles
+shape_0_per_frame29=z3 = .13*z2;
+shape_0_per_frame30=x3 = z3*sin(t3);    y3 = z3*cos(t3);     
+shape_0_per_frame31=
+shape_0_per_frame32=
+shape_0_per_frame33=
+shape_0_per_frame34=x=.5 + (x1+x2+x3)/q6;    y=.5 + (y1+y2+y3); 
+shape_0_per_frame35=
+shape_0_per_frame36=rad = 2*z3;     ang=pie/4+t3;
+shape_0_per_frame37=
+shape_0_per_frame38=t1=.5+.4*sin(1.57*3*y20); 
+shape_0_per_frame39=
+shape_0_per_frame40=//r=x3*1-(qx-qy*(.5*(1-dd+.5)));// r=max(r*x3,x3*(1-r));
+shape_0_per_frame41=r=rad*(rr-dd*(qx+qy+.5))*qx+(.5*x/i);
+shape_0_per_frame42=//r*=abs(x3)+qy+qx-x3*2;
+shape_0_per_frame43=r*=(i/2)%3; r-=int(r);r=max(1-r,r);
+shape_0_per_frame44=
+shape_0_per_frame45=g=r*(.4+.02*((rr-ang)/(tau+ang-pie)))*abs(r-(dd*max(qx,qy)));                      
+shape_0_per_frame46=b=r*dd+(.3*g)-ang/rr; //a=g-max(g*b,r*g)*.2;
+shape_0_per_frame47=//
+shape_0_per_frame48=r2=abs(r);g2=abs(g);b2=abs(b);
+shape_0_per_frame49=r2-=int(r2);g2-=int(g2);b2-=int(b2);
+shape_0_per_frame50=r=r2;g=g2;b=b2;
+shape_0_per_frame51=border_r=r;border_g=g;border_b=b;
+shape_0_per_frame52=a=1;a2=1;border_a=1-above(g,(b+r)/2);
+shape_0_per_frame53=g*=1-border_a;
+shape_0_per_frame54=tex_ang-=ang;
+shape_0_per_frame55=tex_zoom=tex_zoom+rad*1.2;
+shape_0_per_frame56=reg28=num;reg88=reg28;
+shapecode_1_enabled=0
+shapecode_1_sides=3
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_num_inst=972
+shapecode_1_x=0.500
+shapecode_1_y=0.080
+shapecode_1_rad=2.01782
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=1.21795
+shapecode_1_r=1.000
+shapecode_1_g=1.000
+shapecode_1_b=0.000
+shapecode_1_a=1.000
+shapecode_1_r2=1.000
+shapecode_1_g2=1.000
+shapecode_1_b2=0.000
+shapecode_1_a2=1.000
+shapecode_1_border_r=1.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=1.000
+shapecode_1_border_a=0.000
+shape_1_per_frame1=i=instance;   sa=i/972;     
+shape_1_per_frame2=
+shape_1_per_frame3=sa1=((i/162)%6)/6;   t1=6.28*sa1 + q1 ;         //// circle of 6 cubes
+shape_1_per_frame4=z1=.1+.07*sin(.3*q1) + instance/num_inst*.6;;
+shape_1_per_frame5=x1 = z1*sin(t1)*sin(.5*q1);    y1 = z1*cos(t1*1.1);     
+shape_1_per_frame6=w=atan2(y1,x1) + q3*.32;
+shape_1_per_frame7=
+shape_1_per_frame8=
+shape_1_per_frame9=x20=((i/6)%27)/27;   y20=((i/6)%9)/9;     z20=((i/6)%3)/3;       ///// 3x3x3 mesh
+shape_1_per_frame10=x2 =  .4*x20 -  y20 +  .7*z20;
+shape_1_per_frame11=y2 =  1.2*sin(time)*x20 - 1.3*cos(time*.4)*y20 - 1.7*sin(time*1.2)*z20;     
+shape_1_per_frame12=t2=w;   
+shape_1_per_frame13=mx2=x2*sin(t2)+y2*cos(t2);    
+shape_1_per_frame14=my2=y2*sin(t2)-x2*cos(t2);
+shape_1_per_frame15=z2=.7*z1;      
+shape_1_per_frame16=x2=mx2*z2;    y2=my2*z2;
+shape_1_per_frame17=
+shape_1_per_frame18=
+shape_1_per_frame19=t3 = 162*6.28*sa +.5*sa +q1 ;               //// cubes made of 6 triangles
+shape_1_per_frame20=z3 = .13*z2;
+shape_1_per_frame21=x3 = z3*sin(t3);    y3 = z3*cos(t3);     
+shape_1_per_frame22=
+shape_1_per_frame23=
+shape_1_per_frame24=
+shape_1_per_frame25=x=.5 + (x1+x2+x3)/q6;    y=.5 + (y1+y2+y3); 
+shape_1_per_frame26=
+shape_1_per_frame27=rad = 2*z3;     ang=3.14/4+t3;
+shape_1_per_frame28=
+shape_1_per_frame29=t1=.5+.4*sin(1.57*3*y20); 
+shape_1_per_frame30=
+shape_1_per_frame31=r=.1+.25*(i/2)%3;   r*=t1;   r2=r; 
+shape_1_per_frame32=g=r*r;                       g2=g;   
+shape_1_per_frame33=b = z1; b2 = b;
+shapecode_2_enabled=0
+shapecode_2_sides=3
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_num_inst=972
+shapecode_2_x=0.500
+shapecode_2_y=0.610
+shapecode_2_rad=0.01000
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=3.40028
+shapecode_2_r=0.700
+shapecode_2_g=1.000
+shapecode_2_b=0.000
+shapecode_2_a=1.000
+shapecode_2_r2=1.000
+shapecode_2_g2=1.000
+shapecode_2_b2=0.000
+shapecode_2_a2=1.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=1.000
+shapecode_2_border_a=0.000
+shape_2_per_frame1=i=instance;   sa=i/972;     
+shape_2_per_frame2=
+shape_2_per_frame3=sa1=((i/162)%6)/6;   t1=6.28*sa1 + q1 ;         //// circle of 6 cubes
+shape_2_per_frame4=z1=.1+.07*sin(.3*q1) + instance/num_inst*.6;;
+shape_2_per_frame5=x1 = z1*sin(t1)*sin(.5*q1);    y1 = z1*cos(t1*1.1);     
+shape_2_per_frame6=w=atan2(y1,x1) + q3*.32;
+shape_2_per_frame7=
+shape_2_per_frame8=
+shape_2_per_frame9=x20=((i/6)%27)/27;   y20=((i/6)%9)/9;     z20=((i/6)%3)/3;       ///// 3x3x3 mesh
+shape_2_per_frame10=x2 =  .4*x20 -  y20 +  .7*z20;
+shape_2_per_frame11=y2 =  1.2*sin(time)*x20 - 1.3*cos(time*.4)*y20 - 1.7*sin(time*1.2)*z20;     
+shape_2_per_frame12=t2=w;   
+shape_2_per_frame13=mx2=x2*sin(t2)+y2*cos(t2);    
+shape_2_per_frame14=my2=y2*sin(t2)-x2*cos(t2);
+shape_2_per_frame15=z2=.7*z1;      
+shape_2_per_frame16=x2=mx2*z2;    y2=my2*z2;
+shape_2_per_frame17=
+shape_2_per_frame18=
+shape_2_per_frame19=t3 = 162*6.28*sa +.5*sa +q1 ;               //// cubes made of 6 triangles
+shape_2_per_frame20=z3 = .13*z2;
+shape_2_per_frame21=x3 = z3*sin(t3);    y3 = z3*cos(t3);     
+shape_2_per_frame22=
+shape_2_per_frame23=
+shape_2_per_frame24=
+shape_2_per_frame25=x=.5 + (x1+x2+x3)/q6;    y=.5 + (y1+y2+y3); 
+shape_2_per_frame26=
+shape_2_per_frame27=rad = 2*z3;     ang=3.14/4+t3;
+shape_2_per_frame28=
+shape_2_per_frame29=t1=.5+.4*sin(1.57*3*y20); 
+shape_2_per_frame30=
+shape_2_per_frame31=r=.1+.25*(i/2)%3;   r*=t1;   r2=r; 
+shape_2_per_frame32=g=r*r;                       g2=g;   
+shape_2_per_frame33=b = z1; b2 = b;
+shapecode_3_enabled=0
+shapecode_3_sides=3
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=972
+shapecode_3_x=0.380
+shapecode_3_y=0.500
+shapecode_3_rad=2.01042
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.00000
+shapecode_3_r=1.000
+shapecode_3_g=0.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=0.000
+shapecode_3_b2=0.000
+shapecode_3_a2=1.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=0.100
+shapecode_3_border_b=0.000
+shapecode_3_border_a=0.000
+shape_3_per_frame1=i=instance;   sa=i/972;     
+shape_3_per_frame2=
+shape_3_per_frame3=sa1=((i/162)%6)/6;   t1=6.28*sa1 + q1 ;         //// circle of 6 cubes
+shape_3_per_frame4=z1=.1+.07*sin(.3*q1) + instance/num_inst*.6;;
+shape_3_per_frame5=x1 = z1*sin(t1)*sin(.5*q1);    y1 = z1*cos(t1*1.1);     
+shape_3_per_frame6=w=atan2(y1,x1) + q3*.32;
+shape_3_per_frame7=
+shape_3_per_frame8=
+shape_3_per_frame9=x20=((i/6)%27)/27;   y20=((i/6)%9)/9;     z20=((i/6)%3)/3;       ///// 3x3x3 mesh
+shape_3_per_frame10=x2 =  .4*x20 -  y20 +  .7*z20;
+shape_3_per_frame11=y2 =  1.2*sin(time)*x20 - 1.3*cos(time*.4)*y20 - 1.7*sin(time*1.2)*z20;     
+shape_3_per_frame12=t2=w;   
+shape_3_per_frame13=mx2=x2*sin(t2)+y2*cos(t2);    
+shape_3_per_frame14=my2=y2*sin(t2)-x2*cos(t2);
+shape_3_per_frame15=z2=.7*z1;      
+shape_3_per_frame16=x2=mx2*z2;    y2=my2*z2;
+shape_3_per_frame17=
+shape_3_per_frame18=
+shape_3_per_frame19=t3 = 162*6.28*sa +.5*sa +q1 ;               //// cubes made of 6 triangles
+shape_3_per_frame20=z3 = .13*z2;
+shape_3_per_frame21=x3 = z3*sin(t3);    y3 = z3*cos(t3);     
+shape_3_per_frame22=
+shape_3_per_frame23=
+shape_3_per_frame24=
+shape_3_per_frame25=x=.5 + (x1+x2+x3)/q6;    y=.5 + (y1+y2+y3); 
+shape_3_per_frame26=
+shape_3_per_frame27=rad = 2*z3;     ang=3.14/4+t3;
+shape_3_per_frame28=
+shape_3_per_frame29=t1=.5+.4*sin(1.57*3*y20); 
+shape_3_per_frame30=
+shape_3_per_frame31=r=.1+.25*(i/2)%3;   r*=t1;   r2=r; 
+shape_3_per_frame32=g=r*r;                       g2=g;   
+shape_3_per_frame33=b = z1; b2 = b;
+per_frame_init_1=pdiv=pow(70,3); pie=1077566.28/pdiv; pi2=pie*2;q23=pie;q26=pi2;
+per_frame_1=decay=0;  
+per_frame_2=q6=aspecty;
+per_frame_3=
+per_frame_4=p+=bass_att-(.1*treb);
+per_frame_5=q1=10*sin(.15*time+.001*p);
+per_frame_6=monitor=reg88;
+per_frame_7=rot+=q1;
+per_frame_8=
+per_frame_9=
+per_frame_10=
+per_frame_11=zoom=1+.004*(bass_att);
+per_pixel_1=zoom*=1-((q26*.1)*rad)*sin(time/q23);
+per_pixel_2=sx+=.1*zoom-(.8*sy);sy+=.13*zoom-(.9*sx);
+per_pixel_3=cx*=1+sx; cy*=1+sy;rot-=rad;
+warp_1=`float3 mus;
+warp_2=`float2 rs, uv1, uv6, uv7, uv8;
+warp_3=`float dx,dy;
+warp_4=`
+warp_5=`shader_body {
+warp_6=`uv = uv_orig;
+warp_7=`uv1 = (uv-.5) * aspect.xy;
+warp_8=`
+warp_9=`//BACKGROUND
+warp_10=`float z = 1*length(uv1*5)+time;
+warp_11=`float2 uvn =normalize(uv1);
+warp_12=`rs = clamp(tan(z)*uvn,-5,5)/1;
+warp_13=`
+warp_14=`//CRYSTAL
+warp_15=`float mult = q31+rad*2;
+warp_16=`uv7 = sin(uv1*mult);
+warp_17=`uv8 = uv7*7;
+warp_18=`float dist = length(uv8);
+warp_19=`dist *= (abs(uv1.x) + abs(uv1.y))+ q32;
+warp_20=`
+warp_21=`float ang2 = atan2 (uv8.y,uv8.x);
+warp_22=`ang2 =  1*floor (1/ang2);
+warp_23=`float2 dir = .095*uv8+float2 (cos(ang2), sin(ang2));
+warp_24=`
+warp_25=`z = (1-cos(8*dist));
+warp_26=`z *= .200*saturate (lum(z));
+warp_27=`
+warp_28=`//ADD
+warp_29=`float mask = (z <= 1); //momentan beliebig
+warp_30=`rs = q28*rs + (1-q28)*rs.yx;
+warp_31=`uv += (1-mask)*3*(rs.yx) + .5*mask*z*normalize(z.x);
+warp_32=`
+warp_33=`//ZENTRALSTRAHL
+warp_34=`uv6 = mul (uv1,float2x2(_qb*.50));
+warp_35=`mus = .25*abs(0.0225/(sqrt(uv6.x)+.0))*(.3);
+warp_36=`
+warp_37=`//DOTS
+warp_38=`float3 blur = GetBlur1(frac(uv));
+warp_39=`float3 crisp= GetPixel(uv);
+warp_40=`float3 diff = (crisp) - .5*blur;
+warp_41=`float3 ret1 = crisp + mus;
+warp_42=`
+warp_43=`float3 mod = tex2D (sampler_noise_lq,50*uv+time)-.15;
+warp_44=`mod = .98 - mod-diff;
+warp_45=`
+warp_46=`ret = (1/mask)*ret1*mod + mask*ret1*mod;
+warp_47=`ret *= float3(.96,.96,.96)-.10*tex2D(sampler_noise_hq,uv);
+warp_48=`ret *= 2*float3(.88,.82,.76)*lum(uv_orig);
+warp_49=`
+warp_50=`ret *= .96- .1;
+warp_51=`
+warp_52=`}
+comp_1=`sampler sampler_rand00;;
+comp_2=`shader_body
+comp_3=`
+comp_4=`{
+comp_5=`    float2 d = texsize.zw*4;
+comp_6=`    float1 dx = ( GetBlur1(uv+float2(1,0)*d)-GetBlur1(uv-float2(1,0)*d) ).y;
+comp_7=`    float1 dy = ( GetBlur1(uv+float2(0,1)*d)-GetBlur3(uv-float2(0,1)*d) ).y;
+comp_8=`    float2 uv_y = uv-float2(dx,dy)*0.4;
+comp_9=`
+comp_10=`ret = lerp(tex2D(sampler_rand00, uv_y), GetPixel(uv).y*0.7,max(rand_preset,rand_frame));
+comp_11=`}
+comp_12=`

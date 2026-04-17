@@ -2587,10 +2587,10 @@ int CPlugin::AllocateMyDX9Stuff()
 			m_verts[nVert].z = 0.0f;
 
 			// precompute rad, ang, being conscious of aspect ratio
-			            if (m_bScreenDependentRenderMode)
-            m_vertinfo[nVert].rad = sqrtf(m_verts[nVert].x * m_verts[nVert].x + m_verts[nVert].y * m_verts[nVert].y);
+			if (m_bScreenDependentRenderMode)
+                m_vertinfo[nVert].rad = sqrtf(m_verts[nVert].x * m_verts[nVert].x + m_verts[nVert].y * m_verts[nVert].y);
             else
-            m_vertinfo[nVert].rad = sqrtf(m_verts[nVert].x * m_verts[nVert].x * m_fAspectX * m_fAspectX + m_verts[nVert].y * m_verts[nVert].y * m_fAspectY * m_fAspectY);
+                m_vertinfo[nVert].rad = sqrtf(m_verts[nVert].x * m_verts[nVert].x * m_fAspectX * m_fAspectX + m_verts[nVert].y * m_verts[nVert].y * m_fAspectY * m_fAspectY);
 			if (y==m_nGridY/2 && x==m_nGridX/2)
 				m_vertinfo[nVert].ang = 0.0f;
 			else
@@ -11571,7 +11571,7 @@ void CPlugin::DoCustomSoundAnalysis()
     for (int i = 0; i < 3; i++)
     {
         // Process each frequency band
-        float freq_min, freq_max;
+        int freq_min, freq_max;
 
         switch (i) {
         case 0: // Bass
