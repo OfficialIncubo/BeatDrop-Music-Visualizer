@@ -43,11 +43,15 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "texmgr.h"
 #include "state.h"
 #include <vector>
+#include <random>
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 
 //#include <core/sdk/IPlaybackService.h>
 
 extern "C" int (*warand)(void);
+
+extern std::random_device rd;
+extern std::mt19937_64 gen;
 
 typedef enum { TEX_DISK, TEX_VS, TEX_FFT, TEX_WAVE, TEX_BLUR0, TEX_BLUR1, TEX_BLUR2, TEX_BLUR3, TEX_BLUR4, TEX_BLUR5, TEX_BLUR6, TEX_BLUR_LAST } tex_code;
 typedef enum { UI_REGULAR, UI_MENU, UI_LOAD, UI_LOAD_DEL, UI_LOAD_RENAME, UI_SAVEAS, UI_SAVE_OVERWRITE, UI_EDIT_MENU_STRING, UI_CHANGEDIR, UI_IMPORT_WAVE, UI_EXPORT_WAVE, UI_IMPORT_SHAPE, UI_EXPORT_SHAPE, UI_UPGRADE_PIXEL_SHADER, UI_MASHUP } ui_mode;

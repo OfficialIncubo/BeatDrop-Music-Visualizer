@@ -633,7 +633,7 @@ SPOUT :
 #include "Milkdrop2PcmVisualizer.h"
 #include "songtitlegetter.h"
 #include "AMDDetection.h"
-#include <random>
+//#include <random> // defined in header
 
 #include <dwmapi.h>  // Link with Dwmapi.lib
 #pragma comment(lib, "dwmapi.lib")

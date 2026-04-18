@@ -46,6 +46,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define D3DCOLOR_RGBA_01(r,g,b,a) D3DCOLOR_RGBA(((int)(r*255)),((int)(g*255)),((int)(b*255)),((int)(a*255)))
 #define FRAND ((rand() % 7381)/7380.0f)
+extern std::mt19937_64 gen;
 
 #define VERT_CLIP 0.75f		// warning: top/bottom can get clipped if you go < 0.65!
 
@@ -837,7 +838,8 @@ void CPlugin::RenderFrame(int bRedraw)
 
 	if (m_fNextPresetTime < 0)
 	{
-		float dt = m_fTimeBetweenPresetsRand * (rand()%1000)*0.001f;
+		std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+		float dt = m_fTimeBetweenPresetsRand * dist(gen);
 		m_fNextPresetTime = GetTime() + m_fBlendTimeAuto + m_fTimeBetweenPresets + dt;
 	}
 
