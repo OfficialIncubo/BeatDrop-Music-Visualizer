@@ -144,6 +144,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "AutoCharFn.h"
 #include <mmsystem.h>
 #include "plugin.h"
+#include "../audio/audiobuf.h"
 #include <shellapi.h>
 #pragma comment(lib,"winmm.lib")    // for timeGetTime
 
@@ -1817,8 +1818,8 @@ void CPluginShell::AnalyzeNewSound(unsigned char *pWaveL, unsigned char *pWaveR)
 	int old_i = 0;
 	for (i=0; i<576; i++)
 	{
-		m_sound.fWaveform[0][i] = (float)((pWaveL[i] ^ 128) - 128);
-		m_sound.fWaveform[1][i] = (float)((pWaveR[i] ^ 128) - 128);
+		m_sound.fWaveform[0][i] = (float)((pWaveL[i] ^ 128) - 128) * g_fAudioSensitivity;
+		m_sound.fWaveform[1][i] = (float)((pWaveR[i] ^ 128) - 128) * g_fAudioSensitivity;
 
 		// simulating single frequencies from 200 to 11,025 Hz:
 		//float freq = 1.0f + 11050*(GetFrame() % 100)*0.01f;

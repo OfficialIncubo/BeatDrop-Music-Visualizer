@@ -54,7 +54,6 @@ void GetAudioBuf(unsigned char *pWaveL, unsigned char *pWaveR, int SamplesCount)
 }
 
 int8_t FltToInt(float flt) {
-    flt *= g_fAudioSensitivity;
     if (flt >= 1.0f) {
         return +127; // 0x7f
     }
