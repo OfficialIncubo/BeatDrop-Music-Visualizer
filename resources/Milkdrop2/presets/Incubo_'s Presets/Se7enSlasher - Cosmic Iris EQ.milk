@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 11/03/2026 at 08:53:38.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 19/04/2026 at 19:22:27.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -170,7 +170,7 @@ warp_87=`
 comp_1=`shader_body
 comp_2=`{
 comp_3=`    // MilkDrop3 Flip Mode
-comp_4=`    uv = 1.0 - uv;
+comp_4=`    //uv = 1.0 - uv;
 comp_5=`    
 comp_6=`    float3 col = tex2D(sampler_main, uv).xyz;
 comp_7=`    

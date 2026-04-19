@@ -11430,6 +11430,11 @@ void CPlugin::DoCustomSoundAnalysis()
     //float fWaveLeft[MY_FFT_WINDOW];
     //float fWaveRight[MY_FFT_WINDOW];
     //GetAudioBufFloat(fWaveLeft, fWaveRight, MY_FFT_WINDOW);
+    //for (int i = 0; i < MY_FFT_WINDOW; i++)
+    //{
+    //    fWaveLeft[i] *= g_fAudioSensitivity;
+    //    fWaveRight[i] *= g_fAudioSensitivity;
+    //}
 
 	memset(mysound.fSpecLeft, 0, sizeof(float)*MY_FFT_SAMPLES);
     memset(mysound.fSpecRight, 0, sizeof(float)*MY_FFT_SAMPLES);
