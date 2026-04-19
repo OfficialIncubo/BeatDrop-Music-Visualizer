@@ -145,7 +145,7 @@ namespace fs = std::filesystem;
 
 #define DLL_EXPORT __declspec(dllexport)
 //#define COMPILE_AS_DLL
-#define SAMPLE_SIZE 576
+#define SAMPLE_SIZE 2304
 //#define DEFAULT_WIDTH 720;
 //#define DEFAULT_HEIGHT 720;
 

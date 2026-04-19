@@ -59,9 +59,10 @@ typedef struct { float rad; float ang; float a; float c;  } td_vertinfo; // blen
 typedef char* CHARPTR;
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-//#define MY_FFT_SAMPLES 512     // for old [pre-vms] milkdrop sound analysis
-#define MY_FFT_SAMPLES 1024
+#define MY_FFT_SAMPLES 512     // for old [pre-vms] milkdrop sound analysis
 #define MY_FFT_WINDOW MY_FFT_SAMPLES*2
+#define MY_FFT_SHADER_SAMPLES 1024
+#define MY_FFT_SHADER_WINDOW MY_FFT_SHADER_SAMPLES*2
 
 HRESULT DetectSampleRate();
 bool GetCaptureMicFlag();
@@ -599,9 +600,9 @@ public:
         IDirect3DTexture9 *m_lpVS[2];
         IDirect3DTexture9* m_lpFFTTexture = nullptr;  // FFT Samplesx2 R32F FFT spectrum texture (row 0: smoothed, row 1: peak hold)
         IDirect3DTexture9* m_lpWaveTexture = nullptr; // Waveform Samplesx2 R32F Waveform texture (row 0: left, row 1: right)
-        float m_fFFTSmoothed[MY_FFT_SAMPLES] = {};    // smoothed mono FFT buffer
-        float m_fFFTPeak[MY_FFT_SAMPLES] = {};         // peak hold values
-        int   m_nFFTPeakHold[MY_FFT_SAMPLES] = {};    // frames remaining at current peak
+        float m_fFFTSmoothed[MY_FFT_SHADER_SAMPLES] = {};    // smoothed mono FFT buffer
+        float m_fFFTPeak[MY_FFT_SHADER_SAMPLES] = {};         // peak hold values
+        int   m_nFFTPeakHold[MY_FFT_SHADER_SAMPLES] = {};    // frames remaining at current peak
         #define NUM_BLUR_TEX 6
         #if (NUM_BLUR_TEX>0)
 	    IDirect3DTexture9 *m_lpBlur[NUM_BLUR_TEX]; // each is successively 1/2 size of prev.

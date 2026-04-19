@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 25/03/2026 at 17:52:39.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 19/04/2026 at 17:56:11.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -7,12 +7,12 @@ Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord
 MILKDROP_PRESET_VERSION=201
 PSVERSION=4
 PSVERSION_WARP=4
-PSVERSION_COMP=3
+PSVERSION_COMP=4
 [preset00]
 fRating=1.000
 fGammaAdj=1.980
 fDecay=0.500
-FFTAttack=0.100
+FFTAttack=0.150
 FFTDecay=0.250
 fVideoEchoZoom=1.000
 fVideoEchoAlpha=0.500
@@ -111,73 +111,76 @@ comp_15=`   float static_r = length(static_center);
 comp_16=`   float static_ang = atan2(static_center.x, static_center.y);
 comp_17=`
 comp_18=`   // 2. Pulsing/Shaking Coordinates for Logo & Spectrum
-comp_19=`   float bassfft = get_fft_hz(0.01) * 3.5;
-comp_20=`   float zoom = 1.0 + bassfft * 0.12;
-comp_21=`   float2 uv_zoom = (uv - 0.5) / zoom + 0.5;
-comp_22=`   float2 shake = float2(rand_frame.x*2-1, rand_frame.y*2-1) * (bassfft*0.0045);
-comp_23=`   uv_zoom += shake * smoothstep(0.3, 0.9, bassfft);
-comp_24=`   
-comp_25=`   float2 center_uv = (uv_zoom - 0.5) * aspectv * 3.0;
-comp_26=`   float r = length(center_uv);
-comp_27=`   float angle = atan2(center_uv.x, center_uv.y);
-comp_28=`   float logo_radius = 0.4045;
-comp_29=`
-comp_30=`   // --- UPSIDE DOWN SPECTRUM (Bass at Top) ---
-comp_31=`   float norm_ang = 1 - (abs(angle) / M_PI);
-comp_32=`   float hz = lerp(20.0, 250.0, norm_ang);
-comp_33=`   float fft = get_fft_hz(hz);
-comp_34=`
-comp_35=`   // --- WHITE PARTICLES (Stabilized) ---
-comp_36=`   float p_vel = q1;
-comp_37=`   float2 p_uv = float2(static_ang * 12.0, (static_r - p_vel) * 6.0);
-comp_38=`   float2 p_id = floor(p_uv);
-comp_39=`   float3 p_noise = frac(float3(p_id.x, p_id.y, p_id.x) * 0.1031);
-comp_40=`   p_noise += dot(p_noise, p_noise.yzx + 33.33);
-comp_41=`   float p_hash = frac((p_noise.x + p_noise.y) * p_noise.z);
-comp_42=`   
-comp_43=`   float2 p_local = frac(p_uv) - 0.5 + (frac(float2(p_hash, p_hash*1.7))-0.5)*0.8;
-comp_44=`   float part = smoothstep(0.09, 0.01, length(p_local)) * smoothstep(0.75, 0.99, p_hash);
-comp_45=`   part *= smoothstep(logo_radius, logo_radius + 0.6, static_r);
-comp_46=`   float3 part_col = float3(1.0, 1.0, 1.0) * part * (1.2 + bass_att * 2.5);
-comp_47=`
-comp_48=`   // --- COMPOSITE BACKGROUND ---
-comp_49=`   float3 bg = GetPixel(uv) + (GetBlur3(uv)*2.75)*(bassfft*.025);
-comp_50=`   bg += part_col; 
-comp_51=`
-comp_52=`   // --- ARRAY-BASED RAINBOW TRAILING ---
-comp_53=`   float3 colors[7];
-comp_54=`   colors[0] = float3(1.0, 1.0, 1.0); // White (Main Part)
-comp_55=`   colors[1] = float3(1.0, 1.0, 0.0); // Yellow
-comp_56=`   colors[2] = float3(1.0, 0.0, 0.0); // Red
-comp_57=`   colors[3] = float3(0.7, 0.0, 1.0); // Purple (Vibrant)
-comp_58=`   colors[4] = float3(0.0, 0.0, 1.0); // Blue
-comp_59=`   colors[5] = float3(0.0, 1.0, 1.0); // Cyan
-comp_60=`   colors[6] = float3(0.0, 1.0, 0.0); // Green
-comp_61=`
-comp_62=`   float3 final_spec = bg;
-comp_63=`   
-comp_64=`   // Render back-to-front (Green to White) so White overlaps everything
-comp_65=`   for(int i = 6; i >= 0; i--) {
-comp_66=`       // Height increased by 0.05 per layer. 
-comp_67=`       // Multiply by fft to create the expanding shockwave / delay illusion
-comp_68=`       float offset = (float)i * 0.04 * pow(fft, 2);
-comp_69=`       float spec_h = logo_radius + pow(fft, 1) * 0.25 + offset;
-comp_70=`       
-comp_71=`       // Smooth Continuous Ring
-comp_72=`       float spectrum = smoothstep(spec_h + 0.015, spec_h, r) *
-comp_73=`                        smoothstep(logo_radius - 0.01, logo_radius, r);
-comp_74=`       
-comp_75=`       // Glow
-comp_76=`       float trail = smoothstep(spec_h + 0.15, logo_radius, r) * pow(fft, 1.5) * 0.5;
+comp_19=`   float bassSum = 0;
+comp_20=`   for (int i = 0; i <= 200; i++)
+comp_21=`       bassSum += get_fft_hz(i);
+comp_22=`   float bassfft = bassSum * .02;
+comp_23=`   float zoom = 1.0 + bassfft * 0.12;
+comp_24=`   float2 uv_zoom = (uv - 0.5) / zoom + 0.5;
+comp_25=`   float2 shake = float2(rand_frame.x*2-1, rand_frame.y*2-1) * (bassfft*0.0045);
+comp_26=`   uv_zoom += shake * smoothstep(0.3, 0.9, bassfft);
+comp_27=`   
+comp_28=`   float2 center_uv = (uv_zoom - 0.5) * aspectv * 3.0;
+comp_29=`   float r = length(center_uv);
+comp_30=`   float angle = atan2(center_uv.x, center_uv.y);
+comp_31=`   float logo_radius = 0.4045;
+comp_32=`
+comp_33=`   // --- UPSIDE DOWN SPECTRUM (Bass at Top) ---
+comp_34=`   float norm_ang = 1 - (abs(angle) / M_PI);
+comp_35=`   float hz = lerp(20.0, 250.0, norm_ang);
+comp_36=`   float fft = get_fft_hz(hz);
+comp_37=`
+comp_38=`   // --- WHITE PARTICLES (Stabilized) ---
+comp_39=`   float p_vel = q1;
+comp_40=`   float2 p_uv = float2(static_ang * 12.0, (static_r - p_vel) * 6.0);
+comp_41=`   float2 p_id = floor(p_uv);
+comp_42=`   float3 p_noise = frac(float3(p_id.x, p_id.y, p_id.x) * 0.1031);
+comp_43=`   p_noise += dot(p_noise, p_noise.yzx + 33.33);
+comp_44=`   float p_hash = frac((p_noise.x + p_noise.y) * p_noise.z);
+comp_45=`   
+comp_46=`   float2 p_local = frac(p_uv) - 0.5 + (frac(float2(p_hash, p_hash*1.7))-0.5)*0.8;
+comp_47=`   float part = smoothstep(0.09, 0.01, length(p_local)) * smoothstep(0.75, 0.99, p_hash);
+comp_48=`   part *= smoothstep(logo_radius, logo_radius + 0.6, static_r);
+comp_49=`   float3 part_col = float3(1.0, 1.0, 1.0) * part * (1.2 + bass_att * 2.5);
+comp_50=`
+comp_51=`   // --- COMPOSITE BACKGROUND ---
+comp_52=`   float3 bg = GetPixel(uv) + (GetBlur3(uv)*2.75)*(bassfft*.025);
+comp_53=`   bg += part_col; 
+comp_54=`
+comp_55=`   // --- ARRAY-BASED RAINBOW TRAILING ---
+comp_56=`   float3 colors[7];
+comp_57=`   colors[0] = float3(1.0, 1.0, 1.0); // White (Main Part)
+comp_58=`   colors[1] = float3(1.0, 1.0, 0.0); // Yellow
+comp_59=`   colors[2] = float3(1.0, 0.0, 0.0); // Red
+comp_60=`   colors[3] = float3(0.7, 0.0, 1.0); // Purple (Vibrant)
+comp_61=`   colors[4] = float3(0.0, 0.0, 1.0); // Blue
+comp_62=`   colors[5] = float3(0.0, 1.0, 1.0); // Cyan
+comp_63=`   colors[6] = float3(0.0, 1.0, 0.0); // Green
+comp_64=`
+comp_65=`   float3 final_spec = bg;
+comp_66=`   
+comp_67=`   // Render back-to-front (Green to White) so White overlaps everything
+comp_68=`   for(int i = 6; i >= 0; i--) {
+comp_69=`       // Height increased by 0.05 per layer. 
+comp_70=`       // Multiply by fft to create the expanding shockwave / delay illusion
+comp_71=`       float offset = (float)i * 0.04 * pow(fft, 2);
+comp_72=`       float spec_h = logo_radius + pow(fft, 1) * 0.25 + offset;
+comp_73=`       
+comp_74=`       // Smooth Continuous Ring
+comp_75=`       float spectrum = smoothstep(spec_h + 0.015, spec_h, r) *
+comp_76=`                        smoothstep(logo_radius - 0.01, logo_radius, r);
 comp_77=`       
-comp_78=`       // Mask and Alpha Blend
-comp_79=`       float mask = saturate(spectrum + trail);
-comp_80=`       final_spec = lerp(final_spec, colors[i], mask);
-comp_81=`   }
-comp_82=`   
-comp_83=`   // --- FINAL LOGO BLEND ---
-comp_84=`   float3 logo_img = tex2D(TrapNation, SquareUV(uv_zoom));
-comp_85=`   float logo_mask = 1.0 - smoothstep(logo_radius, logo_radius + 0.003, r);
-comp_86=`   
-comp_87=`   ret = lerp(final_spec, logo_img, logo_mask);
-comp_88=`}
+comp_78=`       // Glow
+comp_79=`       float trail = smoothstep(spec_h + 0.15, logo_radius, r) * pow(fft, 1.5) * 0.5;
+comp_80=`       
+comp_81=`       // Mask and Alpha Blend
+comp_82=`       float mask = saturate(spectrum + trail);
+comp_83=`       final_spec = lerp(final_spec, colors[i], mask);
+comp_84=`   }
+comp_85=`   
+comp_86=`   // --- FINAL LOGO BLEND ---
+comp_87=`   float3 logo_img = tex2D(TrapNation, SquareUV(uv_zoom));
+comp_88=`   float logo_mask = 1.0 - smoothstep(logo_radius, logo_radius + 0.003, r);
+comp_89=`   
+comp_90=`   ret = lerp(final_spec, logo_img, logo_mask);
+comp_91=`}

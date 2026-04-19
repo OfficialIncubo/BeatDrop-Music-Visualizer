@@ -1248,7 +1248,7 @@ void CPlugin::MyPreInitialize()
     //m_nRatingReadProgress = -1;
 
     myfft.Init(MY_FFT_WINDOW, MY_FFT_SAMPLES, -1);
-    myfftshader.Init(MY_FFT_WINDOW, MY_FFT_SAMPLES, 0);
+    myfftshader.Init(MY_FFT_SHADER_WINDOW, MY_FFT_SHADER_SAMPLES, 0);
 	memset(&mysound, 0, sizeof(mysound));
 
     for (int i=0; i<PRESET_HIST_LEN; i++)
@@ -2334,7 +2334,7 @@ int CPlugin::AllocateMyDX9Stuff()
     m_fInvAspectY = 1.0f/m_fAspectY;
 
     // Create FFT spectrum texture (FFT Samplesx2, R32F: row0=smoothed, row1=peak hold, updated each frame)
-    GetDevice()->CreateTexture(MY_FFT_SAMPLES, 2, 1, D3DUSAGE_DYNAMIC, D3DFMT_R32F, D3DPOOL_DEFAULT, &m_lpFFTTexture, NULL);
+    GetDevice()->CreateTexture(MY_FFT_SHADER_SAMPLES, 2, 1, D3DUSAGE_DYNAMIC, D3DFMT_R32F, D3DPOOL_DEFAULT, &m_lpFFTTexture, NULL);
 
     // Create Waveform texture (Waveform Samplesx2, R32F: row0=left, row1=right, updated each frame)
     GetDevice()->CreateTexture(NUM_WAVEFORM_SAMPLES, 2, 1, D3DUSAGE_DYNAMIC, D3DFMT_R32F, D3DPOOL_DEFAULT, &m_lpWaveTexture, NULL);
@@ -11427,6 +11427,10 @@ void CPlugin::DoCustomSoundAnalysis()
         fWaveRight[i] = m_sound.fWaveform[1][i]; //right channel
     }
 
+    //float fWaveLeft[MY_FFT_WINDOW];
+    //float fWaveRight[MY_FFT_WINDOW];
+    //GetAudioBufFloat(fWaveLeft, fWaveRight, MY_FFT_WINDOW);
+
 	memset(mysound.fSpecLeft, 0, sizeof(float)*MY_FFT_SAMPLES);
     memset(mysound.fSpecRight, 0, sizeof(float)*MY_FFT_SAMPLES);
 
@@ -11434,24 +11438,28 @@ void CPlugin::DoCustomSoundAnalysis()
     myfft.time_to_frequency_domain(fWaveRight, mysound.fSpecRight);
 	//for (i=0; i<MY_FFT_SAMPLES; i++) fSpecLeft[i] = sqrtf(fSpecLeft[i]*fSpecLeft[i] + fSpecTemp[i]*fSpecTemp[i]);
 
+    float fWaveLargeLeft[MY_FFT_SHADER_WINDOW];
+    float fWaveLargeRight[MY_FFT_SHADER_WINDOW];
+    GetAudioBufFloat(fWaveLargeLeft, fWaveLargeRight, MY_FFT_SHADER_WINDOW);
+
     // Apply FFT smoothing and upload to GPU texture for get_fft()/get_fft_hz() shader functions
     // Compute clean (un-equalized) FFT for get_fft()/get_fft_hz() shader functions
-    float fShaderSpecLeft[MY_FFT_SAMPLES];
-    float fShaderSpecRight[MY_FFT_SAMPLES];
-    memset(fShaderSpecLeft, 0, sizeof(float) * MY_FFT_SAMPLES);
-    memset(fShaderSpecRight, 0, sizeof(float) * MY_FFT_SAMPLES);
-    myfftshader.time_to_frequency_domain(fWaveLeft, fShaderSpecLeft);
-    myfftshader.time_to_frequency_domain(fWaveRight, fShaderSpecRight);
+    float fShaderSpecLeft[MY_FFT_SHADER_SAMPLES];
+    float fShaderSpecRight[MY_FFT_SHADER_SAMPLES];
+    memset(fShaderSpecLeft, 0, sizeof(float) * MY_FFT_SHADER_SAMPLES);
+    memset(fShaderSpecRight, 0, sizeof(float) * MY_FFT_SHADER_SAMPLES);
+    myfftshader.time_to_frequency_domain(fWaveLargeLeft, fShaderSpecLeft);
+    myfftshader.time_to_frequency_domain(fWaveLargeRight, fShaderSpecRight);
 
     // RMS normalization
     // Sum all the bins and take a square mono calculated FFT.
     float fftSumSq = 0;
-    for (int i = 0; i < MY_FFT_SAMPLES; i++)
+    for (int i = 0; i < MY_FFT_SHADER_SAMPLES; i++)
     {
         float mono = (fShaderSpecLeft[i] + fShaderSpecRight[i]) * .5f;
         fftSumSq += mono * mono;
     }
-    float fftRMS = sqrtf(fftSumSq / MY_FFT_SAMPLES);    // Calculate RMS from square mono calculated FFT.
+    float fftRMS = sqrtf(fftSumSq / MY_FFT_SHADER_SAMPLES);    // Calculate RMS from square mono calculated FFT.
     if (fftRMS < 1e-5f) fftRMS = 1e-5f; // PREVENT DIVISION BY ZERO ERROR, is it neccesary?
 
     // Smoothing RMS with simple low-pass
@@ -11473,7 +11481,7 @@ void CPlugin::DoCustomSoundAnalysis()
         float decay  = m_pState->m_fFFTDecay.eval(GetTime());   // Reads FFT Decay from state
         float decayFactor = (1.0f - decay) * (1.0f - decay);
         const float kVisibleFloor = 5e-8f;
-        for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)
+        for (int fi = 0; fi < MY_FFT_SHADER_SAMPLES; fi++)
         {
             float mono = (fShaderSpecLeft[fi] + fShaderSpecRight[fi]) * 0.5f;
             // Normalize FFT with RMS.
@@ -11499,7 +11507,7 @@ void CPlugin::DoCustomSoundAnalysis()
                 m_fFFTSmoothed[fi] = 0.0f;
         }
         // Update peak hold: hold for 1 second then decay
-        for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)
+        for (int fi = 0; fi < MY_FFT_SHADER_SAMPLES; fi++)
         {
             if (m_fFFTSmoothed[fi] >= m_fFFTPeak[fi])
             {
@@ -11522,7 +11530,7 @@ void CPlugin::DoCustomSoundAnalysis()
             {
                 float* row0 = (float*)r.pBits;
                 float* row1 = (float*)((BYTE*)r.pBits + r.Pitch);
-                for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)
+                for (int fi = 0; fi < MY_FFT_SHADER_SAMPLES; fi++)
                 {
                     row0[fi] = m_fFFTSmoothed[fi];
                     row1[fi] = m_fFFTPeak[fi];
