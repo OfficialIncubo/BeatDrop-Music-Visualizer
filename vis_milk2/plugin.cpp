@@ -11490,6 +11490,10 @@ void CPlugin::DoCustomSoundAnalysis()
         float attack = m_pState->m_fFFTAttack.eval(GetTime());  // Reads FFT Attack from state
         float decay  = m_pState->m_fFFTDecay.eval(GetTime());   // Reads FFT Decay from state
         float decayFactor = (1.0f - decay) * (1.0f - decay);
+
+        // FPS-independent: scale both coefficients relative to 60fps reference
+        float attackPerFrame = 1.0f - powf(1.0f - attack,      60.0f / fps);
+        float decayPerFrame  = 1.0f - powf(1.0f - decayFactor, 60.0f / fps);
         const float kVisibleFloor = 5e-8f;
         for (int fi = 0; fi < MY_FFT_SHADER_SAMPLES; fi++)
         {
@@ -11510,9 +11514,9 @@ void CPlugin::DoCustomSoundAnalysis()
                 mono *= lowcut;
             }
             if (mono > m_fFFTSmoothed[fi])
-                m_fFFTSmoothed[fi] += (mono - m_fFFTSmoothed[fi]) * attack;
+                m_fFFTSmoothed[fi] += (mono - m_fFFTSmoothed[fi]) * attackPerFrame;
             else
-                m_fFFTSmoothed[fi] += (mono - m_fFFTSmoothed[fi]) * decayFactor;
+                m_fFFTSmoothed[fi] += (mono - m_fFFTSmoothed[fi]) * decayPerFrame;
             if (m_fFFTSmoothed[fi] < kVisibleFloor)
                 m_fFFTSmoothed[fi] = 0.0f;
         }
