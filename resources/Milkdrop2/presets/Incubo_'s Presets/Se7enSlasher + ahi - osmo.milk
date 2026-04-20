@@ -1,0 +1,158 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 20/04/2026 at 15:54:06.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=2
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.235
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`/*
+warp_2=`osmo by ahi
+warp_3=`Converted from ShaderToy to MilkDrop by me (No AI, hand-written)
+warp_4=`Original ShaderToy shader link: https://www.shadertoy.com/view/lsX3Wn
+warp_5=`*/
+warp_6=`
+warp_7=`shader_body
+warp_8=`{
+warp_9=`    const float fxFadeLength = 200;
+warp_10=`    const float fxFadeStart = 80;
+warp_11=`    const float3 colBGIn = float3(.2,.25,.5);
+warp_12=`    const float3 colBGOut = float3(.5,.1,.1);
+warp_13=`    const float3 colSphereIn = float3(.001,0,0);
+warp_14=`    const float3 colSphereOut = float3(0,0,0);
+warp_15=`    const float edgeSmooth = .015;
+warp_16=`    
+warp_17=`    
+warp_18=`    float3 o;
+warp_19=`    float2 aspectT = float2(1, texsize.y/texsize.x);
+warp_20=`    
+warp_21=`    //BG
+warp_22=`    float volA = get_fft(.1);
+warp_23=`    float2 vec = uv - .5;
+warp_24=`    vec *= aspectT;
+warp_25=`    float len = length(vec);
+warp_26=`    float3 colBG = lerp(colBGIn, colBGOut, len * volA);
+warp_27=`    volA *= volA * 2;
+warp_28=`    o = colBG * volA;
+warp_29=`    
+warp_30=`    //SPHERES
+warp_31=`    float prog = .3 * clamp((30 - fxFadeStart) / fxFadeLength, 0, 1);
+warp_32=`    
+warp_33=`    for(float x = .1; x<1; x+=.2)
+warp_34=`    {
+warp_35=`        for(float y = .05; y<1; y+=.1)
+warp_36=`        {
+warp_37=`            float2 pos = float2(abs(y-.5),abs(x-.5));
+warp_38=`            #if HAS_FFT_PEAK
+warp_39=`            float2 volB = float2(get_fft(pos), get_fft_peak(pos));
+warp_40=`            #else
+warp_41=`            float2 volB = get_fft(pos);
+warp_42=`            #endif
+warp_43=`            volA = volB.x * volB.y;
+warp_44=`            volA *= volA;
+warp_45=`            
+warp_46=`            float2 add = float2(prog,0);
+warp_47=`            float tA = volA * 5 + x * y * time * prog;
+warp_48=`            float2x2 rot = transpose(float2x2(cos(tA),-sin(tA),sin(tA),cos(tA))); // Important: GLSL vs. HLSL Matrix Major Order
+warp_49=`            add = mul(add, rot);
+warp_50=`            
+warp_51=`            pos = add + float2(x,y);
+warp_52=`            float2 vec = float2(pos.x + ((pos.x-.5)* volA * .05), pos.y);
+warp_53=`            vec = uv - vec;
+warp_54=`            vec *= aspectT;
+warp_55=`            float len = length(vec);
+warp_56=`            
+warp_57=`            //SPHERE
+warp_58=`            float sphereRadius = .5 * volA-.03;
+warp_59=`            float a = 1 - smoothstep(sphereRadius, sphereRadius + edgeSmooth + prog * .2, len) - prog * 2.5;
+warp_60=`            a = max(a,0);
+warp_61=`            o += float3(a, a * .3, a * .1);
+warp_62=`            
+warp_63=`            //SPHERE GLOW
+warp_64=`            sphereRadius += .05;
+warp_65=`            a = 1 - smoothstep(sphereRadius, sphereRadius + .1, len) - prog * 1;
+warp_66=`            a = max(a,0);
+warp_67=`            o += float3(a, a * .3, a * .1) * .4 * volA;
+warp_68=`        }
+warp_69=`    }
+warp_70=`    
+warp_71=`    o.rg += volA * .5;
+warp_72=`    o = (o-0.5) * 1.1 + .5;
+warp_73=`    ret = o;
+warp_74=`}
+comp_1=`shader_body
+comp_2=`{ ret = GetPixel(uv); }

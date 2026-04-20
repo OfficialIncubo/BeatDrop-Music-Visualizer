@@ -1,0 +1,141 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 20/04/2026 at 16:27:12.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=2
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+FFTAttack=0.700
+FFTDecay=0.350
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.235
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`/*
+warp_2=`Fire Vortex (Ball of Fire Edit) by Trisomie21 and Adrian Eddy
+warp_3=`Converted from Adrian Eddy's Spectrum Analyzer Android App to MilkDrop by me (no AI, hand-written)
+warp_4=`Original ShaderToy shader link: https://www.shadertoy.com/view/lsf3RH
+warp_5=`*/
+warp_6=`
+warp_7=`float snoise(float3 uva, float res) {
+warp_8=`    const float3 s = float3(1e0, 1e2, 1e4);
+warp_9=`    
+warp_10=`    uva *= res;
+warp_11=`    
+warp_12=`    float3 uv0 = floor(fmod(uva, res))*s;
+warp_13=`    float3 uv1 = floor(fmod(uva+float3(1,1,1), res))*s;
+warp_14=`    
+warp_15=`    float3 f = frac(uva); f = f*f*(3-2*f);
+warp_16=`
+warp_17=`    float4 v = float4(uv0.x+uv0.y+uv0.z, uv1.x+uv0.y+uv0.z,
+warp_18=`                    uv0.x+uv1.y+uv0.z, uv1.x+uv1.y+uv0.z);
+warp_19=`
+warp_20=`    float4 r = frac(sin(v*1e-3)*1e5);
+warp_21=`    float r0 = lerp(lerp(r.x, r.y, f.x), lerp(r.z, r.w, f.x), f.y);
+warp_22=`    
+warp_23=`    r = frac(sin((v + uv1.z - uv0.z)*1e-3)*1e5);
+warp_24=`    float r1 = lerp(lerp(r.x, r.y, f.x), lerp(r.z, r.w, f.x), f.y);
+warp_25=`    
+warp_26=`    return lerp(r0, r1, f.z)*2-1;
+warp_27=`}
+warp_28=`
+warp_29=`float freqs[4];
+warp_30=`
+warp_31=`shader_body
+warp_32=`{
+warp_33=`    float2 p = uv - .5;
+warp_34=`    p *= aspect;
+warp_35=`    
+warp_36=`    freqs[0] = get_fft(.01); // texture2D( sa_AudioChannel, vec2( 0.01, .25 ) ).x; 
+warp_37=`    freqs[1] = get_fft(.07); // texture2D( sa_AudioChannel, vec2( 0.07, .25 ) ).x;
+warp_38=`    freqs[2] = get_fft(.15); // texture2D( sa_AudioChannel, vec2( 0.15, .25 ) ).x;
+warp_39=`    freqs[3] = get_fft(.30); // texture2D( sa_AudioChannel, vec2( 0.30, 0.25 ) ).x;
+warp_40=`
+warp_41=`    float brightness    =  freqs[1] * .25 + freqs[2] * .25;
+warp_42=`    float radius        =  brightness * 2.;
+warp_43=`    
+warp_44=`    
+warp_45=`    float color = 3 - (3*length(2*p));
+warp_46=`    color *= radius;
+warp_47=`    
+warp_48=`    float3 coord = float3(atan2(p.y,p.x)/M_PI_2+.5, length(p)*.4, .5);
+warp_49=`    
+warp_50=`    
+warp_51=`    for (int i = 1; i <= 7; i++)
+warp_52=`    {
+warp_53=`        float power = pow(2.0, float(i));
+warp_54=`        color += (1.5 / power) * snoise(coord + float3(0.,-time*.05, time*.01), power*16.);
+warp_55=`    }
+warp_56=`    ret = float4( color, pow(max(color,0.),2.)*0.4, pow(max(color,0.),3.)*0.15 , 1.0);
+warp_57=`}
+comp_1=`shader_body
+comp_2=`{ ret = GetPixel(uv); }
