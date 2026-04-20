@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 19/04/2026 at 17:56:11.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 19/04/2026 at 22:40:40.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -112,7 +112,7 @@ comp_16=`   float static_ang = atan2(static_center.x, static_center.y);
 comp_17=`
 comp_18=`   // 2. Pulsing/Shaking Coordinates for Logo & Spectrum
 comp_19=`   float bassSum = 0;
-comp_20=`   for (int i = 0; i <= 200; i++)
+comp_20=`   for (int i = 0; i <= 150; i++)
 comp_21=`       bassSum += get_fft_hz(i);
 comp_22=`   float bassfft = bassSum * .02;
 comp_23=`   float zoom = 1.0 + bassfft * 0.12;
@@ -163,8 +163,8 @@ comp_67=`   // Render back-to-front (Green to White) so White overlaps everythin
 comp_68=`   for(int i = 6; i >= 0; i--) {
 comp_69=`       // Height increased by 0.05 per layer. 
 comp_70=`       // Multiply by fft to create the expanding shockwave / delay illusion
-comp_71=`       float offset = (float)i * 0.04 * pow(fft, 2);
-comp_72=`       float spec_h = logo_radius + pow(fft, 1) * 0.25 + offset;
+comp_71=`       float offset = (float)i * 0.025 * pow(fft, 2);
+comp_72=`       float spec_h = logo_radius + pow(fft, 1) * 0.2 + offset;
 comp_73=`       
 comp_74=`       // Smooth Continuous Ring
 comp_75=`       float spectrum = smoothstep(spec_h + 0.015, spec_h, r) *
