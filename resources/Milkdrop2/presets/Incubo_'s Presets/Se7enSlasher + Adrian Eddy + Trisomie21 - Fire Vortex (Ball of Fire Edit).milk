@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 20/04/2026 at 16:27:12.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 21/04/2026 at 09:59:59.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -112,7 +112,7 @@ warp_29=`float freqs[4];
 warp_30=`
 warp_31=`shader_body
 warp_32=`{
-warp_33=`    float2 p = uv - .5;
+warp_33=`    float2 p = uv*2 - 1;
 warp_34=`    p *= aspect;
 warp_35=`    
 warp_36=`    freqs[0] = get_fft(.01); // texture2D( sa_AudioChannel, vec2( 0.01, .25 ) ).x; 
