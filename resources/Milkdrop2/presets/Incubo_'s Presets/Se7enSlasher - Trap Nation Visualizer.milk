@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 20/04/2026 at 23:17:37.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 21/04/2026 at 20:25:38.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -83,10 +83,12 @@ b1ed=0.000
 per_frame_init_1=randseed1 = 500+rand(5000);
 per_frame_init_2=randseed2 = 500+rand(5000);
 per_frame_init_3=particleTime = 0;
+per_frame_init_4=randmirror = int(rand(3));
 per_frame_1=particleTime += 1/fps;
 per_frame_2=bassTime = bassTime + (bass*0.015);
 per_frame_3=particleMove = particleTime * .5 + bassTime;
 per_frame_4=q1 = particleMove;
+per_frame_5=q2 = randmirror;
 warp_1=`sampler sampler_rand00; 
 warp_2=`
 warp_3=`shader_body
@@ -144,43 +146,49 @@ comp_48=`   part *= smoothstep(logo_radius, logo_radius + 0.6, static_r);
 comp_49=`   float3 part_col = float3(1.0, 1.0, 1.0) * part * (1.2 + bass_att * 2.5);
 comp_50=`
 comp_51=`   // --- COMPOSITE BACKGROUND ---
-comp_52=`   float3 bg = GetPixel(uv) + (GetBlur3(uv)*2.75)*(bassfft*.025);
-comp_53=`   bg += part_col; 
-comp_54=`
-comp_55=`   // --- ARRAY-BASED RAINBOW TRAILING ---
-comp_56=`   float3 colors[7];
-comp_57=`   colors[0] = float3(1.0, 1.0, 1.0); // White (Main Part)
-comp_58=`   colors[1] = float3(1.0, 1.0, 0.0); // Yellow
-comp_59=`   colors[2] = float3(1.0, 0.0, 0.0); // Red
-comp_60=`   colors[3] = float3(0.7, 0.0, 1.0); // Purple (Vibrant)
-comp_61=`   colors[4] = float3(0.0, 0.0, 1.0); // Blue
-comp_62=`   colors[5] = float3(0.0, 1.0, 1.0); // Cyan
-comp_63=`   colors[6] = float3(0.0, 1.0, 0.0); // Green
-comp_64=`
-comp_65=`   float3 final_spec = bg;
-comp_66=`   
-comp_67=`   // Render back-to-front (Green to White) so White overlaps everything
-comp_68=`   for(int i = 6; i >= 0; i--) {
-comp_69=`       // Height increased by 0.05 per layer. 
-comp_70=`       // Multiply by fft to create the expanding shockwave / delay illusion
-comp_71=`       float offset = (float)i * 0.0275 * pow(fft, 2);
-comp_72=`       float spec_h = logo_radius + pow(fft, 1) * 0.2 + offset;
-comp_73=`       
-comp_74=`       // Smooth Continuous Ring
-comp_75=`       float spectrum = smoothstep(spec_h + 0.015, spec_h, r) *
-comp_76=`                        smoothstep(logo_radius - 0.01, logo_radius, r);
-comp_77=`       
-comp_78=`       // Glow
-comp_79=`       float trail = smoothstep(spec_h + 0.15, logo_radius, r) * pow(fft, 1.5) * 0.5;
-comp_80=`       
-comp_81=`       // Mask and Alpha Blend
-comp_82=`       float mask = saturate(spectrum + trail);
-comp_83=`       final_spec = lerp(final_spec, colors[i], mask);
-comp_84=`   }
-comp_85=`   
-comp_86=`   // --- FINAL LOGO BLEND ---
-comp_87=`   float3 logo_img = tex2D(TrapNation, SquareUV(uv_zoom));
-comp_88=`   float logo_mask = 1.0 - smoothstep(logo_radius, logo_radius + 0.003, r);
-comp_89=`   
-comp_90=`   ret = lerp(final_spec, logo_img, logo_mask);
-comp_91=`}
+comp_52=`   float2 bg_uv = uv;
+comp_53=`   int MIRROR_MODE = q2;
+comp_54=`   if (MIRROR_MODE == 1)
+comp_55=`       bg_uv.x = .5 - abs(uv.x - .5);
+comp_56=`   else if (MIRROR_MODE == 2)
+comp_57=`       bg_uv.x = .5 + abs(uv.x - .5);
+comp_58=`   float3 bg = GetPixel(bg_uv) + (GetBlur3(bg_uv)*2.75)*(bassfft*.025);
+comp_59=`   bg += part_col; 
+comp_60=`
+comp_61=`   // --- ARRAY-BASED RAINBOW TRAILING ---
+comp_62=`   float3 colors[7];
+comp_63=`   colors[0] = float3(1.0, 1.0, 1.0); // White (Main Part)
+comp_64=`   colors[1] = float3(1.0, 1.0, 0.0); // Yellow
+comp_65=`   colors[2] = float3(1.0, 0.0, 0.0); // Red
+comp_66=`   colors[3] = float3(0.7, 0.0, 1.0); // Purple (Vibrant)
+comp_67=`   colors[4] = float3(0.0, 0.0, 1.0); // Blue
+comp_68=`   colors[5] = float3(0.0, 1.0, 1.0); // Cyan
+comp_69=`   colors[6] = float3(0.0, 1.0, 0.0); // Green
+comp_70=`
+comp_71=`   float3 final_spec = bg;
+comp_72=`   
+comp_73=`   // Render back-to-front (Green to White) so White overlaps everything
+comp_74=`   for(int i = 6; i >= 0; i--) {
+comp_75=`       // Height increased by 0.05 per layer. 
+comp_76=`       // Multiply by fft to create the expanding shockwave / delay illusion
+comp_77=`       float offset = (float)i * 0.0275 * pow(fft, 2);
+comp_78=`       float spec_h = logo_radius + pow(fft, 1) * 0.2 + offset;
+comp_79=`       
+comp_80=`       // Smooth Continuous Ring
+comp_81=`       float spectrum = smoothstep(spec_h + 0.015, spec_h, r) *
+comp_82=`                        smoothstep(logo_radius - 0.01, logo_radius, r);
+comp_83=`       
+comp_84=`       // Glow
+comp_85=`       float trail = smoothstep(spec_h + 0.15, logo_radius, r) * pow(fft, 1.5) * 0.5;
+comp_86=`       
+comp_87=`       // Mask and Alpha Blend
+comp_88=`       float mask = saturate(spectrum + trail);
+comp_89=`       final_spec = lerp(final_spec, colors[i], mask);
+comp_90=`   }
+comp_91=`   
+comp_92=`   // --- FINAL LOGO BLEND ---
+comp_93=`   float3 logo_img = tex2D(TrapNation, SquareUV(uv_zoom));
+comp_94=`   float logo_mask = 1.0 - smoothstep(logo_radius, logo_radius + 0.003, r);
+comp_95=`   
+comp_96=`   ret = lerp(final_spec, logo_img, logo_mask);
+comp_97=`}
