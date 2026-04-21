@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 19/04/2026 at 22:40:40.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 20/04/2026 at 23:17:37.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -163,7 +163,7 @@ comp_67=`   // Render back-to-front (Green to White) so White overlaps everythin
 comp_68=`   for(int i = 6; i >= 0; i--) {
 comp_69=`       // Height increased by 0.05 per layer. 
 comp_70=`       // Multiply by fft to create the expanding shockwave / delay illusion
-comp_71=`       float offset = (float)i * 0.025 * pow(fft, 2);
+comp_71=`       float offset = (float)i * 0.0275 * pow(fft, 2);
 comp_72=`       float spec_h = logo_radius + pow(fft, 1) * 0.2 + offset;
 comp_73=`       
 comp_74=`       // Smooth Continuous Ring
