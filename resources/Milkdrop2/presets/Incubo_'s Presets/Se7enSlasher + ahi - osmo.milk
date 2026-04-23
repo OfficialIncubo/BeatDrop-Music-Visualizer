@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 20/04/2026 at 15:54:06.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 22/04/2026 at 21:22:17.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -12,7 +12,7 @@ PSVERSION_COMP=2
 fRating=5.000
 fGammaAdj=1.460
 fDecay=0.935
-FFTAttack=0.500
+FFTAttack=1.000
 FFTDecay=0.700
 fVideoEchoZoom=1.007
 fVideoEchoAlpha=0.500
