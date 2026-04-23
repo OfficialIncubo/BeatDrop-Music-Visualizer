@@ -9,7 +9,7 @@
 	https://github.com/mbechard	
 
 	- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	Copyright (c) 2014-2023, Lynn Jarvis. All rights reserved.
+	Copyright (c) 2014-2025, Lynn Jarvis. All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, 
 	are permitted provided that the following conditions are met:
@@ -36,9 +36,10 @@
 #ifndef __spoutSenderNames__ // standard way as well
 #define __spoutSenderNames__
 
+#include "SpoutCommon.h"
+#include "SpoutSharedMemory.h"
+
 #include <windowsx.h>
-#include <d3d9.h>
-#include <d3d11.h>
 #include <wingdi.h>
 #include <set>
 #include <map>
@@ -47,9 +48,10 @@
 #include <unordered_map>
 #include <intrin.h> // for __movsd
 #include <stdint.h> // for _uint32
-
-#include "SpoutCommon.h"
-#include "SpoutSharedMemory.h"
+#include <assert.h>
+#ifdef _M_ARM64
+#include <sse2neon.h> // For ARM
+#endif
 
 // 100 msec wait for events
 #define SPOUT_WAIT_TIMEOUT 100
@@ -86,6 +88,7 @@ struct SharedTextureInfo {		// 280 bytes total
 static const char* GUID_queue = "AB5C33D6-3654-43F9-85F6-F54872B0460B";
 
 
+
 class SPOUT_DLLEXP spoutSenderNames {
 
 	public:
@@ -102,7 +105,7 @@ class SPOUT_DLLEXP spoutSenderNames {
 		//
 
 		// Register a sender name in the list of senders
-		bool RegisterSenderName(const char* sendername);
+		bool RegisterSenderName(char* sendername, bool bNewname = false);
 		// Remove a name from the list
 		bool ReleaseSenderName(const char* sendername);
 		// Find a name in the list
@@ -118,9 +121,10 @@ class SPOUT_DLLEXP spoutSenderNames {
 		int  GetSenderCount();
 		// Sender item name
 		bool GetSender(int index, char* sendername, int MaxSize = 256);
+		// Sender index into the set of names
+		int GetSenderIndex(const char* sendername);
 		// Information about a sender from an index into the list
 		bool GetSenderNameInfo(int index, char* sendername, int sendernameMaxSize, unsigned int &width, unsigned int &height, HANDLE &dxShareHandle);
-
 
 		//
 		// Maximum number of senders allowed in the list
@@ -168,8 +172,8 @@ class SPOUT_DLLEXP spoutSenderNames {
 		//
 
 		// Create a sender and register the name in the sender list
-		bool CreateSender (const char* sendername, unsigned int width, unsigned int height, HANDLE hSharehandle, DWORD dwFormat = 0);
-		// Update ana existing sender
+		bool CreateSender(char* sendername, unsigned int width, unsigned int height, HANDLE hSharehandle, DWORD dwFormat = 0);
+		// Update an existing sender
 		bool UpdateSender (const char* sendername, unsigned int width, unsigned int height, HANDLE hSharehandle, DWORD dwFormat = 0);
 		// Check details of a sender
 		bool CheckSender  (const char* sendername, unsigned int &width, unsigned int &height, HANDLE &hSharehandle, DWORD &dwFormat);
