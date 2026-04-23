@@ -1154,23 +1154,27 @@ bool spoutDX9::ReadDX9texture(IDirect3DDevice9Ex* pDevice, LPDIRECT3DTEXTURE9 &d
 
 	// Access the sender shared texture
 	if (frame.CheckTextureAccess()) {
-		m_bNewFrame = false; // For query of new frame
-		// Check if the sender has produced a new frame.
-		if (frame.GetNewFrame()) {
-			// printf("New frame : sender (%dx%d) format = %d, handle = 0x%.7X\n", m_Width, m_Height, m_dwFormat, PtrToUint(m_dxShareHandle));
-			// Create a new texture from the sender's shared texture handle
-			if (dxTexture) dxTexture->Release();
+		m_bNewFrame = frame.GetNewFrame();
+
+		// If the texture hasn't been created yet, or a change was detected by ReceiveSenderData,
+		// or we have a new frame (re-link the handle to ensure we see the latest data in DX9)
+		if (!dxTexture || m_bUpdated || m_bNewFrame) {
+			if (dxTexture) {
+				dxTexture->Release();
+				dxTexture = nullptr;
+			}
 
 			bRet = CreateSharedDX9Texture(pDevice,
 				m_Width, m_Height,
 				(D3DFORMAT)m_dwFormat,
 				dxTexture,
 				m_dxShareHandle);
-			m_bNewFrame = true; // The application can query IsNewFrame()
+			m_bUpdated = false; // Reset the update flag after we've handled it
 
 			// printf("bRet = %d\n", bRet);
 
 		}
+		else bRet = (dxTexture != nullptr);
 	}
 	// Allow access to the shared texture
 	frame.AllowTextureAccess();
