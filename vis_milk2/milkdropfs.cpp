@@ -4526,6 +4526,15 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 	{
 		if (m_texmgr.m_tex[iSlot].pSurface)
 		{
+            bool disconnected = false;
+            m_texmgr.UpdateTexFrame(iSlot, GetTime(), GetFrame(), &disconnected);
+            if (disconnected && m_texmgr.m_tex[iSlot].auto_kill_if_disconnected)
+            {
+                KillSprite(iSlot);
+                AddError(L"Spout sender disconnected. Sprite auto-uninvoked.", 4.0f, ERR_MISC, false);
+                continue;
+            }
+
 			int k;
 
 			// set values of input variables:

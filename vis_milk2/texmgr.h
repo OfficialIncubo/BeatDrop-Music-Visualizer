@@ -38,6 +38,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <d3d9.h>
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 #include "md_defines.h"
+#include "..\spoutDX9\SpoutDX9.h"
 
 #define TEXMGR_ERROR_MASK                 0x0F
 #define TEXMGR_ERR_SUCCESS                0
@@ -61,6 +62,14 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 typedef struct
 {
+    enum class media_type
+    {
+        static_image = 0,
+        gif_animation,
+        video_stream,
+        spout_input
+    };
+
 	LPDIRECT3DTEXTURE9     pSurface;
 	int                    img_w, img_h;
     /*
@@ -87,6 +96,11 @@ typedef struct
 	double          *var_repeatx, *var_repeaty;
 	double          *var_done, *var_burn;
 	NSEEL_VMCTX	tex_eel_ctx;
+
+    media_type             source_type;
+    void*                  media_source;
+    bool                   auto_kill_if_disconnected;
+    bool                   owns_media_source;
 }
 td_tex;
 
@@ -100,6 +114,7 @@ public:
 	void Init(LPDIRECT3DDEVICE9 lpDD);           // DirectDraw object
 	int  LoadTex(wchar_t *szFilename, int iSlot, char *szInitCode, char *szCode, float time, int frame, unsigned int ck);
 	void KillTex(int iSlot);
+    bool UpdateTexFrame(int iSlot, float time_now, int frame_now, bool* pDisconnected = nullptr);
 	void Finish();
 
 	// data

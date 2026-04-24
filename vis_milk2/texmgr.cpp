@@ -32,6 +32,91 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "support.h"
 #include "plugin.h"
 #include "utility.h"
+#include <vector>
+#include <string>
+#include <mfapi.h>
+#include <mfidl.h>
+#include <mfreadwrite.h>
+#include <mferror.h>
+#include <wrl/client.h>
+#pragma comment(lib, "mfplat.lib")
+#pragma comment(lib, "mfreadwrite.lib")
+#pragma comment(lib, "mfuuid.lib")
+#pragma comment(lib, "ole32.lib")
+
+using Microsoft::WRL::ComPtr;
+
+namespace
+{
+    struct GifSource
+    {
+        struct FrameData
+        {
+            std::vector<unsigned char> pixels;
+            UINT width = 0;
+            UINT height = 0;
+            UINT delay_ms = 100;
+        };
+
+        std::vector<FrameData> frames;
+        UINT current = 0;
+        double next_frame_time = 0.0;
+    };
+
+    struct VideoSource
+    {
+        ComPtr<IMFSourceReader> reader;
+        UINT width = 0;
+        UINT height = 0;
+        std::wstring path;
+    };
+
+    struct SpoutSource
+    {
+        spoutDX9 receiver;
+        std::string sender_name;
+    };
+
+    static bool EnsureMediaFoundation()
+    {
+        static bool initialized = false;
+        static bool attempted = false;
+        if (attempted)
+            return initialized;
+        attempted = true;
+        CoInitializeEx(nullptr, COINIT_MULTITHREADED);
+        initialized = SUCCEEDED(MFStartup(MF_VERSION));
+        return initialized;
+    }
+
+    static bool UploadBGRA(LPDIRECT3DTEXTURE9 tex, const unsigned char* src, UINT width, UINT height)
+    {
+        if (!tex || !src || width == 0 || height == 0)
+            return false;
+
+        D3DLOCKED_RECT lr{};
+        if (FAILED(tex->LockRect(0, &lr, nullptr, 0)))
+            return false;
+
+        const UINT row_bytes = width * 4;
+        for (UINT y = 0; y < height; ++y)
+            memcpy(static_cast<unsigned char*>(lr.pBits) + lr.Pitch * y, src + row_bytes * y, row_bytes);
+
+        tex->UnlockRect(0);
+        return true;
+    }
+
+    static std::wstring LowerExt(const wchar_t* filename)
+    {
+        const wchar_t* dot = wcsrchr(filename, L'.');
+        if (!dot)
+            return L"";
+        std::wstring ext(dot);
+        for (auto& c : ext)
+            c = towlower(c);
+        return ext;
+    }
+}
 
 texmgr::texmgr()
 {
@@ -47,7 +132,7 @@ void texmgr::Finish()
 	for (int i=0; i<NUM_TEX; i++)
 	{
 		KillTex(i);
-		if (m_tex[i].pSurface)
+		if (m_tex[i].tex_eel_ctx)
 		{
 			NSEEL_VM_free(m_tex[i].tex_eel_ctx);
 			m_tex[i].tex_eel_ctx = nullptr;
@@ -68,6 +153,10 @@ void texmgr::Init(LPDIRECT3DDEVICE9 lpDD)
 		m_tex[i].m_codehandle = NULL;
 		m_tex[i].m_szExpr[0] = 0;
 		m_tex[i].tex_eel_ctx = NSEEL_VM_alloc();
+        m_tex[i].source_type = td_tex::media_type::static_image;
+        m_tex[i].media_source = nullptr;
+        m_tex[i].auto_kill_if_disconnected = false;
+        m_tex[i].owns_media_source = false;
 	}
 }
 
@@ -84,13 +173,17 @@ int texmgr::LoadTex(wchar_t *szFilename, int iSlot, char *szInitCode, char *szCo
 			{
 				//Kai Blaschke - Sprite Slots Code Conflict fix
 				m_tex[iSlot].pSurface = m_tex[x].pSurface;
-				m_tex[iSlot].img_w = m_tex[x].img_w;
-				m_tex[iSlot].img_h = m_tex[x].img_h;
-				wcscpy(m_tex[iSlot].szFileName, szFilename);
-				m_tex[iSlot].m_szExpr[0] = 0;
+					m_tex[iSlot].img_w = m_tex[x].img_w;
+					m_tex[iSlot].img_h = m_tex[x].img_h;
+					wcscpy(m_tex[iSlot].szFileName, szFilename);
+					m_tex[iSlot].m_szExpr[0] = 0;
+                    m_tex[iSlot].source_type = m_tex[x].source_type;
+                    m_tex[iSlot].media_source = m_tex[x].media_source;
+                    m_tex[iSlot].auto_kill_if_disconnected = m_tex[x].auto_kill_if_disconnected;
+                    m_tex[iSlot].owns_media_source = false;
 
-				bTextureInstanced = true;
-				break;
+					bTextureInstanced = true;
+					break;
 			}
 	}
 
@@ -101,23 +194,169 @@ int texmgr::LoadTex(wchar_t *szFilename, int iSlot, char *szInitCode, char *szCo
 
 		wcscpy(m_tex[iSlot].szFileName, szFilename);
 
-        D3DXIMAGE_INFO info;
-        HRESULT hr = D3DXCreateTextureFromFileExW(
-          m_lpDD,
-          szFilename,
-          D3DX_DEFAULT,
-          D3DX_DEFAULT,
-          D3DX_DEFAULT, // create a mip chain
-          0,
-          D3DFMT_UNKNOWN,
-          D3DPOOL_DEFAULT,
-          D3DX_DEFAULT,
-          D3DX_DEFAULT,
-          0xFF000000 | ck,
-          &info,
-          NULL,
-          &m_tex[iSlot].pSurface
-        );
+        m_tex[iSlot].source_type = td_tex::media_type::static_image;
+        m_tex[iSlot].media_source = nullptr;
+        m_tex[iSlot].auto_kill_if_disconnected = false;
+        m_tex[iSlot].owns_media_source = false;
+
+        HRESULT hr = E_FAIL;
+        D3DXIMAGE_INFO info{};
+
+        if (!_wcsnicmp(szFilename, L"Spout/", 6))
+        {
+            SpoutSource* ss = new SpoutSource();
+            ss->sender_name = std::string();
+            const wchar_t* senderW = szFilename + 6;
+            if (*senderW)
+            {
+                char senderA[256]{};
+                WideCharToMultiByte(CP_UTF8, 0, senderW, -1, senderA, 255, nullptr, nullptr);
+                ss->sender_name = senderA;
+                ss->receiver.SetReceiverName(ss->sender_name.c_str());
+            }
+            IDirect3DDevice9Ex* pDevEx = nullptr;
+            if (SUCCEEDED(m_lpDD->QueryInterface(__uuidof(IDirect3DDevice9Ex), (void**)&pDevEx)))
+            {
+                ss->receiver.SetDX9device(pDevEx);
+                pDevEx->Release();
+            }
+            LPDIRECT3DTEXTURE9 spoutTex = nullptr;
+            if (ss->receiver.ReceiveDX9Texture(spoutTex) && spoutTex)
+            {
+                m_tex[iSlot].pSurface = spoutTex;
+                m_tex[iSlot].img_w = (int)ss->receiver.GetSenderWidth();
+                m_tex[iSlot].img_h = (int)ss->receiver.GetSenderHeight();
+                m_tex[iSlot].source_type = td_tex::media_type::spout_input;
+                m_tex[iSlot].media_source = ss;
+                m_tex[iSlot].auto_kill_if_disconnected = true;
+                m_tex[iSlot].owns_media_source = true;
+                hr = S_OK;
+            }
+            else
+            {
+                delete ss;
+                return TEXMGR_ERR_BADFILE;
+            }
+        }
+        else
+        {
+            const std::wstring ext = LowerExt(szFilename);
+            if (ext == L".gif")
+            {
+                IWICImagingFactory* factory = nullptr;
+                IWICBitmapDecoder* decoder = nullptr;
+                if (SUCCEEDED(CoCreateInstance(CLSID_WICImagingFactory, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&factory))) &&
+                    SUCCEEDED(factory->CreateDecoderFromFilename(szFilename, nullptr, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &decoder)))
+                {
+                    UINT frameCount = 0;
+                    decoder->GetFrameCount(&frameCount);
+                    if (frameCount > 0)
+                    {
+                        GifSource* gif = new GifSource();
+                        for (UINT fi = 0; fi < frameCount; ++fi)
+                        {
+                            IWICBitmapFrameDecode* frameDecode = nullptr;
+                            if (FAILED(decoder->GetFrame(fi, &frameDecode)) || !frameDecode)
+                                continue;
+                            IWICFormatConverter* conv = nullptr;
+                            if (SUCCEEDED(factory->CreateFormatConverter(&conv)))
+                            {
+                                if (SUCCEEDED(conv->Initialize(frameDecode, GUID_WICPixelFormat32bppBGRA, WICBitmapDitherTypeNone, nullptr, 0.0, WICBitmapPaletteTypeCustom)))
+                                {
+                                    UINT fw = 0, fh = 0;
+                                    conv->GetSize(&fw, &fh);
+                                    GifSource::FrameData fd;
+                                    fd.width = fw;
+                                    fd.height = fh;
+                                    fd.pixels.resize((size_t)fw * fh * 4);
+                                    conv->CopyPixels(nullptr, fw * 4, (UINT)fd.pixels.size(), fd.pixels.data());
+                                    gif->frames.push_back(std::move(fd));
+                                }
+                                conv->Release();
+                            }
+                            frameDecode->Release();
+                        }
+                        if (!gif->frames.empty())
+                        {
+                            hr = m_lpDD->CreateTexture(gif->frames[0].width, gif->frames[0].height, 1, 0, D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &m_tex[iSlot].pSurface, nullptr);
+                            if (SUCCEEDED(hr))
+                            {
+                                UploadBGRA(m_tex[iSlot].pSurface, gif->frames[0].pixels.data(), gif->frames[0].width, gif->frames[0].height);
+                                m_tex[iSlot].img_w = (int)gif->frames[0].width;
+                                m_tex[iSlot].img_h = (int)gif->frames[0].height;
+                                m_tex[iSlot].source_type = td_tex::media_type::gif_animation;
+                                m_tex[iSlot].media_source = gif;
+                                m_tex[iSlot].owns_media_source = true;
+                            }
+                            else
+                                delete gif;
+                        }
+                    }
+                }
+                if (decoder) decoder->Release();
+                if (factory) factory->Release();
+            }
+
+            if (FAILED(hr) && (ext == L".mp4" || ext == L".wmv" || ext == L".avi" || ext == L".mkv" || ext == L".mov" || ext == L".webm" || ext == L".mpeg" || ext == L".mpg" || ext == L".flv" || ext == L".mxf" || ext == L".3gp" || ext == L".3g2"))
+            {
+                if (EnsureMediaFoundation())
+                {
+                    VideoSource* vs = new VideoSource();
+                    vs->path = szFilename;
+                    if (SUCCEEDED(MFCreateSourceReaderFromURL(szFilename, nullptr, &vs->reader)))
+                    {
+                        ComPtr<IMFMediaType> outType;
+                        MFCreateMediaType(&outType);
+                        outType->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Video);
+                        outType->SetGUID(MF_MT_SUBTYPE, MFVideoFormat_RGB32);
+                        if (SUCCEEDED(vs->reader->SetCurrentMediaType((DWORD)MF_SOURCE_READER_FIRST_VIDEO_STREAM, nullptr, outType.Get())))
+                        {
+                            ComPtr<IMFMediaType> currentType;
+                            if (SUCCEEDED(vs->reader->GetCurrentMediaType((DWORD)MF_SOURCE_READER_FIRST_VIDEO_STREAM, &currentType)))
+                            {
+                                MFGetAttributeSize(currentType.Get(), MF_MT_FRAME_SIZE, &vs->width, &vs->height);
+                                hr = m_lpDD->CreateTexture(vs->width, vs->height, 1, 0, D3DFMT_X8R8G8B8, D3DPOOL_DEFAULT, &m_tex[iSlot].pSurface, nullptr);
+                                if (SUCCEEDED(hr))
+                                {
+                                    m_tex[iSlot].img_w = (int)vs->width;
+                                    m_tex[iSlot].img_h = (int)vs->height;
+                                    m_tex[iSlot].source_type = td_tex::media_type::video_stream;
+                                    m_tex[iSlot].media_source = vs;
+                                    m_tex[iSlot].owns_media_source = true;
+                                    UpdateTexFrame(iSlot, time, frame, nullptr);
+                                }
+                                else delete vs;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (FAILED(hr))
+            {
+                hr = D3DXCreateTextureFromFileExW(
+                    m_lpDD,
+                    szFilename,
+                    D3DX_DEFAULT,
+                    D3DX_DEFAULT,
+                    D3DX_DEFAULT,
+                    0,
+                    D3DFMT_UNKNOWN,
+                    D3DPOOL_DEFAULT,
+                    D3DX_DEFAULT,
+                    D3DX_DEFAULT,
+                    0xFF000000 | ck,
+                    &info,
+                    NULL,
+                    &m_tex[iSlot].pSurface
+                );
+                if (SUCCEEDED(hr))
+                {
+                    m_tex[iSlot].img_w = info.Width;
+                    m_tex[iSlot].img_h = info.Height;
+                }
+            }
+        }
         
         if (hr != D3D_OK)
         {
@@ -130,9 +369,6 @@ int texmgr::LoadTex(wchar_t *szFilename, int iSlot, char *szInitCode, char *szCo
 			    return TEXMGR_ERR_BADFILE;
             }
         }
-
-        m_tex[iSlot].img_w = info.Width;
-		m_tex[iSlot].img_h = info.Height;
 	}
 	
 	m_tex[iSlot].fStartTime = time;
@@ -174,8 +410,110 @@ void texmgr::KillTex(int iSlot)
 		m_tex[iSlot].pSurface = NULL;
 	}
 	m_tex[iSlot].szFileName[0] = 0;
+    if (m_tex[iSlot].media_source && m_tex[iSlot].owns_media_source)
+    {
+        if (m_tex[iSlot].source_type == td_tex::media_type::gif_animation)
+            delete reinterpret_cast<GifSource*>(m_tex[iSlot].media_source);
+        else if (m_tex[iSlot].source_type == td_tex::media_type::video_stream)
+            delete reinterpret_cast<VideoSource*>(m_tex[iSlot].media_source);
+        else if (m_tex[iSlot].source_type == td_tex::media_type::spout_input)
+        {
+            SpoutSource* ss = reinterpret_cast<SpoutSource*>(m_tex[iSlot].media_source);
+            ss->receiver.ReleaseReceiver();
+            delete ss;
+        }
+    }
+    m_tex[iSlot].media_source = nullptr;
+    m_tex[iSlot].source_type = td_tex::media_type::static_image;
+    m_tex[iSlot].auto_kill_if_disconnected = false;
+    m_tex[iSlot].owns_media_source = false;
 
 	FreeCode(iSlot);
+}
+
+bool texmgr::UpdateTexFrame(int iSlot, float time_now, int frame_now, bool* pDisconnected)
+{
+    if (pDisconnected)
+        *pDisconnected = false;
+    if (iSlot < 0 || iSlot >= NUM_TEX || !m_tex[iSlot].pSurface)
+        return false;
+
+    if (m_tex[iSlot].source_type == td_tex::media_type::gif_animation)
+    {
+        GifSource* gif = reinterpret_cast<GifSource*>(m_tex[iSlot].media_source);
+        if (!gif || gif->frames.empty())
+            return false;
+        if (time_now >= gif->next_frame_time)
+        {
+            gif->current = (gif->current + 1) % (UINT)gif->frames.size();
+            const auto& frame = gif->frames[gif->current];
+            UploadBGRA(m_tex[iSlot].pSurface, frame.pixels.data(), frame.width, frame.height);
+            gif->next_frame_time = time_now + max(0.01, frame.delay_ms / 1000.0);
+        }
+        return true;
+    }
+    else if (m_tex[iSlot].source_type == td_tex::media_type::video_stream)
+    {
+        VideoSource* vs = reinterpret_cast<VideoSource*>(m_tex[iSlot].media_source);
+        if (!vs || !vs->reader)
+            return false;
+        DWORD streamIndex = 0, flags = 0;
+        LONGLONG ts = 0;
+        ComPtr<IMFSample> sample;
+        HRESULT hr = vs->reader->ReadSample((DWORD)MF_SOURCE_READER_FIRST_VIDEO_STREAM, 0, &streamIndex, &flags, &ts, &sample);
+        if (FAILED(hr))
+            return false;
+        if (flags & MF_SOURCE_READERF_ENDOFSTREAM)
+        {
+            PROPVARIANT var;
+            PropVariantInit(&var);
+            var.vt = VT_I8;
+            var.hVal.QuadPart = 0;
+            vs->reader->SetCurrentPosition(GUID_NULL, var);
+            PropVariantClear(&var);
+            return true;
+        }
+        if (sample)
+        {
+            ComPtr<IMFMediaBuffer> buffer;
+            if (SUCCEEDED(sample->ConvertToContiguousBuffer(&buffer)))
+            {
+                BYTE* bytes = nullptr;
+                DWORD maxLen = 0, curLen = 0;
+                if (SUCCEEDED(buffer->Lock(&bytes, &maxLen, &curLen)))
+                {
+                    UploadBGRA(m_tex[iSlot].pSurface, bytes, vs->width, vs->height);
+                    buffer->Unlock();
+                }
+            }
+        }
+        return true;
+    }
+    else if (m_tex[iSlot].source_type == td_tex::media_type::spout_input)
+    {
+        SpoutSource* ss = reinterpret_cast<SpoutSource*>(m_tex[iSlot].media_source);
+        if (!ss)
+            return false;
+        LPDIRECT3DTEXTURE9 spoutTex = nullptr;
+        const bool ok = ss->receiver.ReceiveDX9Texture(spoutTex);
+        if (!ok || !spoutTex)
+        {
+            if (pDisconnected)
+                *pDisconnected = true;
+            return false;
+        }
+
+        if (m_tex[iSlot].pSurface != spoutTex)
+        {
+            m_tex[iSlot].pSurface->Release();
+            m_tex[iSlot].pSurface = spoutTex;
+        }
+        m_tex[iSlot].img_w = (int)ss->receiver.GetSenderWidth();
+        m_tex[iSlot].img_h = (int)ss->receiver.GetSenderHeight();
+        return true;
+    }
+
+    return true;
 }
 
 void texmgr::StripLinefeedCharsAndComments(char *src, char *dest)

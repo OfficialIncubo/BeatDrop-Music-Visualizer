@@ -3162,7 +3162,10 @@ bool CPlugin::EvictSomeTexture()
     return true;
 }
 
-std::wstring texture_exts[] = { L"jpg", L"jpeg", L"jfif", L"dds", L"png", L"tga", L"bmp", L"dib"};
+std::wstring texture_exts[] = {
+    L"jpg", L"jpeg", L"jfif", L"dds", L"png", L"tga", L"bmp", L"dib",
+    L"gif", L"mp4", L"wmv", L"mkv", L"avi", L"mov", L"webm", L"mpeg", L"mpg", L"flv", L"mxf", L"3gp", L"3g2"
+};
 const wchar_t szExtsWithSlashes[] = L".jpg|.png|.dds|etc.";
 typedef std::vector<std::wstring> StringVec;
 bool PickRandomTexture(const wchar_t* prefix, wchar_t* szRetTextureFilename)  //should be MAX_PATH chars
@@ -11203,7 +11206,8 @@ bool CPlugin::LaunchSprite(int nSpriteNum, int nSlot)
 		return false;
 	}
 
-	if (img[1] != L':')// || img[2] != '\\')
+    const bool isSpoutSprite = !_wcsnicmp(img, L"Spout/", 6);
+	if (!isSpoutSprite && img[1] != L':' && !(img[0] == L'\\' && img[1] == L'\\'))// || img[2] != '\\')
 	{
 		// it's not in the form "x:\blah\billy.jpg" so prepend plugin dir path.
 		wchar_t temp[512];
