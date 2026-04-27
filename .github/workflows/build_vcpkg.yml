@@ -22,12 +22,6 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v2
 
-    - name: Install Legacy DirectX SDK
-      shell: powershell
-      run: |
-        choco install directx-sdk -y
-        echo "DXSDK_DIR=C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)" >> $env:GITHUB_ENV
-
     - name: Update vcpkg baseline and install dependencies
       shell: bash
       run: |
@@ -45,6 +39,12 @@ jobs:
         find vcpkg_installed -name "projectM_eval.lib" -exec cp {} lib/ \;
         find vcpkg_installed -name "projectM_ns-eel2.lib" -exec cp {} lib/ \;
         find vcpkg_installed -name "ns-eel.h" -exec cp {} ns-eel2-shim/ \;
+
+    - name: Install Legacy DirectX SDK
+      shell: powershell
+      run: |
+        choco install directx-sdk -y
+        echo "DXSDK_DIR=C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)" >> $env:GITHUB_ENV
 
     - name: Build BeatDrop (Release)
       shell: cmd
