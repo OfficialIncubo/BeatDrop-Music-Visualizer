@@ -1,0 +1,67 @@
+# Generated with Gemini 3.1 Pro
+
+name: Build Release Only (Windows 10/11 only) - vcpkg
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Install Legacy DirectX SDK
+      shell: powershell
+      run: |
+        choco install directx-sdk -y
+        echo "DXSDK_DIR=C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)" >> $env:GITHUB_ENV
+
+    - name: Update vcpkg baseline and install dependencies
+      shell: bash
+      run: |
+        vcpkg integrate install
+        vcpkg x-update-baseline
+        vcpkg install --triplet x86-windows-static
+
+    - name: Copy projectM-eval libraries from vcpkg
+      shell: bash
+      run: |
+        mkdir -p lib
+        mkdir -p ns-eel2-shim
+        find vcpkg_installed -name "projectM_eval.lib" -exec cp {} lib/ \;
+        find vcpkg_installed -name "projectM_ns-eel2.lib" -exec cp {} lib/ \;
+        find vcpkg_installed -name "ns-eel.h" -exec cp {} ns-eel2-shim/ \;
+
+    - name: Build BeatDrop (Release)
+      shell: cmd
+      env:
+        INCLUDE: 'C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;%INCLUDE%'
+        LIB: 'C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;%LIB%'
+      run: |
+        msbuild BeatDrop.sln /p:Configuration="Release" /p:Platform="Win32" /m
+
+    - name: Post-Build Packaging
+      shell: bash
+      run: |
+        mkdir -p "BeatDrop/BeatDrop Resources"
+        cp vis_milk2/Release/BeatDrop.exe BeatDrop/
+        cp -R resources/Milkdrop2/* "BeatDrop/BeatDrop Resources/"
+        cp resources/precache.txt BeatDrop/
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: BeatDrop-Release
+        path: BeatDrop/

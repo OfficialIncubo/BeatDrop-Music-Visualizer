@@ -1,7 +1,6 @@
 # Generated with Gemini Pro 3.1
-# The issue was it doesn't detect DirectX SDK files, windowsapp.lib etc.
 
-name: Build Release_OldOS (for Windows Vista-11)
+name: Build Release Only (Windows 10/11 only) - CMake
 
 on:
   push:
@@ -37,7 +36,7 @@ jobs:
         
         # Generate project files and force BUILD_NS_EEL_SHIM to ON
         cmake -A Win32 -DBUILD_NS_EEL_SHIM=ON ..
-
+        
         # Build and install
         cmake --build . --config "Release" --parallel
         cmake --install . --prefix projectm-eval-install
@@ -58,14 +57,14 @@ jobs:
         # Setting environment variables for the current session
         echo "DXSDK_DIR=C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)" >> $env:GITHUB_ENV
 
-    - name: Build BeatDrop (Release_OldOS)
+    - name: Build BeatDrop (Release)
       shell: cmd
       env:
         INCLUDE: 'C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;%INCLUDE%'
         LIB: 'C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;%LIB%'
       run: |
-        :: Build the main project solution using the Release_OldOS configuration
-        msbuild BeatDrop.sln /p:Configuration="Release_OldOS" /p:Platform="Win32" /m
+        :: Build the main project solution
+        msbuild BeatDrop.sln /p:Configuration="Release" /p:Platform="Win32" /m
 
     - name: Post-Build Packaging
       shell: bash
@@ -73,8 +72,8 @@ jobs:
         # Create destination directories
         mkdir -p "BeatDrop/BeatDrop Resources"
         
-        # Copy the OldOS executable
-        cp vis_milk2/Release/BeatDrop_OldOS.exe BeatDrop/
+        # Copy the executable
+        cp vis_milk2/Release/BeatDrop.exe BeatDrop/
         
         # Copy resources
         cp -R resources/Milkdrop2/* "BeatDrop/BeatDrop Resources/"
@@ -83,5 +82,5 @@ jobs:
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: BeatDrop-Release-OldOS
+        name: BeatDrop-Release
         path: BeatDrop/
