@@ -1,19 +1,20 @@
 # Generated with Gemini 3.1 Pro
 
-name: Build Release_OldOS Only (for Windows Vista-11) - vcpkg
+name: Build Release_OldOS Only (for Windows Vista-11) (vcpkg)
 
 on:
   push:
-    branches:
-      - "**"
+    branches: ["**"]
   pull_request:
-    branches:
-      - "**"
-  workflow_dispatch:
+    branches: ["**"]
+  workflow_dispatch: # Allows you to run this workflow manually
 
 jobs:
   build:
-    runs-on: windows-2022
+    strategy:
+      matrix:
+        os: [windows-2022, windows-2025]
+    runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout Repository
@@ -63,5 +64,5 @@ jobs:
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: BeatDrop-Release-OldOS
+        name: BeatDrop-Release-OldOS-${{ matrix.os }}
         path: BeatDrop/
