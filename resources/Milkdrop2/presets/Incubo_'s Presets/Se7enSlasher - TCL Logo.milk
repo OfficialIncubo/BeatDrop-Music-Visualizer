@@ -1,3 +1,9 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 02/05/2026 at 13:53:52.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
 MILKDROP_PRESET_VERSION=201
 PSVERSION=2
 PSVERSION_WARP=2
@@ -6,6 +12,8 @@ PSVERSION_COMP=0
 fRating=3.000
 fGammaAdj=2.000
 fDecay=0.980
+FFTAttack=0.500
+FFTDecay=0.700
 fVideoEchoZoom=2.000
 fVideoEchoAlpha=0.500
 nVideoEchoOrientation=0
@@ -72,154 +80,6 @@ b1x=1.000
 b2x=1.000
 b3x=1.000
 b1ed=0.250
-wavecode_0_enabled=0
-wavecode_0_samples=512
-wavecode_0_sep=0
-wavecode_0_bSpectrum=0
-wavecode_0_bUseDots=0
-wavecode_0_bDrawThick=0
-wavecode_0_bAdditive=0
-wavecode_0_scaling=1.00000
-wavecode_0_smoothing=0.50000
-wavecode_0_r=1.000
-wavecode_0_g=1.000
-wavecode_0_b=1.000
-wavecode_0_a=1.000
-wavecode_1_enabled=0
-wavecode_1_samples=512
-wavecode_1_sep=0
-wavecode_1_bSpectrum=0
-wavecode_1_bUseDots=0
-wavecode_1_bDrawThick=0
-wavecode_1_bAdditive=0
-wavecode_1_scaling=1.00000
-wavecode_1_smoothing=0.50000
-wavecode_1_r=1.000
-wavecode_1_g=1.000
-wavecode_1_b=1.000
-wavecode_1_a=1.000
-wavecode_2_enabled=0
-wavecode_2_samples=512
-wavecode_2_sep=0
-wavecode_2_bSpectrum=0
-wavecode_2_bUseDots=0
-wavecode_2_bDrawThick=0
-wavecode_2_bAdditive=0
-wavecode_2_scaling=1.00000
-wavecode_2_smoothing=0.50000
-wavecode_2_r=1.000
-wavecode_2_g=1.000
-wavecode_2_b=1.000
-wavecode_2_a=1.000
-wavecode_3_enabled=0
-wavecode_3_samples=512
-wavecode_3_sep=0
-wavecode_3_bSpectrum=0
-wavecode_3_bUseDots=0
-wavecode_3_bDrawThick=0
-wavecode_3_bAdditive=0
-wavecode_3_scaling=1.00000
-wavecode_3_smoothing=0.50000
-wavecode_3_r=1.000
-wavecode_3_g=1.000
-wavecode_3_b=1.000
-wavecode_3_a=1.000
-shapecode_0_enabled=0
-shapecode_0_sides=4
-shapecode_0_additive=0
-shapecode_0_thickOutline=0
-shapecode_0_textured=0
-shapecode_0_num_inst=1
-shapecode_0_x=0.500
-shapecode_0_y=0.500
-shapecode_0_rad=0.10000
-shapecode_0_ang=0.00000
-shapecode_0_tex_ang=0.00000
-shapecode_0_tex_zoom=1.00000
-shapecode_0_r=1.000
-shapecode_0_g=0.000
-shapecode_0_b=0.000
-shapecode_0_a=1.000
-shapecode_0_r2=0.000
-shapecode_0_g2=1.000
-shapecode_0_b2=0.000
-shapecode_0_a2=0.000
-shapecode_0_border_r=1.000
-shapecode_0_border_g=1.000
-shapecode_0_border_b=1.000
-shapecode_0_border_a=0.100
-shapecode_1_enabled=0
-shapecode_1_sides=4
-shapecode_1_additive=0
-shapecode_1_thickOutline=0
-shapecode_1_textured=0
-shapecode_1_num_inst=1
-shapecode_1_x=0.500
-shapecode_1_y=0.500
-shapecode_1_rad=0.10000
-shapecode_1_ang=0.00000
-shapecode_1_tex_ang=0.00000
-shapecode_1_tex_zoom=1.00000
-shapecode_1_r=1.000
-shapecode_1_g=0.000
-shapecode_1_b=0.000
-shapecode_1_a=1.000
-shapecode_1_r2=0.000
-shapecode_1_g2=1.000
-shapecode_1_b2=0.000
-shapecode_1_a2=0.000
-shapecode_1_border_r=1.000
-shapecode_1_border_g=1.000
-shapecode_1_border_b=1.000
-shapecode_1_border_a=0.100
-shapecode_2_enabled=0
-shapecode_2_sides=4
-shapecode_2_additive=0
-shapecode_2_thickOutline=0
-shapecode_2_textured=0
-shapecode_2_num_inst=1
-shapecode_2_x=0.500
-shapecode_2_y=0.500
-shapecode_2_rad=0.10000
-shapecode_2_ang=0.00000
-shapecode_2_tex_ang=0.00000
-shapecode_2_tex_zoom=1.00000
-shapecode_2_r=1.000
-shapecode_2_g=0.000
-shapecode_2_b=0.000
-shapecode_2_a=1.000
-shapecode_2_r2=0.000
-shapecode_2_g2=1.000
-shapecode_2_b2=0.000
-shapecode_2_a2=0.000
-shapecode_2_border_r=1.000
-shapecode_2_border_g=1.000
-shapecode_2_border_b=1.000
-shapecode_2_border_a=0.100
-shapecode_3_enabled=0
-shapecode_3_sides=4
-shapecode_3_additive=0
-shapecode_3_thickOutline=0
-shapecode_3_textured=0
-shapecode_3_num_inst=1
-shapecode_3_x=0.500
-shapecode_3_y=0.500
-shapecode_3_rad=0.10000
-shapecode_3_ang=0.00000
-shapecode_3_tex_ang=0.00000
-shapecode_3_tex_zoom=1.00000
-shapecode_3_r=1.000
-shapecode_3_g=0.000
-shapecode_3_b=0.000
-shapecode_3_a=1.000
-shapecode_3_r2=0.000
-shapecode_3_g2=1.000
-shapecode_3_b2=0.000
-shapecode_3_a2=0.000
-shapecode_3_border_r=1.000
-shapecode_3_border_g=1.000
-shapecode_3_border_b=1.000
-shapecode_3_border_a=0.100
 per_frame_1=warp=0;
 per_frame_2=bass_thresh = above(bass_att,bass_thresh)*2 + (1-above(bass_att,bass_thresh))*((bass_thresh-1.3)*0.96+1.3);
 per_frame_3=
@@ -227,9 +87,24 @@ per_frame_4=echo_zoom = bass_thresh-0.3;
 per_frame_5=echo_alpha = 1+bass_thresh;
 warp_1=`sampler sampler_fc_tcl_logo;
 warp_2=`float4 texsize_tcl_logo; // .xy = (w,h); .zw = (1/w, 1/h)
-warp_3=`shader_body
-warp_4=`{
-warp_5=`    // sample previous frame
-warp_6=`    ret = tex2D(sampler_fc_tcl_logo, uv*5-2).xyz;
-warp_7=`    ret *= 1;
-warp_8=`}
+warp_3=`
+warp_4=`// Deepseek - Universal edge fading function
+warp_5=`// Modified EdgeFade function - fades top, left, and right edges only
+warp_6=`float EdgeFade(float2 uva, float margin)
+warp_7=`{
+warp_8=`    margin = max(margin, 0.001); // Minimum margin to prevent artifacts.
+warp_9=`    // Fade left/right edges
+warp_10=`    float fadeX = smoothstep(0.0, margin, uva.x) * smoothstep(1.0, 1.0 - margin, uva.x);
+warp_11=`    // Fade top/bottom edges
+warp_12=`    float fadeY = smoothstep(0.0, margin, uva.y) * smoothstep(1.0, 1.0 - margin, uva.y);
+warp_13=`    return fadeX * fadeY;
+warp_14=`}
+warp_15=`
+warp_16=`shader_body
+warp_17=`{
+warp_18=`    float2 uvi = uv*5-2;
+warp_19=`    float edgefade = EdgeFade(uvi, .01);
+warp_20=`    // sample previous frame
+warp_21=`    ret = tex2D(sampler_fc_tcl_logo, uvi).xyz * edgefade;
+warp_22=`    ret *= 1;
+warp_23=`}
