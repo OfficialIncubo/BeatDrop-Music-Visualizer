@@ -1,6 +1,6 @@
 # Generated with Gemini Pro 3.1
 
-name: Build Full Package (CMake)
+name: CMake Build
 
 on:
   push:
@@ -11,9 +11,21 @@ on:
 
 jobs:
   build:
+    name: ${{ matrix.build_name }} (${{ matrix.os }})
     strategy:
       matrix:
         os: [windows-2022, windows-2025]
+        config: [release, release-oldos, full-package]
+        include:
+          - config: release
+            build_name: "Build Release Only"
+            artifact_name: "BeatDrop-Release"
+          - config: release-oldos
+            build_name: "Build Release_OldOS Only"
+            artifact_name: "BeatDrop-Release-OldOS"
+          - config: full-package
+            build_name: "Build Full Package"
+            artifact_name: "BeatDrop-Full-Package"
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -46,6 +58,7 @@ jobs:
       shell: bash
       run: |
         mkdir -p lib
+        mkdir -p ns-eel2-shim
         cp projectm-eval/projectm-eval-build/projectm-eval-install/lib/projectM_eval.lib lib/
         cp projectm-eval/projectm-eval-build/projectm-eval-install/lib/projectM_ns-eel2.lib lib/
         cp projectm-eval/projectm-eval-build/projectm-eval-install/include/projectm-eval/ns-eel2/ns-eel.h ns-eel2-shim/
@@ -58,6 +71,7 @@ jobs:
         echo "DXSDK_DIR=C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)" >> $env:GITHUB_ENV
 
     - name: Build BeatDrop (Release)
+      if: matrix.config == 'release' || matrix.config == 'full-package'
       shell: cmd
       env:
         INCLUDE: 'C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;%INCLUDE%'
@@ -65,13 +79,16 @@ jobs:
       run: |
         :: Build the main project solution using the Release configuration
         msbuild BeatDrop.sln /p:Configuration="Release" /p:Platform="Win32" /m
-    
-    - name: Copy BeatDrop executable to BeatDrop package
+
+    - name: Copy BeatDrop executable to package
+      if: matrix.config == 'release' || matrix.config == 'full-package'
       shell: bash
       run: |
+        mkdir -p BeatDrop
         cp vis_milk2/Release/BeatDrop.exe BeatDrop/
 
     - name: Build BeatDrop (Release_OldOS)
+      if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
       shell: cmd
       env:
         INCLUDE: 'C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;%INCLUDE%'
@@ -80,9 +97,11 @@ jobs:
         :: Build the main project solution using the Release_OldOS configuration
         msbuild BeatDrop.sln /p:Configuration="Release_OldOS" /p:Platform="Win32" /m
 
-    - name: Copy BeatDrop_OldOS executable to BeatDrop package
+    - name: Copy BeatDrop_OldOS executable to package
+      if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
       shell: bash
       run: |
+        mkdir -p BeatDrop
         cp vis_milk2/Release/BeatDrop_OldOS.exe BeatDrop/
 
     - name: Post-Build Packaging
@@ -98,5 +117,5 @@ jobs:
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v7
       with:
-        name: BeatDrop-Full-Package-${{ matrix.os }}
+        name: ${{ matrix.artifact_name }}-${{ matrix.os }}
         path: BeatDrop/
