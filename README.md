@@ -1,9 +1,5 @@
-[![Release vcpkg Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_release_vcpkg.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_release_vcpkg.yml)
-[![Release CMake Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_release_cmake.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_release_cmake.yml)
-[![Release_OldOS vcpkg Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_release_oldos_vcpkg.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_release_oldos_vcpkg.yml)
-[![Release_OldOS CMake Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_release_oldos_cmake.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_release_oldos_cmake.yml)
-[![Full Package vcpkg Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_vcpkg.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_vcpkg.yml)
-[![Full Package CMake Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_cmake.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_cmake.yml)
+[![vcpkg Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_vcpkg.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_vcpkg.yml)
+[![CMake Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_cmake.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_cmake.yml)
 
 ![Discord Shield](https://discord.com/api/guilds/1041603212798599168/widget.png?style=shield) [Chat with us on Discord!](https://discord.gg/rp5cBDtGuM)
 
