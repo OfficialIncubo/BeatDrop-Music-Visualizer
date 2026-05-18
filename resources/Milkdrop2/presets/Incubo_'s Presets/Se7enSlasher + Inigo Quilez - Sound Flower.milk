@@ -1,12 +1,12 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 18/05/2026 at 15:43:21.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 18/05/2026 at 12:15:12.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
 ###################################################################################################
 
 MILKDROP_PRESET_VERSION=201
-PSVERSION=2
-PSVERSION_WARP=2
+PSVERSION=3
+PSVERSION_WARP=3
 PSVERSION_COMP=2
 [preset00]
 fRating=5.000
@@ -81,17 +81,27 @@ b2x=1.000
 b3x=1.000
 b1ed=0.250
 warp_1=`/*
-warp_2=`Sound by Inigo Quilez
-warp_3=`Converted to MilkDrop by me (no AI, hand-written)
-warp_4=`Original ShaderToy shader link: https://www.shadertoy.com/view/Xds3Rr
+warp_2=`Sound Flower by Inigo Quilez
+warp_3=`Converted from ShaderToy to MilkDrop by me (no AI, hand-written)
+warp_4=`Original ShaderToy shader link: https://www.shadertoy.com/view/Msf3Dn
 warp_5=`*/
 warp_6=`
-warp_7=`shader_body {
-warp_8=`    float fft  = get_fft(uv.x);
-warp_9=`    float wave = get_wave(uv.x)*.5;
-warp_10=`    float3 col = float3( fft, 4*fft*(1-fft), 1-fft ) * fft;
-warp_11=`    col += 1 - smoothstep( 0, .15, abs(wave - uv.y + .5) );
-warp_12=`    ret = float4(col,1);
-warp_13=`}
+warp_7=`shader_body
+warp_8=`{
+warp_9=`    	uv = (uv*2-1)*aspect.xy;
+warp_10=`	
+warp_11=`	    float r = length( uv );
+warp_12=`    	float a = atan2( uv.y, uv.x );
+warp_13=`
+warp_14=`    	float w = get_wave((abs(a)/M_PI_2) * .5) + float2(.5, 0); //texture2D( iChannel0, vec2( abs(a)/6.28,1.0) ).x;
+warp_15=`	
+warp_16=`	    float t = 3.0*sqrt(abs(w-.5));
+warp_17=`
+warp_18=`    	float f = 0.0;
+warp_19=`	    if( r<t ) f = (1-r/t);
+warp_20=`	    float3 col = pow( float3(f,f,f), float3(1.5,1.1,.8) );
+warp_21=`
+warp_22=`    	ret = float4( col, 1.0 );
+warp_23=`}
 comp_1=`shader_body
 comp_2=`{ ret = GetPixel(uv); }
