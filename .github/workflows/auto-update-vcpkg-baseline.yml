@@ -1,0 +1,28 @@
+name: Automated/Scheduled vcpkg baseline update
+
+on:
+  schedule:
+    # Runs at 00:00 every Monday
+    - cron: '0 0 * * 1'
+  workflow_dispatch: # Allows you to trigger it manually for testing
+
+jobs:
+  update-baseline:
+    runs-on: windows-latest
+    permissions:
+      contents: write # Needed to push the commit back to the repo
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Update vcpkg baseline
+        run: vcpkg x-update-baseline
+
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "chore: update vcpkg baseline"
+          file_pattern: 'vcpkg-configuration.json' # Only commit the manifest change
+          commit_user_name: github-actions[bot]
+          commit_user_email: github-actions[bot]@users.noreply.github.com
