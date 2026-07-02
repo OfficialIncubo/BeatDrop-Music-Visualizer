@@ -11446,11 +11446,11 @@ void CPlugin::DoCustomSoundAnalysis()
     float fWaveLargeLeft[MY_FFT_SHADER_WINDOW];
     float fWaveLargeRight[MY_FFT_SHADER_WINDOW];
     GetAudioBufFloat(fWaveLargeLeft, fWaveLargeRight, MY_FFT_SHADER_WINDOW);
-    for (int i = 0; i < MY_FFT_SHADER_WINDOW; i++)
-    {
-        fWaveLargeLeft[i] *= g_fAudioSensitivity;
-        fWaveLargeRight[i] *= g_fAudioSensitivity;
-    }
+    // for (int i = 0; i < MY_FFT_SHADER_WINDOW; i++)
+    // {
+    //     fWaveLargeLeft[i] *= g_fAudioSensitivity;
+    //     fWaveLargeRight[i] *= g_fAudioSensitivity;
+    // }
 
     // Apply FFT smoothing and upload to GPU texture for get_fft()/get_fft_hz() shader functions
     // Compute clean (un-equalized) FFT for get_fft()/get_fft_hz() shader functions

@@ -230,11 +230,14 @@ void SetAudioBuf(const BYTE *pData, const UINT32 nNumFramesToRead, const WAVEFOR
         // 8-bit signed integer in Two's Complement Representation stored in unsigned char array
         // int8_t[-128 .. + 127] stored into uint8_t[0 .. 255]
 
+        float finalLeft = (sumLeft / downsampleRatio) * g_fAudioSensitivity;
+        float finalRight = (sumRight / downsampleRatio) * g_fAudioSensitivity;
+
         // Store averaged/downsampled values
-        pcmLeftFloatLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = sumLeft / downsampleRatio;
-        pcmRightFloatLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = sumRight / downsampleRatio;
-        pcmLeftLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = (uint8_t)FltToInt(sumLeft / downsampleRatio);
-        pcmRightLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = (uint8_t)FltToInt(sumRight / downsampleRatio);
+        pcmLeftFloatLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = finalLeft;
+        pcmRightFloatLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = finalRight;
+        pcmLeftLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = (uint8_t)FltToInt(finalLeft);
+        pcmRightLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = (uint8_t)FltToInt(finalRight);
     }
 
     pcmBufDrained = false;
