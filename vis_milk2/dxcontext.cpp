@@ -151,6 +151,7 @@ bool DXContext::OnUserResizeWindow(RECT *new_window_rect, RECT *new_client_rect)
 
     m_d3dpp->BackBufferWidth = m_client_width;
     m_d3dpp->BackBufferHeight = m_client_height;
+    FlushGPU();
     if (m_lpDevice->Reset(m_d3dpp) != D3D_OK)
     {
         //WriteSafeWindowPos();
@@ -161,6 +162,22 @@ bool DXContext::OnUserResizeWindow(RECT *new_window_rect, RECT *new_client_rect)
     SetViewport();
     m_ready = TRUE;
     return TRUE;
+}
+
+void DXContext::FlushGPU()
+{
+    if (!m_lpDevice)
+        return;
+
+    IDirect3DQuery9* pEventQuery = nullptr;
+    m_lpDevice->CreateQuery(D3DQUERYTYPE_EVENT, &pEventQuery);
+    if (pEventQuery)
+    {
+        pEventQuery->Issue(D3DISSUE_END);
+        for (int i = 0; i < 1000 && S_FALSE == pEventQuery->GetData(NULL, 0, D3DGETDATA_FLUSH); i++)
+            Sleep(0);
+        pEventQuery->Release();
+    }
 }
 
 void DXContext::SetViewport()

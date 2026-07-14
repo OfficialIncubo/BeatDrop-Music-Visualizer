@@ -28,10 +28,62 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "texmgr.h"
+#include "MediaTexture.h"
+#include <cmath>
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 #include "support.h"
 #include "plugin.h"
 #include "utility.h"
+
+namespace
+{
+	bool IsExprIdentChar(char ch)
+	{
+		return (ch >= 'A' && ch <= 'Z') ||
+			(ch >= 'a' && ch <= 'z') ||
+			(ch >= '0' && ch <= '9') ||
+			ch == '_';
+	}
+
+	bool ExprMentionsBurn(const char* text)
+	{
+		if (!text)
+			return false;
+
+		for (const char* p = text; *p; p++)
+		{
+			if ((*p == 'b' || *p == 'B') &&
+				(p[1] == 'u' || p[1] == 'U') &&
+				(p[2] == 'r' || p[2] == 'R') &&
+				(p[3] == 'n' || p[3] == 'N'))
+			{
+				const bool leftOk = (p == text) || !IsExprIdentChar(*(p - 1));
+				const bool rightOk = !IsExprIdentChar(p[4]);
+				if (leftOk && rightOk)
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	void UnbindTextureFromDevice(LPDIRECT3DDEVICE9EX device, LPDIRECT3DBASETEXTURE9 texture)
+	{
+		if (!device || !texture)
+			return;
+
+		for (DWORD stage = 0; stage < 16; stage++)
+		{
+			LPDIRECT3DBASETEXTURE9 bound = nullptr;
+			if (SUCCEEDED(device->GetTexture(stage, &bound)) && bound)
+			{
+				if (bound == texture)
+					device->SetTexture(stage, nullptr);
+				bound->Release();
+			}
+		}
+	}
+}
 
 texmgr::texmgr()
 {
@@ -47,7 +99,7 @@ void texmgr::Finish()
 	for (int i=0; i<NUM_TEX; i++)
 	{
 		KillTex(i);
-		if (m_tex[i].pSurface)
+		if (m_tex[i].tex_eel_ctx)
 		{
 			NSEEL_VM_free(m_tex[i].tex_eel_ctx);
 			m_tex[i].tex_eel_ctx = nullptr;
@@ -57,14 +109,16 @@ void texmgr::Finish()
 	// DO NOT RELEASE OR DELETE m_lpDD; CLIENT SHOULD DO THIS!
 }
 
-void texmgr::Init(LPDIRECT3DDEVICE9 lpDD)
+void texmgr::Init(LPDIRECT3DDEVICE9EX lpDD)
 {
 	m_lpDD = lpDD;
 
 	for (int i=0; i<NUM_TEX; i++)
 	{
 		m_tex[i].pSurface = NULL;
+		m_tex[i].pMedia = NULL;
 		m_tex[i].szFileName[0] = 0;
+		m_tex[i].bSpoutDefaultNoBurn = false;
 		m_tex[i].m_codehandle = NULL;
 		m_tex[i].m_szExpr[0] = 0;
 		m_tex[i].tex_eel_ctx = NSEEL_VM_alloc();
@@ -75,6 +129,9 @@ int texmgr::LoadTex(wchar_t *szFilename, int iSlot, char *szInitCode, char *szCo
 {
 	if (iSlot < 0) return TEXMGR_ERR_BAD_INDEX;
 	if (iSlot >= NUM_TEX) return TEXMGR_ERR_BAD_INDEX;
+
+	bool bSpoutTexture = MediaTexture::IsSpoutPath(szFilename);
+	bool bSpoutDefaultNoBurn = bSpoutTexture && !ExprMentionsBurn(szInitCode) && !ExprMentionsBurn(szCode);
 	
 	// first, if this texture is already loaded, just add another instance.
 	bool bTextureInstanced = false;
@@ -82,11 +139,16 @@ int texmgr::LoadTex(wchar_t *szFilename, int iSlot, char *szInitCode, char *szCo
 		for (int x=0; x<NUM_TEX; x++)
 			if (m_tex[x].pSurface && _wcsicmp(m_tex[x].szFileName, szFilename)==0)
 			{
+				if (m_tex[x].pMedia)
+					continue;
+
 				//Kai Blaschke - Sprite Slots Code Conflict fix
 				m_tex[iSlot].pSurface = m_tex[x].pSurface;
+				m_tex[iSlot].pMedia = m_tex[x].pMedia;
 				m_tex[iSlot].img_w = m_tex[x].img_w;
 				m_tex[iSlot].img_h = m_tex[x].img_h;
 				wcscpy(m_tex[iSlot].szFileName, szFilename);
+				m_tex[iSlot].bSpoutDefaultNoBurn = bSpoutDefaultNoBurn;
 				m_tex[iSlot].m_szExpr[0] = 0;
 
 				bTextureInstanced = true;
@@ -100,39 +162,53 @@ int texmgr::LoadTex(wchar_t *szFilename, int iSlot, char *szInitCode, char *szCo
 		KillTex(iSlot);
 
 		wcscpy(m_tex[iSlot].szFileName, szFilename);
+		m_tex[iSlot].bSpoutDefaultNoBurn = bSpoutDefaultNoBurn;
 
-        D3DXIMAGE_INFO info;
-        HRESULT hr = D3DXCreateTextureFromFileExW(
-          m_lpDD,
-          szFilename,
-          D3DX_DEFAULT,
-          D3DX_DEFAULT,
-          D3DX_DEFAULT, // create a mip chain
-          0,
-          D3DFMT_UNKNOWN,
-          D3DPOOL_DEFAULT,
-          D3DX_DEFAULT,
-          D3DX_DEFAULT,
-          0xFF000000 | ck,
-          &info,
-          NULL,
-          &m_tex[iSlot].pSurface
-        );
-        
-        if (hr != D3D_OK)
-        {
-            switch(hr)
-            {
-            case E_OUTOFMEMORY:
-            case D3DERR_OUTOFVIDEOMEMORY:
-                return TEXMGR_ERR_OUTOFMEM;
-            default:
-			    return TEXMGR_ERR_BADFILE;
-            }
-        }
+		if (MediaTexture::IsSupportedFile(szFilename) || MediaTexture::IsSpoutPath(szFilename))
+		{
+			m_tex[iSlot].pMedia = MediaTexture::Create(m_lpDD, szFilename, ck, true);
+			if (!m_tex[iSlot].pMedia)
+				return TEXMGR_ERR_BADFILE;
 
-        m_tex[iSlot].img_w = info.Width;
-		m_tex[iSlot].img_h = info.Height;
+			m_tex[iSlot].pSurface = m_tex[iSlot].pMedia->GetTexture();
+			m_tex[iSlot].img_w = m_tex[iSlot].pMedia->GetWidth();
+			m_tex[iSlot].img_h = m_tex[iSlot].pMedia->GetHeight();
+		}
+		else
+		{
+			D3DXIMAGE_INFO info;
+			HRESULT hr = D3DXCreateTextureFromFileExW(
+			  m_lpDD,
+			  szFilename,
+			  D3DX_DEFAULT,
+			  D3DX_DEFAULT,
+			  D3DX_DEFAULT, // create a mip chain
+			  0,
+			  D3DFMT_UNKNOWN,
+			  D3DPOOL_DEFAULT,
+			  D3DX_DEFAULT,
+			  D3DX_DEFAULT,
+			  0xFF000000 | ck,
+			  &info,
+			  NULL,
+			  &m_tex[iSlot].pSurface
+			);
+			
+			if (hr != D3D_OK)
+			{
+				switch(hr)
+				{
+				case E_OUTOFMEMORY:
+				case D3DERR_OUTOFVIDEOMEMORY:
+					return TEXMGR_ERR_OUTOFMEM;
+				default:
+					return TEXMGR_ERR_BADFILE;
+				}
+			}
+
+			m_tex[iSlot].img_w = info.Width;
+			m_tex[iSlot].img_h = info.Height;
+		}
 	}
 	
 	m_tex[iSlot].fStartTime = time;
@@ -143,6 +219,8 @@ int texmgr::LoadTex(wchar_t *szFilename, int iSlot, char *szInitCode, char *szCo
 	// compile & run init. code:	
 	if (!RunInitCode(iSlot, szInitCode))
 		ret |= TEXMGR_WARN_ERROR_IN_INIT_CODE;
+	if (m_tex[iSlot].bSpoutDefaultNoBurn && m_tex[iSlot].var_burn)
+		*(m_tex[iSlot].var_burn) = 0.0;
 	
 	// compile & save per-frame code:
 	strcpy(m_tex[iSlot].m_szExpr, szCode);
@@ -155,13 +233,49 @@ int texmgr::LoadTex(wchar_t *szFilename, int iSlot, char *szInitCode, char *szCo
 	return ret;
 }
 
+bool texmgr::UpdateTex(int iSlot, float time, bool* shouldKill)
+{
+	if (shouldKill)
+		*shouldKill = false;
+	if (iSlot < 0) return false;
+	if (iSlot >= NUM_TEX) return false;
+	if (!m_tex[iSlot].pMedia) return (m_tex[iSlot].pSurface != NULL);
+
+	bool wantColorKeyThisFrame = m_tex[iSlot].var_blendmode &&
+		//fabs(*(m_tex[iSlot].var_blendmode) - 4.0) < 1;
+		(int)(*(m_tex[iSlot].var_blendmode)) == 4;
+
+	bool ok = m_tex[iSlot].pMedia->Update(time, shouldKill, wantColorKeyThisFrame);
+	m_tex[iSlot].pSurface = m_tex[iSlot].pMedia->GetTexture();
+	m_tex[iSlot].img_w = m_tex[iSlot].pMedia->GetWidth();
+	m_tex[iSlot].img_h = m_tex[iSlot].pMedia->GetHeight();
+
+	return ok && m_tex[iSlot].pSurface != NULL;
+}
+
 void texmgr::KillTex(int iSlot)
 {
 	if (iSlot < 0) return;
 	if (iSlot >= NUM_TEX) return;
 	
 	// Free old resources:
-	if (m_tex[iSlot].pSurface)
+	if (m_tex[iSlot].pMedia)
+	{
+		int refcount = 0;
+		for (int x=0; x<NUM_TEX; x++)
+			if (m_tex[x].pMedia == m_tex[iSlot].pMedia)
+				refcount++;
+
+		if (refcount==1)
+		{
+			UnbindTextureFromDevice(m_lpDD, m_tex[iSlot].pSurface);
+			delete m_tex[iSlot].pMedia;
+		}
+
+		m_tex[iSlot].pMedia = NULL;
+		m_tex[iSlot].pSurface = NULL;
+	}
+	else if (m_tex[iSlot].pSurface)
 	{
 		// first, make sure no other sprites reference this texture!
 		int refcount = 0;
@@ -170,10 +284,14 @@ void texmgr::KillTex(int iSlot)
 				refcount++;
 
 		if (refcount==1)
+		{
+			UnbindTextureFromDevice(m_lpDD, m_tex[iSlot].pSurface);
 			m_tex[iSlot].pSurface->Release();
+		}
 		m_tex[iSlot].pSurface = NULL;
 	}
 	m_tex[iSlot].szFileName[0] = 0;
+	m_tex[iSlot].bSpoutDefaultNoBurn = false;
 
 	FreeCode(iSlot);
 }

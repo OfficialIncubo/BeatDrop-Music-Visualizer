@@ -1,6 +1,6 @@
 # Generated with Gemini Pro 3.1
 
-name: vcpkg Build
+name: Build
 
 on:
   push:

@@ -78,6 +78,9 @@ public:
 	char*     GetConfigIniFileA();
     double    m_dTimeVariableResetDelay = 250000;
 
+    void PrepareForExternalDeviceReset();
+    void RestoreAfterExternalDeviceReset();
+
 protected:
 
     // GET METHODS THAT ONLY WORK ONCE DIRECTX IS READY

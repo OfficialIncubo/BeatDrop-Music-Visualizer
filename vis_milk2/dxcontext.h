@@ -82,6 +82,7 @@ public:
     HWND GetHwnd();
     bool OnUserResizeWindow(RECT* w, RECT* c);
     bool TempIgnoreDestroyMessages();
+    void FlushGPU();
 
     // PUBLIC DATA - DO NOT WRITE TO THESE FROM OUTSIDE THE CLASS
     int m_ready;

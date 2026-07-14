@@ -68,6 +68,7 @@ spoutDX9::spoutDX9() {
 
 	m_pD3D = nullptr;
 	m_pDevice = nullptr;
+	m_bDeviceIsExternal = false;
 	m_bSpoutInitialized = false;
 	m_dxShareHandle = NULL;
 	m_pSharedTexture = nullptr;
@@ -98,6 +99,10 @@ bool spoutDX9::OpenDirectX9(HWND hWnd)
 {
 	HWND fgWnd = NULL;
 	char fgwndName[MAX_PATH];
+
+	if (m_pDevice != nullptr) {
+		return true;
+	}
 
 	// Already initialized ?
 	if (m_pD3D != nullptr) {
@@ -177,10 +182,15 @@ void spoutDX9::CloseDirectX9()
 {
 	SpoutLogNotice("spoutDX9::CloseDirectX9");
 
-	if (m_pD3D) {
+	if (m_pD3D && !m_bDeviceIsExternal) {
 		// Release device before the object
 		if (m_pDevice)
 			m_pDevice->Release();
+		m_pD3D->Release();
+	}
+	else if (m_pD3D) {
+		// External device: only release the (now-confirmed-unused) DX9
+		// object, never the device itself.
 		m_pD3D->Release();
 	}
 	m_pDevice = nullptr;
@@ -287,7 +297,7 @@ void spoutDX9::SetDX9device(IDirect3DDevice9Ex* pDevice)
 		// The Spout DX9 device can be released here because
 		// it will not be released again if m_pD3D is NULL.
 		// If set externally, the device must also released externally
-		if (m_pDevice)
+		if (m_pDevice && !m_bDeviceIsExternal)
 			m_pDevice->Release();
 		m_pD3D = nullptr;
 		m_pDevice = nullptr;
@@ -302,6 +312,7 @@ void spoutDX9::SetDX9device(IDirect3DDevice9Ex* pDevice)
 
 	// Set the Spout DX9 device to the application device
 	m_pDevice = pDevice;
+	m_bDeviceIsExternal = (pDevice != nullptr);
 
 }
 
@@ -516,7 +527,7 @@ bool spoutDX9::ReceiveDX9Texture(LPDIRECT3DTEXTURE9 &pTexture)
 	} // sender exists
 	else {
 		// There is no sender or the connected sender closed.
-		ReleaseReceiver();
+		ReleaseReceiver(false);
 		// Let the application know.
 		m_bConnected = false;
 	}
@@ -530,7 +541,7 @@ bool spoutDX9::ReceiveDX9Texture(LPDIRECT3DTEXTURE9 &pTexture)
 //---------------------------------------------------------
 // Function: ReleaseReceiver
 // Close receiver and release resources ready to connect to another sender.
-void spoutDX9::ReleaseReceiver()
+void spoutDX9::ReleaseReceiver(bool waitForReconnect)
 {
 	if (!m_bSpoutInitialized)
 		return;
@@ -543,8 +554,10 @@ void spoutDX9::ReleaseReceiver()
 	else
 		m_SenderName[0] = 0;
 
-	// Wait 4 frames in case the same sender opens again
-	Sleep(67);
+	// Wait 4 frames in manual cleanup paths, but avoid blocking the render path
+	// when a sender disappears mid-frame.
+	if (waitForReconnect)
+		Sleep(67);
 
 	if (m_pSharedTexture)
 		m_pSharedTexture->Release();
@@ -996,10 +1009,11 @@ bool spoutDX9::WriteDX9memory(IDirect3DDevice9Ex* pDevice, LPDIRECT3DSURFACE9 so
 			pDevice->CreateQuery(D3DQUERYTYPE_EVENT, &pEventQuery);
 			if (pEventQuery) {
 				pEventQuery->Issue(D3DISSUE_END);
-				while (S_FALSE == pEventQuery->GetData(NULL, 0, D3DGETDATA_FLUSH));
-				pEventQuery->Release(); // Must be released or causes a leak and reference count increment
-			}
-			return true;
+			for (int i = 0; i < 1000 && S_FALSE == pEventQuery->GetData(NULL, 0, D3DGETDATA_FLUSH); i++)
+				Sleep(0);
+			pEventQuery->Release(); // Must be released or causes a leak and reference count increment
+		}
+		return true;
 		}
 	}
 
@@ -1029,7 +1043,8 @@ bool spoutDX9::WriteDX9surface(IDirect3DDevice9Ex* pDevice, LPDIRECT3DSURFACE9 s
 			pDevice->CreateQuery(D3DQUERYTYPE_EVENT, &pEventQuery) ;
 			if(pEventQuery) {
 				pEventQuery->Issue(D3DISSUE_END) ;
-				while(S_FALSE == pEventQuery->GetData(NULL, 0, D3DGETDATA_FLUSH)) ;
+				for (int i = 0; i < 1000 && S_FALSE == pEventQuery->GetData(NULL, 0, D3DGETDATA_FLUSH); i++)
+					Sleep(0);
 				pEventQuery->Release(); // Must be released or causes a leak and reference count increment
 			}
 			return true;
@@ -1086,7 +1101,7 @@ bool spoutDX9::ReceiveSenderData()
 
 		// Memoryshare not supported (no texture share handle)
 		if (info.shareHandle == 0) {
-			ReleaseReceiver();
+			ReleaseReceiver(false);
 			return false;
 		}
 
@@ -1111,7 +1126,7 @@ bool spoutDX9::ReceiveSenderData()
 		//   o for texture size or format change
 		if (dxShareHandle != m_dxShareHandle) {
 			// Release everything and start again
-			ReleaseReceiver();
+			ReleaseReceiver(false);
 			// Update the sender share handle
 			m_dxShareHandle = dxShareHandle;
 			m_Width = width;
@@ -1149,16 +1164,16 @@ bool spoutDX9::ReadDX9texture(IDirect3DDevice9Ex* pDevice, LPDIRECT3DTEXTURE9 &d
 	if (!pDevice || m_Width == 0 || m_Height == 0 || !m_dxShareHandle)
 		return false;
 
-
 	bool bRet = false;
 
 	// Access the sender shared texture
 	if (frame.CheckTextureAccess()) {
 		m_bNewFrame = frame.GetNewFrame();
 
-		// If the texture hasn't been created yet, or a change was detected by ReceiveSenderData,
-		// or we have a new frame (re-link the handle to ensure we see the latest data in DX9)
-		if (!dxTexture || m_bUpdated || m_bNewFrame) {
+		// Re-link the shared handle only when the sender changes size or handle.
+		// Recreating the DX9 texture every frame is expensive and can destabilize
+		// self-feedback sender/receiver setups.
+		if (!dxTexture || m_bUpdated) {
 			if (dxTexture) {
 				dxTexture->Release();
 				dxTexture = nullptr;
@@ -1175,9 +1190,13 @@ bool spoutDX9::ReadDX9texture(IDirect3DDevice9Ex* pDevice, LPDIRECT3DTEXTURE9 &d
 
 		}
 		else bRet = (dxTexture != nullptr);
+
+		// Allow access to the shared texture only after this thread owns it.
+		frame.AllowTextureAccess();
 	}
-	// Allow access to the shared texture
-	frame.AllowTextureAccess();
+	else {
+		bRet = (dxTexture != nullptr);
+	}
 
 	return bRet;
 }
@@ -1188,7 +1207,7 @@ void spoutDX9::CreateReceiver(const char * SenderName, unsigned int width, unsig
 	SpoutLogNotice("CreateReceiver(%s, %d x %d)", SenderName, width, height);
 
 	if (m_bSpoutInitialized)
-		ReleaseReceiver();
+		ReleaseReceiver(false);
 
 	// Create a named sender mutex for access to the sender's shared texture
 	frame.CreateAccessMutex(SenderName);

@@ -1,5 +1,4 @@
-[![vcpkg Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_vcpkg.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_vcpkg.yml)
-[![CMake Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_cmake.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_cmake.yml)
+[![Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build.yml)
 
 ![Discord Shield](https://discord.com/api/guilds/1041603212798599168/widget.png?style=shield) [Chat with us on Discord!](https://discord.gg/rp5cBDtGuM)
 
@@ -26,6 +25,7 @@ Highlights:
 - Toggleable Speaker and Microphone Audio Source Modes
 - Our modified [loopback-capture](https://matthewvaneerde.wordpress.com/2008/12/16/sample-wasapi-loopback-capture-record-what-you-hear/) code, called BeatDrop-loopback, with above 92kHz sample rate (Hi-Res) support, intelligent default audio change and anti-stutter
 - Interact presets with Mouse and Keyboard (CTRL + Arrow Keys)
+- Support for GIF, Video and Spout Input sprites and textures
 - Extended preset, texture, transition and noise generation randomization limit using [Mersenne Twister Pseudo-Random Number Generator](https://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/emt.html)
 - Hard Cut Modes, Transparency Mode, Playback Controls, Startup Preset etc.
 - And so much more!
@@ -135,6 +135,27 @@ To not break the listening sessions or DJ sessions, BeatDrop will no longer inte
 BeatDrop now uses [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library, a drop-in replacement of Nullsoft Expression Evaluation Library, which it's assembly-free and it uses much faster instructions than i386 instructions that achieves preset compilation performance optimization. [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) also performs a few compile-time optimizations like replacing larger constant expressions with a simple value.
 
 Steps on how to compile BeatDrop with [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library:
+
+## Known-good build steps for FFmpeg video support
+
+BeatDrop video support uses FFmpeg through vcpkg. These steps are the shortest reproducible path for a working `BeatDrop.exe`.
+
+1. Install Visual Studio 2022 or higher with the Desktop development with C++ workload, CMake tools, the Windows 10/11 SDK, and the DirectX SDK June 2010.
+2. Make sure the `vcpkg package manager` is checked on any workflows.
+3. Install FFmpeg for the Win32 dynamic triplet:
+```
+vcpkg install ffmpeg:x86-windows
+```
+4. Make sure `lib\projectM_eval.lib` and `lib\projectM_ns-eel2.lib` exist. If they are missing, build/copy them using the projectM-eval steps below.
+5. Open `BeatDrop.sln` in Visual Studio, select `Release` or `Release_OldOS` configurations, and build. Or build from Developer PowerShell:
+```
+msbuild BeatDrop.sln /m /p:Configuration=Release /p:Platform=Win32
+msbuild BeatDrop.sln /m /p:Configuration=Release_OldOS /p:Platform=Win32
+```
+6. The post-build step copies `vis_milk2\Release\BeatDrop.exe` to `BeatDrop\BeatDrop.exe` and copies these FFmpeg runtime DLLs beside it: `avcodec-62.dll`, `avformat-62.dll`, `avutil-60.dll`, `swresample-6.dll`, and `swscale-9.dll`.
+7. Run `BeatDrop\BeatDrop.exe` from the `BeatDrop` folder so it can find `beatdrop.ini`, `beatdrop_img.ini`, resources, presets, and the FFmpeg DLLs.
+
+⚠️  Please note that disabling vcpkg manifest mode will give you some errors or missing libraries.
 
 ## First method: Using [vcpkg](https://vcpkg.io)
 
