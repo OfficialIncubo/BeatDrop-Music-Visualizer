@@ -40,7 +40,7 @@ jobs:
       run: |
         vcpkg integrate install
         vcpkg x-update-baseline
-        vcpkg install --triplet x86-windows-static
+        vcpkg install --triplet x86-windows
 
     - name: Copy projectM-eval libraries from vcpkg
       shell: bash
