@@ -90,10 +90,10 @@
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgUseStatic>false</VcpkgUseStatic>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_OldOS|Win32'" Label="Vcpkg">
-    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgUseStatic>false</VcpkgUseStatic>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -109,7 +109,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>..\ffmpeg\include;$(VcpkgInstalledDir)\installed\x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ffmpeg\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN10_BUILD;WIN32;NDEBUG;_WINDOWS;USE_VIS_HDR_HWND;STRSAFE_NO_DEPRECATE;NSEEL_REENTRANT_EXECUTION;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -135,7 +135,7 @@
     <Link>
       <AdditionalDependencies>windowsapp.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;$(VcpkgInstalledDir)\installed\x86-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>
@@ -153,11 +153,7 @@
     <PostBuildEvent>
       <Command>if not exist "..\BeatDrop" mkdir "..\BeatDrop"
 copy /y /v "..\vis_milk2\Release\BeatDrop.exe" "..\BeatDrop\BeatDrop.exe"
-copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\avcodec-62.dll" "..\BeatDrop\avcodec-62.dll"
-copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\avformat-62.dll" "..\BeatDrop\avformat-62.dll"
-copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\avutil-60.dll" "..\BeatDrop\avutil-60.dll"
-copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\swresample-6.dll" "..\BeatDrop\swresample-6.dll"
-copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\swscale-9.dll" "..\BeatDrop\swscale-9.dll"</Command>
+copy /y /v "..\vis_milk2\Release\*.dll" "..\BeatDrop\"</Command>
     </PostBuildEvent>
     <Manifest />
     <Manifest>
@@ -183,7 +179,7 @@ copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\swscale-9.dll" "..\Be
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>..\ffmpeg\include;$(VcpkgInstalledDir)\installed\x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ffmpeg\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;USE_VIS_HDR_HWND;STRSAFE_NO_DEPRECATE;NSEEL_REENTRANT_EXECUTION;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -209,7 +205,7 @@ copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\swscale-9.dll" "..\Be
     <Link>
       <AdditionalDependencies>DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;$(VcpkgInstalledDir)\installed\x86-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>
@@ -228,11 +224,7 @@ copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\swscale-9.dll" "..\Be
     <PostBuildEvent>
       <Command>if not exist "..\BeatDrop" mkdir "..\BeatDrop"
 copy /y /v "..\vis_milk2\Release\BeatDrop_OldOS.exe" "..\BeatDrop\BeatDrop_OldOS.exe"
-copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\avcodec-62.dll" "..\BeatDrop\avcodec-62.dll"
-copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\avformat-62.dll" "..\BeatDrop\avformat-62.dll"
-copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\avutil-60.dll" "..\BeatDrop\avutil-60.dll"
-copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\swresample-6.dll" "..\BeatDrop\swresample-6.dll"
-copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\swscale-9.dll" "..\BeatDrop\swscale-9.dll"</Command>
+copy /y /v "..\vis_milk2\Release\*.dll" "..\BeatDrop\"</Command>
     </PostBuildEvent>
     <Manifest />
     <Manifest>
@@ -254,7 +246,7 @@ copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\swscale-9.dll" "..\Be
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\ffmpeg\include;$(VcpkgInstalledDir)\installed\x86-windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ffmpeg\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_NODEBUG;_WINDOWS;USE_VIS_HDR_HWND;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -280,7 +272,7 @@ copy /y /v "$(VcpkgInstalledDir)\installed\x86-windows\bin\swscale-9.dll" "..\Be
       <AdditionalDependencies>windowsapp.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;$(VcpkgInstalledDir)\installed\x86-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
