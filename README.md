@@ -1,4 +1,5 @@
 [![Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build.yml)
+[![Alternate Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_alt.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_alt.yml)
 
 ![Discord Shield](https://discord.com/api/guilds/1041603212798599168/widget.png?style=shield) [Chat with us on Discord!](https://discord.gg/rp5cBDtGuM)
 
