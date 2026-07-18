@@ -59,6 +59,11 @@ List of available apps here: https://spout.zeal.co
 ![BeatDropSpoutDemo](https://github.com/user-attachments/assets/5abf19b8-d064-4a4f-b756-d1936fdc88dc) ![BeatDropSpoutResolumeArenaDemo](https://github.com/user-attachments/assets/63ef3d28-4244-40d7-88a4-848cd3751cf3)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
+## GIF, Video and Spout Input support for Sprites and Textures
+
+TBA; needs snapshots, previews and description.
+
+---------------------------------------------------------------------------------------------------------------------------------------------
 ## SCREEN-DEPENDENT RENDER MODE & PRESET PATCH FIXES
 Bring back the nostalgia from 2000s by fixing some old MilkDrop 1 presets behavior with Screen-Dependent Render Mode, making the visual way better. You are free to turn it off if you don't want.
 
@@ -137,26 +142,23 @@ BeatDrop now uses [projectM-eval](https://github.com/projectM-visualizer/project
 
 Steps on how to compile BeatDrop with [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library:
 
-## Known-good build steps for FFmpeg video support
+## Known-good build steps for video support
 
-BeatDrop video support uses FFmpeg through vcpkg. These steps are the shortest reproducible path for a working `BeatDrop.exe`.
+BeatDrop's video support uses FFmpeg through vcpkg. These steps are the shortest reproducible path for a working executable.
 
-1. Install Visual Studio 2022 or higher with the Desktop development with C++ workload, CMake tools, the Windows 10/11 SDK, and the DirectX SDK June 2010.
+1. Install Visual Studio 2022 or higher with the Desktop development with C++ workload, CMake tools, the Windows 10/11 SDK, and the [DirectX SDK June 2010](https://www.microsoft.com/en-us/download/details.aspx?id=6812).
 2. Make sure the `vcpkg package manager` is checked on any workflows.
-3. Install FFmpeg for the Win32 dynamic triplet:
-```
-vcpkg install ffmpeg:x86-windows
-```
+3. Vcpkg's manifest mode is enabled by default, run the command by the following: `vcpkg install --triplet x86-windows`, else run `vcpkg install ffmpeg:x86-windows`
 4. Make sure `lib\projectM_eval.lib` and `lib\projectM_ns-eel2.lib` exist. If they are missing, build/copy them using the projectM-eval steps below.
 5. Open `BeatDrop.sln` in Visual Studio, select `Release` or `Release_OldOS` configurations, and build. Or build from Developer PowerShell:
 ```
 msbuild BeatDrop.sln /m /p:Configuration=Release /p:Platform=Win32
 msbuild BeatDrop.sln /m /p:Configuration=Release_OldOS /p:Platform=Win32
 ```
-6. The post-build step copies `vis_milk2\Release\BeatDrop.exe` to `BeatDrop\BeatDrop.exe` and copies these FFmpeg runtime DLLs beside it: `avcodec-62.dll`, `avformat-62.dll`, `avutil-60.dll`, `swresample-6.dll`, and `swscale-9.dll`.
-7. Run `BeatDrop\BeatDrop.exe` from the `BeatDrop` folder so it can find `beatdrop.ini`, `beatdrop_img.ini`, resources, presets, and the FFmpeg DLLs.
+6. The post-build step copies `vis_milk2\Release\BeatDrop[_OldOS].exe` to `BeatDrop\BeatDrop[_OldOS].exe` and copies these FFmpeg runtime DLLs beside it: `avcodec-62.dll`, `avformat-62.dll`, `avutil-60.dll`, `swresample-6.dll`, and `swscale-9.dll`.
+7. Run `BeatDrop[_OldOS].exe` from the `BeatDrop` folder so it can find `beatdrop.ini`, `beatdrop_img.ini`, resources, presets, and the FFmpeg DLLs.
 
-⚠️  Please note that disabling vcpkg manifest mode will give you some errors or missing libraries.
+⚠️  Please note that disabling vcpkg manifest mode will give you some errors or missing libraries, so you need to manually install libraries with the command line.
 
 ## First method: Using [vcpkg](https://vcpkg.io)
 
