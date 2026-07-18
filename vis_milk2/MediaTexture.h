@@ -6,7 +6,10 @@
 #define BEATDROP_MEDIA_TEXTURE_H 1
 
 #include <d3d9.h>
+#include <chrono>
 #include <condition_variable>
+#include <cstdint>
+#include <deque>
 #include <mutex>
 #include <string>
 #include <thread>
@@ -75,7 +78,7 @@ private:
     bool StartVideoWorker();
     void StopVideoWorker();
     void VideoWorkerMain();
-    bool UploadPendingVideoFrame();
+    bool UploadPendingVideoFrame(uint64_t targetIndex);
     void ReleaseTexture();
     void ReleaseVideo();
     void ReleaseSpout(bool waitForSpout);
@@ -92,6 +95,16 @@ private:
     int m_gifFrameIndex;
     unsigned int m_gifColorKey;
     bool m_gifApplyColorKey;
+    std::chrono::steady_clock::time_point m_gifPlaybackStartClock;
+    bool m_gifHavePlaybackStart;
+
+    struct VideoFrame
+    {
+        std::vector<unsigned char> pixels;
+        int width;
+        int height;
+        uint64_t index;
+    };
 
     AVFormatContext* m_formatContext;
     AVCodecContext* m_codecContext;
@@ -107,13 +120,12 @@ private:
     std::mutex m_videoMutex;
     std::condition_variable m_videoCondition;
     bool m_videoStopWorker;
-    bool m_videoPendingFrame;
-    std::vector<unsigned char> m_videoPendingPixels;
-    int m_videoPendingWidth;
-    int m_videoPendingHeight;
+    std::deque<VideoFrame> m_videoQueue;
+    uint64_t m_videoNextProduceIndex;
+    uint64_t m_videoDisplayedIndex;
+    std::chrono::steady_clock::time_point m_videoPlaybackStartClock;
+    bool m_videoHavePlaybackStart;
     double m_videoFrameSeconds;
-    double m_videoLastFrameTime;
-    bool m_videoHaveLastFrameTime;
     unsigned int m_videoColorKey;
     bool m_videoApplyColorKey;
 

@@ -52,6 +52,15 @@ typedef struct DXGI_JPEG_QUANTIZATION_TABLE
 
 namespace
 {
+    // Depth of the decoded-frame lookahead buffer between the video decode
+    // thread and the render thread (see m_videoQueue in MediaTexture.h).
+    // Deep enough to absorb ordinary decode jitter (a costly keyframe, a GOP
+    // boundary, a scheduler hiccup) without visibly stalling playback, while
+    // keeping worst-case memory bounded: each slot holds one full BGRA
+    // frame, e.g. ~8MB at 1920x1080 or ~33MB at 3840x2160, so a capacity of
+    // 4 tops out around 32-133MB depending on source resolution.
+    const size_t kVideoQueueCapacity = 4;
+
     template <class T>
     void SafeReleaseLocal(T*& p)
     {
@@ -245,6 +254,7 @@ MediaTexture::MediaTexture(LPDIRECT3DDEVICE9EX device)
     , m_gifFrameIndex(-1)
     , m_gifColorKey(0)
     , m_gifApplyColorKey(false)
+    , m_gifHavePlaybackStart(false)
     , m_formatContext(nullptr)
     , m_codecContext(nullptr)
     , m_videoFrame(nullptr)
@@ -256,12 +266,10 @@ MediaTexture::MediaTexture(LPDIRECT3DDEVICE9EX device)
     , m_videoSrcFormat(-1)
     , m_videoReachedEnd(false)
     , m_videoStopWorker(false)
-    , m_videoPendingFrame(false)
-    , m_videoPendingWidth(0)
-    , m_videoPendingHeight(0)
+    , m_videoNextProduceIndex(1)
+    , m_videoDisplayedIndex(0)
+    , m_videoHavePlaybackStart(false)
     , m_videoFrameSeconds(1.0 / 30.0)
-    , m_videoLastFrameTime(0)
-    , m_videoHaveLastFrameTime(false)
     , m_videoColorKey(0)
     , m_videoApplyColorKey(false)
     , m_spoutReceiver(nullptr)
@@ -429,12 +437,10 @@ void MediaTexture::ReleaseVideo()
     m_videoSrcHeight = 0;
     m_videoSrcFormat = -1;
     m_videoReachedEnd = false;
-    m_videoPendingPixels.clear();
-    m_videoPendingFrame = false;
-    m_videoPendingWidth = 0;
-    m_videoPendingHeight = 0;
-    m_videoLastFrameTime = 0.0;
-    m_videoHaveLastFrameTime = false;
+    m_videoQueue.clear();
+    m_videoNextProduceIndex = 1;
+    m_videoDisplayedIndex = 0;
+    m_videoHavePlaybackStart = false;
 }
 
 void MediaTexture::ReleaseSpout(bool waitForSpout)
@@ -457,7 +463,7 @@ bool MediaTexture::StartVideoWorker()
     {
         std::lock_guard<std::mutex> lock(m_videoMutex);
         m_videoStopWorker = false;
-        m_videoPendingFrame = false;
+        m_videoQueue.clear();
     }
 
     try
@@ -486,10 +492,7 @@ void MediaTexture::StopVideoWorker()
     {
         std::lock_guard<std::mutex> lock(m_videoMutex);
         m_videoStopWorker = false;
-        m_videoPendingFrame = false;
-        m_videoPendingPixels.clear();
-        m_videoPendingWidth = 0;
-        m_videoPendingHeight = 0;
+        m_videoQueue.clear();
     }
 }
 
@@ -503,7 +506,7 @@ void MediaTexture::VideoWorkerMain()
             std::unique_lock<std::mutex> lock(m_videoMutex);
             m_videoCondition.wait(lock, [this]()
             {
-                return m_videoStopWorker || !m_videoPendingFrame;
+                return m_videoStopWorker || m_videoQueue.size() < kVideoQueueCapacity;
             });
 
             if (m_videoStopWorker)
@@ -524,39 +527,43 @@ void MediaTexture::VideoWorkerMain()
             if (m_videoStopWorker)
                 break;
 
-            m_videoPendingPixels.swap(decodedPixels);
-            m_videoPendingWidth = width;
-            m_videoPendingHeight = height;
-            m_videoPendingFrame = true;
+            VideoFrame item;
+            item.pixels.swap(decodedPixels);
+            item.width = width;
+            item.height = height;
+            item.index = m_videoNextProduceIndex++;
+            m_videoQueue.push_back(std::move(item));
         }
         m_videoCondition.notify_all();
     }
 }
 
-bool MediaTexture::UploadPendingVideoFrame()
+bool MediaTexture::UploadPendingVideoFrame(uint64_t targetIndex)
 {
-    std::vector<unsigned char> pixels;
-    int width = 0;
-    int height = 0;
+    VideoFrame frame;
+    bool haveFrame = false;
 
     {
         std::lock_guard<std::mutex> lock(m_videoMutex);
-        if (!m_videoPendingFrame)
-            return false;
-
-        pixels.swap(m_videoPendingPixels);
-        width = m_videoPendingWidth;
-        height = m_videoPendingHeight;
-        m_videoPendingFrame = false;
-        m_videoPendingWidth = 0;
-        m_videoPendingHeight = 0;
+        while (!m_videoQueue.empty() && m_videoQueue.front().index <= targetIndex)
+        {
+            frame = std::move(m_videoQueue.front());
+            m_videoQueue.pop_front();
+            haveFrame = true;
+        }
     }
-    m_videoCondition.notify_all();
 
-    if (width <= 0 || height <= 0 || pixels.empty())
+    if (!haveFrame)
+        return false; // decoder hasn't produced the next due frame yet; keep showing the current texture
+
+    m_videoCondition.notify_all(); // queue has room again; wake the worker if it was waiting
+
+    m_videoDisplayedIndex = frame.index;
+
+    if (frame.width <= 0 || frame.height <= 0 || frame.pixels.empty())
         return false;
 
-    return UploadPixels(pixels.data(), width, height, m_videoColorKey, m_videoApplyColorKey, false);
+    return UploadPixels(frame.pixels.data(), frame.width, frame.height, m_videoColorKey, m_videoApplyColorKey, false);
 }
 
 bool MediaTexture::UploadPixels(const unsigned char* pixels, int width, int height, unsigned int colorKey, bool applyColorKey, bool forceOpaque)
@@ -916,11 +923,6 @@ bool MediaTexture::InitVideo(const wchar_t* path, unsigned int colorKey)
     if (!UploadPixels(firstFrame.data(), firstWidth, firstHeight, colorKey, m_videoApplyColorKey, false))
         return false;
 
-    // Note: the frame-timing baseline (m_videoLastFrameTime) is intentionally left
-    // unset here; it's established on the first Update(now, ...) call using the
-    // visualizer's own high-resolution clock rather than the OS wall clock, so
-    // video playback stays in sync with the app's animation timeline (same
-    // approach GIF playback already uses).
     StartVideoWorker();
     return true;
 }
@@ -1127,6 +1129,8 @@ bool MediaTexture::Update(float now, bool* shouldKill, bool wantColorKeyThisFram
     if (shouldKill)
         *shouldKill = false;
 
+    (void)now;
+
     switch (m_kind)
     {
     case KIND_GIF:
@@ -1134,7 +1138,17 @@ bool MediaTexture::Update(float now, bool* shouldKill, bool wantColorKeyThisFram
         if (m_gifFrames.empty())
             return m_texture != nullptr;
 
-        double t = fmod((double)now, m_gifTotalSeconds);
+        if (!m_gifHavePlaybackStart)
+        {
+            m_gifPlaybackStartClock = std::chrono::steady_clock::now();
+            m_gifHavePlaybackStart = true;
+        }
+        double elapsedSeconds = std::chrono::duration<double>(
+            std::chrono::steady_clock::now() - m_gifPlaybackStartClock).count();
+        if (elapsedSeconds < 0.0)
+            elapsedSeconds = 0.0;
+
+        double t = fmod(elapsedSeconds, m_gifTotalSeconds);
         double cursor = 0.0;
         int frameIndex = 0;
         for (int i = 0; i < (int)m_gifFrames.size(); i++)
@@ -1156,33 +1170,25 @@ bool MediaTexture::Update(float now, bool* shouldKill, bool wantColorKeyThisFram
     }
     case KIND_VIDEO:
     {
-        // Colorkey only has an effect when THIS frame's blendmode is
-        // actually 4 (matches the documented MilkDrop behavior classic
-        // images already have, and GIF's own colorkey handling) - decided
-        // fresh every call rather than once at load time. See the comment
-        // on Update()'s declaration in MediaTexture.h.
         m_videoApplyColorKey = wantColorKeyThisFrame;
 
-        // Use the visualizer's own high-resolution animation clock ('now', a
-        // damped/smoothed real-time seconds value - see CPluginShell::GetTime())
-        // instead of the OS wall clock (timeGetTime()). This keeps video frame
-        // presentation synced to the video's own native FPS (m_videoFrameSeconds,
-        // read from the container's stream metadata in InitVideo) rather than
-        // drifting or feeling locked to a fixed rate, and is consistent with how
-        // GIF playback already times itself off of 'now'.
-        double elapsedSeconds = m_videoHaveLastFrameTime ? ((double)now - m_videoLastFrameTime) : m_videoFrameSeconds;
-        double frameSeconds = m_videoFrameSeconds > 0.0 ? m_videoFrameSeconds : (1.0 / 30.0);
-
-        // Guard against a negative/garbage delta (e.g. 'now' wrapped or was reset)
-        // by treating it the same as "time for a new frame" rather than stalling.
-        if (!m_videoHaveLastFrameTime || elapsedSeconds < 0.0 || elapsedSeconds >= frameSeconds)
+        if (!m_videoHavePlaybackStart)
         {
-            if (UploadPendingVideoFrame())
-            {
-                m_videoLastFrameTime = (double)now;
-                m_videoHaveLastFrameTime = true;
-            }
+            m_videoPlaybackStartClock = std::chrono::steady_clock::now();
+            m_videoHavePlaybackStart = true;
         }
+
+        double frameSeconds = m_videoFrameSeconds > 0.0 ? m_videoFrameSeconds : (1.0 / 30.0);
+        double elapsedSeconds = std::chrono::duration<double>(
+            std::chrono::steady_clock::now() - m_videoPlaybackStartClock).count();
+        if (elapsedSeconds < 0.0)
+            elapsedSeconds = 0.0; // guard against a theoretical clock anomaly
+
+        uint64_t targetIndex = (uint64_t)(elapsedSeconds / frameSeconds);
+
+        if (targetIndex > m_videoDisplayedIndex)
+            UploadPendingVideoFrame(targetIndex);
+
         return m_texture != nullptr;
     }
     case KIND_SPOUT:
