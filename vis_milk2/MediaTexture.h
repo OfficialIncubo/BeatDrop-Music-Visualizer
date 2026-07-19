@@ -73,12 +73,13 @@ private:
 
     bool CreateDynamicTexture(int width, int height);
     bool UploadPixels(const unsigned char* pixels, int width, int height, unsigned int colorKey, bool applyColorKey, bool forceOpaque);
-    bool DecodeNextVideoFrame(std::vector<unsigned char>& pixels, int* width, int* height, bool loop);
+    bool DecodeNextVideoFrame(std::vector<unsigned char>& pixels, int* width, int* height, double* presentationSeconds, bool loop);
     bool SeekVideoToStart();
     bool StartVideoWorker();
     void StopVideoWorker();
     void VideoWorkerMain();
-    bool UploadPendingVideoFrame(uint64_t targetIndex);
+    bool UploadPendingVideoFrame(double targetPresentationSeconds);
+    bool VideoQueueHasRoom() const;
     void ReleaseTexture();
     void ReleaseVideo();
     void ReleaseSpout(bool waitForSpout);
@@ -103,7 +104,7 @@ private:
         std::vector<unsigned char> pixels;
         int width;
         int height;
-        uint64_t index;
+        double presentationSeconds;
     };
 
     AVFormatContext* m_formatContext;
@@ -121,10 +122,16 @@ private:
     std::condition_variable m_videoCondition;
     bool m_videoStopWorker;
     std::deque<VideoFrame> m_videoQueue;
-    uint64_t m_videoNextProduceIndex;
-    uint64_t m_videoDisplayedIndex;
+    std::deque<std::vector<unsigned char> > m_videoFreeBuffers;
     std::chrono::steady_clock::time_point m_videoPlaybackStartClock;
     bool m_videoHavePlaybackStart;
+    double m_videoTimeBaseSeconds;
+    double m_videoTimestampOriginSeconds;
+    bool m_videoHaveTimestampOrigin;
+    double m_videoLoopOffsetSeconds;
+    double m_videoLastPresentationSeconds;
+    double m_videoLastFrameDurationSeconds;
+    bool m_videoHavePresentation;
     double m_videoFrameSeconds;
     unsigned int m_videoColorKey;
     bool m_videoApplyColorKey;
