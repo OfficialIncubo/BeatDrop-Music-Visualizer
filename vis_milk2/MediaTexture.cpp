@@ -685,7 +685,12 @@ bool MediaTexture::UploadPixels(const unsigned char* pixels, int width, int heig
 
 bool MediaTexture::InitGif(const wchar_t* path, unsigned int colorKey)
 {
-    HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+    // BeatDrop.exe enables the Windows Runtime song-title poller, which runs
+    // on this same render thread and uses an MTA. Requesting an STA here per
+    // GIF therefore returns RPC_E_CHANGED_MODE. WIC is MTA-compatible, so
+    // match the render thread instead and only balance a COM reference that
+    // this MediaTexture actually acquired.
+    HRESULT hr = CoInitializeEx(nullptr, COINIT_MULTITHREADED);
     if (SUCCEEDED(hr))
         m_comInitialized = true;
     else if (FAILED(hr) && hr != RPC_E_CHANGED_MODE)
