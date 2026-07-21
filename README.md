@@ -21,6 +21,8 @@ Highlights:
 - Drag, Drop & Load MilkDrop preset
 - Shader Precaching or Caching for Instant Preset Loading
 - Fully supported Pixel Shader 4 (Shader Model 3) presets for AMD/ATI processor/graphic cards
+- FFT and Wave functions accessible via shaders!
+- Real-time system time and date variables/functions
 - [Spout](https://spout.zeal.co) integration
 - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library integration
 - Toggleable Speaker and Microphone Audio Source Modes
@@ -61,7 +63,31 @@ List of available apps here: https://spout.zeal.co
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## GIF, Video and Spout Input support for Sprites and Textures
 
-TBA; needs snapshots, previews and description.
+### GIF and Video sprites
+
+The sprite handler is now smart and can hybridly invoke GIF, Video and Image sprites. Simply open the image ini file (beatdrop_img.ini), find an empty digit slot or modify the existing one, easily pass an image, video or GIF path and write some code! Then in a visualizer, press K to change to sprite mode, type 2 digits corresponding to your image ini file you have provided, then you'll see some magic.
+
+<video autoplay loop muted playsinline src="https://github.com/user-attachments/assets/eea26915-fc52-48c7-af66-77ed30825f7b" alt="BeatDrop GIF and Video Sprite Support Demo" width="100%" height="auto"></video>
+
+### GIF and Video textures
+
+Presets can now load GIF, video and image textures in a simple way. It detects a file name from sampler and then hybridly shows static or animated textures.
+
+<video autoplay loop muted playsinline src="https://github.com/user-attachments/assets/6dd2d72a-008f-4fa1-91d9-c3ce35107b57" alt="BeatDrop GIF and Video Sprite Support Demo" width="100%" height="auto"></video>
+
+New supported formats: gif, 3gp, 3g2, mp4, wmv, mkv, avi, mxf, mov, webm, flv, mpg, mpeg
+
+### Spout Input Sprites
+
+You can also invoke sprites using [Spout](https://spout.zeal.co)! It's the same steps, but you need to pass `Spout\` or `Spout/` prefixes and the Spout receiver name to your image path.
+
+An example of how it invoked: OBS's Browser Source with [Spout Plug-in as sender filter](https://github.com/Off-World-Live/obs-spout2-plugin) and invoked a Spout sprite with `Spout/SpoutSB` with digit noº 18.
+
+<video autoplay loop muted playsinline src="https://github.com/user-attachments/assets/ff60f37a-9fda-47a5-a03b-e621799b562c" alt="BeatDrop Spout Input Sprite Demo" width="100%" height="auto"></video>
+
+You can also do some epic/crazy feedback by self-invoking the visual renderer using a Spout Input sprite. Pass `Spout/BeatDrop`, write some sprite code and enjoy beautiful feedback effects!
+
+<video autoplay loop muted playsinline src="https://github.com/user-attachments/assets/8f1abd9c-4bfc-49a8-bf90-541b882e56a6" alt="BeatDrop Spout Input Feedback Tricks Demo" width="100%" height="auto"></video>
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## SCREEN-DEPENDENT RENDER MODE & PRESET PATCH FIXES
@@ -100,10 +126,38 @@ After 20 years of the bug when using any Pixel Shader Version 4 presets that cau
 ![hi-res-audio-sound-waves](https://github.com/user-attachments/assets/7b80210c-a7c4-4c84-9cb4-8bfbc3eca8ea)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-## CONTROL PRESETS BY USING A MOUSE
+## FFT and Wave audio data shader variables
+
+[MilkDrop3](https://milkdrop3.com) introduced FFT shader variables months ago, which I was very excited about. Firstly, ported to [Milkwave](https://github.com/IkeC/Milkwave) and then ported to this visualizer itself with some hard-tweaks, RMS normalization (thanks, martin a.k.a. Nitorami, the preset legend), smooth decay/attack transition and a high-quality full-range audio processing by me.
+
+I've also made support for Wave shader functions, but maybe the it should support for [MilkDrop3]((https://milkdrop3.com)) in the next version too ;)
+
+Please refer the [new functions/variables documentation](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/blob/master/resources/Milkdrop2/docs/ADDED%20SHADER%20VARIABLES%20AND%20FUNCTIONS.txt) how to use them.
+
+![BeatDropFFTWaveShaderVarsDemo](https://github.com/user-attachments/assets/c2a4b761-3eb2-448e-ae51-25db77500cc7)
+
+You can also adjust FFT shader's attack or decay via preset editor! Press "M" and you'll see `fft shader attack/decay` option. Both attack and decay ranges from 0 to 1.
+
+![BeatDropFFTAttackDecaySettings](https://github.com/user-attachments/assets/5d6185a2-3cf9-4b28-b063-4e23cc6ffe00)
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+## SYSTEM TIME AND DATE VARIABLES
+
+Now you can use system time and date variables on init, per-frame or in shaders. Some presets can see what time is it in real-time!
+
+For use in init or in per-frame code: some new variables are written when you open the preset editor (`M`) and you hover the cursor (it should see in right-down corner). Some variables added: year, month, day, weekday, hour, minute, second, milliseconds, totalseconds.
+
+For shaders: Please refer [new functions/variables documentation](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/blob/master/resources/Milkdrop2/docs/ADDED%20SHADER%20VARIABLES%20AND%20FUNCTIONS.txt) in `System time shader variables` section.
+
+https://github.com/user-attachments/assets/abcfadf4-282a-429e-87d6-10233db1d210
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+## CONTROL PRESETS BY USING A MOUSE AND A KEYBOARD
 To make BeatDrop more and more interactive, Me & [MilkDrop2077/Serge Blanc](https://x.com/MilkDrop2077) have made support for controlling presets by just using a mouse! Preset authors can now use the mouse variables in a simple way. Just pass them to init, per-frame, per-vertex or shaders, use a mouse and look how it goes! For more information about this, you can read it from docs folder.
 
-![BeatDropMouseSupportDemo](https://github.com/user-attachments/assets/5184e575-26cf-4dc9-a2cb-22fa59656c8e)
+Oh, and you can also control presets with CTRL + arrow keys, but you need to pass `ctrllt`, `ctrlrt`, `ctrlup` and `ctrldn` in order to do that.
+
+![BeatDropMouseSupportDemo](https://github.com/user-attachments/assets/8ebc5843-7100-49c0-91e6-aa9182d03319)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## REAL-TIME SONG INFORMATION
