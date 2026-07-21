@@ -28,7 +28,7 @@ Highlights:
 - Toggleable Speaker and Microphone Audio Source Modes
 - Our modified [loopback-capture](https://matthewvaneerde.wordpress.com/2008/12/16/sample-wasapi-loopback-capture-record-what-you-hear/) code, called BeatDrop-loopback, with above 92kHz sample rate (Hi-Res) support, intelligent default audio change and anti-stutter
 - Interact presets with Mouse and Keyboard (CTRL + Arrow Keys)
-- Support for GIF, Video and Spout Input sprites and textures
+- GIF, Video and [Spout](https://spout.zeal.co) Input support for sprites and textures
 - Extended preset, texture, transition and noise generation randomization limit using [Mersenne Twister Pseudo-Random Number Generator](https://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/emt.html)
 - Hard Cut Modes, Transparency Mode, Playback Controls, Startup Preset etc.
 - And so much more!
@@ -126,7 +126,7 @@ After 20 years of the bug when using any Pixel Shader Version 4 presets that cau
 ![hi-res-audio-sound-waves](https://github.com/user-attachments/assets/7b80210c-a7c4-4c84-9cb4-8bfbc3eca8ea)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-## FFT and Wave audio data shader variables
+## FFT AND WAVE AUDIO DATA SHADER VARIABLES
 
 [MilkDrop3](https://milkdrop3.com) introduced FFT shader variables months ago, which I was very excited about. Firstly, ported to [Milkwave](https://github.com/IkeC/Milkwave) and then ported to this visualizer itself with some hard-tweaks, RMS normalization (thanks, martin a.k.a. Nitorami, the preset legend), smooth decay/attack transition and a high-quality full-range audio processing by me.
 
