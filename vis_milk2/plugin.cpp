@@ -11451,7 +11451,10 @@ bool CPlugin::LaunchSprite(int nSpriteNum, int nSlot)
         if (MediaTexture::IsSpoutPath(img))
         {
             const wchar_t* senderName = img + 6;
-            swprintf(buf, L"sprite #%02d error: Spout prefix detected, but sender \"%ls\" was not found. Try modifying the sender name from beatdrop_img.ini to exactly match the active Spout sender name.", nSpriteNum, senderName[0] ? senderName : L"(empty)");
+            if (!senderName[0])
+                swprintf(buf, L"sprite #%02d error: attempted to invoke a Spout sprite with an empty sender name. Set img=Spout\\<active sender name> or img=Spout/<active sender name> in beatdrop_img.ini.", nSpriteNum);
+            else
+                swprintf(buf, L"sprite #%02d error: Spout prefix detected, but sender \"%ls\" was not found. Try modifying the sender name from beatdrop_img.ini to exactly match the active Spout sender name.", nSpriteNum, senderName);
             AddError(buf, 7.0f, ERR_MISC, false);
         }
         else
