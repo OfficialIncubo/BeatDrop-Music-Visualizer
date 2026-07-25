@@ -309,7 +309,9 @@ void ToggleStretch(HWND hwnd) {
         d3dPp.BackBufferWidth = width;
         d3dPp.BackBufferHeight = height;
 
+        g_plugin.PrepareForExternalDeviceReset();
         pD3DDevice->Reset(&d3dPp);
+        g_plugin.RestoreAfterExternalDeviceReset();
 
         SetWindowLongW(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
         SetWindowLongW(hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
@@ -332,7 +334,9 @@ void ToggleStretch(HWND hwnd) {
         d3dPp.BackBufferWidth = width;
         d3dPp.BackBufferHeight = height;
 
+        g_plugin.PrepareForExternalDeviceReset();
         pD3DDevice->Reset(&d3dPp);
+        g_plugin.RestoreAfterExternalDeviceReset();
         SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
         stretch = false;
 
@@ -385,7 +389,9 @@ void ToggleFullScreen(HWND hwnd) {
         d3dPp.BackBufferWidth = width;
         d3dPp.BackBufferHeight = height;
 
+        g_plugin.PrepareForExternalDeviceReset();
         pD3DDevice->Reset(&d3dPp);
+        g_plugin.RestoreAfterExternalDeviceReset();
         SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
 		DragAcceptFiles(hwnd, TRUE);
         fullscreen = true;
@@ -403,7 +409,9 @@ void ToggleFullScreen(HWND hwnd) {
         d3dPp.BackBufferWidth = width;
         d3dPp.BackBufferHeight = height;
 
+        g_plugin.PrepareForExternalDeviceReset();
         pD3DDevice->Reset(&d3dPp);
+        g_plugin.RestoreAfterExternalDeviceReset();
         SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
         fullscreen = false;
 

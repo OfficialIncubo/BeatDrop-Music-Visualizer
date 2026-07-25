@@ -90,10 +90,10 @@
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
   </PropertyGroup>
   <PropertyGroup Label="Vcpkg" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgUseStatic>false</VcpkgUseStatic>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_OldOS|Win32'" Label="Vcpkg">
-    <VcpkgUseStatic>true</VcpkgUseStatic>
+    <VcpkgUseStatic>false</VcpkgUseStatic>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -109,7 +109,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ffmpeg\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_WIN10_BUILD;WIN32;NDEBUG;_WINDOWS;USE_VIS_HDR_HWND;STRSAFE_NO_DEPRECATE;NSEEL_REENTRANT_EXECUTION;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -133,9 +133,9 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>windowsapp.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>windowsapp.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>
@@ -148,10 +148,13 @@
       <DataExecutionPrevention />
       <ImportLibrary>.\Release/vis_milk2.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>copy /y /v "..\vis_milk2\Release\BeatDrop.exe" "..\BeatDrop\BeatDrop.exe"</Command>
+      <Command>if not exist "..\BeatDrop" mkdir "..\BeatDrop"
+copy /y /v "..\vis_milk2\Release\BeatDrop.exe" "..\BeatDrop\BeatDrop.exe"
+copy /y /v "..\vis_milk2\Release\*.dll" "..\BeatDrop\"</Command>
     </PostBuildEvent>
     <Manifest />
     <Manifest>
@@ -177,7 +180,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ffmpeg\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;USE_VIS_HDR_HWND;STRSAFE_NO_DEPRECATE;NSEEL_REENTRANT_EXECUTION;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -201,9 +204,9 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <DelayLoadDLLs>
@@ -217,10 +220,13 @@
       </DataExecutionPrevention>
       <ImportLibrary>.\Release/vis_milk2.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>copy /y /v "..\vis_milk2\Release\BeatDrop_OldOS.exe" "..\BeatDrop\BeatDrop_OldOS.exe"</Command>
+      <Command>if not exist "..\BeatDrop" mkdir "..\BeatDrop"
+copy /y /v "..\vis_milk2\Release\BeatDrop_OldOS.exe" "..\BeatDrop\BeatDrop_OldOS.exe"
+copy /y /v "..\vis_milk2\Release\*.dll" "..\BeatDrop\"</Command>
     </PostBuildEvent>
     <Manifest />
     <Manifest>
@@ -242,7 +248,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\ffmpeg\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_NODEBUG;_WINDOWS;USE_VIS_HDR_HWND;_CRT_SECURE_NO_WARNINGS;_CRT_NON_CONFORMING_SWPRINTFS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
@@ -265,10 +271,10 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>windowsapp.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;projectM_ns-eel2.lib;projectM_eval.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>windowsapp.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalLibraryDirectories>..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>
       </DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -277,6 +283,7 @@
       <DataExecutionPrevention />
       <ImportLibrary>.\Debug/vis_milk2.lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
+      <LargeAddressAware>true</LargeAddressAware>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PostBuildEvent>
@@ -302,6 +309,7 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClCompile Include="dxcontext.cpp" />
     <ClCompile Include="fft.cpp" />
     <ClCompile Include="menu.cpp" />
+    <ClCompile Include="MediaTexture.cpp" />
     <ClCompile Include="Milkdrop2PcmVisualizer.cpp" />
     <ClCompile Include="milkdropfs.cpp" />
     <ClCompile Include="plugin.cpp" />
@@ -341,6 +349,7 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClInclude Include="fft.h" />
     <ClInclude Include="md_defines.h" />
     <ClInclude Include="menu.h" />
+    <ClInclude Include="MediaTexture.h" />
     <ClInclude Include="Milkdrop2PcmVisualizer.h" />
     <ClInclude Include="plugin.h" />
     <ClInclude Include="pluginshell.h" />

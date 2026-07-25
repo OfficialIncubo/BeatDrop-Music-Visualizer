@@ -897,7 +897,7 @@ bool spoutFrameCount::CheckAccess()
 	// Note that NVIDIA "Threaded optimization" can cause a delay for WaitForSingleObject
 	// and can be set OFF by the NVIDIA control panel or by SpoutSettings.
 	//
-	const DWORD dwWaitResult = WaitForSingleObject(m_hAccessMutex, 67); // timeout 4 frames at 60fps
+	const DWORD dwWaitResult = WaitForSingleObject(m_hAccessMutex, 0); // never stall the render thread
 	switch (dwWaitResult) {
 		case WAIT_OBJECT_0 : // 0
 			// The state of the object is signalled.
@@ -1330,5 +1330,4 @@ void spoutFrameCount::OpenFrameSync(const char* SenderName)
 }
 
 // ===============================================================================
-
 

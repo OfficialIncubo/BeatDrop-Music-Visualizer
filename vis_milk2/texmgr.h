@@ -39,6 +39,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 #include "md_defines.h"
 
+class MediaTexture;
+
 #define TEXMGR_ERROR_MASK                 0x0F
 #define TEXMGR_ERR_SUCCESS                0
 #define TEXMGR_ERR_BAD_INDEX              1
@@ -62,6 +64,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 typedef struct
 {
 	LPDIRECT3DTEXTURE9     pSurface;
+	MediaTexture*          pMedia;
 	int                    img_w, img_h;
     /*
 	int                    tex_w, tex_h;
@@ -72,6 +75,7 @@ typedef struct
 	float				   fStartTime;
 	int                    nStartFrame;
 	int                    nUserData;
+	bool                   bSpoutDefaultNoBurn;
 
 	// stuff for expressions:
 	char            m_szExpr[8192];         // for expression eval
@@ -97,8 +101,9 @@ public:
 	~texmgr();
 
 	// members
-	void Init(LPDIRECT3DDEVICE9 lpDD);           // DirectDraw object
+	void Init(LPDIRECT3DDEVICE9EX lpDD);           // DirectDraw object
 	int  LoadTex(wchar_t *szFilename, int iSlot, char *szInitCode, char *szCode, float time, int frame, unsigned int ck);
+	bool UpdateTex(int iSlot, float time, bool* shouldKill);
 	void KillTex(int iSlot);
 	void Finish();
 
@@ -116,7 +121,7 @@ protected:
 	void StripLinefeedCharsAndComments(char *src, char *dest);
 
 	// data
-	LPDIRECT3DDEVICE9 m_lpDD;					
+	LPDIRECT3DDEVICE9EX m_lpDD;					
 };
 
 #endif

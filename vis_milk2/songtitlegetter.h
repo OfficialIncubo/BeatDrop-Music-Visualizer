@@ -38,9 +38,10 @@ public:
 
 	bool updated = false;
 	bool doPoll = true;
-	bool doPollExplicit = false;
-	bool SMTCSupported = false;
-	bool isSongChange = false;
+    bool doPollExplicit = false;
+    bool SMTCSupported = false;
+    bool isSongChange = false;
+    bool winrtInitialized = false;
 
 	SongTitleGetter();
 	void Init();

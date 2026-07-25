@@ -35,6 +35,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "plugin.h"
+#include "MediaTexture.h"
 #include "resource.h"
 #include "support.h"
 //#include "evallib\eval.h"		// for math. expr. eval - thanks Francis! (in SourceOffSite, it's the 'vis_avs\evallib' project.)
@@ -887,6 +888,8 @@ void CPlugin::RenderFrame(int bRedraw)
 		    if (m_pState->m_fBlendProgress > 1.0f)
 		    {
 			    m_pState->m_bBlending = false;
+                m_OldShaders.comp.Clear();
+                m_OldShaders.warp.Clear();
 		    }
 	    }
 
@@ -947,6 +950,8 @@ void CPlugin::RenderFrame(int bRedraw)
     LPDIRECT3DDEVICE9 lpDevice = GetDevice();
     if (!lpDevice)
         return;
+
+    UpdateLiveTextures();
 
     // Remember the original backbuffer and zbuffer
     LPDIRECT3DSURFACE9 pBackBuffer=NULL;//, pZBuffer=NULL;
@@ -4490,6 +4495,7 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 
     lpDevice->SetTexture(0, NULL);
     lpDevice->SetVertexShader( NULL );
+    lpDevice->SetPixelShader( NULL );
     lpDevice->SetFVF( SPRITEVERTEX_FORMAT );
 
     //lpDevice->SetRenderState(D3DRS_WRAP0, 0);
@@ -4524,6 +4530,23 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 
 	for (int iSlot=0; iSlot < NUM_TEX; iSlot++)
 	{
+        bool bLiveSpriteShouldKill = false;
+        if (m_texmgr.m_tex[iSlot].pMedia)
+        {
+            m_texmgr.UpdateTex(iSlot, GetTime(), &bLiveSpriteShouldKill);
+            if (bLiveSpriteShouldKill)
+            {
+                wchar_t buf[1024];
+                const wchar_t* senderName = MediaTexture::IsSpoutPath(m_texmgr.m_tex[iSlot].szFileName)
+                    ? m_texmgr.m_tex[iSlot].szFileName + 6
+                    : L"unknown sender";
+                swprintf(buf, L"Spout sender \"%ls\" turned off by the user process. Spout Input Sprite is now automatically killed.", senderName);
+                AddError(buf, 7.0f, ERR_MISC, false);
+                KillSprite(iSlot);
+                continue;
+            }
+        }
+
 		if (m_texmgr.m_tex[iSlot].pSurface)
 		{
 			int k;
@@ -4570,9 +4593,10 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
                 pNewTarget->Release();
 
 	            lpDevice->SetTexture(0, NULL);
-            }
+			}
 
 			// finally, use the results to draw the sprite.
+            bool bSpoutSprite = m_texmgr.m_tex[iSlot].pMedia && m_texmgr.m_tex[iSlot].pMedia->IsSpout();
 			if (lpDevice->SetTexture(0, m_texmgr.m_tex[iSlot].pSurface) != D3D_OK)
 				return;
 
@@ -4672,6 +4696,17 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 
 			// finally, flip 'y' for annoying DirectX
 			//for (k=0; k<4; k++) v3[k].y *= -1.0f;
+
+			if (bSpoutSprite && GetWidth() > 0 && GetHeight() > 0)
+			{
+				float halfPixelX = 1.0f / (float)GetWidth();
+				float halfPixelY = 1.0f / (float)GetHeight();
+				for (k=0; k<4; k++)
+				{
+					v3[k].x -= halfPixelX;
+					v3[k].y -= halfPixelY; // This "down shift" thing fixes the issue, flipped the plus sign to minus
+				}
+			}
 
 			// set u,v coords
 			{
@@ -4784,6 +4819,28 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 				lpDevice->SetRenderState(D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA);
 				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 				for (k=0; k<4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r,g,b,a);
+
+				if (bSpoutSprite)
+				{
+					unsigned int colorKeyRGB = 0;
+					IDirect3DPixelShader9* pColorKeyPS =
+						m_texmgr.m_tex[iSlot].pMedia->GetColorKey(&colorKeyRGB) ? EnsureSpriteColorKeyPS() : nullptr;
+					if (pColorKeyPS)
+					{
+						float colorKeyConst[4] =
+						{
+							((colorKeyRGB >> 16) & 0xFF) / 255.0f,
+							((colorKeyRGB >>  8) & 0xFF) / 255.0f,
+							( colorKeyRGB        & 0xFF) / 255.0f,
+							0.001f // squared-distance match threshold; a live Spout
+							       // source is a rendered image, not a bit-exact
+							       // loaded file, so allow a little slack versus an
+							       // exact match.
+						};
+						lpDevice->SetPixelShaderConstantF(0, colorKeyConst, 1);
+						lpDevice->SetPixelShader(pColorKeyPS);
+					}
+				}
 				break;
 			}
 
@@ -4826,6 +4883,8 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 	}
 
 	lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+
+	lpDevice->SetPixelShader(NULL);
 
     // reset these to the standard safe mode:
     lpDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);

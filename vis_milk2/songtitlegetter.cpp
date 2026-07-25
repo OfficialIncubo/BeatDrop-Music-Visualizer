@@ -11,7 +11,20 @@ SongTitleGetter::SongTitleGetter()
 
 void SongTitleGetter::Init() {
 #if SUPPORT_SMTC
-    winrt::init_apartment(); // Initialize the WinRT runtime
+    if (!SMTCSupported || winrtInitialized)
+        return;
+
+    try {
+        // The render thread is an MTA. Initializing this once prevents the
+        // first few startup frames from repeatedly increasing its WinRT/COM
+        // initialization count before MediaTexture creates a WIC GIF decoder.
+        winrt::init_apartment(winrt::apartment_type::multi_threaded);
+        winrtInitialized = true;
+    }
+    catch (const winrt::hresult_error&) {
+        SMTCSupported = false;
+        return;
+    }
     start_time = std::chrono::steady_clock::now();
 #else
     SMTCSupported = false;

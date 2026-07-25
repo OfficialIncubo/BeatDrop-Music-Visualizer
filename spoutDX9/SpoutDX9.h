@@ -126,7 +126,7 @@ class SPOUT_DLLEXP spoutDX9 {
 		// Receive a DirectX 9 texture from a sender
 		bool ReceiveDX9Texture(LPDIRECT3DTEXTURE9 &pTexture);
 		// Close receiver and free resources
-		void ReleaseReceiver();
+		void ReleaseReceiver(bool waitForReconnect = true);
 		// Open sender selection dialog
 		bool SelectSender(HWND hwnd = nullptr);
 		// Sender has changed
@@ -191,6 +191,7 @@ class SPOUT_DLLEXP spoutDX9 {
 
 		IDirect3D9Ex* m_pD3D; // DX9 object
 		IDirect3DDevice9Ex* m_pDevice; // DX9 device
+		bool m_bDeviceIsExternal;
 		bool m_bSpoutInitialized;
 		HANDLE m_dxShareHandle;
 		LPDIRECT3DTEXTURE9 m_pSharedTexture; // Texture to be shared

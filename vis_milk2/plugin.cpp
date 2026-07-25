@@ -615,6 +615,7 @@ SPOUT :
 #include "pluginshell.h"
 #include "utility.h"
 #include "support.h"
+#include "MediaTexture.h"
 #include "state.h"
 #include "resource.h"
 #include "defines.h"
@@ -3071,6 +3072,16 @@ void CShaderParams::OnTextureEvict(LPDIRECT3DBASETEXTURE9 texptr)
             m_texture_bindings[i].texptr = NULL;
 }
 
+void CShaderParams::OnTextureReplace(LPDIRECT3DBASETEXTURE9 oldTexPtr, LPDIRECT3DBASETEXTURE9 newTexPtr)
+{
+    if (!oldTexPtr || !newTexPtr || oldTexPtr == newTexPtr)
+        return;
+
+    for (int i=0; i<sizeof(m_texture_bindings)/sizeof(m_texture_bindings[0]); i++)
+        if (m_texture_bindings[i].texptr == oldTexPtr)
+            m_texture_bindings[i].texptr = newTexPtr;
+}
+
 void CShaderParams::Clear()
 {
     // float4 handles:
@@ -3088,6 +3099,26 @@ void CShaderParams::Clear()
         m_texture_bindings[i].texptr = NULL;
         m_texcode[i] = TEX_DISK;
     }
+}
+
+static bool IsTextureBoundToAnyShaderParams(LPDIRECT3DBASETEXTURE9 texptr)
+{
+    if (!texptr)
+        return false;
+
+    size_t count = global_CShaderParams_master_list.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        CShaderParams* params = global_CShaderParams_master_list[i];
+        if (!params)
+            continue;
+
+        for (int stage = 0; stage < sizeof(params->m_texture_bindings) / sizeof(params->m_texture_bindings[0]); stage++)
+            if (params->m_texture_bindings[stage].texptr == texptr)
+                return true;
+    }
+
+    return false;
 }
 
 bool CPlugin::EvictSomeTexture()
@@ -3156,14 +3187,74 @@ bool CPlugin::EvictSomeTexture()
         global_CShaderParams_master_list[i]->OnTextureEvict( m_textures[biggest_index].texptr );
 
     // 2. erase the texture itself
-    SafeRelease(m_textures[biggest_index].texptr);
+    if (m_textures[biggest_index].pMedia)
+    {
+        delete m_textures[biggest_index].pMedia;
+        m_textures[biggest_index].pMedia = nullptr;
+        m_textures[biggest_index].texptr = nullptr;
+    }
+    else
+    {
+        SafeRelease(m_textures[biggest_index].texptr);
+    }
     m_textures.erase(m_textures.begin() + biggest_index);
 
     return true;
 }
 
-std::wstring texture_exts[] = { L"jpg", L"jpeg", L"jfif", L"dds", L"png", L"tga", L"bmp", L"dib"};
-const wchar_t szExtsWithSlashes[] = L".jpg|.png|.dds|etc.";
+void CPlugin::UpdateLiveTextures()
+{
+    for (size_t i = 0; i < m_textures.size(); )
+    {
+        TexInfo& tex = m_textures[i];
+        if (!tex.pMedia)
+        {
+            i++;
+            continue;
+        }
+
+        LPDIRECT3DBASETEXTURE9 oldTexPtr = tex.texptr;
+        if (!IsTextureBoundToAnyShaderParams(oldTexPtr))
+        {
+            delete tex.pMedia;
+            m_textures.erase(m_textures.begin() + i);
+            continue;
+        }
+
+        bool shouldKill = false;
+        tex.pMedia->Update(GetTime(), &shouldKill);
+        tex.texptr = tex.pMedia->GetTexture();
+        tex.w = tex.pMedia->GetWidth();
+        tex.h = tex.pMedia->GetHeight();
+        tex.d = 1;
+
+        if (tex.texptr && oldTexPtr && tex.texptr != oldTexPtr)
+        {
+            size_t N = global_CShaderParams_master_list.size();
+            for (size_t j = 0; j < N; j++)
+                global_CShaderParams_master_list[j]->OnTextureReplace(oldTexPtr, tex.texptr);
+        }
+
+        if (shouldKill || !tex.texptr)
+        {
+            size_t N = global_CShaderParams_master_list.size();
+            for (size_t j = 0; j < N; j++)
+                global_CShaderParams_master_list[j]->OnTextureEvict(oldTexPtr);
+            if (tex.texptr && tex.texptr != oldTexPtr)
+                for (size_t j = 0; j < N; j++)
+                    global_CShaderParams_master_list[j]->OnTextureEvict(tex.texptr);
+
+            delete tex.pMedia;
+            m_textures.erase(m_textures.begin() + i);
+            continue;
+        }
+
+        i++;
+    }
+}
+
+std::wstring texture_exts[] = { L"jpg", L"jpeg", L"jfif", L"dds", L"png", L"tga", L"bmp", L"dib", L"gif", L"3gp", L"3g2", L"mp4", L"wmv", L"mkv", L"avi", L"mxf", L"mov", L"webm", L"flv", L"mpg", L"mpeg"};
+const wchar_t szExtsWithSlashes[] = L".jpg|.png|.dds|.gif|.mp4|.wmv|.avi|.mov|etc.";
 typedef std::vector<std::wstring> StringVec;
 bool PickRandomTexture(const wchar_t* prefix, wchar_t* szRetTextureFilename)  //should be MAX_PATH chars
 {
@@ -3501,6 +3592,23 @@ void CShaderParams::CacheParams(LPD3DXCONSTANTTABLE pCT, bool bHardErrors)
                               continue;
                         }
                         D3DXIMAGE_INFO desc;
+
+                        if (MediaTexture::IsSupportedFile(szFilename))
+                        {
+                            x.pMedia = MediaTexture::Create(g_plugin.GetDevice(), szFilename, 0, false);
+                            if (x.pMedia)
+                            {
+                                x.texptr = x.pMedia->GetTexture();
+                                x.w = x.pMedia->GetWidth();
+                                x.h = x.pMedia->GetHeight();
+                                x.d = 1;
+                                x.bEvictable = true;
+                                x.nAge = g_plugin.m_nPresetsLoadedTotal;
+                                x.nSizeInBytes = x.w * x.h * 4 + 16384;
+                                break;
+                            }
+                            continue;
+                        }
 
                         // keep trying to load it - if it fails due to memory, evict something and try again.
                         while (1)
@@ -4171,6 +4279,19 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
     m_pState->m_bBlending = false;
 
 
+    if (GetDevice())
+    {
+        for (DWORD stage = 0; stage < 16; stage++)
+            GetDevice()->SetTexture(stage, NULL);
+    }
+
+    m_texmgr.Finish();
+
+    if (bInitialized)
+    {
+        spoutsender.ReleaseDX9sender();
+        bInitialized = false;
+    }
 
     for (size_t i=0; i<m_textures.size(); i++)
         if (m_textures[i].texptr)
@@ -4180,7 +4301,16 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
             for (size_t j=0; j<N; j++)
                 global_CShaderParams_master_list[j]->OnTextureEvict( m_textures[i].texptr );
 
-            SafeRelease(m_textures[i].texptr);
+            if (m_textures[i].pMedia)
+            {
+                delete m_textures[i].pMedia;
+                m_textures[i].pMedia = nullptr;
+                m_textures[i].texptr = nullptr;
+            }
+            else
+            {
+                SafeRelease(m_textures[i].texptr);
+            }
         }
     m_textures.clear();
 
@@ -4215,6 +4345,7 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
     m_BlurShaders[0].ps.Clear();
     m_BlurShaders[1].vs.Clear();
     m_BlurShaders[1].ps.Clear();
+    ReleaseSpriteColorKeyPS();
     /*
     SafeRelease( m_shaders.comp.ptr );
     SafeRelease( m_shaders.warp.ptr );
@@ -4245,8 +4376,6 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
         DeleteObject(m_gdi_title_font_doublesize);
         m_gdi_title_font_doublesize = NULL;
     }
-
-    m_texmgr.Finish();
 
 	if (m_verts != NULL)
 	{
@@ -4904,7 +5033,7 @@ void CPlugin::MyRenderUI(
         }
         if (m_bShowDebugInfo) //If show debug info is enabled, it entirely shows it, else it's hidden.
         {
-            swprintf(buf, L"BeatDrop v1.5 Developer Preview 1");
+            swprintf(buf, L"BeatDrop v1.5 Developer Preview 2");
             MyTextOut_Shadow(buf, MTO_LOWER_RIGHT);
             swprintf(buf, L"%s %d ", L"Time (s):", (int)(GetTime()));
             MyTextOut_Shadow(buf, MTO_LOWER_RIGHT);
@@ -9885,6 +10014,8 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
         ZeroMemory(&m_shaders, sizeof(PShaderSet));
 
         LoadShaders(&m_shaders, m_pState, false, false);
+        m_OldShaders.comp.Clear();
+        m_OldShaders.warp.Clear();
         NumTotalPresetsLoaded++;
         OnFinishedLoadingPreset();
     }
@@ -11203,7 +11334,7 @@ bool CPlugin::LaunchSprite(int nSpriteNum, int nSlot)
 		return false;
 	}
 
-	if (img[1] != L':')// || img[2] != '\\')
+	if (img[1] != L':' && !MediaTexture::IsSpoutPath(img))// || img[2] != '\\')
 	{
 		// it's not in the form "x:\blah\billy.jpg" so prepend plugin dir path.
 		wchar_t temp[512];
@@ -11317,8 +11448,20 @@ bool CPlugin::LaunchSprite(int nSpriteNum, int nSlot)
 	case TEXMGR_ERR_CORRUPT_JPEG:           sprintf(m_szUserMessage, "sprite #%d error: jpeg is corrupt", nSpriteNum); break;
     */
     case TEXMGR_ERR_BADFILE:
-        swprintf(buf, wasabiApiLangString(IDS_SPRITE_X_ERROR_IMAGE_FILE_MISSING_OR_CORRUPT), nSpriteNum);
-        AddError(buf, 6.0f, ERR_MISC, true);
+        if (MediaTexture::IsSpoutPath(img))
+        {
+            const wchar_t* senderName = img + 6;
+            if (!senderName[0])
+                swprintf(buf, L"sprite #%02d error: attempted to invoke a Spout sprite with an empty sender name. Set img=Spout\\<active sender name> or img=Spout/<active sender name> in beatdrop_img.ini.", nSpriteNum);
+            else
+                swprintf(buf, L"sprite #%02d error: Spout prefix detected, but sender \"%ls\" was not found. Try modifying the sender name from beatdrop_img.ini to exactly match the active Spout sender name.", nSpriteNum, senderName);
+            AddError(buf, 7.0f, ERR_MISC, false);
+        }
+        else
+        {
+            swprintf(buf, wasabiApiLangString(IDS_SPRITE_X_ERROR_IMAGE_FILE_MISSING_OR_CORRUPT), nSpriteNum);
+            AddError(buf, 6.0f, ERR_MISC, true);
+        }
         break;
     case TEXMGR_ERR_OUTOFMEM:
         swprintf(buf, wasabiApiLangString(IDS_SPRITE_X_ERROR_OUT_OF_MEM), nSpriteNum);
@@ -11831,6 +11974,68 @@ bool CPlugin::OpenSender(unsigned int width, unsigned int height)
 	return true;
 
 } // end OpenSender
+
+IDirect3DPixelShader9* CPlugin::EnsureSpriteColorKeyPS()
+{
+    if (m_pSpriteColorKeyPS)
+        return m_pSpriteColorKeyPS;
+
+    if (m_bSpriteColorKeyPSFailed || !GetDevice())
+        return nullptr;
+
+    static const char* szSrc =
+        "sampler2D texSampler : register(s0);\n"
+        "float4 colorKey : register(c0);\n" // .rgb = key color (0..1), .a = squared-distance threshold
+        "float4 main(float2 uv : TEXCOORD0, float4 diffuse : COLOR0) : COLOR0\n"
+        "{\n"
+        "    float4 tex = tex2D(texSampler, uv);\n"
+        "    float3 diff = tex.rgb - colorKey.rgb;\n"
+        "    float dist2 = dot(diff, diff);\n"
+        "    float keep = step(colorKey.a, dist2);\n" // 0 if close to colorKey (keyed out), else 1
+        "    return float4(tex.rgb * diffuse.rgb, tex.a * diffuse.a * keep);\n"
+        "}\n";
+
+    ID3DXBuffer* pShaderByteCode = nullptr;
+    ID3DXBuffer* pErrors = nullptr;
+    HRESULT hr = D3DXCompileShader(
+        szSrc,
+        (UINT)strlen(szSrc),
+        NULL,
+        NULL,
+        "main",
+        "ps_2_0",
+        0,
+        &pShaderByteCode,
+        &pErrors,
+        NULL);
+
+    SafeRelease(pErrors);
+
+    if (FAILED(hr) || !pShaderByteCode)
+    {
+        SafeRelease(pShaderByteCode);
+        m_bSpriteColorKeyPSFailed = true; // fall back to the old (texture-alpha-only) behavior
+        return nullptr;
+    }
+
+    HRESULT hrCreate = GetDevice()->CreatePixelShader((DWORD*)pShaderByteCode->GetBufferPointer(), &m_pSpriteColorKeyPS);
+    SafeRelease(pShaderByteCode);
+
+    if (FAILED(hrCreate))
+    {
+        m_pSpriteColorKeyPS = nullptr;
+        m_bSpriteColorKeyPSFailed = true;
+        return nullptr;
+    }
+
+    return m_pSpriteColorKeyPS;
+}
+
+void CPlugin::ReleaseSpriteColorKeyPS()
+{
+    SafeRelease(m_pSpriteColorKeyPS);
+    m_bSpriteColorKeyPSFailed = false; // device was (or is about to be) reset; ok to try compiling again
+}
 
 // SET AMD FLAG
 // A setting for forcing, non-forcing or auto-checking AMD mode for PS4 presets.

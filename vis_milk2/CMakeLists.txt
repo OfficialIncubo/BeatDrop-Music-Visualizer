@@ -13,11 +13,17 @@ endif()
 #Thank you, Kai Blaschke (CodAv)!
 if(ENABLE_PROJECTM_NSEEL)
     find_package(projectM-Eval REQUIRED COMPONENTS Milkdrop)
+    find_path(FFMPEG_INCLUDE_DIR libavformat/avformat.h REQUIRED)
+    find_library(AVFORMAT_LIBRARY avformat REQUIRED)
+    find_library(AVCODEC_LIBRARY avcodec REQUIRED)
+    find_library(AVUTIL_LIBRARY avutil REQUIRED)
+    find_library(SWSCALE_LIBRARY swscale REQUIRED)
 
     set (SOURCES
             dxcontext.cpp
             fft.cpp
             milkdropfs.cpp
+            MediaTexture.cpp
             plugin.cpp
             pluginshell.cpp
             state.cpp
@@ -25,6 +31,7 @@ if(ENABLE_PROJECTM_NSEEL)
             texmgr.cpp
             utility.cpp
             plugin.h
+            MediaTexture.h
             state.h
             texmgr.h
             )
@@ -42,9 +49,10 @@ add_executable(vis_milk2
 target_include_directories(vis_milk2
     PUBLIC
     ${CMAKE_SOURCE_DIR}/ns-eel2
+    ${FFMPEG_INCLUDE_DIR}
     )
 
-target_link_libraries(vis_milk2 PUBLIC projectM::ns-eel2)
+target_link_libraries(vis_milk2 PUBLIC projectM::ns-eel2 windowscodecs ole32 ${AVFORMAT_LIBRARY} ${AVCODEC_LIBRARY} ${AVUTIL_LIBRARY} ${SWSCALE_LIBRARY})
 
 #    set_target_properties(vis_milk2 PROPERTIES
 #                      EXPORT_NAME ns-eel2

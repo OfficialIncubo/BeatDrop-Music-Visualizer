@@ -774,6 +774,22 @@ void CPluginShell::CleanUpDX9Stuff(int final_cleanup)
 	CleanUpMyDX9Stuff(final_cleanup);
 }
 
+void CPluginShell::PrepareForExternalDeviceReset()
+{
+	// See the comment on this method's declaration in pluginshell.h - call
+	// this immediately before any Reset() issued from outside this class on
+	// the device it owns (final_cleanup=0: this is a temporary teardown, not
+	// the plugin shutting down, so everything gets reallocated right after).
+	CleanUpDX9Stuff(0);
+	if (m_lpDX)
+		m_lpDX->FlushGPU();
+}
+
+void CPluginShell::RestoreAfterExternalDeviceReset()
+{
+	AllocateDX9Stuff();
+}
+
 void CPluginShell::OnUserResizeTextWindow()
 {
 	// Update window properties
@@ -1413,6 +1429,7 @@ int CPluginShell::PluginRender(unsigned char *pWaveL, unsigned char *pWaveR)//, 
 	{
 		// device WAS lost, and is now ready to be reset (and come back online):
 		CleanUpDX9Stuff(0);
+		m_lpDX->FlushGPU();
 		if (m_lpDX->m_lpDevice->Reset(m_lpDX->m_d3dpp) != D3D_OK)
 		{
 			// note: a basic warning messagebox will have already been given.
@@ -2247,7 +2264,7 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 	//bool bShiftHeldDown = (GetKeyState(VK_SHIFT) & mask) != 0;
 	bool bCtrlHeldDown  = (GetKeyState(VK_CONTROL) & mask) != 0;
 	//bool bAltHeldDown: most keys come in under WM_SYSKEYDOWN when ALT is depressed.
-	RECT rect;
+	//RECT rect;
 
 	// Catch Explorer restarts
 	if (uMsg == WM_TASKBARCREATED)
@@ -2364,12 +2381,9 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 	case WM_EXITSIZEMOVE:
 		// SPOUT
 		// Find out whether the window has been resized or just moved
-		GetClientRect(hWnd, &rect);
-		if ((rect.right - rect.left) != 1280
-			|| (rect.bottom - rect.top) != 720) {
-			if (m_lpDX && m_lpDX->m_ready)
-				OnUserResizeWindow();
-		}
+		// GetClientRect(hWnd, &rect);
+		if (m_lpDX && m_lpDX->m_ready)
+			OnUserResizeWindow();
 		m_resizing = 0;
 		break;
 

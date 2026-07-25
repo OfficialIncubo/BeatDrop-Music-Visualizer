@@ -58,6 +58,7 @@ typedef enum { UI_REGULAR, UI_MENU, UI_LOAD, UI_LOAD_DEL, UI_LOAD_RENAME, UI_SAV
 typedef struct { float rad; float ang; float a; float c;  } td_vertinfo; // blending: mix = max(0,min(1,a*t + c));
 typedef char* CHARPTR;
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+class MediaTexture;
 
 #define MY_FFT_SAMPLES 512     // for old [pre-vms] milkdrop sound analysis
 #define MY_FFT_WINDOW MY_FFT_SAMPLES*2
@@ -171,16 +172,17 @@ typedef struct
 }
 td_supertext;
 
-typedef struct
+struct TexInfo
 {
-    wchar_t        texname[256];   // ~filename, but without path or extension!
-    LPDIRECT3DBASETEXTURE9 texptr;
-    int                w,h,d;
+    wchar_t        texname[256] = {};   // ~filename, but without path or extension!
+    LPDIRECT3DBASETEXTURE9 texptr = nullptr;
+    MediaTexture*      pMedia = nullptr;
+    int                w = 0,h = 0,d = 0;
     //D3DXHANDLE         texsize_param;
-    bool               bEvictable;
-    int                 nAge;   // only valid if bEvictable is true
-    int                 nSizeInBytes;    // only valid if bEvictable is true
-} TexInfo;
+    bool               bEvictable = false;
+    int                 nAge = 0;   // only valid if bEvictable is true
+    int                 nSizeInBytes = 0;    // only valid if bEvictable is true
+};
 
 typedef struct
 {
@@ -232,6 +234,7 @@ public:
     void Clear();
     void CacheParams(LPD3DXCONSTANTTABLE pCT, bool bHardErrors);
     void OnTextureEvict(LPDIRECT3DBASETEXTURE9 texptr);
+    void OnTextureReplace(LPDIRECT3DBASETEXTURE9 oldTexPtr, LPDIRECT3DBASETEXTURE9 newTexPtr);
     CShaderParams();
     ~CShaderParams();
 };
@@ -322,6 +325,10 @@ public:
 	wchar_t	m_szSavedSongTitle[512]; // for saving song tile with Spout on or off
 	// =========================================================
 
+	IDirect3DPixelShader9* m_pSpriteColorKeyPS = nullptr;
+	bool m_bSpriteColorKeyPSFailed = false; // don't retry compiling every frame after a failure
+	IDirect3DPixelShader9* EnsureSpriteColorKeyPS();
+	void ReleaseSpriteColorKeyPS();
 	
 	/// CONFIG PANEL SETTINGS THAT WE'VE ADDED (TAB #2)
         bool		m_bFirstRun;
@@ -458,6 +465,7 @@ public:
         bool RecompileVShader(const char* szShadersText, VShaderInfo *si, int shaderType, bool bHardErrors, bool bRecompileOnly);
         bool RecompilePShader(const char* szShadersText, PShaderInfo *si, int shaderType, bool bHardErrors, int PSVersion, bool bRecompileOnly);
         bool EvictSomeTexture();
+        void UpdateLiveTextures();
         typedef std::vector<TexInfo> TexInfoList;
         TexInfoList     m_textures;
         bool m_bNeedRescanTexturesDir;
