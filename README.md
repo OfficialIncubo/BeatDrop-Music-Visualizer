@@ -61,7 +61,7 @@ List of available apps here: https://spout.zeal.co
 ![BeatDropSpoutDemo](https://github.com/user-attachments/assets/5abf19b8-d064-4a4f-b756-d1936fdc88dc) ![BeatDropSpoutResolumeArenaDemo](https://github.com/user-attachments/assets/63ef3d28-4244-40d7-88a4-848cd3751cf3)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-## GIF, Video and Spout Input support for Sprites and Textures
+## GIF, VIDEO AND SPOUT INPUT SUPPORT FOR SPRITE AND TEXTURES
 
 ### GIF and Video sprites
 
