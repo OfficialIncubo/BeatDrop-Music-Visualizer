@@ -1,0 +1,195 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 12/03/2026 at 11:49:31.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=1.000
+FFTAttack=1.000
+FFTDecay=0.250
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`float3 hsv2rgb(float3 c) {
+warp_2=`    float4 K = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+warp_3=`    float3 p = abs(frac(c.xxx + K.xyz) * 6.0 - K.www);
+warp_4=`    return c.z * lerp(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+warp_5=`}
+warp_6=`
+warp_7=`shader_body {
+warp_8=`    float t = time;
+warp_9=`    float2 aspect_texsize = float2(1, texsize.y/texsize.x);
+warp_10=`    float2 c_uv = (uv_orig - 0.5) * aspect_texsize;
+warp_11=`    float r = length(c_uv);
+warp_12=`    float a = atan2(c_uv.y, c_uv.x);
+warp_13=`    
+warp_14=`    // Audio Reactivity
+warp_15=`    float bassfft = get_fft(0.0025);
+warp_16=`    float pump = bassfft * 0.05; // How far the speaker pushes out
+warp_17=`    
+warp_18=`    // --- 1. BACKGROUND SOUND WAVES ---
+warp_19=`    float ripple = sin(r * 30.0 - t * 8.0) * 0.5 + 0.5;
+warp_20=`    float3 bg_col = hsv2rgb(float3(t * 0.1, 0.8, 0.5)) * ripple * exp(-r * 4.0) * bassfft;
+warp_21=`
+warp_22=`    // --- 2. 3D SUBWOOFER GENERATOR ---
+warp_23=`    // Define speaker radii
+warp_24=`    float frame_r = 0.20;
+warp_25=`    float surround_r = 0.20 + pump;
+warp_26=`    float cone_r = 0.15 + pump * .5;
+warp_27=`    float cap_r = 0.05 + pump * 1.15; // Dust cap moves the most
+warp_28=`
+warp_29=`    // Anti-aliased circle masks
+warp_30=`    float draw_frame = smoothstep(frame_r + 0.01, frame_r, r);
+warp_31=`    float draw_surround = smoothstep(surround_r + 0.01, surround_r, r);
+warp_32=`    float draw_cone = smoothstep(cone_r + 0.01, cone_r, r);
+warp_33=`    float draw_cap = smoothstep(cap_r + 0.01, cap_r, r);
+warp_34=`
+warp_35=`    // Shading the speaker to look metallic and 3D
+warp_36=`    float3 f_col = float3(0.05, 0.05, 0.05); // Dark outer frame
+warp_37=`    
+warp_38=`    // Rubber surround (rounded highlight)
+warp_39=`    float s_shade = sin((r - cone_r) / (surround_r - cone_r) * 3.14) * 0.4 + 0.05;
+warp_40=`    float3 s_col = float3(s_shade, s_shade, s_shade);
+warp_41=`    
+warp_42=`    // Main cone (angled depth)
+warp_43=`    float c_shade = (r / cone_r) * 0.3 + 0.05; 
+warp_44=`    // Add a light reflection to the cone
+warp_45=`    c_shade += smoothstep(0.9, 1.0, sin(a + t)) * 0.1;
+warp_46=`    float3 c_col = float3(c_shade, c_shade, c_shade);
+warp_47=`    
+warp_48=`    // Center dust cap (domed)
+warp_49=`    float cap_shade = 1.0 - (r / cap_r);
+warp_50=`    float3 cap_col = float3(cap_shade * 0.3, cap_shade * 0.3, cap_shade * 0.3) + 0.1;
+warp_51=`
+warp_52=`    // Layer the speaker components
+warp_53=`    float3 speaker = lerp(float3(0,0,0), f_col, draw_frame);
+warp_54=`    speaker = lerp(speaker, s_col, draw_surround);
+warp_55=`    speaker = lerp(speaker, c_col, draw_cone);
+warp_56=`    speaker = lerp(speaker, cap_col, draw_cap);
+warp_57=`
+warp_58=`    // --- 3. RADIAL 360 EQ BARS ---
+warp_59=`    float num_bars = 64.0;
+warp_60=`    float norm_a = (a + M_PI) / M_PI_2; // Map angle 0 to 1
+warp_61=`    
+warp_62=`    // Mirror left and right channels
+warp_63=`    float eq_idx = abs(norm_a - 0.5) * 2.0; 
+warp_64=`    float bar_idx = floor(eq_idx * num_bars);
+warp_65=`    
+warp_66=`    // Sample FFT, leaning heavily on the mid-lows for visual impact
+warp_67=`    float fft_val = get_fft(bar_idx / num_bars * 0.5 + 0.02);
+warp_68=`    float bar_inner = 0.21;
+warp_69=`    float bar_h = bar_inner + pow(fft_val, 1.5) * 0.5; // Exponential scale for punchy bars
+warp_70=`    
+warp_71=`    // Draw discrete bars with gaps
+warp_72=`    float is_bar_angle = smoothstep(0.2, 0.4, abs(frac(eq_idx * num_bars) - 0.5));
+warp_73=`    float is_bar_height = smoothstep(bar_h, bar_h - 0.01, r) * smoothstep(bar_inner-.01, bar_inner, r);
+warp_74=`    float bar_mask = is_bar_angle * is_bar_height;
+warp_75=`    
+warp_76=`    // Dynamic color gradient for bars (Blue/Purple -> Red/Orange on peaks)
+warp_77=`    float hue = eq_idx * 0.5 - t * 0.2 + fft_val * 0.3;
+warp_78=`    float3 bar_color = hsv2rgb(float3(hue, 0.9, 1.0));
+warp_79=`    
+warp_80=`    // Final composite (Background + Radial EQ + 3D Speaker Overlay)
+warp_81=`    float3 final_col = bg_col + (bar_color * bar_mask) * 1.5;
+warp_82=`    final_col = lerp(final_col, speaker, draw_frame);
+warp_83=`    
+warp_84=`    ret = final_col;
+warp_85=`}
+comp_1=`shader_body {
+comp_2=`    uv = 1.0 - uv; // MilkDrop3 Orientation Fix
+comp_3=`    
+comp_4=`    // --- PHYSICAL SCREEN SHAKE ---
+comp_5=`    // Target exact 50Hz kick drum frequency
+comp_6=`    float kick = get_fft_hz(50.0);
+comp_7=`    
+comp_8=`    // Generate erratic offsets on beat
+comp_9=`    float shake_x = (sin(time * 143.0) * 0.03) * kick;
+comp_10=`    float shake_y = (cos(time * 117.0) * 0.03) * kick;
+comp_11=`    float2 shaken_uv = uv + float2(shake_x, shake_y);
+comp_12=`    
+comp_13=`    // --- CHROMATIC ABERRATION SPLIT ---
+comp_14=`    // When the screen shakes, RGB channels violently separate
+comp_15=`    float shift = kick * 0.015;
+comp_16=`    
+comp_17=`    float3 col;
+comp_18=`    col.r = tex2D(sampler_main, shaken_uv + float2(shift, shift)).r;
+comp_19=`    col.g = tex2D(sampler_main, shaken_uv).g;
+comp_20=`    col.b = tex2D(sampler_main, shaken_uv - float2(shift, shift)).b;
+comp_21=`    
+comp_22=`    // Cinematic Vignette to focus the eye on the subwoofer
+comp_23=`    float d = length(uv - 0.5);
+comp_24=`    col *= smoothstep(0.8, 0.3, d);
+comp_25=`    
+comp_26=`    // Contrast punch
+comp_27=`    ret = pow(col, float3(0.8, 0.8, 0.8)) * 1.3;
+comp_28=`}

@@ -1,0 +1,183 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=2
+PSVERSION_COMP=3
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`sampler sampler_rand00;
+comp_2=`sampler sampler_rand01;
+comp_3=`sampler sampler_rand02;
+comp_4=`
+comp_5=`shader_body
+comp_6=`{
+comp_7=`    float4 finalColor = float4(0, 0, 0, 1);
+comp_8=`    
+comp_9=`    /* Generate random texture from sampler_rand00 */
+comp_10=`    float2 randomUV = uv + float2(sin(time * 0.5) * 0.1, cos(time * 0.3) * 0.1) +.5;
+comp_11=`    float4 randomTex = tex2D(sampler_rand00, randomUV * 1.5);
+comp_12=`    
+comp_13=`    /* Base random texture with music reaction */
+comp_14=`    float bassBoost = bass_att * 1.5 + 0.5;
+comp_15=`    float midBoost = mid_att * 1.2;
+comp_16=`    float trebBoost = treb_att * 1.0;
+comp_17=`    
+comp_18=`    /* Create pulsing random pattern */
+comp_19=`    float pulse = sin(time * 2.0 + bass * 3.0) * 0.5 + 0.5;
+comp_20=`    float4 basePattern = randomTex * float4(
+comp_21=`        0.3 + pulse * 0.2,
+comp_22=`        0.4 + midBoost * 0.3,
+comp_23=`        0.5 + bassBoost * 0.4,
+comp_24=`        1.0
+comp_25=`    );
+comp_26=`    
+comp_27=`    /* Lightning effect */
+comp_28=`    float lightningIntensity = treb_att * 2.0;
+comp_29=`    if (lightningIntensity > 0.3) {
+comp_30=`        /* Create lightning branches */
+comp_31=`        float lightningX = 0.5 + sin(time * 5.0 + uv.y * 10.0) * 0.3;
+comp_32=`        float lightningDist = distance(uv.x, lightningX);
+comp_33=`        float lightning = exp(-lightningDist * 50.0) * lightningIntensity;
+comp_34=`        
+comp_35=`        /* Add random lightning forks */
+comp_36=`        float2 forkUV = uv * float2(3.0, 1.5) + float2(0, -time*2.5);
+comp_37=`        float4 forkNoise = tex2D(sampler_noise_lq, forkUV);
+comp_38=`        float forks = forkNoise.r * 0.3 * treb_att;
+comp_39=`        
+comp_40=`        /* Combine lightning */
+comp_41=`        lightning += forks;
+comp_42=`        
+comp_43=`        /* Lightning color (cyan/blue with white core) */
+comp_44=`        float4 lightningColor = float4(
+comp_45=`            0.5 + lightning * 2.0,
+comp_46=`            0.7 + lightning * 2.0,
+comp_47=`            1.0 + lightning * 3.0,
+comp_48=`            1.0
+comp_49=`        ) * lightning;
+comp_50=`        
+comp_51=`        /* Safe lightning - clamp intensity */
+comp_52=`        lightningColor = min(lightningColor, float4(2.0, 2.0, 3.0, 1.0));
+comp_53=`        finalColor += lightningColor;
+comp_54=`    }
+comp_55=`    
+comp_56=`    /* Water reflection effect */
+comp_57=`    float2 waterUV = uv;
+comp_58=`    
+comp_59=`    /* Gentle wave distortion */
+comp_60=`    float wave1 = sin(uv.y * 15.0 + time * 1.5 + bass * 2.0) * 0.005 * mid_att;
+comp_61=`    float wave2 = sin(uv.x * 10.0 + time * 2.0 + treb * 1.5) * 0.003 * treb_att;
+comp_62=`    
+comp_63=`    waterUV.x += wave1 + wave2;
+comp_64=`    waterUV.y += sin(uv.x * 12.0 + time) * 0.004 * bass_att;
+comp_65=`    
+comp_66=`    /* Sample water-distorted texture */
+comp_67=`    float4 waterTex = tex2D(sampler_rand02, waterUV);
+comp_68=`    
+comp_69=`    /* Create reflection color (bluish with highlights) */
+comp_70=`    float4 waterColor = float4(
+comp_71=`        waterTex.b * 0.3,
+comp_72=`        waterTex.g * 0.5,
+comp_73=`        waterTex.r * 0.7,
+comp_74=`        waterTex.a * 0.8
+comp_75=`    );
+comp_76=`    
+comp_77=`    /* Add specular highlights */
+comp_78=`    float highlight = sin(uv.x * 30.0 + time * 3.0) * 0.5 + 0.5;
+comp_79=`    highlight *= sin(uv.y * 20.0 + time * 2.0) * 0.3 + 0.7;
+comp_80=`    waterColor += float4(0.2, 0.3, 0.4, 0) * highlight * mid_att * 0.5;
+comp_81=`    
+comp_82=`    /* Combine effects */
+comp_83=`    finalColor += basePattern * 0.6;
+comp_84=`    finalColor += waterColor * 0.4;
+comp_85=`    
+comp_86=`    /* Audio-reactive brightness */
+comp_87=`    float audioBrightness = 0.3 + bass_att * 0.3 + mid_att * 0.2 + treb_att * 0.1;
+comp_88=`    finalColor.rgb *= audioBrightness;
+comp_89=`    
+comp_90=`    /* Add gentle color cycling */
+comp_91=`    float hueShift = sin(time * 0.3) * 0.05;
+comp_92=`    float tempR = finalColor.r;
+comp_93=`    finalColor.r = finalColor.r * (1.0 - hueShift * 0.5) + finalColor.b * hueShift;
+comp_94=`    finalColor.b = finalColor.b * (1.0 - hueShift * 0.5) + tempR * hueShift;
+comp_95=`    
+comp_96=`    /* Safety: Clamp to avoid extreme brightness */
+comp_97=`    finalColor = min(finalColor, float4(2.0, 2.0, 2.0, 1.0));
+comp_98=`    
+comp_99=`    /* Add subtle vignette for focus */
+comp_100=`    float2 centered = uv * 2.0 - 1.0;
+comp_101=`    float vignette = 1.0 - dot(centered, centered) * 0.2;
+comp_102=`    finalColor.rgb *= vignette;
+comp_103=`    
+comp_104=`    ret = finalColor;
+comp_105=`}

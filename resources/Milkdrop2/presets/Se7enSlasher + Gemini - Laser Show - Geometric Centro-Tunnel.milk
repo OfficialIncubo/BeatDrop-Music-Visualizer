@@ -1,0 +1,155 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 29/06/2026 at 22:28:28.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.900
+fDecay=0.970
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.630
+fWaveParam=-1.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=q1=0.0;
+per_frame_init_2=q2=40.0;
+per_frame_init_3=q5=0.0;
+per_frame_init_4=q6=0.0;
+per_frame_init_5=time_delay=0.0;
+per_frame_init_6=rand_laser = rand(80);
+per_frame_init_7=rand_pattern1 = rand(200);
+per_frame_init_8=rand_pattern2 = rand(200);
+per_frame_init_9=temp1 = temp2 = 0;
+per_frame_1=// SKELETON (Values configured for highly active, low-latency beat tracking)
+per_frame_2=time_delay = if(time_delay >= 0.18 && bass > 1.9, 0, time_delay += 1/fps);
+per_frame_3=rand_laser = if(time_delay == 0, rand(80), rand_laser);
+per_frame_4=rand_pattern1 = if(time_delay == 0, rand(200), rand_pattern1);
+per_frame_5=rand_pattern2 = if(time_delay == 0, rand(200), rand_pattern2);
+per_frame_6=
+per_frame_7=// Custom variable mapping
+per_frame_8=q1 = time_delay;
+per_frame_9=q2 = rand_laser;
+per_frame_10=q3 = rand_pattern1 + time;
+per_frame_11=q4 = rand_pattern2 + time;
+per_frame_12=temp1 += 0.009 * (treb + 0.5);
+per_frame_13=q5 = temp1;
+per_frame_14=temp2 = if(time_delay == 0, 1, temp2 * 0.92); // Sharp strobe trigger
+per_frame_15=q6 = temp2
+warp_1=`shader_body {
+warp_2=`
+warp_3=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    // Auto-calculate current monitor aspect ratio to avoid squishing/stretching
+comp_4=`    float aspect = texsize.y * texsize.z;
+comp_5=`    float2 p_centered = uv - 0.5;
+comp_6=`    p_centered.x *= aspect; 
+comp_7=`    
+comp_8=`    float3 lasers = float3(0, 0, 0);
+comp_9=`    float r = length(p_centered);
+comp_10=`    
+comp_11=`    // 1. Geometric Laser Tunnel Array Loop
+comp_12=`    for(int i = 0; i < 8; i++)
+comp_13=`    {
+comp_14=`        // Symmetrical angular distributions with audio clock rotations
+comp_15=`        float angle = (6.28318 / 8.0) * float(i) + q3 * 0.5 + sin(q4 + float(i) * 0.5);
+comp_16=`        float2 dir = float2(cos(angle), sin(angle));
+comp_17=`        
+comp_18=`        // Distance calculation from aspect-corrected absolute center
+comp_19=`        float d = abs(p_centered.y * dir.x - p_centered.x * dir.y);
+comp_20=`        
+comp_21=`        float core = smoothstep(0.003, 0.0, d);
+comp_22=`        float glow = exp(-d * 50.0) * 0.3 + exp(-d * 14.0) * 0.15;
+comp_23=`        
+comp_24=`        // Multi-color rave mapping cycling across color channels
+comp_25=`        float3 beam_color = float3(
+comp_26=`            sin(float(i) + q3) * 0.5 + 0.5,
+comp_27=`            cos(float(i) - q4) * 0.5 + 0.5,
+comp_28=`            sin(q5 + float(i)) * 0.5 + 0.5
+comp_29=`        );
+comp_30=`        
+comp_31=`        lasers += (core + glow) * beam_color;
+comp_32=`    }
+comp_33=`    
+comp_34=`    // 2. Underlying smoke grid occlusion
+comp_35=`    float smoke = sin(p_centered.x * 6.0 + q4) * cos(p_centered.y * 6.0 - q3);
+comp_36=`    lasers *= (0.3 + 0.7 * clamp(smoke * 0.5 + 0.5, 0.0, 1.0));
+comp_37=`    
+comp_38=`    // 3. Central blind flash / Volumetric disco strobe projecting outwards on beat
+comp_39=`    float3 center_strobe = float3(1.0, 0.95, 0.9) * q6 * 0.45 * exp(-r * 2.5);
+comp_40=`    float3 final_rgb = lasers + center_strobe;
+comp_41=`    
+comp_42=`    // 4. Smooth continuous brightness modulation
+comp_43=`    final_rgb *= (0.8 + 0.2 * sin(q5 * 2.0));
+comp_44=`    
+comp_45=`    ret = final_rgb;
+comp_46=`}

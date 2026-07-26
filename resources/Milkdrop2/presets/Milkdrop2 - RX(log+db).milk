@@ -1,0 +1,116 @@
+MILKDROP_PRESET_VERSION=201
+nWaveMode=4
+fWarpScale=1.0
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=-0.01
+warp=0.00000
+sx=1.00000
+sy=1.00000
+# ============================================================
+# hide default wave
+# ============================================================
+fWaveAlpha=0 
+wave_r=1.000 
+wave_g=1.000
+wave_b=1.000
+wave_x=0.0
+wave_y=-5
+
+ob_size=0.0
+ib_size=0.0
+mv_a=0.0
+
+per_frame_init_1=n = 0;
+per_frame_init_2=loop(256, gmegabuf(n)=0; n+=1;);
+
+# ============================================================
+# wave_0: pre-calculate
+# ============================================================
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_bSpectrum=1
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.00000
+wavecode_0_r=0.000
+wavecode_0_g=0.000
+wavecode_0_b=0.000
+wavecode_0_a=0.000
+wave_0_per_frame1=j = 0;
+wave_0_per_frame2=loop(128, gmegabuf(j)=0; j+=1;);
+wave_0_per_point1=freq = sample;
+# k: log factor, 2 is linear
+wave_0_per_point2=k = 40; lpos = log(1 + freq*k) / log(1 + k);
+wave_0_per_point3=col = int(lpos*128);
+wave_0_per_point4=col = max(0, min(127, col));
+wave_0_per_point5=amp = value1 + value2;
+wave_0_per_point6=gmegabuf(col) = max(gmegabuf(col), amp);
+wave_0_per_point7=x = 0;
+wave_0_per_point8=y = -5;
+
+# ============================================================
+# wave_1: drawing, 4 points per pillar: base(transparent) -> middle -> top -> top(transparent)
+# height is dB 
+# ============================================================
+wavecode_1_enabled=1
+wavecode_1_samples=512
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=1
+wavecode_1_bAdditive=0
+wavecode_1_scaling=1.00000
+wavecode_1_smoothing=0.01000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=1.000
+wave_1_per_frame1=j = 1;
+wave_1_per_frame2=loop(127, gmegabuf(j) = if(below(gmegabuf(j),0.0001), gmegabuf(j-1), gmegabuf(j)); j+=1;);
+# ============================================================
+# sensitivity adjustment
+# ============================================================
+wave_1_per_point1=sensLow = 0.3; sensMid = 0.3; sensHigh = 0.3;
+# ============================================================
+# visual clipping, dbFloor: pillar height at 0%, dbTop: pillar height at 100%
+# ============================================================
+wave_1_per_point2=dbFloor = -55; dbTop = 0; Hmax = 0.10; ybase = 0.02;
+wave_1_per_point3=bandLM = 43; bandMH = 86;
+wave_1_per_point4=idx = min(511, int(sample*512));
+wave_1_per_point5=bar = int(idx*0.25);
+wave_1_per_point6=ph  = idx - bar*4;
+wave_1_per_point7=x = (bar + 0.5)/128;
+wave_1_per_point8=amp = gmegabuf(bar);
+wave_1_per_point9=sens = if(below(bar,bandLM), sensLow, if(below(bar,bandMH), sensMid, sensHigh));
+# normalize
+wave_1_per_point10=a2 = amp*sens; db = 20*log10(a2 + 0.000001); lev = (db - dbFloor)/(dbTop - dbFloor); lev = max(0, min(1, lev));
+wave_1_per_point11=ytop = ybase + lev*Hmax;
+wave_1_per_point12=midY = min(ytop, ybase + 0.5*Hmax);
+wave_1_per_point13=y = if(equal(ph,0), ybase, if(equal(ph,1), midY, if(equal(ph,2), ytop, ytop+0.001)));
+wave_1_per_point14=t = (y - ybase)/Hmax; t = max(0, min(1, t));
+wave_1_per_point15=lr=0.008; lg=0.140; lb=0.262;
+wave_1_per_point16=mr=0.855; mg=0.430; mb=0.141;
+wave_1_per_point17=hr=0.980; hg=1.000; hb=0.574;
+wave_1_per_point18=f = if(below(t,0.5), t*2, (t-0.5)*2);
+wave_1_per_point19=tr = if(below(t,0.5), lr+(mr-lr)*f, mr+(hr-mr)*f);
+wave_1_per_point20=tg = if(below(t,0.5), lg+(mg-lg)*f, mg+(hg-mg)*f);
+wave_1_per_point21=tb = if(below(t,0.5), lb+(mb-lb)*f, mb+(hb-mb)*f);
+wave_1_per_point22=r = tr; g = tg; b = tb;
+wave_1_per_point23=a = if(equal(ph,0) + equal(ph,3), 0, 1);
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  float3 c = tex2D(sampler_pc_main, uv).xyz;
+warp_4=`  float m = max(c.r, max(c.g, c.b));
+warp_5=`  float k = 0.0005;  // Decay speed 
+warp_6=`  float f = (m > 1e-4) ? max(m - k, 0.0)/m : 0.0;
+warp_7=`  ret = c * f;
+warp_8=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`ret = tex2D(sampler_main, uv).xyz;
+comp_4=`}

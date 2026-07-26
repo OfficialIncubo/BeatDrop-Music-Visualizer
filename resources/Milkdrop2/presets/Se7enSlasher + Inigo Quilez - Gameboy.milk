@@ -1,0 +1,180 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 18/05/2026 at 15:44:51.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=2
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.235
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`/*
+warp_2=`Gameboy by Inigo Quilez
+warp_3=`Converted from ShaderToy to MilkDrop by me using Gemini
+warp_4=`Original ShaderToy shader link: https://www.shadertoy.com/view/XdlGzr
+warp_5=`*/
+warp_6=`
+warp_7=`// Define the text function before the shader_body.
+warp_8=`// Fixed: Removed all asymmetric early returns to satisfy the compiler.
+warp_9=`float text( float2 p, float timeX ) 
+warp_10=`{
+warp_11=`    // trick for encoding fonts from CPU
+warp_12=`    p.x += 0.2*floor(10.0*(0.5+0.5*sin(timeX)))/10.0;
+warp_13=`    
+warp_14=`    // Offset adjusted to center the new 32-bit width "MilkDrop" text
+warp_15=`    float x = floor( p.x*50.0 ) - 14.0; 
+warp_16=`    float y = floor( p.y*35.0 ) - 27.5;
+warp_17=`
+warp_18=`    float result = 0.0;
+warp_19=`
+warp_20=`    // Structure wrapped into a single safe execution path
+warp_21=`    if (y >= 0.0 && y <= 5.0 && x >= 0.0 && x <= 31.0)
+warp_22=`    {
+warp_23=`        float v = 0.0;
+warp_24=`        
+warp_25=`        if( x>15.5 ) { // x from 16 to 31 (Right half: 'D R O P')
+warp_26=`            v = 51944.0;
+warp_27=`            if(y>0.5) v = 43688.0;
+warp_28=`            if(y>1.5) v = 44204.0;
+warp_29=`            if(y>2.5) v = 43690.0;
+warp_30=`            if(y>3.5) v = 52460.0; 
+warp_31=`        }
+warp_32=`        else {         // x from 0 to 15 (Left half: 'M I L K')
+warp_33=`            v = 35562.0;
+warp_34=`            if(y>0.5) v = 35468.0;
+warp_35=`            if(y>1.5) v = 43656.0;
+warp_36=`            if(y>2.5) v = 55948.0;
+warp_37=`            if(y>3.5) v = 35466.0; 
+warp_38=`        }
+warp_39=`        
+warp_40=`        result = floor( fmod(v/exp2(15.0-fmod( x, 16.0 )), 2.0) );
+warp_41=`    }
+warp_42=`    
+warp_43=`    return result;
+warp_44=`}
+warp_45=`
+warp_46=`shader_body
+warp_47=`{
+warp_48=`    uv.y = 1-uv.y; // Y flip
+warp_49=`    float2 uvo = uv;
+warp_50=`    
+warp_51=`    // iResolution replaced with MilkDrop's internal texsize coordinate space
+warp_52=`    float2 res = floor( 60.0*float2(1.0, texsize.y/texsize.x) );
+warp_53=`    
+warp_54=`    float3 col = float3(131.0, 145.0, 0.0);
+warp_55=`    if( uv.x>0.03 && uv.x<0.97 )
+warp_56=`    {
+warp_57=`        float2 local_uv = uv;
+warp_58=`        local_uv.x = clamp( (local_uv.x-0.03)/0.94, 0.0, 1.0 );
+warp_59=`        
+warp_60=`        float2 iuv = floor( local_uv * res )/res;
+warp_61=`    
+warp_62=`        float f = 1.0-abs(-1.0+2.0*frac( local_uv.x * res.x ));
+warp_63=`        float g = 1.0-abs(-1.0+2.0*frac( local_uv.y * res.y ));
+warp_64=`    
+warp_65=`        // Replaced iChannel0 texture lookup with MilkDrop3 get_fft() function
+warp_66=`        float fft = get_fft(iuv.x); 
+warp_67=`        fft = 0.8*fft*fft;
+warp_68=`        
+warp_69=`        if( iuv.y<fft )
+warp_70=`        {
+warp_71=`            if( f>0.1 && g>0.1 ) col = float3(40.0,44.0,4.0);
+warp_72=`            if( f>0.5 && g>0.5 ) col = float3(74.0,82.0,4.0);
+warp_73=`        }
+warp_74=`        
+warp_75=`        // Replaced iChannel0 texture lookup with MilkDrop3 get_wave() function
+warp_76=`        float wave = get_wave(iuv.x)*.5 + float2(.5, 0);
+warp_77=`        if( abs(iuv.y-wave)<=(1.0/res.y) )
+warp_78=`        {
+warp_79=`            col = float3(185.0, 200.0, 90.0);
+warp_80=`        }
+warp_81=`
+warp_82=`        // iTime mapped to MilkDrop's built-in time variable
+warp_83=`        float t = text( uvo, time );
+warp_84=`        col = lerp( col, float3(40.0,44.0,4.0), t );
+warp_85=`    }
+warp_86=`    else
+warp_87=`    {
+warp_88=`        float g = 1.0-abs(-1.0+2.0*frac( uv.y * res.y*1.5 ));
+warp_89=`        float f = 1.0-abs(-1.0+2.0*frac( uv.x * res.x + 0.5*floor(uv.y*res.y*1.5)));
+warp_90=`
+warp_91=`        if( g<0.15 || f<0.15 ) col = float3(40.0,44.0,4.0);
+warp_92=`    }
+warp_93=`
+warp_94=`    // Output mapped to MilkDrop's ret float3 structure
+warp_95=`    ret = col/255.0;
+warp_96=`}
+comp_1=`shader_body
+comp_2=`{ ret = GetPixel(uv); }

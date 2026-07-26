@@ -1,0 +1,156 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=2
+[preset00]
+fRating=5.000
+fGammaAdj=1.210
+fDecay=0.960
+fVideoEchoZoom=0.997
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=1
+nWaveMode=3
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=1.000
+fWaveScale=0.610
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=1.000
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=0.93101
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00001
+dy=0.00001
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=0.400
+wave_g=0.400
+wave_b=0.400
+wave_x=0.500
+wave_y=0.500
+ob_size=0.001
+ob_r=1.000
+ob_g=1.000
+ob_b=1.000
+ob_a=0.500
+ib_size=0.001
+ib_r=0.500
+ib_g=1.000
+ib_b=1.000
+ib_a=0.500
+nMotionVectorsX=8.320
+nMotionVectorsY=2.400
+mv_dx=0.000
+mv_dy=0.000
+mv_l=2.000
+mv_r=0.000
+mv_g=0.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=rot = rot + 0.1*(0.4*sin(bass) - 0.4*sin(treb) / 0.4*sin(mid))*sin(5*time);
+per_frame_2=wave_x = wave_x + 0.1*sin(time) - 0.157*sin(1.73*time);
+per_frame_3=wave_y = wave_y - 0.126*sin(time) + 0.15*cos(1.1*time);
+per_pixel_1=rot = rot + 0.05*min(abs(1-rad*cos(bass))*tan(bass),-(abs(1-rad*sin(treb))*sin(time)));
+per_pixel_2=dx = dx + (0.025*sin(bass))*0.8*abs(5*bass-5*treb);
+per_pixel_3=dy = dy + (0.015*cos(treb))*0.8*abs(5*treb - 5*bass);
+per_pixel_4=cy = cy + (0.8*rad/time)*bass;
+per_pixel_5=zoom = zoom - 0.05*log(1.5-rad);
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    float2 d = texsize.zw * 8;
+warp_4=`    float3 dx = ( GetBlur1(uv + float2(1,0)*d) - GetBlur1(uv-float2(1,0)*d) );
+warp_5=`    float3 dy = ( GetBlur1(uv + float2(0,1)*d) - GetBlur1(uv-float2(0,1)*d) );
+warp_6=`
+warp_7=`    float2 dither_uv = uv_orig*texsize.xy*texsize_noise_lq.zw * 1.2 + rand_frame.xy;
+warp_8=`
+warp_9=`    float2 uv_x= lerp(uv_orig,uv,0.1)  + float2(dx.x,dy.x)*texsize.zw  *2;
+warp_10=`    float2 uv_y= lerp(uv_orig,uv,0.3)  + float2(dx.y,dy.y)*texsize.zw  *2;
+warp_11=`    float2 uv_z= lerp(uv_orig,uv,0.1)  + float2(dx.z,dy.z)*texsize.zw  *2;
+warp_12=`    ret.x = GetPixel(uv_x).x - (GetPixel(uv_x) - GetBlur3(uv_x)).x  * 0.01;
+warp_13=`    ret.y = GetPixel(uv_y).y - (GetPixel(uv_y) - GetBlur3(uv_y)).y  * 0.01;
+warp_14=`    ret.z = GetPixel(uv_z).z - (GetPixel(uv_z) - GetBlur3(uv_z)).z  * 0.01;
+warp_15=`
+warp_16=`float4 noise9 = tex3D(sampler_noisevol_hq, 
+warp_17=`                      ((float3(uv_y.y,uv_z.x,uv_x.y)*q27
+warp_18=`                       )*texsize.xyy*texsize_noisevol_hq.zww
+warp_19=`                      ).xyz*
+warp_20=`                      float3(1,1,0)*0.05 + 
+warp_21=`                      time*float3(0,0,1)*q29
+warp_22=`                     );
+warp_23=`if(ret.x> q21*q13         && ret.x<= q24*q11        )ret.y -= (noise9).x*.5; 
+warp_24=`if(ret.y> q22*q11         && ret.y<= q25*q12        )ret.z -= (noise9).y*.5; 
+warp_25=`if(ret.z> q23*q12         && ret.z<= q26*q13        )ret.x -= (noise9).z*.5; 
+warp_26=`
+warp_27=`    ret += - 0.004  +(tex2D(sampler_noise_lq, dither_uv).xyz-0.5) *0.1;
+warp_28=`
+warp_29=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float rad_lq = rad * length(texsize.xy)*0.5;
+comp_4=`    float ang_lq = ang;
+comp_5=`    float2 uv_temp1 = (uv - 0.5) * texsize.xy;
+comp_6=`    float rad_hq = length(uv_temp1);
+comp_7=`    float ang_hq = atan2(-uv_temp1.y, uv_temp1.x);
+comp_8=`
+comp_9=`    float2 uv2 = (uv - 0.5);
+comp_10=`    float rad2 = rad_lq*0.8;
+comp_11=`    float ang2 = ang_lq * M_INV_PI_2;
+comp_12=`
+comp_13=`        // ROTATION OVER TIME
+comp_14=`        #if 1
+comp_15=`          ang2 += time*0.025;   //rotate over time
+comp_16=`        #endif
+comp_17=`
+comp_18=`        // FIN TYPE
+comp_19=`        float fins = 3 + floor(rand_preset.z*5.95);
+comp_20=`        #if 1     // SHARP FINS
+comp_21=`          ang2 = frac(ang2*fins)/fins;
+comp_22=`              // ENABLE THIS TO MAKE THE FINS ALTERNATE: (seamless!)
+comp_23=`              ang2 = abs(ang2 - 0.5/fins);
+comp_24=`        #else     // COSINE FINS - a bit slow
+comp_25=`          ang2 = cos(ang2*M_PI_2*fins) * 0.023;
+comp_26=`        #endif
+comp_27=`
+comp_28=`        // RADIAL KALEIDOSCOPING?
+comp_29=`        #if 0
+comp_30=`          rad2 *= g_fTexSize.z;
+comp_31=`            // choose one:
+comp_32=`            //rad2 = lerp(rad2, frac(rad2*3)/3.0, 0.5);
+comp_33=`            rad2 = cos(rad2*5);
+comp_34=`            //rad2 = sqrt(rad2)*0.5;
+comp_35=`            //rad2 += abs(frac(rad2*7)-0.5)/7.0 * 1.15;  // stepifier
+comp_36=`            //rad2 += cos(rad2*61)*0.02;
+comp_37=`          rad2 *= g_fTexSize.x;
+comp_38=`        #endif
+comp_39=`
+comp_40=`    ang2 *= M_PI_2;
+comp_41=`    uv2 = 0.5 + rad2*float2(cos(ang2),sin(ang2))*texsize.zw;
+comp_42=`
+comp_43=`    ret = tex2D(sampler_main, uv2).xyz;
+comp_44=`    ret *= 1.333; // a little bit of overbright
+comp_45=`}

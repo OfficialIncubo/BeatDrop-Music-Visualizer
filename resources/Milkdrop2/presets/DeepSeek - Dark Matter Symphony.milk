@@ -1,0 +1,427 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 28/06/2026 at 20:05:40.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=smooth_reaction = int(rand(2))
+per_frame_1=q1 = smooth_reaction
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`sampler sampler_rand00;
+comp_2=`sampler sampler_rand01;
+comp_3=`sampler sampler_rand02;
+comp_4=`sampler sampler_rand03;
+comp_5=`
+comp_6=`// Cellular noise for organic patterns
+comp_7=`float2 random2(float2 p) {
+comp_8=`    return frac(sin(float2(dot(p, float2(127.1, 311.7)),
+comp_9=`                         dot(p, float2(269.5, 183.3)))) * 43758.5453);
+comp_10=`}
+comp_11=`
+comp_12=`float cellularNoise(float2 st, float timea) {
+comp_13=`    st *= 3.0;
+comp_14=`    float2 i_st = floor(st);
+comp_15=`    float2 f_st = frac(st);
+comp_16=`    
+comp_17=`    float m_dist = 1.0;
+comp_18=`    
+comp_19=`    for (int y = -1; y <= 1; y++) {
+comp_20=`        for (int x = -1; x <= 1; x++) {
+comp_21=`            float2 neighbor = float2(float(x), float(y));
+comp_22=`            float2 point = random2(i_st + neighbor);
+comp_23=`            
+comp_24=`            // Animate points with music
+comp_25=`            point = 0.5 + 0.5 * sin(timea * 0.5 + 6.2831 * point);
+comp_26=`            point += float2(bass * 0.2, mid * 0.15);
+comp_27=`            
+comp_28=`            float2 diff = neighbor + point - f_st;
+comp_29=`            float dist = length(diff);
+comp_30=`            m_dist = min(m_dist, dist);
+comp_31=`        }
+comp_32=`    }
+comp_33=`    
+comp_34=`    return m_dist;
+comp_35=`}
+comp_36=`
+comp_37=`// Ink/fluid simulation
+comp_38=`float3 inkFlow(float2 uva, float timeb) {
+comp_39=`    float2 p = uva * 2.0 - 1.0;
+comp_40=`    
+comp_41=`    // Music-driven flow field
+comp_42=`    float flowStrength = bass * 0.8 + mid * 0.4 + treb * 0.2;
+comp_43=`    flowStrength += (bass_att + mid_att + treb_att) * 0.3;
+comp_44=`    
+comp_45=`    // Create swirling motion
+comp_46=`    float angle = atan2(p.y, p.x);
+comp_47=`    float radius = length(p);
+comp_48=`    
+comp_49=`    // Bass creates large swirls
+comp_50=`    float swirl1 = sin(angle * 3.0 + timeb * 0.7 + radius * 4.0) * bass * 0.6;
+comp_51=`    // Mid creates medium patterns
+comp_52=`    float swirl2 = sin(angle * 5.0 + timeb * 1.2 + radius * 8.0) * mid * 0.4;
+comp_53=`    // Treble creates fine details
+comp_54=`    float swirl3 = sin(angle * 8.0 + timeb * 1.8 + radius * 12.0) * treb * 0.3;
+comp_55=`    
+comp_56=`    float totalSwirl = swirl1 + swirl2 + swirl3;
+comp_57=`    
+comp_58=`    // Distort UVs with flow
+comp_59=`    float2 distortedUV = uva;
+comp_60=`    distortedUV.x += totalSwirl * 0.1 * sin(timeb * 0.3);
+comp_61=`    distortedUV.y += totalSwirl * 0.1 * cos(timeb * 0.4);
+comp_62=`    
+comp_63=`    // Sample random textures for ink patterns
+comp_64=`    float3 rand00 = tex2D(sampler_rand00, distortedUV * 1.5).rgb;
+comp_65=`    float3 rand01 = tex2D(sampler_rand01, distortedUV * 2.0).rgb;
+comp_66=`    float3 rand02 = tex2D(sampler_rand02, distortedUV * 3.0).rgb;
+comp_67=`    
+comp_68=`    // Create ink layers
+comp_69=`    float ink1 = cellularNoise(distortedUV * 2.0, timeb * 0.5);
+comp_70=`    float ink2 = cellularNoise(distortedUV * 4.0 + 0.5, timeb * 0.8);
+comp_71=`    float ink3 = cellularNoise(distortedUV * 8.0 + 0.8, timeb * 1.2);
+comp_72=`    
+comp_73=`    // Music modulates ink density
+comp_74=`    ink1 *= 0.6 + bass * 0.4;
+comp_75=`    ink2 *= 0.5 + mid * 0.3;
+comp_76=`    ink3 *= 0.4 + treb * 0.2;
+comp_77=`    
+comp_78=`    // Combine ink layers
+comp_79=`    float inkPattern = ink1 * 0.5 + ink2 * 0.3 + ink3 * 0.2;
+comp_80=`    inkPattern = 1.0 - inkPattern;
+comp_81=`    
+comp_82=`    // Dark base colors (deep blues/purples)
+comp_83=`    float3 darkBase = float3(0.05, 0.02, 0.08);
+comp_84=`    float3 inkColor1 = float3(0.1, 0.05, 0.2); // Deep purple
+comp_85=`    float3 inkColor2 = float3(0.0, 0.1, 0.25); // Navy blue
+comp_86=`    float3 inkColor3 = float3(0.15, 0.0, 0.3); // Royal purple
+comp_87=`    
+comp_88=`    // Mix colors based on music
+comp_89=`    float colorMix = sin(timeb * 0.2 + bass * 3.0) * 0.3 + 0.5;
+comp_90=`    float3 inkColor = lerp(lerp(inkColor1, inkColor2, colorMix), 
+comp_91=`                          inkColor3, 
+comp_92=`                          sin(timeb * 0.3 + mid * 2.0) * 0.3 + 0.5);
+comp_93=`    
+comp_94=`    // Add subtle highlights from treble
+comp_95=`    float highlights = pow(rand02.r * rand02.g, 2.0);
+comp_96=`    highlights *= smoothstep(0.3, 0.7, highlights);
+comp_97=`    highlights *= treb * 1.5 + treb_att;
+comp_98=`    
+comp_99=`    // Build final ink color
+comp_100=`    float3 finalInk = darkBase;
+comp_101=`    finalInk = lerp(finalInk, inkColor, inkPattern * 0.8);
+comp_102=`    finalInk += highlights * float3(0.3, 0.4, 0.6) * 0.1;
+comp_103=`    
+comp_104=`    return finalInk;
+comp_105=`}
+comp_106=`
+comp_107=`// Electric arcs/circuit patterns
+comp_108=`float3 electricArcs(float2 uvb, float timec) {
+comp_109=`    uvb = uvb * 2.0 - 1.0;
+comp_110=`    
+comp_111=`    // Music intensity for arcs
+comp_112=`    float arcIntensity = bass * 1.2 + mid * 0.8 + treb * 0.5;
+comp_113=`    arcIntensity += (bass_att + mid_att + treb_att) * 0.4;
+comp_114=`    
+comp_115=`    // Create branching patterns
+comp_116=`    float arcPattern = 0.0;
+comp_117=`    float2 st = uvb * 3.0;
+comp_118=`    
+comp_119=`    // Multiple arc layers
+comp_120=`    for (int i = 0; i < 4; i++) {
+comp_121=`        float layer = float(i);
+comp_122=`        float2 offset = float2(sin(timec * 0.3 + layer * 1.2),
+comp_123=`                             cos(timec * 0.4 + layer * 1.5));
+comp_124=`        offset += float2(bass * 0.5, mid * 0.3);
+comp_125=`        
+comp_126=`        float2 p = st + offset;
+comp_127=`        
+comp_128=`        // Create lightning-like patterns
+comp_129=`        float arc = sin(p.x * 20.0 + timec * 3.0 + sin(p.y * 15.0 + timec * 2.0));
+comp_130=`        arc += sin(p.y * 25.0 + timec * 2.5 + cos(p.x * 18.0 + timec * 1.8));
+comp_131=`        
+comp_132=`        // Make it jagged
+comp_133=`        arc = abs(frac(arc * 5.0) - 0.5) * 2.0;
+comp_134=`        
+comp_135=`        // Fade with distance from center
+comp_136=`        float distFade = 1.0 - smoothstep(0.0, 2.0, length(p));
+comp_137=`        arc *= distFade * (0.5 - 0.1 * layer);
+comp_138=`        
+comp_139=`        arcPattern += arc;
+comp_140=`    }
+comp_141=`    
+comp_142=`    // Sharpen the arcs
+comp_143=`    arcPattern = smoothstep(0.3, 0.7, arcPattern);
+comp_144=`    
+comp_145=`    // Electric colors (blue/cyan with purple accents)
+comp_146=`    float3 arcColor = float3(0.0, 0.6, 1.0); // Electric blue
+comp_147=`    float3 arcGlow = float3(0.4, 0.2, 1.0);  // Purple glow
+comp_148=`    
+comp_149=`    // Pulse with music
+comp_150=`    float pulse = sin(timec * 4.0 + bass * 10.0) * 0.3 + 0.7;
+comp_151=`    pulse *= 0.5 + arcIntensity * 0.5;
+comp_152=`    
+comp_153=`    // Create the arc effect
+comp_154=`    float3 arcs = arcColor * arcPattern * pulse * 0.8;
+comp_155=`    arcs += arcGlow * pow(arcPattern, 2.0) * pulse * 0.4;
+comp_156=`    
+comp_157=`    // Add occasional bright flashes on bass hits
+comp_158=`    float flash = step(0.8, bass) * bass_att * 2.0;
+comp_159=`    arcs += float3(0.2, 0.5, 1.0) * flash * pow(arcPattern, 3.0);
+comp_160=`    
+comp_161=`    return arcs;
+comp_162=`}
+comp_163=`
+comp_164=`// Fog/mist layer
+comp_165=`float3 atmosphericFog(float2 uvc, float timed) {
+comp_166=`    // Sample multiple random textures for fog
+comp_167=`    float3 rand00 = tex2D(sampler_rand00, uvc * 0.5).rgb;
+comp_168=`    float3 rand01 = tex2D(sampler_rand01, uvc * 0.8).rgb;
+comp_169=`    float3 rand02 = tex2D(sampler_rand02, uvc * 1.2).rgb;
+comp_170=`    
+comp_171=`    // Create fog density
+comp_172=`    float fog1 = rand00.r * 0.4 + sin(uvc.x * 5.0 + timed * 0.3) * 0.2;
+comp_173=`    float fog2 = rand01.g * 0.3 + cos(uvc.y * 7.0 + timed * 0.5) * 0.15;
+comp_174=`    float fog3 = rand02.b * 0.3 + sin((uvc.x + uvc.y) * 3.0 + timed * 0.7) * 0.1;
+comp_175=`    
+comp_176=`    // Music modulates fog movement
+comp_177=`    float fogDrift = (mid * 0.4 + treb * 0.2) * 0.3;
+comp_178=`    fog1 += sin(timed * 0.2 + bass * 2.0) * 0.1;
+comp_179=`    fog2 += cos(timed * 0.3 + mid * 1.5) * 0.08;
+comp_180=`    fog3 += sin(timed * 0.4 + treb * 2.5) * 0.06;
+comp_181=`    
+comp_182=`    float fogDensity = (fog1 + fog2 * 0.7 + fog3 * 0.5) * 0.6;
+comp_183=`    
+comp_184=`    // Soft blue-gray fog
+comp_185=`    float3 fogColor = float3(0.15, 0.2, 0.25);
+comp_186=`    
+comp_187=`    // Add subtle color variations
+comp_188=`    fogColor.r += sin(timed * 0.1) * 0.05;
+comp_189=`    fogColor.g += cos(timed * 0.15) * 0.03;
+comp_190=`    fogColor.b += sin(timed * 0.2 + 1.0) * 0.04;
+comp_191=`    
+comp_192=`    return fogColor * fogDensity * 0.4;
+comp_193=`}
+comp_194=`
+comp_195=`// Particle system
+comp_196=`float3 particles(float2 uvd, float timee) {
+comp_197=`    float3 particleColor = float3(0.0, 0.0, 0.0);
+comp_198=`    
+comp_199=`    // Create multiple particle systems
+comp_200=`    for (int i = 0; i < 8; i++) {
+comp_201=`        float fi = float(i);
+comp_202=`        
+comp_203=`        // Particle system parameters
+comp_204=`        float speed = 0.3 + fi * 0.1;
+comp_205=`        float size = 0.002 + fi * 0.001;
+comp_206=`        float2 offset = float2(sin(fi * 12.34), cos(fi * 56.78));
+comp_207=`        
+comp_208=`        // Music affects particle behavior
+comp_209=`        speed += (bass * 0.2 + mid * 0.1) * (0.5 + 0.5 * sin(fi));
+comp_210=`        size *= 1.0 + treb * 0.5;
+comp_211=`        
+comp_212=`        // Animated particle positions
+comp_213=`        float2 particlePos = 0.5 + 0.4 * float2(
+comp_214=`            sin(timee * speed * 0.5 + offset.x * 6.28 + fi),
+comp_215=`            cos(timee * speed * 0.6 + offset.y * 6.28 + fi * 1.3)
+comp_216=`        );
+comp_217=`        
+comp_218=`        // Add music-driven randomness
+comp_219=`        particlePos += float2(bass * 0.1 * sin(timee * 2.0 + fi),
+comp_220=`                            mid * 0.08 * cos(timee * 1.5 + fi));
+comp_221=`        
+comp_222=`        // Distance to particle
+comp_223=`        float dist = length(uvd - particlePos);
+comp_224=`        
+comp_225=`        // Particle glow
+comp_226=`        float particle = 1.0 - smoothstep(0.0, size, dist);
+comp_227=`        particle = pow(particle, 3.0);
+comp_228=`        
+comp_229=`        // Particle colors (varies by system)
+comp_230=`        float3 pColor = float3(
+comp_231=`            0.5 + 0.5 * sin(fi * 0.7),
+comp_232=`            0.3 + 0.3 * cos(fi * 0.9),
+comp_233=`            0.7 + 0.3 * sin(fi * 1.1)
+comp_234=`        );
+comp_235=`        
+comp_236=`        // Music intensity affects particle brightness
+comp_237=`        float brightness = 0.3 + (bass * 0.3 + mid * 0.2 + treb * 0.1);
+comp_238=`        particleColor += pColor * particle * brightness * 0.1;
+comp_239=`    }
+comp_240=`    
+comp_241=`    // Add occasional bright particles on treble peaks
+comp_242=`    float spark = step(0.7, treb) * treb_att;
+comp_243=`    if (spark > 0.0) {
+comp_244=`        float2 sparkUV = frac(uvd + float2(sin(timee * 10.0), cos(timee * 8.0)));
+comp_245=`        float sparkle = tex2D(sampler_rand03, sparkUV).r;
+comp_246=`        sparkle = pow(sparkle, 4.0) * spark;
+comp_247=`        particleColor += float3(0.8, 0.9, 1.0) * sparkle * 0.5;
+comp_248=`    }
+comp_249=`    
+comp_250=`    return particleColor;
+comp_251=`}
+comp_252=`
+comp_253=`shader_body {
+comp_254=`
+comp_255=`    if (q1)
+comp_256=`    {
+comp_257=`        bass = bass_att;
+comp_258=`        mid = mid_att;
+comp_259=`        treb = treb_att;
+comp_260=`    }
+comp_261=`
+comp_262=`    //float2 uv = vv_frag_normcoord;
+comp_263=`    
+comp_264=`    // Time with music modulation
+comp_265=`    float musicTime = time * 0.5;
+comp_266=`    musicTime += bass * 0.3 + mid * 0.2 + treb * 0.1;
+comp_267=`    
+comp_268=`    // Apply music-reactive distortion
+comp_269=`    float distortion = (bass * 0.3 + mid * 0.2 + treb * 0.1) * 0.2;
+comp_270=`    distortion += (bass_att + mid_att + treb_att) * 0.15;
+comp_271=`    
+comp_272=`    float2 distortedUV = uv;
+comp_273=`    distortedUV.x += sin(uv.y * 8.0 + musicTime * 2.0) * distortion * 0.05;
+comp_274=`    distortedUV.y += cos(uv.x * 6.0 + musicTime * 1.7) * distortion * 0.05;
+comp_275=`    
+comp_276=`    // Generate all layers
+comp_277=`    float3 inkLayer = inkFlow(distortedUV, musicTime);
+comp_278=`    float3 arcLayer = electricArcs(distortedUV, musicTime);
+comp_279=`    float3 fogLayer = atmosphericFog(distortedUV, musicTime);
+comp_280=`    float3 particleLayer = particles(distortedUV, musicTime);
+comp_281=`    
+comp_282=`    // Combine layers using multiply and screen blending to prevent white
+comp_283=`    // Start with ink as base
+comp_284=`    float3 finalColor = inkLayer;
+comp_285=`    
+comp_286=`    // Add arcs using screen blend (keeps dark areas dark)
+comp_287=`    finalColor = 1.0 - (1.0 - finalColor) * (1.0 - arcLayer * 0.8);
+comp_288=`    
+comp_289=`    // Add fog using additive but with low opacity
+comp_290=`    finalColor += fogLayer * 0.3;
+comp_291=`    
+comp_292=`    // Add particles using screen blend
+comp_293=`    finalColor = 1.0 - (1.0 - finalColor) * (1.0 - particleLayer);
+comp_294=`    
+comp_295=`    // Add central "energy" from bass
+comp_296=`    float2 centerVec = uv - 0.5;
+comp_297=`    float centerDist = length(centerVec);
+comp_298=`    float energy = 1.0 - smoothstep(0.0, 0.6, centerDist);
+comp_299=`    energy = pow(energy, 3.0) * (bass * 1.5 + bass_att);
+comp_300=`    
+comp_301=`    // Energy color (varies with music)
+comp_302=`    float3 energyColor = float3(
+comp_303=`        0.1 + bass * 0.3,
+comp_304=`        0.2 + mid * 0.2,
+comp_305=`        0.6 + treb * 0.4
+comp_306=`    );
+comp_307=`    
+comp_308=`    // Add energy using screen blend
+comp_309=`    finalColor = 1.0 - (1.0 - finalColor) * (1.0 - energyColor * energy * 0.3);
+comp_310=`    
+comp_311=`    // Apply music-driven contrast
+comp_312=`    float contrast = 1.0 + (bass * 0.2 + mid * 0.1);
+comp_313=`    finalColor = (finalColor - 0.5) * contrast + 0.5;
+comp_314=`    
+comp_315=`    // Add subtle scanlines that pulse with treble
+comp_316=`    float scanline = sin(uv.y * 800.0 + time * 3.0) * 0.5 + 0.5;
+comp_317=`    scanline = 0.95 + 0.05 * scanline * treb;
+comp_318=`    finalColor *= scanline;
+comp_319=`    
+comp_320=`    // Vignette (stronger at edges)
+comp_321=`    float vignette = 1.0 - smoothstep(0.0, 0.7, centerDist);
+comp_322=`    vignette = pow(vignette, 1.5);
+comp_323=`    vignette *= 0.8 + 0.2 * sin(time * 0.5 + bass * 5.0);
+comp_324=`    finalColor *= vignette;
+comp_325=`    
+comp_326=`    // Final color correction (prevent white, boost saturation)
+comp_327=`    float luminance = dot(finalColor, float3(0.299, 0.587, 0.114));
+comp_328=`    float3 chroma = finalColor - luminance;
+comp_329=`    finalColor = luminance + chroma * 1.4; // Boost color
+comp_330=`    
+comp_331=`    // Soft clamp with curve that preserves dark tones
+comp_332=`    finalColor = finalColor * (1.0 - 0.4) + finalColor * finalColor * 0.4;
+comp_333=`    finalColor = min(finalColor, 0.95);
+comp_334=`    
+comp_335=`    // Ensure minimum darkness
+comp_336=`    finalColor = max(finalColor, 0.02);
+comp_337=`    
+comp_338=`    ret = float4(finalColor, 1.0);
+comp_339=`}

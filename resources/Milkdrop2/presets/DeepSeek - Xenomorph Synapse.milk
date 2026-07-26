@@ -1,0 +1,472 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 28/06/2026 at 20:09:27.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=smooth_reaction = int(rand(2))
+per_frame_1=q1 = smooth_reaction
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`sampler sampler_rand00;
+comp_2=`sampler sampler_rand01;
+comp_3=`sampler sampler_rand02;
+comp_4=`sampler sampler_rand03;
+comp_5=`
+comp_6=`// Voronoi cells for organic tissue patterns
+comp_7=`float3 voronoi(float2 uva, float timea, float scale) {
+comp_8=`    uva *= scale;
+comp_9=`    
+comp_10=`    float2 i_uv = floor(uva);
+comp_11=`    float2 f_uv = frac(uva);
+comp_12=`    
+comp_13=`    float m_dist = 1.0;
+comp_14=`    float2 m_point;
+comp_15=`    float m_id = 0.0;
+comp_16=`    
+comp_17=`    for (int y = -1; y <= 1; y++) {
+comp_18=`        for (int x = -1; x <= 1; x++) {
+comp_19=`            float2 neighbor = float2(float(x), float(y));
+comp_20=`            float2 point = float2(
+comp_21=`                0.5 + 0.5 * sin(timea * 0.3 + 6.2831 * (i_uv.x + neighbor.x) * 0.317),
+comp_22=`                0.5 + 0.5 * cos(timea * 0.4 + 6.2831 * (i_uv.y + neighbor.y) * 0.419)
+comp_23=`            );
+comp_24=`            
+comp_25=`            // Animate points with music
+comp_26=`            point.x += bass * 0.1 * sin(time + neighbor.x);
+comp_27=`            point.y += mid * 0.08 * cos(time * 1.2 + neighbor.y);
+comp_28=`            
+comp_29=`            float2 diff = neighbor + point - f_uv;
+comp_30=`            float dist = length(diff);
+comp_31=`            
+comp_32=`            if (dist < m_dist) {
+comp_33=`                m_dist = dist;
+comp_34=`                m_point = point;
+comp_35=`                m_id = dot(i_uv + neighbor, float2(57.0, 113.0));
+comp_36=`            }
+comp_37=`        }
+comp_38=`    }
+comp_39=`    
+comp_40=`    return float3(m_dist, m_point.x, m_id);
+comp_41=`}
+comp_42=`
+comp_43=`// Pulsing flesh/tissue layer
+comp_44=`float3 organicTissue(float2 uvb, float timeb) {
+comp_45=`    float2 p = uvb * 2.0 - 1.0;
+comp_46=`    
+comp_47=`    // Create tissue-like patterns
+comp_48=`    float3 vor1 = voronoi(uvb, timeb * 0.5, 4.0);
+comp_49=`    float3 vor2 = voronoi(uvb * 1.5 + 0.3, timeb * 0.7, 6.0);
+comp_50=`    float3 vor3 = voronoi(uvb * 2.5 + 0.7, timeb * 1.1, 10.0);
+comp_51=`    
+comp_52=`    // Music modulates tissue density and pulse
+comp_53=`    float tissue1 = 1.0 - vor1.x * (1.0 + bass * 0.3);
+comp_54=`    float tissue2 = 1.0 - vor2.x * (0.8 + mid * 0.25);
+comp_55=`    float tissue3 = 1.0 - vor3.x * (0.6 + treb * 0.2);
+comp_56=`    
+comp_57=`    // Combine tissue layers
+comp_58=`    float tissuePattern = tissue1 * 0.5 + tissue2 * 0.3 + tissue3 * 0.2;
+comp_59=`    
+comp_60=`    // Add vein-like patterns
+comp_61=`    float veins = sin(uvb.x * 25.0 + timeb * 0.8) * 0.15;
+comp_62=`    veins += sin(uvb.y * 30.0 + timeb * 1.2) * 0.12;
+comp_63=`    veins = abs(veins);
+comp_64=`    veins *= 0.7 + bass * 0.3;
+comp_65=`    
+comp_66=`    // Create pulsing animation
+comp_67=`    float pulse = sin(timeb * 1.5 + bass * 5.0) * 0.1 + 1.0;
+comp_68=`    pulse += mid * 0.15 * sin(timeb * 2.0);
+comp_69=`    
+comp_70=`    tissuePattern = tissuePattern * pulse + veins * 0.5;
+comp_71=`    
+comp_72=`    // Flesh colors (reds, pinks, purples)
+comp_73=`    float3 fleshBase = float3(0.3, 0.08, 0.12); // Deep red
+comp_74=`    float3 fleshMid = float3(0.6, 0.15, 0.25);  // Medium flesh
+comp_75=`    float3 fleshHigh = float3(0.8, 0.3, 0.4);   // Light flesh
+comp_76=`    
+comp_77=`    // Create color variation
+comp_78=`    float colorVar = sin(timeb * 0.2 + vor1.z * 0.1) * 0.3 + 0.5;
+comp_79=`    colorVar += bass * 0.2 - mid * 0.1; // Music affects color
+comp_80=`    
+comp_81=`    float3 fleshColor = lerp(lerp(fleshBase, fleshMid, colorVar),
+comp_82=`                           fleshHigh,
+comp_83=`                           tissuePattern * 0.7);
+comp_84=`    
+comp_85=`    // Add subtle texture from random sampler
+comp_86=`    float3 randTex = tex2D(sampler_rand00, uvb * 3.0).rgb;
+comp_87=`    fleshColor += (randTex - 0.5) * 0.05 * treb;
+comp_88=`    
+comp_89=`    // Make tissue throb with bass
+comp_90=`    float throb = pow(bass, 2.0) * 0.3;
+comp_91=`    fleshColor *= 1.0 + throb;
+comp_92=`    
+comp_93=`    return fleshColor;
+comp_94=`}
+comp_95=`
+comp_96=`// Circuit/neural pathways
+comp_97=`float3 neuralCircuits(float2 uvc, float timec) {
+comp_98=`    uvc = uvc * 2.0 - 1.0;
+comp_99=`    
+comp_100=`    // Create grid-based circuit patterns
+comp_101=`    float gridSize = 8.0 + bass * 2.0;
+comp_102=`    float2 gridUV = uvc * gridSize;
+comp_103=`    float2 gridCell = floor(gridUV);
+comp_104=`    float2 gridFract = frac(gridUV) * 2.0 - 1.0;
+comp_105=`    
+comp_106=`    // Music-driven circuit activity
+comp_107=`    float circuitPower = (bass * 0.8 + mid * 0.5 + treb * 0.3) * 0.7;
+comp_108=`    circuitPower += (bass_att + mid_att + treb_att) * 0.4;
+comp_109=`    
+comp_110=`    // Create circuit lines
+comp_111=`    float circuits = 0.0;
+comp_112=`    
+comp_113=`    // Horizontal lines
+comp_114=`    float horiz = abs(gridFract.y);
+comp_115=`    horiz = smoothstep(0.03, 0.01, horiz);
+comp_116=`    
+comp_117=`    // Vertical lines
+comp_118=`    float vert = abs(gridFract.x);
+comp_119=`    vert = smoothstep(0.03, 0.01, vert);
+comp_120=`    
+comp_121=`    // Animate line brightness
+comp_122=`    float linePulse = sin(timec * 3.0 + gridCell.x * 0.7 + gridCell.y * 0.9);
+comp_123=`    linePulse = 0.5 + 0.5 * linePulse;
+comp_124=`    linePulse *= 0.6 + circuitPower * 0.4;
+comp_125=`    
+comp_126=`    circuits = max(horiz, vert) * linePulse;
+comp_127=`    
+comp_128=`    // Add data nodes at intersections
+comp_129=`    float nodes = step(0.9, abs(gridFract.x) * abs(gridFract.y));
+comp_130=`    nodes *= (0.7 + 0.3 * sin(timec * 5.0 + gridCell.x * 1.3 + gridCell.y * 2.1));
+comp_131=`    nodes *= treb * 0.8 + treb_att * 0.4;
+comp_132=`    
+comp_133=`    circuits = max(circuits, nodes);
+comp_134=`    
+comp_135=`    // Circuit colors (electric blue/cyan)
+comp_136=`    float3 circuitColor = float3(0.0, 0.7, 0.9); // Cyan
+comp_137=`    float3 nodeColor = float3(0.2, 0.9, 1.0);    // Bright cyan
+comp_138=`    
+comp_139=`    // Create pulsing glow
+comp_140=`    float glow = pow(circuits, 2.0) * (0.5 + circuitPower * 0.5);
+comp_141=`    
+comp_142=`    float3 finalCircuits = circuitColor * circuits * 0.8;
+comp_143=`    finalCircuits += nodeColor * nodes * 1.2;
+comp_144=`    finalCircuits += circuitColor * glow * 0.4;
+comp_145=`    
+comp_146=`    // Add data flow animation
+comp_147=`    float dataFlow = sin(uvc.x * 15.0 + timec * 2.0 + bass * 10.0);
+comp_148=`    dataFlow = (dataFlow * 0.5 + 0.5) * mid * 0.3;
+comp_149=`    finalCircuits += circuitColor * dataFlow * glow * 0.3;
+comp_150=`    
+comp_151=`    return finalCircuits;
+comp_152=`}
+comp_153=`
+comp_154=`// Biotech tendrils/growth
+comp_155=`float3 biotechGrowth(float2 uvd, float timed) {
+comp_156=`    // Create branching growth patterns
+comp_157=`    float growth = 0.0;
+comp_158=`    
+comp_159=`    // Multiple growth layers
+comp_160=`    for (int i = 0; i < 6; i++) {
+comp_161=`        float layer = float(i);
+comp_162=`        float angle = layer * 1.047; // ~60 degrees
+comp_163=`        
+comp_164=`        // Growth direction
+comp_165=`        float2 dir = float2(sin(angle), cos(angle));
+comp_166=`        
+comp_167=`        // Project UV onto growth direction
+comp_168=`        float projection = dot(uvd - 0.5, dir);
+comp_169=`        
+comp_170=`        // Create branching pattern
+comp_171=`        float branch = sin(projection * 40.0 + timed * (1.0 + layer * 0.3)) * 0.5 + 0.5;
+comp_172=`        branch = pow(branch, 3.0);
+comp_173=`        
+comp_174=`        // Music controls growth rate
+comp_175=`        float growthRate = (bass * 0.5 + mid * 0.3 + treb * 0.2) * (0.5 + layer * 0.1);
+comp_176=`        branch *= 0.4 + growthRate * 0.6;
+comp_177=`        
+comp_178=`        // Fade based on distance from center
+comp_179=`        float distFade = 1.0 - smoothstep(0.0, 0.7, length(uvd - 0.5));
+comp_180=`        branch *= distFade;
+comp_181=`        
+comp_182=`        growth = max(growth, branch);
+comp_183=`    }
+comp_184=`    
+comp_185=`    // Add tendril details
+comp_186=`    float3 randTex = tex2D(sampler_rand01, uvd * 5.0).rgb;
+comp_187=`    float details = randTex.g * 0.3;
+comp_188=`    details *= 0.5 + treb * 0.5;
+comp_189=`    
+comp_190=`    growth = max(growth, details * 0.5);
+comp_191=`    
+comp_192=`    // Biotech colors (alien greens/yellows)
+comp_193=`    float3 growthColor = float3(0.3, 0.8, 0.2);  // Alien green
+comp_194=`    float3 tendrilColor = float3(0.6, 0.9, 0.3); // Lime green
+comp_195=`    float3 glowColor = float3(0.4, 1.0, 0.5);    // Neon green
+comp_196=`    
+comp_197=`    // Mix colors
+comp_198=`    float3 finalGrowth = lerp(growthColor, tendrilColor, growth);
+comp_199=`    finalGrowth *= growth * 0.8;
+comp_200=`    
+comp_201=`    // Add glowing edges
+comp_202=`    float glow = pow(growth, 3.0) * (0.3 + bass * 0.2);
+comp_203=`    finalGrowth += glowColor * glow * 0.4;
+comp_204=`    
+comp_205=`    return finalGrowth;
+comp_206=`}
+comp_207=`
+comp_208=`// Bio-mechanical fluid/slime
+comp_209=`float3 biogel(float2 uve, float timee) {
+comp_210=`    float2 p = uve * 2.0 - 1.0;
+comp_211=`    
+comp_212=`    // Sample multiple random textures for fluid patterns
+comp_213=`    float3 rand00 = tex2D(sampler_rand00, uve * 2.0).rgb;
+comp_214=`    float3 rand01 = tex2D(sampler_rand01, uve * 3.0).rgb;
+comp_215=`    float3 rand02 = tex2D(sampler_rand02, uve * 5.0).rgb;
+comp_216=`    float3 rand03 = tex2D(sampler_rand03, uve * 7.0).rgb;
+comp_217=`    
+comp_218=`    // Create fluid motion
+comp_219=`    float fluid1 = rand00.r * 0.4 + sin(p.x * 3.0 + timee * 0.5) * 0.2;
+comp_220=`    float fluid2 = rand01.g * 0.3 + cos(p.y * 4.0 + timee * 0.7) * 0.15;
+comp_221=`    float fluid3 = rand02.b * 0.3 + sin((p.x + p.y) * 2.5 + timee * 1.0) * 0.1;
+comp_222=`    
+comp_223=`    // Music drives fluid movement
+comp_224=`    float fluidFlow = (mid * 0.6 + treb * 0.4) * 0.4;
+comp_225=`    fluid1 += bass * 0.15 * sin(timee * 0.8);
+comp_226=`    fluid2 += mid * 0.12 * cos(timee * 1.2);
+comp_227=`    fluid3 += treb * 0.1 * sin(timee * 1.5);
+comp_228=`    
+comp_229=`    // Combine fluid layers
+comp_230=`    float fluidPattern = (fluid1 + fluid2 * 0.7 + fluid3 * 0.5) * 0.7;
+comp_231=`    
+comp_232=`    // Add bubbles/particles
+comp_233=`    float bubbles = pow(rand03.r * rand03.g, 2.5);
+comp_234=`    bubbles *= smoothstep(0.2, 0.8, bubbles);
+comp_235=`    bubbles *= treb * 1.2 + treb_att * 0.6;
+comp_236=`    
+comp_237=`    // Bio-gel colors (purple/amber alien fluids)
+comp_238=`    float3 gelBase = float3(0.2, 0.05, 0.3);    // Deep purple
+comp_239=`    float3 gelMid = float3(0.5, 0.2, 0.6);      // Medium purple
+comp_240=`    float3 gelHigh = float3(0.8, 0.6, 0.9);     // Light lavender
+comp_241=`    float3 bubbleColor = float3(0.9, 0.7, 0.3); // Amber
+comp_242=`    
+comp_243=`    // Create gel color with depth
+comp_244=`    float depth = fluidPattern * 0.8;
+comp_245=`    float3 gelColor = lerp(gelBase, gelMid, depth);
+comp_246=`    gelColor = lerp(gelColor, gelHigh, depth * depth);
+comp_247=`    
+comp_248=`    // Add bubbles
+comp_249=`    gelColor += bubbleColor * bubbles * 0.3;
+comp_250=`    
+comp_251=`    // Make gel shimmer with music
+comp_252=`    float shimmer = sin(timee * 2.0 + uve.x * 10.0) * 0.05;
+comp_253=`    shimmer *= 0.3 + treb * 0.7;
+comp_254=`    gelColor += float3(shimmer * 0.5, shimmer * 0.3, shimmer * 0.7);
+comp_255=`    
+comp_256=`    return gelColor;
+comp_257=`}
+comp_258=`
+comp_259=`// Organic-tech "breathing" effect
+comp_260=`float3 breathingField(float2 uvf, float timef) {
+comp_261=`    float2 centerVec = uvf - 0.5;
+comp_262=`    float dist = length(centerVec);
+comp_263=`    
+comp_264=`    // Create breathing pattern
+comp_265=`    float breath = sin(timef * 0.8 + dist * 8.0) * 0.5 + 0.5;
+comp_266=`    breath = pow(breath, 2.0);
+comp_267=`    
+comp_268=`    // Music modulates breathing intensity
+comp_269=`    float breathIntensity = 0.3 + bass * 0.4 + mid * 0.2;
+comp_270=`    breath *= breathIntensity;
+comp_271=`    
+comp_272=`    // Radial falloff
+comp_273=`    float radialMask = 1.0 - smoothstep(0.0, 0.6, dist);
+comp_274=`    breath *= radialMask;
+comp_275=`    
+comp_276=`    // Breathing colors (subtle energy field)
+comp_277=`    float3 breathColor = float3(0.1, 0.4, 0.6); // Deep teal
+comp_278=`    breathColor = lerp(breathColor, float3(0.3, 0.7, 0.9), breath);
+comp_279=`    
+comp_280=`    return breathColor * breath * 0.5;
+comp_281=`}
+comp_282=`
+comp_283=`shader_body {
+comp_284=`
+comp_285=`    if (q1)
+comp_286=`    {
+comp_287=`        bass = bass_att;
+comp_288=`        mid = mid_att;
+comp_289=`        treb = treb_att;
+comp_290=`    }
+comp_291=`
+comp_292=`    //float2 uv = vv_frag_normcoord;
+comp_293=`    
+comp_294=`    // Time with music modulation
+comp_295=`    float bioTime = time * 0.6;
+comp_296=`    bioTime += bass * 0.4 + mid * 0.25 + treb * 0.15;
+comp_297=`    
+comp_298=`    // Apply biomechanical distortion
+comp_299=`    float distortion = (bass * 0.4 + mid * 0.3 + treb * 0.2) * 0.25;
+comp_300=`    distortion += (bass_att + mid_att + treb_att) * 0.2;
+comp_301=`    
+comp_302=`    float2 distortedUV = uv;
+comp_303=`    
+comp_304=`    // Organic warping
+comp_305=`    distortedUV.x += sin(uv.y * 12.0 + bioTime * 1.5) * distortion * 0.04;
+comp_306=`    distortedUV.y += cos(uv.x * 10.0 + bioTime * 1.3) * distortion * 0.04;
+comp_307=`    
+comp_308=`    // Add cellular wobble
+comp_309=`    float3 randTex = tex2D(sampler_rand02, uv * 8.0).rgb;
+comp_310=`    distortedUV += (randTex.rg - 0.5) * distortion * 0.03;
+comp_311=`    
+comp_312=`    // Generate all biomechanical layers
+comp_313=`    float3 tissueLayer = organicTissue(distortedUV, bioTime);
+comp_314=`    float3 circuitLayer = neuralCircuits(distortedUV, bioTime);
+comp_315=`    float3 growthLayer = biotechGrowth(distortedUV, bioTime);
+comp_316=`    float3 gelLayer = biogel(distortedUV, bioTime);
+comp_317=`    float3 breathLayer = breathingField(distortedUV, bioTime);
+comp_318=`    
+comp_319=`    // Combine layers using organic blending modes
+comp_320=`    
+comp_321=`    // Start with tissue as base organism
+comp_322=`    float3 finalColor = tissueLayer;
+comp_323=`    
+comp_324=`    // Add circuits as overlay (like implants)
+comp_325=`    finalColor = lerp(finalColor, circuitLayer, circuitLayer.r * 0.7);
+comp_326=`    
+comp_327=`    // Add growth as screen blend (keeps dark areas)
+comp_328=`    float3 growthBlend = 1.0 - (1.0 - finalColor) * (1.0 - growthLayer * 0.6);
+comp_329=`    finalColor = lerp(finalColor, growthBlend, growthLayer.g * 0.5);
+comp_330=`    
+comp_331=`    // Add gel as additive with low opacity
+comp_332=`    finalColor += gelLayer * 0.3;
+comp_333=`    
+comp_334=`    // Add breathing field as overlay
+comp_335=`    finalColor = lerp(finalColor, breathLayer, breathLayer.b * 0.4);
+comp_336=`    
+comp_337=`    // Create organic pulsation
+comp_338=`    float organicPulse = sin(bioTime * 1.2 + bass * 4.0) * 0.05 + 0.95;
+comp_339=`    organicPulse += mid * 0.08 * sin(bioTime * 2.5);
+comp_340=`    finalColor *= organicPulse;
+comp_341=`    
+comp_342=`    // Add bioluminescent response to treble
+comp_343=`    float bioLuminescence = pow(treb, 2.0) * 0.4;
+comp_344=`    finalColor += float3(0.1, 0.3, 0.2) * bioLuminescence * 0.2;
+comp_345=`    
+comp_346=`    // Cellular texture overlay
+comp_347=`    float3 cellTex = tex2D(sampler_rand03, distortedUV * 12.0).rgb;
+comp_348=`    float cellPattern = cellTex.r * 0.15;
+comp_349=`    finalColor *= 1.0 - cellPattern * 0.2;
+comp_350=`    finalColor += cellPattern * float3(0.1, 0.2, 0.3) * treb * 0.1;
+comp_351=`    
+comp_352=`    // Vignette with organic shape
+comp_353=`    float2 centerVec = uv - 0.5;
+comp_354=`    float dist = length(centerVec);
+comp_355=`    float vignette = 1.0 - smoothstep(0.0, 0.8, dist);
+comp_356=`    vignette = pow(vignette, 1.3);
+comp_357=`    
+comp_358=`    // Make vignette pulse with music
+comp_359=`    vignette *= 0.8 + 0.2 * sin(bioTime * 0.5 + bass * 3.0);
+comp_360=`    finalColor *= vignette;
+comp_361=`    
+comp_362=`    // Color correction - boost organic colors
+comp_363=`    // Separate RGB for individual adjustment
+comp_364=`    finalColor.r = pow(finalColor.r, 0.9);  // Slightly boost reds
+comp_365=`    finalColor.g = pow(finalColor.g, 1.1);  // Boost greens more
+comp_366=`    finalColor.b = pow(finalColor.b, 1.0);  // Keep blues neutral
+comp_367=`    
+comp_368=`    // Add subtle color shift with music
+comp_369=`    float colorShift = sin(bioTime * 0.3) * 0.05;
+comp_370=`    colorShift += bass * 0.03 - mid * 0.02;
+comp_371=`    finalColor.r += colorShift;
+comp_372=`    finalColor.g -= colorShift * 0.5;
+comp_373=`    
+comp_374=`    // Final organic contrast
+comp_375=`    float contrast = 1.2 + bass * 0.1;
+comp_376=`    finalColor = (finalColor - 0.5) * contrast + 0.5;
+comp_377=`    
+comp_378=`    // Soft clamp - preserve organic feel
+comp_379=`    finalColor = finalColor * (1.0 - 0.3) + finalColor * finalColor * 0.3;
+comp_380=`    finalColor = min(finalColor, 0.98);
+comp_381=`    finalColor = max(finalColor, 0.02);
+comp_382=`    
+comp_383=`    ret = float4(finalColor, 1.0);
+comp_384=`}

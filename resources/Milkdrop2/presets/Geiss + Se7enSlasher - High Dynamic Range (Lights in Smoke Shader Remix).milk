@@ -1,0 +1,410 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=3.000
+fGammaAdj=1.500
+fDecay=0.980
+fVideoEchoZoom=2.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=4
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=32.545
+fWaveScale=0.504
+fWaveSmoothing=0.558
+fWaveParam=0.000
+fModWaveAlphaStart=0.870
+fModWaveAlphaEnd=1.290
+fWarpAnimSpeed=1.000
+fWarpScale=2.853
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00001
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=0
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.50000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wavecode_1_enabled=0
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=0
+wavecode_1_scaling=1.00000
+wavecode_1_smoothing=0.50000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=1.000
+wavecode_2_enabled=0
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.00000
+wavecode_2_smoothing=0.50000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=1.000
+wavecode_2_a=1.000
+wavecode_3_enabled=0
+wavecode_3_samples=512
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=1.000
+shapecode_0_enabled=1
+shapecode_0_sides=16
+shapecode_0_additive=1
+shapecode_0_thickOutline=1
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.88000
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=1.00000
+shapecode_0_r=1.000
+shapecode_0_g=0.000
+shapecode_0_b=0.000
+shapecode_0_a=0.060
+shapecode_0_r2=0.000
+shapecode_0_g2=1.000
+shapecode_0_b2=0.000
+shapecode_0_a2=0.000
+shapecode_0_border_r=0.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=0.000
+shape_0_per_frame1=ang = time*1.4;
+shape_0_per_frame2=x = q1;
+shape_0_per_frame3=y = q2;
+shape_0_per_frame4=r = 0.5 + 0.5*sin(time*0.713 + 1);
+shape_0_per_frame5=g = 0.5 + 0.5*sin(time*0.563 + 2);
+shape_0_per_frame6=b = 0.5 + 0.5*sin(time*0.654 + 5);
+shape_0_per_frame7=r2 = 0.5 + 0.5*sin(time*0.885 + 4);
+shape_0_per_frame8=g2 = 0.5 + 0.5*sin(time*0.556+ 1);
+shape_0_per_frame9=b2 = 0.5 + 0.5*sin(time*0.638 + 3);
+shapecode_1_enabled=0
+shapecode_1_sides=4
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_num_inst=1
+shapecode_1_x=0.500
+shapecode_1_y=0.500
+shapecode_1_rad=0.10000
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=1.00000
+shapecode_1_r=1.000
+shapecode_1_g=0.000
+shapecode_1_b=0.000
+shapecode_1_a=1.000
+shapecode_1_r2=0.000
+shapecode_1_g2=1.000
+shapecode_1_b2=0.000
+shapecode_1_a2=0.000
+shapecode_1_border_r=1.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=1.000
+shapecode_1_border_a=0.100
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_num_inst=1
+shapecode_2_x=0.500
+shapecode_2_y=0.500
+shapecode_2_rad=0.10000
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=1.00000
+shapecode_2_r=1.000
+shapecode_2_g=0.000
+shapecode_2_b=0.000
+shapecode_2_a=1.000
+shapecode_2_r2=0.000
+shapecode_2_g2=1.000
+shapecode_2_b2=0.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=1.000
+shapecode_2_border_a=0.100
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=1
+shapecode_3_x=0.500
+shapecode_3_y=0.500
+shapecode_3_rad=0.10000
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.00000
+shapecode_3_r=1.000
+shapecode_3_g=0.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=1.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=1.000
+shapecode_3_border_b=1.000
+shapecode_3_border_a=0.100
+per_frame_1=
+per_frame_2=// in this example, q1 and q2 act as the center of zooming
+per_frame_3=// AND as the position of custom shape #1...
+per_frame_4=q1 = 0.5 + 0.32*cos(time*0.4);
+per_frame_5=q2 = 0.5 + 0.22*sin(time*0.4);
+per_frame_6=
+per_frame_7=//wave_x = q1;
+per_frame_8=wave_y = q2;
+per_pixel_1=dx = (x-q1)*0.02;
+per_pixel_2=dy = (y-q2)*0.02;
+per_pixel_3=
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // sample previous frame
+warp_4=`    ret = tex2D( sampler_main, uv ).xyz;
+warp_5=`    
+warp_6=`    // darken (decay) over time
+warp_7=`    ret *= 0.98; //or try: ret -= 0.004;
+warp_8=`}
+comp_1=`//Original shader by ehj1/Ethan Jennings
+comp_2=`//ShaderToy Original: https://www.shadertoy.com/view/MdyGzR#
+comp_3=`//MilkDrop (HLSL) Port by Incubo_
+comp_4=`
+comp_5=`//This GLSL shader compiles very shortly, but in MilkDrop (HLSL) version compiles a little bit slow, like 2-4 seconds.
+comp_6=`
+comp_7=`float3 mod289(float3 x) {
+comp_8=`  return x - floor(x * (1.0 / 289.0)) * 289.0;
+comp_9=`}
+comp_10=`
+comp_11=`float4 mod289(float4 x) {
+comp_12=`  return x - floor(x * (1.0 / 289.0)) * 289.0;
+comp_13=`}
+comp_14=`
+comp_15=`float4 permute(float4 x) {
+comp_16=`     return mod289(((x*34.0)+1.0)*x);
+comp_17=`}
+comp_18=`
+comp_19=`float4 taylorInvSqrt(float4 r)
+comp_20=`{
+comp_21=`  return 1.79284291400159 - 0.85373472095314 * r;
+comp_22=`}
+comp_23=`
+comp_24=`float snoise(float3 v)
+comp_25=`  { 
+comp_26=`  const float2  C = float2(1.0/6.0, 1.0/3.0) ;
+comp_27=`  const float4  D = float4(0.0, 0.5, 1.0, 2.0);
+comp_28=`
+comp_29=`// First corner
+comp_30=`  float3 i  = floor(v + dot(v, C.yyy) );
+comp_31=`  float3 x0 =   v - i + dot(i, C.xxx) ;
+comp_32=`
+comp_33=`// Other corners
+comp_34=`  float3 g = step(x0.yzx, x0.xyz);
+comp_35=`  float3 l = 1.0 - g;
+comp_36=`  float3 i1 = min( g.xyz, l.zxy );
+comp_37=`  float3 i2 = max( g.xyz, l.zxy );
+comp_38=`
+comp_39=`  //   x0 = x0 - 0.0 + 0.0 * C.xxx;
+comp_40=`  //   x1 = x0 - i1  + 1.0 * C.xxx;
+comp_41=`  //   x2 = x0 - i2  + 2.0 * C.xxx;
+comp_42=`  //   x3 = x0 - 1.0 + 3.0 * C.xxx;
+comp_43=`  float3 x1 = x0 - i1 + C.xxx;
+comp_44=`  float3 x2 = x0 - i2 + C.yyy; // 2.0*C.x = 1/3 = C.y
+comp_45=`  float3 x3 = x0 - D.yyy;      // -1.0+3.0*C.x = -0.5 = -D.y
+comp_46=`
+comp_47=`// Permutations
+comp_48=`  i = mod289(i); 
+comp_49=`  float4 p = permute( permute( permute( 
+comp_50=`             i.z + float4(0.0, i1.z, i2.z, 1.0 ))
+comp_51=`           + i.y + float4(0.0, i1.y, i2.y, 1.0 )) 
+comp_52=`           + i.x + float4(0.0, i1.x, i2.x, 1.0 ));
+comp_53=`
+comp_54=`// Gradients: 7x7 points over a square, mapped onto an octahedron.
+comp_55=`// The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)
+comp_56=`  float n_ = 0.142857142857; // 1.0/7.0
+comp_57=`  float3  ns = n_ * D.wyz - D.xzx;
+comp_58=`
+comp_59=`  float4 j = p - 49.0 * floor(p * ns.z * ns.z);  //  mod(p,7*7)
+comp_60=`
+comp_61=`  float4 x_ = floor(j * ns.z);
+comp_62=`  float4 y_ = floor(j - 7.0 * x_ );    // mod(j,N)
+comp_63=`
+comp_64=`  float4 x = x_ *ns.x + ns.yyyy;
+comp_65=`  float4 y = y_ *ns.x + ns.yyyy;
+comp_66=`  float4 h = 1.0 - abs(x) - abs(y);
+comp_67=`
+comp_68=`  float4 b0 = float4( x.xy, y.xy );
+comp_69=`  float4 b1 = float4( x.zw, y.zw );
+comp_70=`
+comp_71=`  //float4 s0 = float4(lessThan(b0,0.0))*2.0 - 1.0;
+comp_72=`  //float4 s1 = float4(lessThan(b1,0.0))*2.0 - 1.0;
+comp_73=`  float4 s0 = floor(b0)*2.0 + 1.0;
+comp_74=`  float4 s1 = floor(b1)*2.0 + 1.0;
+comp_75=`  float4 sh = -step(h, float4(0, 0, 0, 0));
+comp_76=`
+comp_77=`  float4 a0 = b0.xzyw + s0.xzyw*sh.xxyy ;
+comp_78=`  float4 a1 = b1.xzyw + s1.xzyw*sh.zzww ;
+comp_79=`
+comp_80=`  float3 p0 = float3(a0.xy,h.x);
+comp_81=`  float3 p1 = float3(a0.zw,h.y);
+comp_82=`  float3 p2 = float3(a1.xy,h.z);
+comp_83=`  float3 p3 = float3(a1.zw,h.w);
+comp_84=`
+comp_85=`//Normalise gradients
+comp_86=`  float4 norm = taylorInvSqrt(float4(dot(p0,p0), dot(p1,p1), dot(p2, p2), dot(p3,p3)));
+comp_87=`  p0 *= norm.x;
+comp_88=`  p1 *= norm.y;
+comp_89=`  p2 *= norm.z;
+comp_90=`  p3 *= norm.w;
+comp_91=`
+comp_92=`// Mix final noise value
+comp_93=`  float4 m = max(0.6 - float4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+comp_94=`  m = m * m;
+comp_95=`  return 42.0 * dot( m*m, float4( dot(p0,x0), dot(p1,x1), 
+comp_96=`                                dot(p2,x2), dot(p3,x3) ) );
+comp_97=`  }
+comp_98=`
+comp_99=`float normnoise(float noise) {
+comp_100=`	return 0.5*(noise+1.0);
+comp_101=`}
+comp_102=`
+comp_103=`float clouds(float2 scr) {
+comp_104=`    scr += float2(time*0.05, + time*0.01);
+comp_105=`    
+comp_106=`    float2 off1 = float2(50.0,33.0);
+comp_107=`    float2 off2 = float2(0.0, 0.0);
+comp_108=`    float2 off3 = float2(-300.0, 50.0);
+comp_109=`    float2 off4 = float2(-100.0, 200.0);
+comp_110=`    float2 off5 = float2(400.0, -200.0);
+comp_111=`    float2 off6 = float2(100.0, -1000.0);
+comp_112=`	float scale1 = 3.0;
+comp_113=`    float scale2 = 6.0;
+comp_114=`    float scale3 = 12.0;
+comp_115=`    float scale4 = 24.0;
+comp_116=`    float scale5 = 48.0;
+comp_117=`    float scale6 = 96.0;
+comp_118=`    return normnoise(snoise(float3((scr+off1)*scale1,time*0.5))*0.8 + 
+comp_119=`                     snoise(float3((scr+off2)*scale2,time*0.4))*0.4 +
+comp_120=`                     snoise(float3((scr+off3)*scale3,time*0.1))*0.2 +
+comp_121=`                     snoise(float3((scr+off4)*scale4,time*0.7))*0.1 +
+comp_122=`                     snoise(float3((scr+off5)*scale5,time*0.2))*0.05 +
+comp_123=`                     snoise(float3((scr+off6)*scale6,time*0.3))*0.025);
+comp_124=`}
+comp_125=`
+comp_126=`
+comp_127=`shader_body
+comp_128=`{
+comp_129=`    float2 center = float2(.5,.5);
+comp_130=`    
+comp_131=`    float2 light1 = float2(sin(time*1.2+50.0)*1.0 + cos(time*0.4+10.0)*0.6,sin(time*1.2+100.0)*1.6 + cos(time*0.2+20.0)*-0.2)*0.2+center;
+comp_132=`    float3 lightColor1 = float3(1.0, 0.3, 0.3);
+comp_133=`    
+comp_134=`    float2 light2 = float2(sin(time+3.0)*-2.0,cos(time+7.0)*2.0)*0.2+center;
+comp_135=`    float3 lightColor2 = float3(0.3, 1.0, 0.3);
+comp_136=`    
+comp_137=`    float2 light3 = float2(sin(time+3.0)*2.0,cos(time+14.0)*-2.0)*0.2+center;
+comp_138=`    float3 lightColor3 = float3(0.3, 0.3, 1.0);
+comp_139=`
+comp_140=`    
+comp_141=`    float cloudIntensity1 = 0.7*(1.0-(2.5*distance(uv, light1)));
+comp_142=`    float lighIntensity1 = 1.0/(100.0*distance(uv,light1));
+comp_143=`
+comp_144=`    float cloudIntensity2 = 0.7*(1.0-(2.5*distance(uv, light2)));
+comp_145=`    float lighIntensity2 = 1.0/(100.0*distance(uv,light2));
+comp_146=`    
+comp_147=`    float cloudIntensity3 = 0.7*(1.0-(2.5*distance(uv, light3)));
+comp_148=`    float lighIntensity3 = 1.0/(100.0*distance(uv,light3));
+comp_149=`    
+comp_150=`    ret = tex2D(sampler_main, uv).xyz;
+comp_151=`    //UV INVERT FIX
+comp_152=`    uv = -uv;
+comp_153=`    uv.x = -uv.x-1;
+comp_154=`    //END
+comp_155=`
+comp_156=`	ret += float4(        cloudIntensity1*clouds(uv)*lightColor1 + lighIntensity1*lightColor1 +
+comp_157=`                     cloudIntensity2*clouds(uv)*lightColor2 + lighIntensity2*lightColor2 +
+comp_158=`                     cloudIntensity3*clouds(uv)*lightColor3 + lighIntensity3*lightColor3 ,
+comp_159=`                     float(1));
+comp_160=`}

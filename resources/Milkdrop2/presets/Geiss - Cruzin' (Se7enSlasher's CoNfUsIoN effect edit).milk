@@ -1,0 +1,117 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 20/06/2026 at 20:50:06.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+[preset00]
+fRating=4.000
+fGammaAdj=2.000
+fDecay=0.980
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=2.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=6
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=4.000
+fWaveScale=1.692
+fWaveSmoothing=0.500
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=3.138
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00030
+rot=0.00000
+cx=0.500
+cy=0.110
+dx=0.00000
+dy=-0.00100
+warp=0.02430
+sx=1.00199
+sy=1.00499
+wave_r=0.000
+wave_g=0.570
+wave_b=1.000
+wave_x=0.650
+wave_y=0.500
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=wave_r = wave_r + 0.250*( 0.60*sin(10.937*time) + 0.40*sin(1.470*time) );
+per_frame_2=wave_g = wave_g + 0.300*( 0.60*sin(11.344*time) + 0.40*sin(1.041*time) );
+per_frame_3=wave_b = wave_b + 0.250*( 0.60*sin(21.251*time) + 0.40*sin(1.355*time) );
+per_frame_4=rot = rot + 0.004*( 0.60*sin(0.381*time) + 0.40*sin(0.579*time) );
+per_frame_5=cx = cx + 0.110*( 0.60*sin(0.374*time) + 0.40*sin(0.294*time) );
+per_frame_6=cy = cy + 0.110*( 0.60*sin(0.393*time) + 0.40*sin(0.223*time) );
+per_frame_7=decay = decay - 0.01*equal(frame%6,0);
+per_pixel_1=du = (x-cx)*2;
+per_pixel_2=dv = (y-cy)*2;
+per_pixel_3=q = 0.01*pow(du*du+dv*dv,1.5);
+per_pixel_4=dx = q*du;
+per_pixel_5=dy = q*dv;
+per_pixel_6=
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // sample previous frame
+warp_4=`    ret = tex2D( sampler_main, uv ).xyz;
+warp_5=`    
+warp_6=`    // darken (decay) over time
+warp_7=`    ret *= 0.98; //or try: ret -= 0.004;
+warp_8=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float2 uv_mirror = uv;
+comp_4=`    uv_mirror.x = .5 - abs(uv_mirror.x - .5); // mirror left
+comp_5=`    float3 col = GetMain(uv_mirror);
+comp_6=`
+comp_7=`    // Standard CoNfUsIoN (Invert Lightness)
+comp_8=`    // This perfectly replicates "Hue 180 + Invert" in RGB space
+comp_9=`    float cmin = min(col.r, min(col.g, col.b));
+comp_10=`    float cmax = max(col.r, max(col.g, col.b));
+comp_11=`
+comp_12=`    ret *= 2.00; //gamma
+comp_13=`    ret = col + 1 - (cmax + cmin); //Apply CoNfUsIoN effect calculation
+comp_14=`}

@@ -1,0 +1,96 @@
+[preset00]
+fRating=3.000
+fGammaAdj=2.000
+fDecay=0.000
+fVideoEchoZoom=2.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=6
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.504
+fWaveSmoothing=0.000
+fWaveParam=-0.460
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.020
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.50000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wave_0_init1=beatrand = 2+rand(3)
+wave_0_per_frame1=beatrand = if (bass > 2, 2+rand(3), beatrand);
+wave_0_per_frame2=
+wave_0_per_frame3=t1 = int(bass*7.5);
+wave_0_per_frame4=t2 = int(treb*7.5);
+wave_0_per_frame5=t3 = beatrand;
+wave_0_per_frame6=
+wave_0_per_frame7=r = rand(1);
+wave_0_per_frame8=g = rand(1);
+wave_0_per_frame9=b = rand(1);
+wave_0_per_point1=x = .5+sin(sample*10*t1)/t3;
+wave_0_per_point2=y = .5+cos(sample*10*t2)/t3;
+wave_0_per_point3=a = if(t1 != 0 && t2 != 0, 1, 0)

@@ -1,0 +1,452 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 28/06/2026 at 20:07:19.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=smooth_reaction = int(rand(2))
+per_frame_1=q1 = smooth_reaction
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`sampler sampler_rand00;
+comp_2=`sampler sampler_rand01;
+comp_3=`sampler sampler_rand02;
+comp_4=`sampler sampler_rand03;
+comp_5=`
+comp_6=`// Refined diamond-like noise
+comp_7=`float luxuryNoise(float2 uva, float timea, float scale) {
+comp_8=`    uva *= scale;
+comp_9=`    
+comp_10=`    float2 i_uv = floor(uva);
+comp_11=`    float2 f_uv = frac(uva);
+comp_12=`    
+comp_13=`    float2 p[4];
+comp_14=`    p[0] = float2(0.0, 0.0);
+comp_15=`    p[1] = float2(1.0, 0.0);
+comp_16=`    p[2] = float2(0.0, 1.0);
+comp_17=`    p[3] = float2(1.0, 1.0);
+comp_18=`    
+comp_19=`    float minDist = 1.0;
+comp_20=`    
+comp_21=`    for (int i = 0; i < 4; i++) {
+comp_22=`        float2 neighbor = p[i];
+comp_23=`        float2 point = float2(
+comp_24=`            0.5 + 0.5 * sin(timea * 0.2 + (i_uv.x + neighbor.x) * 1.273),
+comp_25=`            0.5 + 0.5 * cos(timea * 0.3 + (i_uv.y + neighbor.y) * 1.618)
+comp_26=`        );
+comp_27=`        
+comp_28=`        // Subtle music modulation
+comp_29=`        point.x += bass * 0.05;
+comp_30=`        point.y += mid * 0.04;
+comp_31=`        
+comp_32=`        float2 diff = neighbor + point - f_uv;
+comp_33=`        float dist = length(diff);
+comp_34=`        
+comp_35=`        minDist = min(minDist, dist);
+comp_36=`    }
+comp_37=`    
+comp_38=`    return 1.0 - smoothstep(0.0, 0.6, minDist);
+comp_39=`}
+comp_40=`
+comp_41=`// Prismatic facets like cut gemstones
+comp_42=`float3 gemstoneFacets(float2 uvb, float timeb) {
+comp_43=`    float2 p = uvb * 2.0 - 1.0;
+comp_44=`    
+comp_45=`    // Create geometric patterns
+comp_46=`    float pattern = 0.0;
+comp_47=`    
+comp_48=`    // Multiple facet layers
+comp_49=`    for (int i = 0; i < 4; i++) {
+comp_50=`        float angle = radians(float(i) * 45.0 + timeb * 0.1);
+comp_51=`        float2 dir = float2(sin(angle), cos(angle));
+comp_52=`        
+comp_53=`        float projection = dot(p, dir) * (8.0 + float(i) * 2.0);
+comp_54=`        float facet = abs(frac(projection) - 0.5) * 2.0;
+comp_55=`        facet = 1.0 - smoothstep(0.0, 0.3, facet);
+comp_56=`        
+comp_57=`        // Music subtly modulates facet brightness
+comp_58=`        facet *= 0.6 + bass * 0.1 + mid * 0.05;
+comp_59=`        pattern += facet * (0.3 - float(i) * 0.05);
+comp_60=`    }
+comp_61=`    
+comp_62=`    // Add central sparkle
+comp_63=`    float centerDist = length(p);
+comp_64=`    float sparkle = 1.0 - smoothstep(0.0, 0.8, centerDist);
+comp_65=`    sparkle = pow(sparkle, 3.0) * (0.5 + treb * 0.3);
+comp_66=`    pattern += sparkle * 0.4;
+comp_67=`    
+comp_68=`    // Luxury jewel colors (sapphire, emerald, ruby)
+comp_69=`    float3 sapphire = float3(0.0, 0.3, 0.6);
+comp_70=`    float3 emerald = float3(0.0, 0.5, 0.3);
+comp_71=`    float3 ruby = float3(0.6, 0.0, 0.2);
+comp_72=`    float3 amethyst = float3(0.5, 0.0, 0.5);
+comp_73=`    
+comp_74=`    // Color rotation based on time and music
+comp_75=`    float colorShift = sin(timeb * 0.15 + bass * 0.5) * 0.5 + 0.5;
+comp_76=`    
+comp_77=`    float3 jewelColor;
+comp_78=`    if (colorShift < 0.25) {
+comp_79=`        jewelColor = lerp(sapphire, emerald, colorShift * 4.0);
+comp_80=`    } else if (colorShift < 0.5) {
+comp_81=`        jewelColor = lerp(emerald, ruby, (colorShift - 0.25) * 4.0);
+comp_82=`    } else if (colorShift < 0.75) {
+comp_83=`        jewelColor = lerp(ruby, amethyst, (colorShift - 0.5) * 4.0);
+comp_84=`    } else {
+comp_85=`        jewelColor = lerp(amethyst, sapphire, (colorShift - 0.75) * 4.0);
+comp_86=`    }
+comp_87=`    
+comp_88=`    return jewelColor * pattern * 1.2;
+comp_89=`}
+comp_90=`
+comp_91=`// Liquid gold/silver flows
+comp_92=`float3 preciousMetal(float2 uvc, float timec) {
+comp_93=`    // Create flowing metal patterns
+comp_94=`    float2 flowUV = uvc;
+comp_95=`    
+comp_96=`    // Subtle music-driven flow
+comp_97=`    float flowStrength = (bass * 0.3 + mid * 0.2) * 0.1;
+comp_98=`    flowUV.x += sin(uvc.y * 6.0 + timec * 0.5) * flowStrength;
+comp_99=`    flowUV.y += cos(uvc.x * 5.0 + timec * 0.6) * flowStrength * 0.8;
+comp_100=`    
+comp_101=`    // Sample random textures for metal texture
+comp_102=`    float3 rand00 = tex2D(sampler_rand00, flowUV * 3.0).rgb;
+comp_103=`    float3 rand01 = tex2D(sampler_rand01, flowUV * 5.0).rgb;
+comp_104=`    
+comp_105=`    // Create metallic sheen
+comp_106=`    float metal = rand00.r * 0.4 + sin(flowUV.x * 12.0 + timec * 0.8) * 0.2;
+comp_107=`    metal += rand01.g * 0.3 + cos(flowUV.y * 10.0 + timec * 1.0) * 0.15;
+comp_108=`    
+comp_109=`    // Add subtle highlights
+comp_110=`    float highlights = pow(rand00.b * rand01.r, 1.5);
+comp_111=`    highlights *= smoothstep(0.3, 0.7, highlights);
+comp_112=`    highlights *= treb * 0.5 + treb_att * 0.3;
+comp_113=`    
+comp_114=`    metal = metal * 0.7 + highlights * 0.3;
+comp_115=`    
+comp_116=`    // Gold and silver colors
+comp_117=`    float3 gold = float3(0.8, 0.6, 0.2);
+comp_118=`    float3 silver = float3(0.9, 0.9, 0.95);
+comp_119=`    float3 roseGold = float3(0.9, 0.7, 0.6);
+comp_120=`    
+comp_121=`    // Choose metal based on music
+comp_122=`    float metalChoice = sin(timec * 0.1 + mid * 0.5) * 0.5 + 0.5;
+comp_123=`    float3 metalColor;
+comp_124=`    
+comp_125=`    if (bass > 0.5) {
+comp_126=`        // Bass favors gold
+comp_127=`        metalColor = lerp(gold, roseGold, metalChoice);
+comp_128=`    } else if (treb > 0.5) {
+comp_129=`        // Treble favors silver
+comp_130=`        metalColor = lerp(silver, float3(0.95, 0.95, 1.0), metalChoice);
+comp_131=`    } else {
+comp_132=`        // Default blend
+comp_133=`        metalColor = lerp(lerp(gold, silver, metalChoice), roseGold, 0.3);
+comp_134=`    }
+comp_135=`    
+comp_136=`    // Add metallic luster
+comp_137=`    float luster = sin(flowUV.x * 20.0 + timec * 1.5) * 0.1 + 0.9;
+comp_138=`    luster *= 0.8 + metal * 0.2;
+comp_139=`    
+comp_140=`    return metalColor * metal * luster * 0.8;
+comp_141=`}
+comp_142=`
+comp_143=`// Holographic interference patterns
+comp_144=`float3 holographicField(float2 uvd, float timed) {
+comp_145=`    float2 p = uvd * 2.0 - 1.0;
+comp_146=`    
+comp_147=`    // Create concentric rings
+comp_148=`    float dist = length(p);
+comp_149=`    float rings = sin(dist * 20.0 - timed * 1.5) * 0.5 + 0.5;
+comp_150=`    rings = pow(rings, 2.0);
+comp_151=`    
+comp_152=`    // Music modulates rings
+comp_153=`    rings *= 0.4 + bass * 0.2 + mid * 0.1;
+comp_154=`    
+comp_155=`    // Add interference patterns
+comp_156=`    float interference = sin(p.x * 15.0 + timed * 2.0) * 0.3;
+comp_157=`    interference += sin(p.y * 12.0 + timed * 1.8) * 0.25;
+comp_158=`    interference = abs(interference) * 0.6;
+comp_159=`    interference *= 0.5 + treb * 0.3;
+comp_160=`    
+comp_161=`    float hologram = max(rings, interference);
+comp_162=`    
+comp_163=`    // Holographic colors (iridescent)
+comp_164=`    float hue = timed * 0.1 + dist * 2.0 + bass * 0.3;
+comp_165=`    float3 hologramColor;
+comp_166=`    
+comp_167=`    // RGB sine waves for iridescence
+comp_168=`    hologramColor.r = sin(hue) * 0.5 + 0.5;
+comp_169=`    hologramColor.g = sin(hue + 2.094) * 0.5 + 0.5; // 120 degrees
+comp_170=`    hologramColor.b = sin(hue + 4.188) * 0.5 + 0.5; // 240 degrees
+comp_171=`    
+comp_172=`    // Soften colors
+comp_173=`    hologramColor = pow(hologramColor, 1.5);
+comp_174=`    
+comp_175=`    // Add ethereal glow
+comp_176=`    float glow = pow(hologram, 1.5) * (0.3 + treb * 0.2);
+comp_177=`    hologramColor += float3(0.3, 0.4, 0.5) * glow * 0.3;
+comp_178=`    
+comp_179=`    return hologramColor * hologram * 0.7;
+comp_180=`}
+comp_181=`
+comp_182=`// Floating luxury particles (diamonds/dust)
+comp_183=`float3 luxuryParticles(float2 uve, float timee) {
+comp_184=`    float3 particles = float3(0.0, 0.0, 0.0);
+comp_185=`    
+comp_186=`    // Create elegant particle field
+comp_187=`    for (int i = 0; i < 12; i++) {
+comp_188=`        float fi = float(i);
+comp_189=`        
+comp_190=`        // Particle parameters
+comp_191=`        float speed = 0.1 + fi * 0.02;
+comp_192=`        float size = 0.001 + fi * 0.0005;
+comp_193=`        float2 offset = float2(sin(fi * 23.45), cos(fi * 67.89));
+comp_194=`        
+comp_195=`        // Gentle music influence
+comp_196=`        speed *= 1.0 + mid * 0.1;
+comp_197=`        size *= 1.0 + treb * 0.05;
+comp_198=`        
+comp_199=`        // Particle motion (gentle floating)
+comp_200=`        float2 particlePos = 0.5 + 0.3 * float2(
+comp_201=`            sin(timee * speed * 0.3 + offset.x * 6.28 + fi * 1.2),
+comp_202=`            cos(timee * speed * 0.4 + offset.y * 6.28 + fi * 1.5)
+comp_203=`        );
+comp_204=`        
+comp_205=`        // Subtle music drift
+comp_206=`        particlePos.x += bass * 0.02 * sin(timee * 0.5 + fi);
+comp_207=`        particlePos.y += mid * 0.015 * cos(timee * 0.6 + fi);
+comp_208=`        
+comp_209=`        // Distance to particle
+comp_210=`        float dist = length(uve - particlePos);
+comp_211=`        
+comp_212=`        // Particle shape (soft glow)
+comp_213=`        float particle = 1.0 - smoothstep(0.0, size * 3.0, dist);
+comp_214=`        particle = pow(particle, 2.0);
+comp_215=`        
+comp_216=`        // Diamond-like sparkle
+comp_217=`        float sparkle = sin(timee * 3.0 + fi * 10.0) * 0.3 + 0.7;
+comp_218=`        particle *= sparkle;
+comp_219=`        
+comp_220=`        // Luxury particle colors (diamond white with hints of color)
+comp_221=`        float3 particleColor = float3(
+comp_222=`            0.9 + 0.1 * sin(fi * 0.5),
+comp_223=`            0.95 + 0.05 * cos(fi * 0.7),
+comp_224=`            1.0 + 0.1 * sin(fi * 0.9)
+comp_225=`        );
+comp_226=`        
+comp_227=`        // Gentle music brightness
+comp_228=`        float brightness = 0.2 + (bass * 0.1 + mid * 0.05 + treb * 0.08);
+comp_229=`        particles += particleColor * particle * brightness * 0.08;
+comp_230=`    }
+comp_231=`    
+comp_232=`    // Add occasional diamond sparkles on treble peaks
+comp_233=`    if (treb > 0.6) {
+comp_234=`        float2 sparkUV = frac(uve + float2(sin(timee * 2.0), cos(timee * 1.7)));
+comp_235=`        float sparkle = tex2D(sampler_rand02, sparkUV * 3.0).r;
+comp_236=`        sparkle = pow(sparkle, 4.0) * treb * 0.8;
+comp_237=`        particles += float3(1.0, 1.0, 1.0) * sparkle * 0.3;
+comp_238=`    }
+comp_239=`    
+comp_240=`    return particles;
+comp_241=`}
+comp_242=`
+comp_243=`// Ambient light field
+comp_244=`float3 ambientLuxury(float2 uvf, float timef) {
+comp_245=`    float2 centerVec = uvf - 0.5;
+comp_246=`    float dist = length(centerVec);
+comp_247=`    
+comp_248=`    // Create soft ambient gradient
+comp_249=`    float ambient = 1.0 - smoothstep(0.0, 0.7, dist);
+comp_250=`    ambient = pow(ambient, 1.2);
+comp_251=`    
+comp_252=`    // Music subtly modulates ambient light
+comp_253=`    ambient *= 0.6 + bass * 0.1 + mid * 0.05;
+comp_254=`    
+comp_255=`    // Soft ambient color (warm luxury tone)
+comp_256=`    float3 ambientColor = float3(0.1, 0.08, 0.15); // Deep purple-black
+comp_257=`    
+comp_258=`    // Add very subtle color shift
+comp_259=`    ambientColor.r += sin(timef * 0.05) * 0.02;
+comp_260=`    ambientColor.g += cos(timef * 0.06) * 0.01;
+comp_261=`    
+comp_262=`    return ambientColor * ambient;
+comp_263=`}
+comp_264=`
+comp_265=`shader_body {
+comp_266=`
+comp_267=`    if (q1)
+comp_268=`    {
+comp_269=`        bass = bass_att;
+comp_270=`        mid = mid_att;
+comp_271=`        treb = treb_att;
+comp_272=`    }
+comp_273=`
+comp_274=`    //float2 uv = vv_frag_normcoord;
+comp_275=`    
+comp_276=`    // Gentle time modulation
+comp_277=`    float luxuryTime = time * 0.4;
+comp_278=`    luxuryTime += bass * 0.15 + mid * 0.1 + treb * 0.05;
+comp_279=`    
+comp_280=`    // Apply refined distortion (very subtle)
+comp_281=`    float distortion = (bass * 0.2 + mid * 0.15 + treb * 0.1) * 0.1;
+comp_282=`    distortion = smoothstep(0.0, 0.3, distortion); // Gentle curve
+comp_283=`    
+comp_284=`    float2 refinedUV = uv;
+comp_285=`    
+comp_286=`    // Gentle warping
+comp_287=`    refinedUV.x += sin(uv.y * 8.0 + luxuryTime * 1.2) * distortion * 0.02;
+comp_288=`    refinedUV.y += cos(uv.x * 7.0 + luxuryTime * 1.0) * distortion * 0.02;
+comp_289=`    
+comp_290=`    // Generate luxury layers
+comp_291=`    float3 gemLayer = gemstoneFacets(refinedUV, luxuryTime);
+comp_292=`    float3 metalLayer = preciousMetal(refinedUV, luxuryTime);
+comp_293=`    float3 hologramLayer = holographicField(refinedUV, luxuryTime);
+comp_294=`    float3 particleLayer = luxuryParticles(refinedUV, luxuryTime);
+comp_295=`    float3 ambientLayer = ambientLuxury(refinedUV, luxuryTime);
+comp_296=`    
+comp_297=`    // Combine layers with luxury blending
+comp_298=`    // Start with ambient as base
+comp_299=`    float3 finalColor = ambientLayer;
+comp_300=`    
+comp_301=`    // Add gems with overlay blending
+comp_302=`    float3 gemOverlay = gemLayer * (1.0 - ambientLayer);
+comp_303=`    finalColor += gemOverlay * 0.8;
+comp_304=`    
+comp_305=`    // Add metals with soft light blending
+comp_306=`    float3 metalBlend = metalLayer * (finalColor * 2.0);
+comp_307=`    finalColor = lerp(finalColor, metalBlend, 0.4);
+comp_308=`    
+comp_309=`    // Add holograms with additive but controlled
+comp_310=`    finalColor += hologramLayer * 0.3;
+comp_311=`    
+comp_312=`    // Add particles with screen blend
+comp_313=`    float3 particleBlend = 1.0 - (1.0 - finalColor) * (1.0 - particleLayer);
+comp_314=`    finalColor = lerp(finalColor, particleBlend, 0.6);
+comp_315=`    
+comp_316=`    // Create refined pulse (no seizure)
+comp_317=`    float refinedPulse = sin(luxuryTime * 0.8) * 0.05 + 0.95;
+comp_318=`    refinedPulse += bass * 0.08 * smoothstep(0.1, 0.3, bass);
+comp_319=`    refinedPulse += mid * 0.04 * smoothstep(0.1, 0.3, mid);
+comp_320=`    finalColor *= refinedPulse;
+comp_321=`    
+comp_322=`    // Add elegant vignette
+comp_323=`    float2 centerVec = uv - 0.5;
+comp_324=`    float dist = length(centerVec);
+comp_325=`    float vignette = 1.0 - smoothstep(0.0, 0.8, dist);
+comp_326=`    vignette = pow(vignette, 1.5);
+comp_327=`    
+comp_328=`    // Vignette pulse (very gentle)
+comp_329=`    vignette *= 0.85 + 0.15 * sin(luxuryTime * 0.3);
+comp_330=`    finalColor *= vignette;
+comp_331=`    
+comp_332=`    // Luxury color grading
+comp_333=`    // Boost contrast elegantly
+comp_334=`    finalColor = pow(finalColor, 1.1);
+comp_335=`    
+comp_336=`    // Add subtle color grading
+comp_337=`    finalColor.r *= 1.05; // Slight warmth
+comp_338=`    finalColor.g *= 1.02;
+comp_339=`    finalColor.b *= 0.98; // Slight coolness in shadows
+comp_340=`    
+comp_341=`    // Sophisticated saturation control
+comp_342=`    float luminance = dot(finalColor, float3(0.299, 0.587, 0.114));
+comp_343=`    float3 chroma = finalColor - luminance;
+comp_344=`    
+comp_345=`    // Dynamic saturation based on music
+comp_346=`    float saturationBoost = 1.3 + bass * 0.1 + treb * 0.05;
+comp_347=`    saturationBoost = clamp(saturationBoost, 1.0, 1.5);
+comp_348=`    
+comp_349=`    finalColor = luminance + chroma * saturationBoost;
+comp_350=`    
+comp_351=`    // Refined highlight rolloff (prevent harsh whites)
+comp_352=`    finalColor = finalColor * (1.0 - 0.2) + finalColor * finalColor * 0.2;
+comp_353=`    
+comp_354=`    // Luxury clamp (preserve highlight detail)
+comp_355=`    finalColor = min(finalColor, 0.97);
+comp_356=`    
+comp_357=`    // Ensure deep blacks
+comp_358=`    finalColor = max(finalColor, 0.03);
+comp_359=`    
+comp_360=`    // Final smooth curve for filmic look
+comp_361=`    finalColor = pow(finalColor, 0.95);
+comp_362=`    
+comp_363=`    ret = float4(finalColor, 1.0);
+comp_364=`}

@@ -1,0 +1,207 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=2
+PSVERSION_COMP=3
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=smooth_reaction = int(rand(2));
+per_frame_1=q1 = smooth_reaction;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`// MilkDrop shader: Realistic Glass with Reactive Lighting
+comp_2=`// Samplers for random textures - use existing rand textures from MilkDrop
+comp_3=`sampler sampler_rand00;
+comp_4=`sampler sampler_rand01;
+comp_5=`sampler sampler_rand02;
+comp_6=`sampler sampler_rand03;
+comp_7=`
+comp_8=`shader_body
+comp_9=`{
+comp_10=`    if (q1)
+comp_11=`    {
+comp_12=`        bass = bass_att;
+comp_13=`        mid = mid_att;
+comp_14=`        treb = treb_att; 
+comp_15=`    }
+comp_16=`    
+comp_17=`    // Create realistic glass texture using multiple noise layers
+comp_18=`    float3 glass_color = float3(0.9, 0.95, 1.0); // Light blue glass tint
+comp_19=`    
+comp_20=`    // Layer 1: Large glass imperfections
+comp_21=`    float2 uv1 = uv * 2.0 + float2(time * 0.1, time * 0.05);
+comp_22=`    float noise1 = tex2D(sampler_rand00, uv1).r;
+comp_23=`    
+comp_24=`    // Layer 2: Medium details
+comp_25=`    float2 uv2 = uv * 4.0 + float2(time * 0.15, time * 0.07);
+comp_26=`    float noise2 = tex2D(sampler_rand01, uv2).g;
+comp_27=`    
+comp_28=`    // Layer 3: Small details (bubbles/scratches)
+comp_29=`    float2 uv3 = uv * 8.0 + float2(time * 0.2, time * 0.1);
+comp_30=`    float noise3 = tex2D(sampler_rand02, uv3).b;
+comp_31=`    
+comp_32=`    // Combine noise layers for glass texture
+comp_33=`    float glass_texture = noise1 * 0.5 + noise2 * 0.3 + noise3 * 0.2;
+comp_34=`    
+comp_35=`    // Make it more glass-like with smooth variations
+comp_36=`    glass_texture = smoothstep(0.3, 0.7, glass_texture);
+comp_37=`    
+comp_38=`    // Refraction effect
+comp_39=`    float2 refracted_uv = uv + (glass_texture - 0.5) * 0.02;
+comp_40=`    
+comp_41=`    // Sample background with refraction
+comp_42=`    float3 background = tex2D(sampler_fc_main, refracted_uv).rgb;
+comp_43=`    
+comp_44=`    // Add glass color tint
+comp_45=`    float3 glass_result = background * glass_color;
+comp_46=`    
+comp_47=`    // MUSIC-REACTIVE LIGHT BEHIND GLASS
+comp_48=`    // Create radial light from center
+comp_49=`    float2 center_vec = uv - 0.5;
+comp_50=`    float dist_from_center = length(center_vec);
+comp_51=`    
+comp_52=`    // Bass creates main pulsing light
+comp_53=`    float bass_light = bass * 2.0;
+comp_54=`    float light_radius = 0.2 + bass_light * 0.3;
+comp_55=`    float light_strength = .2 - smoothstep(light_radius * 0.8, light_radius, dist_from_center);
+comp_56=`    light_strength *= bass_light;
+comp_57=`    
+comp_58=`    // Mid frequencies add colored rings
+comp_59=`    float mid_rings = sin(dist_from_center * 20.0 - time * 2.0 + mid * 5.0) * 0.5 + 0.5;
+comp_60=`    mid_rings *= mid;
+comp_61=`    
+comp_62=`    // Treble adds sparkling highlights
+comp_63=`    float treble_sparkle = tex2D(sampler_rand01, uv * 10.0 + time).r;
+comp_64=`    treble_sparkle = step(0.9, treble_sparkle) * treb;
+comp_65=`    
+comp_66=`    // Combine light effects
+comp_67=`    float3 reactive_light = float3(0, 0, 0);
+comp_68=`    
+comp_69=`    // Bass - warm core light
+comp_70=`    reactive_light += light_strength * float3(1.0, 0.7, 0.3);
+comp_71=`    
+comp_72=`    // Mid - cool colored rings
+comp_73=`    reactive_light += mid_rings * float3(0.3, 0.6, 1.0) * 0.5;
+comp_74=`    
+comp_75=`    // Treble - white sparkles
+comp_76=`    reactive_light += treble_sparkle * float3(1.0, 1.0, 1.0);
+comp_77=`    
+comp_78=`    // Add bloom/glow to reactive light
+comp_79=`    float glow = light_strength * 0.3;
+comp_80=`    //reactive_light *= 1.0 + glow * 3.0;
+comp_81=`    
+comp_82=`    // KALEIDOSCOPE EFFECT
+comp_83=`    float kaleido_segments = 6.0 + floor(mid * 4.0); // 6-10 segments based on mid
+comp_84=`    float angle = atan2(center_vec.y, center_vec.x);
+comp_85=`    float segment_angle = 3.14159 * 2.0 / kaleido_segments;
+comp_86=`    float kaleido_angle = fmod(angle + time * 0.2, segment_angle);
+comp_87=`    kaleido_angle = min(kaleido_angle, segment_angle - kaleido_angle);
+comp_88=`    
+comp_89=`    // Create new UVs for kaleidoscope
+comp_90=`    float kaleido_dist = dist_from_center * (0.8 + bass * 0.4);
+comp_91=`    float2 kaleido_uv = 0.5 + float2(cos(kaleido_angle), sin(kaleido_angle)) * kaleido_dist;
+comp_92=`    
+comp_93=`    // Sample kaleidoscope pattern
+comp_94=`    float3 kaleido_pattern = tex2D(sampler_rand03, kaleido_uv * 2.0).rgb;
+comp_95=`    kaleido_pattern = smoothstep(0.3, 0.7, kaleido_pattern);
+comp_96=`    
+comp_97=`    // Add kaleidoscope effect to reactive light
+comp_98=`    float kaleido_strength = 0.3 + treb * 0.4;
+comp_99=`    reactive_light += kaleido_pattern * kaleido_strength;
+comp_100=`    
+comp_101=`    // Glass properties: transparency and reflections
+comp_102=`    float glass_thickness = 0.3 + noise1 * 0.2;
+comp_103=`    float transparency = 0.7 - glass_thickness * 0.3;
+comp_104=`    transparency = clamp(transparency, 0.4, 0.9);
+comp_105=`    
+comp_106=`    // Add internal reflections to glass
+comp_107=`    float reflection = pow(1.0 - dist_from_center, 2.0) * 0.3;
+comp_108=`    reflection += treble_sparkle * 0.2;
+comp_109=`    
+comp_110=`    // FINAL COMPOSITION
+comp_111=`    // Blend glass with reactive light (light shines through glass)
+comp_112=`    float3 final_color = glass_result * transparency;
+comp_113=`    
+comp_114=`    // Add reactive light behind glass (scaled by distance)
+comp_115=`    float light_visibility = 1.0 - smoothstep(0.1, 0.5, dist_from_center);
+comp_116=`    final_color += reactive_light * light_visibility * (0.5 + bass * 0.5);
+comp_117=`    
+comp_118=`    // Add glass reflections on top
+comp_119=`    final_color += reflection * float3(1.0, 1.0, 1.0) * glass_texture;
+comp_120=`    
+comp_121=`    // Edge darkening for realism
+comp_122=`    float vignette = 1.0 - dist_from_center * 0.8;
+comp_123=`    final_color *= vignette;
+comp_124=`    
+comp_125=`    // Output final color
+comp_126=`    ret = float4(final_color, 1.0);
+comp_127=`}

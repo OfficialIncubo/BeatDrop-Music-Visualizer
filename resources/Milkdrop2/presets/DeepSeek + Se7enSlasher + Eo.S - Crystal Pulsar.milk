@@ -1,0 +1,241 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_1=vol = (bass_att+mid_att+treb_att)*0.25;
+per_frame_2=mtime=mtime+vol*0.15;
+per_frame_3=q1=mtime*0.4;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`sampler sampler_rand00;
+comp_2=`sampler sampler_rand01;
+comp_3=`sampler sampler_rand02;
+comp_4=`
+comp_5=`// Random hash function for noise
+comp_6=`float hash(float n) { return frac(sin(n)*753.456); }
+comp_7=`
+comp_8=`// Simple 2D noise
+comp_9=`float noise(float2 p) {
+comp_10=`    float2 ip = floor(p);
+comp_11=`    float2 fp = frac(p);
+comp_12=`    fp = fp*fp*(3.0-2.0*fp);
+comp_13=`    
+comp_14=`    float a = hash(ip.x + ip.y*57.0);
+comp_15=`    float b = hash(ip.x + 1.0 + ip.y*57.0);
+comp_16=`    float c = hash(ip.x + (ip.y + 1.0)*57.0);
+comp_17=`    float d = hash(ip.x + 1.0 + (ip.y + 1.0)*57.0);
+comp_18=`    
+comp_19=`    return lerp(lerp(a, b, fp.x), lerp(c, d, fp.x), fp.y);
+comp_20=`}
+comp_21=`
+comp_22=`// Fractal Brownian Motion for glass texture
+comp_23=`float fbm(float2 p) {
+comp_24=`    float f = 0.0;
+comp_25=`    f += 0.5000*noise(p); p *= 2.02;
+comp_26=`    f += 0.2500*noise(p); p *= 2.03;
+comp_27=`    f += 0.1250*noise(p); p *= 2.01;
+comp_28=`    f += 0.0625*noise(p);
+comp_29=`    return f;
+comp_30=`}
+comp_31=`
+comp_32=`// Generate glass refraction texture
+comp_33=`float glass_texture(float2 uva, float time_val) {
+comp_34=`    float t = time_val * 0.3;
+comp_35=`    
+comp_36=`    // Sample random textures for glass imperfections
+comp_37=`    float rand_tex1 = tex2D(sampler_rand00, uva * 1.3 + t * 0.1).r;
+comp_38=`    float rand_tex2 = tex2D(sampler_rand01, uva * 2.1 - t * 0.07).g;
+comp_39=`    float rand_tex3 = tex2D(sampler_rand02, uva * 3.2 + t * 0.05).b;
+comp_40=`    
+comp_41=`    // Procedural noise for glass structure
+comp_42=`    float glass_noise = fbm(uva * 4.0 + t * 0.3);
+comp_43=`    float glass_noise2 = fbm(uva * 8.0 - t * 0.2);
+comp_44=`    
+comp_45=`    // Combine textures with music-reactive modulation
+comp_46=`    float tex = rand_tex1 * 0.4 + rand_tex2 * 0.3 + rand_tex3 * 0.3;
+comp_47=`    tex += glass_noise * 0.3 + glass_noise2 * 0.2;
+comp_48=`    
+comp_49=`    // Music makes glass "ripple"
+comp_50=`    tex += sin(uva.x * 25.0 + t * 2.0) * 0.1 * treb;
+comp_51=`    tex += sin(uva.y * 20.0 + t * 1.5) * 0.08 * mid;
+comp_52=`    tex += sin((uva.x + uva.y) * 15.0 + t) * 0.12 * bass;
+comp_53=`    
+comp_54=`    return tex;
+comp_55=`}
+comp_56=`
+comp_57=`// Generate light rays behind the glass
+comp_58=`float3 back_light(float2 uvb, float time_val) {
+comp_59=`    float t = time_val * 0.5;
+comp_60=`    
+comp_61=`    // Music-reactive light intensity
+comp_62=`    float light_power = 0.5 + bass * 1.5 + bass_att * 0.8;
+comp_63=`    float light_color_mix = 0.3 + mid * 1.2 + mid_att * 0.5;
+comp_64=`    float light_detail = 0.2 + treb * 2.0 + treb_att * 0.6;
+comp_65=`    
+comp_66=`    // Create radial light glow
+comp_67=`    float2 centered_uv = uvb - 0.5;
+comp_68=`    float dist = length(centered_uv);
+comp_69=`    float angle = atan2(centered_uv.y, centered_uv.x);
+comp_70=`    
+comp_71=`    // Light rays pattern
+comp_72=`    float rays = sin(angle * 12.0 + t * 1.5) * 0.5 + 0.5;
+comp_73=`    rays *= 1.0 - smoothstep(0.0, 0.7, dist);
+comp_74=`    
+comp_75=`    // Add music-reactive pulsing to rays
+comp_76=`    rays *= 0.8 + sin(t * 3.0 + bass * 10.0) * 0.2 * bass_att;
+comp_77=`    
+comp_78=`    // Color shifting with music
+comp_79=`    float hue_shift = t * 0.2 + mid * 0.5;
+comp_80=`    float3 color1 = float3(0.9, 0.3, 0.1); // Orange
+comp_81=`    float3 color2 = float3(0.1, 0.7, 0.9); // Cyan
+comp_82=`    float3 color3 = float3(0.8, 0.2, 0.8); // Purple
+comp_83=`    
+comp_84=`    float color_blend = sin(hue_shift) * 0.5 + 0.5;
+comp_85=`    float3 base_color = lerp(color1, color2, color_blend);
+comp_86=`    
+comp_87=`    // Add treble sparkles
+comp_88=`    float sparkles = tex2D(sampler_rand00, uvb * 5.0 + t * 0.2).r;
+comp_89=`    sparkles = pow(sparkles, 3.0) * treb * 2.0;
+comp_90=`    
+comp_91=`    // Combine everything
+comp_92=`    float3 light_color = base_color * rays * light_power;
+comp_93=`    light_color += float3(1.0, 1.0, 0.8) * sparkles * light_detail;
+comp_94=`    
+comp_95=`    // Vignette effect
+comp_96=`    float vignette = 1.0 - dist * 0.8;
+comp_97=`    vignette = pow(vignette, 1.5);
+comp_98=`    light_color *= vignette;
+comp_99=`    
+comp_100=`    return light_color;
+comp_101=`}
+comp_102=`
+comp_103=`// Apply glass refraction effect
+comp_104=`float2 glass_refraction(float2 uvc, float glass_val) {
+comp_105=`    // Create refraction distortion from glass texture
+comp_106=`    float distortion_strength = 0.03 + bass * 0.02 + mid * 0.01;
+comp_107=`    
+comp_108=`    // Distort UV based on glass texture
+comp_109=`    float2 distortion = float2(
+comp_110=`        sin(glass_val * 10.0) * 0.01,
+comp_111=`        cos(glass_val * 8.0) * 0.01
+comp_112=`    );
+comp_113=`    
+comp_114=`    // Add music-reactive warping
+comp_115=`    distortion.x += sin(uvc.y * 15.0 + time * 2.0) * 0.005 * bass;
+comp_116=`    distortion.y += cos(uvc.x * 12.0 + time * 1.7) * 0.004 * mid;
+comp_117=`    
+comp_118=`    return uvc + distortion * distortion_strength;
+comp_119=`}
+comp_120=`
+comp_121=`shader_body {
+comp_122=`    // Time with music sync
+comp_123=`    float music_time = time + q1;
+comp_124=`    
+comp_125=`    // Create glass texture
+comp_126=`    float glass_tex = glass_texture(uv, music_time);
+comp_127=`    
+comp_128=`    // Apply glass refraction to UV coordinates
+comp_129=`    float2 refracted_uv = glass_refraction(uv, glass_tex);
+comp_130=`    
+comp_131=`    // Generate light behind the glass
+comp_132=`    float3 light_color = back_light(refracted_uv, music_time);
+comp_133=`    
+comp_134=`    // Glass tint and opacity
+comp_135=`    float glass_opacity = 0.7 - bass * 0.1; // Bass makes glass more transparent
+comp_136=`    float3 glass_tint = float3(0.9, 0.95, 1.0); // Slight blue tint
+comp_137=`    
+comp_138=`    // View through the glass (background light distorted by glass)
+comp_139=`    float3 view_through = light_color * glass_tint;
+comp_140=`    
+comp_141=`    // Glass surface highlights
+comp_142=`    float highlights = pow(glass_tex, 2.0);
+comp_143=`    highlights *= 0.5 + treb * 0.5; // Treble adds sparkle
+comp_144=`    float3 glass_highlights = float3(1.0, 1.0, 1.0) * highlights * 0.3;
+comp_145=`    
+comp_146=`    // Combine view through glass with glass highlights
+comp_147=`    float3 final_color = view_through * glass_opacity + glass_highlights;
+comp_148=`    
+comp_149=`    // Add overall music-reactive brightness
+comp_150=`    float brightness_pulse = 1.0 + (bass_att + mid_att + treb_att) * 0.2;
+comp_151=`    final_color *= brightness_pulse;
+comp_152=`    
+comp_153=`    // Add subtle color shift with music
+comp_154=`    final_color.r += bass * 0.05;
+comp_155=`    final_color.g += mid * 0.03;
+comp_156=`    final_color.b += treb * 0.04;
+comp_157=`    
+comp_158=`    // Output final color
+comp_159=`    ret = float4(final_color, 1.0);
+comp_160=`}

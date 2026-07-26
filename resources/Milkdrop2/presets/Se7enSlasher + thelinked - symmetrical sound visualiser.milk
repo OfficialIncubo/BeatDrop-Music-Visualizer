@@ -1,0 +1,118 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 18/05/2026 at 16:21:02.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=2
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+FFTAttack=1.000
+FFTDecay=0.750
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.235
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`/*
+warp_2=`symmetrical sound visualiser by thelinked
+warp_3=`Converted from ShaderToy to MilkDrop by me (No AI, hand-written)
+warp_4=`Original ShaderToy shader link: https://www.shadertoy.com/view/MdlSzB
+warp_5=`*/
+warp_6=`
+warp_7=`shader_body
+warp_8=`{
+warp_9=`    if(uv.x > 0.5)
+warp_10=`    {
+warp_11=`	        uv -= .5;
+warp_12=`        	uv *= 2;
+warp_13=`    }
+warp_14=`    else
+warp_15=`    {
+warp_16=`	        uv *= 2;
+warp_17=`	        uv = 1 - uv;
+warp_18=`    }
+warp_19=`
+warp_20=`    float fft  = get_fft(uv.x); //texture( iChannel0, vec2(uv.x,0.25) ).x; 
+warp_21=`    float dr = length(uv);
+warp_22=`    float radius = 1.8;
+warp_23=`    
+warp_24=`    float3 col = float3(0,0,0);
+warp_25=`    if( abs(uv.y)<fft )
+warp_26=`    {
+warp_27=`	        col = lerp( float3(0,0,0), float3( fft, fft*(1-fft), 1-fft ) * fft * fft, fft);
+warp_28=`    }
+warp_29=`
+warp_30=`
+warp_31=`    ret.x = 0.5 - smoothstep(dr, 0.0, radius * col.x);
+warp_32=`    ret.y = 1.5 - smoothstep(dr, 0.0, radius * col.z);
+warp_33=`    ret.z = 1.5 - smoothstep(dr, 0.0, radius * col.x);
+warp_34=`}
+comp_1=`shader_body
+comp_2=`{ ret = GetPixel(uv); }

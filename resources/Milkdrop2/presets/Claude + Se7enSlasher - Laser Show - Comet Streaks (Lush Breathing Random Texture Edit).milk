@@ -1,0 +1,176 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 29/06/2026 at 22:05:07.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.890
+fDecay=0.970
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.630
+fWaveParam=-1.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=q1=0.0;
+per_frame_init_2=q2=40.0;
+per_frame_init_3=q5=0.0;
+per_frame_init_4=q6=0.0;
+per_frame_init_5=time_delay=0.0;
+per_frame_init_6=rand_laser=rand(155);
+per_frame_init_7=temp1 = 0;
+per_frame_init_8=temp2 = 0;
+per_frame_1=// SKELETON (kept intact, medium retrigger to vary comet palette/spread)
+per_frame_2=time_delay = if(time_delay >= .38 && bass > 2, 0, time_delay += 1/fps);
+per_frame_3=rand_laser = if(time_delay == 0, rand(155), rand_laser);
+per_frame_4=
+per_frame_5=// Custom variable mapping to feed the Comp Shader
+per_frame_6=q1 = rand_laser;                          // color palette seed
+per_frame_7=q2 = time_delay;                          // beat clock (0 = beat)
+per_frame_8=temp1 += (0.30 + mid_att*0.30)/fps;       // comet travel master clock (continuous)
+per_frame_9=temp2 += (0.12 + treb_att*0.15)/fps;      // slow sway-amplitude wobble clock
+per_frame_10=q3 = temp1;
+per_frame_11=q4 = temp2;
+per_frame_12=q6 = 0.5 + 0.5*sin(time*0.27 + rand_laser*0.04); // slow color drift phase
+per_frame_13=warp = 0;
+warp_1=`sampler sampler_rand00;
+warp_2=`
+warp_3=`shader_body {
+warp_4=`    ret = (tex2d(sampler_rand00, uv).xyz) * (.5 + sin(time*2)/2 );
+warp_5=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float aspect = texsize.x * texsize.z;
+comp_4=`    float2 center = float2(0.5, 0.5);
+comp_5=`    float2 p = uv - center;
+comp_6=`    p.x *= aspect;
+comp_7=`
+comp_8=`    float col_sel = fmod(q1 * 2.4, 4.0);
+comp_9=`    float3 col1, col2;
+comp_10=`    if (col_sel < 1.0) { col1 = float3(0.4, 0.8, 1.0); col2 = float3(1.0, 1.0, 1.0); }
+comp_11=`    else if (col_sel < 2.0) { col1 = float3(1.0, 0.4, 0.0); col2 = float3(1.0, 0.9, 0.3); }
+comp_12=`    else if (col_sel < 3.0) { col1 = float3(0.8, 0.2, 1.0); col2 = float3(0.3, 1.0, 0.6); }
+comp_13=`    else { col1 = float3(1.0, 0.2, 0.5); col2 = float3(0.2, 0.6, 1.0); }
+comp_14=`
+comp_15=`    float beat_strike = exp(-q2 * 4.5);
+comp_16=`
+comp_17=`    // 1. COMET STREAKS
+comp_18=`    // Several comets fly across the screen on independent curved arcs (a
+comp_19=`    // straight drift plus a perpendicular sine sway, like a slightly bent
+comp_20=`    // trajectory), each with a long fading tail built from lagged position
+comp_21=`    // samples. Comets respawn off-screen and loop back around continuously.
+comp_22=`    float3 lasers = float3(0,0,0);
+comp_23=`    int COMETS = 5;
+comp_24=`    for (int c = 0; c < COMETS; c++) {
+comp_25=`        float cf = float(c);
+comp_26=`        float speed = 0.5 + cf * 0.13;
+comp_27=`        float start_off = cf * 1.7;
+comp_28=`        float entry_ang = cf * 1.256637 + start_off; // spread entry angles around the circle
+comp_29=`
+comp_30=`        float2 entry_dir = float2(cos(entry_ang), sin(entry_ang));
+comp_31=`        float2 perp = float2(-entry_dir.y, entry_dir.x);
+comp_32=`
+comp_33=`        float life = fmod(q3 * speed + start_off, 2.4) - 0.2; // travel param, off-screen at ends
+comp_34=`        float sway_amp = 0.15 + 0.05*sin(q4 + cf);
+comp_35=`
+comp_36=`        int TAIL = 14;
+comp_37=`        for (int t = 0; t < TAIL; t++) {
+comp_38=`            float lag = float(t) * 0.035;
+comp_39=`            float lt = life - lag;
+comp_40=`            float2 comet_p = entry_dir * (lt * 0.75) + perp * sin(lt*2.2 + cf)*sway_amp;
+comp_41=`
+comp_42=`            float d = length(p - comet_p);
+comp_43=`            float w = 1.0 - (float(t)/float(TAIL));
+comp_44=`            float onscreen = smoothstep(-0.2, 0.0, lt) * smoothstep(2.2, 2.0, lt);
+comp_45=`            float core = exp(-pow(d/0.008, 2.0)) * w * onscreen;
+comp_46=`            float glow = exp(-pow(d/0.035, 2.0)) * 0.3 * w * onscreen;
+comp_47=`
+comp_48=`            float3 col = lerp(col1, col2, cf/float(COMETS-1));
+comp_49=`            lasers += col * (core + glow);
+comp_50=`        }
+comp_51=`
+comp_52=`        // bright head of each comet
+comp_53=`        float2 head_p = entry_dir * (life * 0.75) + perp * sin(life*2.2+cf)*sway_amp;
+comp_54=`        float head_onscreen = smoothstep(-0.2, 0.0, life) * smoothstep(2.2, 2.0, life);
+comp_55=`        float head = exp(-length(p-head_p)*45.0) * head_onscreen * (1.0 + beat_strike*1.5);
+comp_56=`        lasers += lerp(col1,col2,0.5) * head * 1.2;
+comp_57=`    }
+comp_58=`
+comp_59=`    // 2. Smoke from MilkDrop's blur buffer
+comp_60=`    float3 smoke = GetBlur2(uv).rgb;
+comp_61=`    float3 bg = smoke * col1 * 0.10;
+comp_62=`
+comp_63=`    // 3. Smooth non-seizure breathing
+comp_64=`    float breathe = 0.84 + 0.16*sin(time*0.4 + q6*M_PI);
+comp_65=`
+comp_66=`    float3 final_rgb = (lasers + bg) * breathe;
+comp_67=`    ret = final_rgb;
+comp_68=`}

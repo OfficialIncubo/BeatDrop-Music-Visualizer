@@ -1,0 +1,147 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=2
+PSVERSION_COMP=3
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=smooth_reaction = int(rand(2));
+per_frame_1=q1 = smooth_reaction;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`sampler sampler_rand00;
+comp_2=`sampler sampler_rand01;
+comp_3=`
+comp_4=`shader_body
+comp_5=`{
+comp_6=`    
+comp_7=`    if (q1)
+comp_8=`    {
+comp_9=`        bass = bass_att;
+comp_10=`        mid = mid_att;
+comp_11=`        treb = treb_att;
+comp_12=`    }
+comp_13=`
+comp_14=`    // Random glass texture from sampler_rand00
+comp_15=`    float4 rand_tex = tex2D(sampler_rand01, uv);
+comp_16=`    
+comp_17=`    // Create glass-like refraction pattern
+comp_18=`    float2 glass_uv = uv;
+comp_19=`    float time_var = time * 0.5;
+comp_20=`    
+comp_21=`    // Refraction distortion using random texture
+comp_22=`    float2 distortion = float2(
+comp_23=`        sin(rand_tex.r * 6.283 + time_var) * 0.1,
+comp_24=`        cos(rand_tex.g * 6.283 + time_var) * 0.1
+comp_25=`    );
+comp_26=`    
+comp_27=`    // Audio-reactive distortion
+comp_28=`    distortion *= bass * 0.3 + mid * 0.2 + treb * 0.1;
+comp_29=`    
+comp_30=`    // Apply distortion
+comp_31=`    glass_uv += distortion;
+comp_32=`    
+comp_33=`    // Sample with distortion
+comp_34=`    float4 glass_color = tex2D(sampler_rand00, glass_uv);
+comp_35=`    
+comp_36=`    // Create internal reflections
+comp_37=`    float reflection = sin(uv.x * 10.0 + time_var) * 0.5 + 0.5;
+comp_38=`    reflection *= sin(uv.y * 8.0 + time_var * 1.3) * 0.5 + 0.5;
+comp_39=`    reflection = pow(reflection, 2.0) * 0.6;
+comp_40=`    
+comp_41=`    // Audio-reactive reflections
+comp_42=`    reflection *= 1.0 + bass * 0.8 + treb * 0.4;
+comp_43=`    
+comp_44=`    // Glass color with transparency
+comp_45=`    float4 final_color = glass_color;
+comp_46=`    final_color.rgb *= 1.0 + reflection;
+comp_47=`    final_color.a = 0.8 + reflection * 0.2; // Semi-transparent glass
+comp_48=`    
+comp_49=`    // Audio-reactive edge glow
+comp_50=`    float2 center_vec = uv - 0.5;
+comp_51=`    float dist_to_center = length(center_vec);
+comp_52=`    float edge_glow = smoothstep(0.4, 0.2, dist_to_center);
+comp_53=`    edge_glow *= bass * 0.5 + mid * 0.3;
+comp_54=`    
+comp_55=`    // Add some sparkle on high frequencies
+comp_56=`    float sparkle = step(0.95, rand_tex.b) * treb;
+comp_57=`    final_color.rgb += float3(sparkle, sparkle * 0.8, sparkle * 0.6) * 0.3;
+comp_58=`    
+comp_59=`    // Subtle color cycling
+comp_60=`    final_color.rgb *= 0.9 + 0.1 * float3(
+comp_61=`        sin(time_var * 0.3),
+comp_62=`        sin(time_var * 0.5),
+comp_63=`        sin(time_var * 0.7)
+comp_64=`    );
+comp_65=`    
+comp_66=`    ret = saturate(final_color);
+comp_67=`}

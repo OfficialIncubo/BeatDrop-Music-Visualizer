@@ -1,0 +1,402 @@
+[preset00]
+fRating=3.000
+fGammaAdj=1.994
+fDecay=0.970
+fVideoEchoZoom=2.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=1
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=4.500
+fWaveScale=0.239
+fWaveSmoothing=0.900
+fWaveParam=0.120
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=0.335
+fWarpScale=3.928
+fZoomExponent=2.10000
+fShader=0.000
+zoom=1.00002
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=0.650
+wave_g=0.650
+wave_b=0.650
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.029
+ib_r=0.340
+ib_g=0.340
+ib_b=0.340
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=0
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.50000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wavecode_1_enabled=0
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=0
+wavecode_1_scaling=1.00000
+wavecode_1_smoothing=0.50000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=1.000
+wavecode_2_enabled=0
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.00000
+wavecode_2_smoothing=0.50000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=1.000
+wavecode_2_a=1.000
+wavecode_3_enabled=0
+wavecode_3_samples=512
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=1.000
+shapecode_0_enabled=1
+shapecode_0_sides=100
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=0
+shapecode_0_num_inst=4
+shapecode_0_x=0.600
+shapecode_0_y=0.500
+shapecode_0_rad=0.04467
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=1.00000
+shapecode_0_r=0.000
+shapecode_0_g=0.000
+shapecode_0_b=0.000
+shapecode_0_a=1.000
+shapecode_0_r2=0.000
+shapecode_0_g2=0.000
+shapecode_0_b2=0.000
+shapecode_0_a2=0.000
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=0.000
+shape_0_per_frame1=//Treble Part
+shape_0_per_frame2=
+shape_0_per_frame3=x = instance/25+.56;
+shape_0_per_frame4=
+shape_0_per_frame5=//1st LED
+shape_0_per_frame6=r = if(instance == 0, q1, 0);
+shape_0_per_frame7=g = if(instance == 0, q2, 0);
+shape_0_per_frame8=b = if(instance == 0, q3, 0);
+shape_0_per_frame9=
+shape_0_per_frame10=//2nd LED - 25%
+shape_0_per_frame11=r += if(instance == 1, q1-.25, 0);
+shape_0_per_frame12=g += if(instance == 1, q2-.25, 0);
+shape_0_per_frame13=b += if(instance == 1, q3-.25, 0);
+shape_0_per_frame14=
+shape_0_per_frame15=r += if(instance == 1, q4+.25, 0);
+shape_0_per_frame16=g += if(instance == 1, q5+.25, 0);
+shape_0_per_frame17=b += if(instance == 1, q6+.25, 0);
+shape_0_per_frame18=
+shape_0_per_frame19=//3rd LED - 75%
+shape_0_per_frame20=r += if(instance == 2, q1-.75, 0);
+shape_0_per_frame21=g += if(instance == 2, q2-.75, 0);
+shape_0_per_frame22=b += if(instance == 2, q3-.75, 0);
+shape_0_per_frame23=
+shape_0_per_frame24=r += if(instance == 2, q4+.75, 0);
+shape_0_per_frame25=g += if(instance == 2, q5+.75, 0);
+shape_0_per_frame26=b += if(instance == 2, q6+.75, 0);
+shape_0_per_frame27=
+shape_0_per_frame28=//4th LED
+shape_0_per_frame29=r += if(instance == 3, q4, 0);
+shape_0_per_frame30=g += if(instance == 3, q5, 0);
+shape_0_per_frame31=b += if(instance == 3, q6, 0);
+shape_0_per_frame32=
+shape_0_per_frame33=//Music Reaction: Treble:
+shape_0_per_frame34=
+shape_0_per_frame35=a = if (instance == 0, if(treb>1, 1, 0), 0);
+shape_0_per_frame36=a += if (instance == 1, if(treb>1.5, 1, 0), 0);
+shape_0_per_frame37=a += if (instance == 2, if(treb>2, 1, 0), 0);
+shape_0_per_frame38=a += if (instance == 3, if(treb>2.5, 1, 0), 0);
+shapecode_1_enabled=1
+shapecode_1_sides=100
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_num_inst=4
+shapecode_1_x=0.500
+shapecode_1_y=0.500
+shapecode_1_rad=0.04507
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=1.00000
+shapecode_1_r=0.000
+shapecode_1_g=0.000
+shapecode_1_b=1.000
+shapecode_1_a=1.000
+shapecode_1_r2=0.000
+shapecode_1_g2=0.000
+shapecode_1_b2=0.000
+shapecode_1_a2=0.000
+shapecode_1_border_r=1.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=0.000
+shapecode_1_border_a=0.000
+shape_1_per_frame1=//Middle Part
+shape_1_per_frame2=
+shape_1_per_frame3=y = instance/25+.56;
+shape_1_per_frame4=
+shape_1_per_frame5=//1st LED
+shape_1_per_frame6=r = if(instance == 0, q1, 0);
+shape_1_per_frame7=g = if(instance == 0, q2, 0);
+shape_1_per_frame8=b = if(instance == 0, q3, 0);
+shape_1_per_frame9=
+shape_1_per_frame10=//2nd LED - 25%
+shape_1_per_frame11=r += if(instance == 1, q1-.25, 0);
+shape_1_per_frame12=g += if(instance == 1, q2-.25, 0);
+shape_1_per_frame13=b += if(instance == 1, q3-.25, 0);
+shape_1_per_frame14=
+shape_1_per_frame15=r += if(instance == 1, q4+.25, 0);
+shape_1_per_frame16=g += if(instance == 1, q5+.25, 0);
+shape_1_per_frame17=b += if(instance == 1, q6+.25, 0);
+shape_1_per_frame18=
+shape_1_per_frame19=//3nd LED - 75%
+shape_1_per_frame20=r += if(instance == 2, q1-.75, 0);
+shape_1_per_frame21=g += if(instance == 2, q2-.75, 0);
+shape_1_per_frame22=b += if(instance == 2, q3-.75, 0);
+shape_1_per_frame23=
+shape_1_per_frame24=r += if(instance == 2, q4+.75, 0);
+shape_1_per_frame25=g += if(instance == 2, q5+.75, 0);
+shape_1_per_frame26=b += if(instance == 2, q6+.75, 0);
+shape_1_per_frame27=
+shape_1_per_frame28=//3nd LED
+shape_1_per_frame29=r += if(instance == 3, q4, 0);
+shape_1_per_frame30=g += if(instance == 3, q5, 0);
+shape_1_per_frame31=b += if(instance == 3, q6, 0);
+shape_1_per_frame32=
+shape_1_per_frame33=//Music Reaction: Middle:
+shape_1_per_frame34=
+shape_1_per_frame35=a = if (instance == 0, if(mid>1, 1, 0), 0);
+shape_1_per_frame36=a += if (instance == 1, if(mid>1.5, 1, 0), 0);
+shape_1_per_frame37=a += if (instance == 2, if(mid>2, 1, 0), 0);
+shape_1_per_frame38=a += if (instance == 3, if(mid>2.5, 1, 0), 0);
+shapecode_2_enabled=1
+shapecode_2_sides=100
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_num_inst=4
+shapecode_2_x=0.500
+shapecode_2_y=0.500
+shapecode_2_rad=0.04511
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=1.00000
+shapecode_2_r=1.000
+shapecode_2_g=1.000
+shapecode_2_b=1.000
+shapecode_2_a=1.000
+shapecode_2_r2=0.000
+shapecode_2_g2=0.000
+shapecode_2_b2=0.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=1.000
+shapecode_2_border_a=0.000
+shape_2_per_frame1=//Bass Part
+shape_2_per_frame2=
+shape_2_per_frame3=x -= instance/25+.06;
+shape_2_per_frame4=
+shape_2_per_frame5=//1st LED
+shape_2_per_frame6=r = if(instance == 0, q1, 0);
+shape_2_per_frame7=g = if(instance == 0, q2, 0);
+shape_2_per_frame8=b = if(instance == 0, q3, 0);
+shape_2_per_frame9=
+shape_2_per_frame10=//2nd LED - 25%
+shape_2_per_frame11=r += if(instance == 1, q1-.25, 0);
+shape_2_per_frame12=g += if(instance == 1, q2-.25, 0);
+shape_2_per_frame13=b += if(instance == 1, q3-.25, 0);
+shape_2_per_frame14=
+shape_2_per_frame15=r += if(instance == 1, q4+.25, 0);
+shape_2_per_frame16=g += if(instance == 1, q5+.25, 0);
+shape_2_per_frame17=b += if(instance == 1, q6+.25, 0);
+shape_2_per_frame18=
+shape_2_per_frame19=//3nd LED - 75%
+shape_2_per_frame20=r += if(instance == 2, q1-.75, 0);
+shape_2_per_frame21=g += if(instance == 2, q2-.75, 0);
+shape_2_per_frame22=b += if(instance == 2, q3-.75, 0);
+shape_2_per_frame23=
+shape_2_per_frame24=r += if(instance == 2, q4+.75, 0);
+shape_2_per_frame25=g += if(instance == 2, q5+.75, 0);
+shape_2_per_frame26=b += if(instance == 2, q6+.75, 0);
+shape_2_per_frame27=
+shape_2_per_frame28=//3nd LED
+shape_2_per_frame29=r += if(instance == 3, q4, 0);
+shape_2_per_frame30=g += if(instance == 3, q5, 0);
+shape_2_per_frame31=b += if(instance == 3, q6, 0);
+shape_2_per_frame32=
+shape_2_per_frame33=//Music Reaction: Bass:
+shape_2_per_frame34=
+shape_2_per_frame35=a = if (instance == 0, if(bass*1.25>1, 1, 0), 0);
+shape_2_per_frame36=a += if (instance == 1, if(bass*1.25>1.5, 1, 0), 0);
+shape_2_per_frame37=a += if (instance == 2, if(bass*1.25>2, 1, 0), 0);
+shape_2_per_frame38=a += if (instance == 3, if(bass*1.25>2.5, 1, 0), 0);
+shapecode_3_enabled=1
+shapecode_3_sides=100
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=4
+shapecode_3_x=0.500
+shapecode_3_y=0.500
+shapecode_3_rad=0.04511
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.00000
+shapecode_3_r=1.000
+shapecode_3_g=0.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=0.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=1.000
+shapecode_3_border_b=1.000
+shapecode_3_border_a=0.000
+shape_3_per_frame1=//Volume Part
+shape_3_per_frame2=
+shape_3_per_frame3=y -= instance/25+.06;
+shape_3_per_frame4=
+shape_3_per_frame5=//1st LED
+shape_3_per_frame6=r = if(instance == 0, q1, 0);
+shape_3_per_frame7=g = if(instance == 0, q2, 0);
+shape_3_per_frame8=b = if(instance == 0, q3, 0);
+shape_3_per_frame9=
+shape_3_per_frame10=//2nd LED - 25%
+shape_3_per_frame11=r += if(instance == 1, q1-.25, 0);
+shape_3_per_frame12=g += if(instance == 1, q2-.25, 0);
+shape_3_per_frame13=b += if(instance == 1, q3-.25, 0);
+shape_3_per_frame14=
+shape_3_per_frame15=r += if(instance == 1, q4+.25, 0);
+shape_3_per_frame16=g += if(instance == 1, q5+.25, 0);
+shape_3_per_frame17=b += if(instance == 1, q6+.25, 0);
+shape_3_per_frame18=
+shape_3_per_frame19=//3nd LED - 75%
+shape_3_per_frame20=r += if(instance == 2, q1-.75, 0);
+shape_3_per_frame21=g += if(instance == 2, q2-.75, 0);
+shape_3_per_frame22=b += if(instance == 2, q3-.75, 0);
+shape_3_per_frame23=
+shape_3_per_frame24=r += if(instance == 2, q4+.75, 0);
+shape_3_per_frame25=g += if(instance == 2, q5+.75, 0);
+shape_3_per_frame26=b += if(instance == 2, q6+.75, 0);
+shape_3_per_frame27=
+shape_3_per_frame28=//3nd LED
+shape_3_per_frame29=r += if(instance == 3, q4, 0);
+shape_3_per_frame30=g += if(instance == 3, q5, 0);
+shape_3_per_frame31=b += if(instance == 3, q6, 0);
+shape_3_per_frame32=
+shape_3_per_frame33=//Music Reaction: Volume:
+shape_3_per_frame34=
+shape_3_per_frame35=a = if (instance == 0, if(q7>1, 1, 0), 0);
+shape_3_per_frame36=a += if (instance == 1, if(q7>1.5, 1, 0), 0);
+shape_3_per_frame37=a += if (instance == 2, if(q7>2, 1, 0), 0);
+shape_3_per_frame38=a += if (instance == 3, if(q7>2.5, 1, 0), 0);
+per_frame_init_1=//LED Color Initialization
+per_frame_init_2=choosecol1 = int(rand(3));
+per_frame_init_3=choosecol2 = int(rand(3));
+per_frame_init_4=
+per_frame_init_5=redcolor1 = if (choosecol1 == 0, 1, 0);
+per_frame_init_6=greencolor1 = if (choosecol1 == 1, 1, 0);
+per_frame_init_7=bluecolor1 = if (choosecol1 == 2, 1, 0);
+per_frame_init_8=
+per_frame_init_9=redcolor2 = if (choosecol2 == 0, 1, 0);
+per_frame_init_10=greencolor2 = if (choosecol2 == 1, 1, 0);
+per_frame_init_11=bluecolor2 = if (choosecol2 == 2, 1, 0);
+per_frame_1=//LED Color Transfer
+per_frame_2=q1 = redcolor1;
+per_frame_3=q2 = greencolor1;
+per_frame_4=q3 = bluecolor1;
+per_frame_5=
+per_frame_6=q4 = redcolor2;
+per_frame_7=q5 = greencolor2;
+per_frame_8=q6 = bluecolor2;
+per_frame_9=
+per_frame_10=//Misc. Transfer
+per_frame_11=q7 = (bass+mid+treb)/2;
+per_frame_12=q8 = aspecty/1.5;
+per_frame_13=
+per_frame_14=//Disabling things
+per_frame_15=wave_a = 0;
+per_frame_16=warp = 0;
+per_frame_17=
+per_frame_18=//Post Process
+per_frame_19=monitor = decay = .98+max(0,sin(time)/50);
+per_pixel_1=rot = if (rad<.75, 1.25725, -.5+0|bass);
+per_pixel_2=zoom = if (rad<.75, 1.025, 1.005+treb_att/195);

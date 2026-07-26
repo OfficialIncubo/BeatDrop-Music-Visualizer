@@ -1,0 +1,272 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=3
+[preset00]
+FFTAttack=0.500
+FFTDecay=0.700
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=1.000
+ob_g=0.000
+ob_b=1.000
+ob_a=1.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`// Original shader from laralubsch
+warp_2=`// https://www.shadertoy.com/view/ltXyRS
+warp_3=`
+warp_4=`// Constants
+warp_5=`#define PI 3.14159265359
+warp_6=`#define MaxSteps 64 // Steps (S)
+warp_7=`#define Precision 0.004 // Precision (P)
+warp_8=`#define MaxDist 2.0 // Max distance (D)
+warp_9=`#define Iterations 20.0 // Iterations for scene function
+warp_10=`
+warp_11=`// Global variables
+warp_12=`static float3 _ro; // Ray origin
+warp_13=`static float3 _rd; // Ray direction
+warp_14=`static float3 _p;  // Transformed position
+warp_15=`static float _d;   // Distance to object
+warp_16=`static float _t;   // Distance travelled
+warp_17=`static float _s;   // Steps taken
+warp_18=`
+warp_19=`// Helper functions
+warp_20=`float2x2 rot(float a)
+warp_21=`{
+warp_22=`    float c = cos(a), s = sin(a);
+warp_23=`    return transpose(float2x2(c, -s, s, c));
+warp_24=`}
+warp_25=`
+warp_26=`void mirror(inout float3 p, float3 n)
+warp_27=`{
+warp_28=`    p -= 2.0 * n * min(0.0, dot(p, n));
+warp_29=`}
+warp_30=`
+warp_31=`float scene(float3 p)
+warp_32=`{
+warp_33=`    float a = time;
+warp_34=`    float s = 1.5;
+warp_35=`    
+warp_36=`    p.xz = mul(p.xz, rot(a));
+warp_37=`    
+warp_38=`    for (float i = 0.0; i < Iterations; i++)
+warp_39=`    {
+warp_40=`        a = (time / texsize.xy + mouse.x * 2).x;
+warp_41=`        p.xz = mul(p.xz, rot(a+mouse.z));
+warp_42=`        a = (time / texsize.xy + mouse.y * 2).y;
+warp_43=`        p.xy = mul(p.xy, rot(a));
+warp_44=`
+warp_45=`        mirror(p, normalize(float3(0.0, 1.0, 1.0)));
+warp_46=`        mirror(p, normalize(float3(1.0, 0.0, 1.0)));
+warp_47=`        mirror(p, normalize(float3(1.0, 1.0, 0.0)));
+warp_48=`
+warp_49=`        p = p * s - (s - 1.0) / 2.0;
+warp_50=`    }
+warp_51=`    
+warp_52=`    _p = p;
+warp_53=`    _d = length(p) / pow(s, Iterations);
+warp_54=`    
+warp_55=`    return _d;
+warp_56=`}
+warp_57=`
+warp_58=`float3 march(float3 ro, float3 rd)
+warp_59=`{
+warp_60=`    float t = Precision;
+warp_61=`    float3 p;
+warp_62=`    int j;
+warp_63=`    for (j = 0; j < MaxSteps; j++)
+warp_64=`    {
+warp_65=`        p = ro + rd * t;
+warp_66=`        float d = scene(p);
+warp_67=`        t += d;
+warp_68=`        if (d < Precision || t > MaxDist)
+warp_69=`        {
+warp_70=`            _t = t;
+warp_71=`            _s = float(j);
+warp_72=`            j = MaxSteps;
+warp_73=`        }
+warp_74=`    }
+warp_75=`    return float3(p.x, p.y, p.z);
+warp_76=`}
+warp_77=`
+warp_78=`float3 getNormal(float3 p)
+warp_79=`{
+warp_80=`    float2 e = float2(Precision, 0.0);
+warp_81=`    return normalize(float3(
+warp_82=`        scene(p + e.xyy) - scene(p - e.xyy),
+warp_83=`        scene(p + e.yxy) - scene(p - e.yxy),
+warp_84=`        scene(p + e.yyx) - scene(p - e.yyx)
+warp_85=`    ));
+warp_86=`}
+warp_87=`
+warp_88=`float3 getColor(float3 p)
+warp_89=`{
+warp_90=`    float3 col = float3(0.0, 0.0, 0.0);
+warp_91=`    if (_d <= Precision || _t >= 2.0)
+warp_92=`    {
+warp_93=`        float3 c = _p / length(_p);
+warp_94=`        float3 n = getNormal(p);
+warp_95=`        float3 l = _ro;
+warp_96=`        float diff = max(dot(normalize(l - p), n), 0.0);
+warp_97=`        float spec = pow(max(dot(reflect(normalize(p - l), n), normalize(_ro - p)), 0.0), 10.0);
+warp_98=`        float aoc = _t < 2.0 ? 5.0 / _s : _s / float(MaxSteps);
+warp_99=`        col = c * aoc + spec * step(_t, 2.0);
+warp_100=`    }
+warp_101=`    return col;
+warp_102=`}
+warp_103=`
+warp_104=`shader_body
+warp_105=`{
+warp_106=`    // UV setup
+warp_107=`    float2 xy = uv_orig;
+warp_108=`    uv = (2.0 * xy - 1.0) * float2(texsize.x / texsize.y, 1.0);
+warp_109=`    uv.y = -uv.y;
+warp_110=`    
+warp_111=`    // Camera setup
+warp_112=`    _ro = float3(uv.x, uv.y, -1.0);
+warp_113=`    _rd = float3(0.0, 0.0, 1.0);
+warp_114=`    
+warp_115=`    // Scene rendering
+warp_116=`    float3 col = getColor(march(_ro, _rd));
+warp_117=`    
+warp_118=`    ret = float4(col, 1.0);
+warp_119=`}
+comp_1=`#define fVBars 100.0
+comp_2=`#define fft_start 0.05
+comp_3=`#define fft_end   0.85
+comp_4=`
+comp_5=`float3 B2_spline(float3 x)
+comp_6=`{
+comp_7=`    float3 t = 3.0 * x;
+comp_8=`
+comp_9=`    float3 b0 = step(0.0, t)     * step(0.0, 1.0 - t);
+comp_10=`    float3 b1 = step(0.0, t-1.0) * step(0.0, 2.0 - t);
+comp_11=`    float3 b2 = step(0.0, t-2.0) * step(0.0, 3.0 - t);
+comp_12=`
+comp_13=`    return 0.5 * (
+comp_14=`        b0 * (t*t) +
+comp_15=`        b1 * (-2.0*(t*t) + 6.0*t - 3.0) +
+comp_16=`        b2 * ((3.0 - t)*(3.0 - t))
+comp_17=`    );
+comp_18=`}
+comp_19=`
+comp_20=`shader_body
+comp_21=`{
+comp_22=`//MilkDrop3 Flip Mode:
+comp_23=`uv = 1-uv;
+comp_24=`
+comp_25=`    // Sample current warp shader
+comp_26=`    float4 cubeLayer = tex2D(sampler_main, uv);
+comp_27=`    uv = uv_orig;
+comp_28=`    float t = time / 100.0;
+comp_29=`
+comp_30=`    // --- BAR QUANTIZATION ---
+comp_31=`    float xq = floor(uv.x * fVBars) / fVBars;
+comp_32=`
+comp_33=`    // --- FFT SAMPLE ---
+comp_34=`    float fft_uv = abs(2.0 * xq - 1.0);
+comp_35=`    float fft_pos = lerp(fft_start, fft_end, fft_uv);
+comp_36=`    float fSample = get_fft(fft_pos);
+comp_37=`
+comp_38=`    // --- HARD BAR SPACING ---
+comp_39=`    float squarewave = sign(fmod(uv.x, 1.0/fVBars) - 0.004);
+comp_40=`    float fft = squarewave * fSample * 0.5;
+comp_41=`
+comp_42=`    // --- VERTICAL STRIPING ---
+comp_43=`    float fHBars = 150.0;
+comp_44=`    float fVSpacing = 0.18;
+comp_45=`    float fVFreq = uv.y * 3.14;
+comp_46=`    fVFreq = sign(sin(fVFreq * fHBars) + 1.0 - fVSpacing);
+comp_47=`
+comp_48=`    // --- B-SPLINE COLOR ---
+comp_49=`    float3 spline_args = frac(float3(uv.x - t,
+comp_50=`                                     uv.x - t - 1.0/3.0,
+comp_51=`                                     uv.x - t - 2.0/3.0));
+comp_52=`    float3 spline = B2_spline(spline_args);
+comp_53=`
+comp_54=`    float3 base_color = float3(2.0, 3.0, 4.0); // purple
+comp_55=`    base_color += 0.5 * spline;
+comp_56=`
+comp_57=`    // --- HEIGHT MASK ---
+comp_58=`    float mask = step(uv.y, fft); // bars grow from bottom
+comp_59=`    float flame = pow(uv.y / max(fft,0.001), 2.2);
+comp_60=`    float3 col = base_color * (mask * 0.7 * 0.9) * flame * fVFreq;
+comp_61=`
+comp_62=`    // --- TOP DIMMING ---
+comp_63=`    float tt = fft - uv.y;
+comp_64=`    float df = sign(tt);
+comp_65=`    df = (df + 1.0)/0.5;
+comp_66=`    col -= col * df * 0.18;
+comp_67=`
+comp_68=`    // Gamma correction
+comp_69=`    col = pow(col, 1.0/2.2);
+comp_70=`
+comp_71=`    // --- COMPOSITE ON TOP OF WARP SHADER ---
+comp_72=`    float barAlpha = saturate(length(col) * 12.5);
+comp_73=`    float3 final = lerp(cubeLayer.rgb, col, barAlpha);
+comp_74=`
+comp_75=`    ret = float4(final,1.0);
+comp_76=`    ret-=0.1;
+comp_77=`}

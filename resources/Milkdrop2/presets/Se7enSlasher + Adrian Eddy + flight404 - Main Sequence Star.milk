@@ -1,0 +1,182 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 23/04/2026 at 15:12:26.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+FFTAttack=0.700
+FFTDecay=0.350
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.235
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`/*
+warp_2=`Main Sequence Star by flight404 and Adrian Eddy
+warp_3=`Converted from Adrian Eddy's Spectrum Analyzer Android App to MilkDrop by me (no AI, hand-written)
+warp_4=`Original ShaderToy shader link: https://www.shadertoy.com/view/4dXGR4
+warp_5=`*/
+warp_6=`
+warp_7=`sampler sampler_stoy_organic2;
+warp_8=`
+warp_9=`float snoise(float3 uva, float res) { // Trisomie21
+warp_10=`    float3 s = float3(1e0, 1e2, 1e4);
+warp_11=`    
+warp_12=`    uva *= res;
+warp_13=`    
+warp_14=`    float3 uv0 = floor(fmod(uva, res))*s;
+warp_15=`    float3 uv1 = floor(fmod(uva+float3(1,1,1), res))*s;
+warp_16=`    
+warp_17=`    float3 f = frac(uva); f = f*f*(3-2*f);
+warp_18=`
+warp_19=`    float4 v = float4(uv0.x+uv0.y+uv0.z, uv1.x+uv0.y+uv0.z,
+warp_20=`                    uv0.x+uv1.y+uv0.z, uv1.x+uv1.y+uv0.z);
+warp_21=`
+warp_22=`    float4 r = frac(sin(v*1e-3)*1e5);
+warp_23=`    float r0 = lerp(lerp(r.x, r.y, f.x), lerp(r.z, r.w, f.x), f.y);
+warp_24=`    
+warp_25=`    r = frac(sin((v + uv1.z - uv0.z)*1e-3)*1e5);
+warp_26=`    float r1 = lerp(lerp(r.x, r.y, f.x), lerp(r.z, r.w, f.x), f.y);
+warp_27=`    
+warp_28=`    return lerp(r0, r1, f.z)*2-1;
+warp_29=`}
+warp_30=`
+warp_31=`float freqs[4];
+warp_32=`
+warp_33=`shader_body
+warp_34=`{
+warp_35=`    freqs[0] = get_fft(.01); // texture2D( sa_AudioChannel, vec2( 0.01, 0.25 ) ).x;
+warp_36=`    freqs[1] = get_fft(.07); // texture2D( sa_AudioChannel, vec2( 0.07, 0.25 ) ).x;
+warp_37=`    freqs[2] = get_fft(.15); // texture2D( sa_AudioChannel, vec2( 0.15, 0.25 ) ).x;
+warp_38=`    freqs[3] = get_fft(.30); // texture2D( sa_AudioChannel, vec2( 0.30, 0.25 ) ).x;
+warp_39=`
+warp_40=`    float brightness    = freqs[1] * .25 + freqs[2] * .25;
+warp_41=`    float radius        = .24 + brightness * .2;
+warp_42=`    float invRadius     = 1/radius;
+warp_43=`    
+warp_44=`    uv = uv * 2 - .5;
+warp_45=`    float3 orange       = float3( .8, .65, .3 );
+warp_46=`    float3 orangeRed    = float3( .8, .35, .1 );
+warp_47=`    float t             = time * .1;
+warp_48=`    float2 aspectT      = float2 (1,texsize.y/texsize.x);
+warp_49=`    float2 p            = (uv - .5);
+warp_50=`    p *= aspectT;
+warp_51=`
+warp_52=`    float fade         = pow( length( 2 * p ), .5 );
+warp_53=`    float fVal1        = 1 - fade;
+warp_54=`    float fVal2        = 1 - fade;
+warp_55=`    
+warp_56=`    float angle        = atan2( p.y, p.x )/M_PI_2;
+warp_57=`    float dist         = length(p);
+warp_58=`    float3 coord       = float3( angle, dist, t * .1 );
+warp_59=`    
+warp_60=`    float newTime1     = abs( snoise( coord + float3( 0.0, -t * ( .35 + brightness * .001 ), t * .015 ), 15 ) );
+warp_61=`    float newTime2     = abs( snoise( coord + float3( 0.0, -t * ( .15 + brightness * .001 ), t * .015 ), 45 ) );    
+warp_62=`    for( int i=1; i<=7; i++ ){
+warp_63=`        float power = pow( 2, float(i + 1) );
+warp_64=`        fVal1 += ( 0.5 / power ) * snoise( coord + float3( 0, -t, t * .2 ), ( power * ( 10 ) * ( newTime1 + 1 ) ) );
+warp_65=`        fVal2 += ( 0.5 / power ) * snoise( coord + float3( 0, -t, t * .2 ), ( power * ( 25 ) * ( newTime2 + 1 ) ) );
+warp_66=`    }
+warp_67=`    
+warp_68=`    float corona       = pow( fVal1 * max( 1.1 - fade, 0 ), 2 ) * 50;
+warp_69=`    corona             += pow( fVal2 * max( 1.1 - fade, 0 ), 2 ) * 50;
+warp_70=`    corona             *= 1.2 - newTime1;
+warp_71=`    float3 sphereNormal  = float3( 0, 0, 1 );
+warp_72=`    float3 dir           = 0;
+warp_73=`    float3 center        = float3( .5, .5, 1 );
+warp_74=`    float3 starSphere    = 0;
+warp_75=`    
+warp_76=`    float2 sp = (uv - .5) * 2;
+warp_77=`    sp *= aspectT;
+warp_78=`    sp *= ( 2 - brightness );
+warp_79=`    float r = dot(sp,sp);
+warp_80=`    float f = (1-sqrt(abs(1-r)))/(r) + brightness * .5;
+warp_81=`    if( dist < radius ) {
+warp_82=`        corona            *= pow( dist * invRadius, 24 );
+warp_83=`        float2 newUv;
+warp_84=`        newUv.x = sp.x*f;
+warp_85=`        newUv.y = sp.y*f;
+warp_86=`        newUv += float2( t, 0.0 );
+warp_87=`        
+warp_88=`        float3 texSample     = tex2D( sampler_stoy_organic2, newUv ).rgb;
+warp_89=`        float  uOff          = ( texSample.g * brightness * 4.5 + t );
+warp_90=`        float2 starUV        = newUv + float2( uOff, 0 );
+warp_91=`        starSphere           = tex2D( sampler_stoy_organic2, starUV ).rgb;
+warp_92=`    }
+warp_93=`    
+warp_94=`    float starGlow    = min( max( 1 - dist * ( 1 - brightness ), 0 ), 1 );
+warp_95=`    //gl_FragColor.rgb    = float3( r );
+warp_96=`    ret.rgb      = float3( f * ( .75 + brightness * .3 ) * orange ) + starSphere + corona * orange + starGlow * orangeRed;
+warp_97=`    //ret.a        = 1;
+warp_98=`}
+comp_1=`shader_body
+comp_2=`{ ret = GetPixel(uv); }

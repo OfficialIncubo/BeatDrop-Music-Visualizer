@@ -1,14 +1,22 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 26/07/2026 at 11:38:34.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
 MILKDROP_PRESET_VERSION=201
 PSVERSION=3
 PSVERSION_WARP=3
 PSVERSION_COMP=3
 [preset00]
 fRating=5.000
-fGammaAdj=1.700
+fGammaAdj=1.000
 fDecay=1.000
-fVideoEchoZoom=0.997
-fVideoEchoAlpha=0.500
-nVideoEchoOrientation=1
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
 nWaveMode=0
 bAdditiveWaves=0
 bWaveDots=0
@@ -16,51 +24,51 @@ bWaveThick=0
 bModWaveAlphaByVolume=0
 bMaximizeWaveColor=0
 bTexWrap=0
-bDarkenCenter=1
+bDarkenCenter=0
 bRedBlueStereo=0
 bBrighten=0
 bDarken=0
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.001
-fWaveScale=0.010
-fWaveSmoothing=0.750
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.000
 fWaveParam=0.000
-fModWaveAlphaStart=0.750
-fModWaveAlphaEnd=0.950
-fWarpAnimSpeed=2.599
-fWarpScale=0.010
-fZoomExponent=0.99990
-fShader=0.000
-zoom=1.11956
+fModWaveAlphaStart=1.000
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
 rot=0.00000
 cx=0.500
 cy=0.500
 dx=0.00000
 dy=0.00000
-warp=0.01000
+warp=0.00000
 sx=1.00000
-sy=1.00170
-wave_r=0.200
-wave_g=0.400
-wave_b=0.300
-wave_x=0.200
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
 wave_y=0.500
 ob_size=0.000
-ob_r=1.000
-ob_g=1.000
-ob_b=1.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
 ob_a=0.000
 ib_size=0.000
 ib_r=0.000
 ib_g=0.000
 ib_b=0.000
-ib_a=1.000
-nMotionVectorsX=12.000
-nMotionVectorsY=9.000
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
 mv_dx=0.000
 mv_dy=0.000
-mv_l=0.900
+mv_l=1.000
 mv_r=1.000
 mv_g=1.000
 mv_b=1.000
@@ -71,154 +79,108 @@ b3n=0.000
 b1x=1.000
 b2x=1.000
 b3x=1.000
-b1ed=0.250
-shapecode_0_enabled=1
-shapecode_0_sides=20
-shapecode_0_additive=1
-shapecode_0_thickOutline=0
-shapecode_0_textured=0
-shapecode_0_num_inst=410
-shapecode_0_x=0.500
-shapecode_0_y=0.500
-shapecode_0_rad=0.01000
-shapecode_0_ang=0.00000
-shapecode_0_tex_ang=0.00000
-shapecode_0_tex_zoom=1.00000
-shapecode_0_r=0.000
-shapecode_0_g=0.000
-shapecode_0_b=1.000
-shapecode_0_a=1.000
-shapecode_0_r2=0.000
-shapecode_0_g2=0.000
-shapecode_0_b2=0.000
-shapecode_0_a2=0.100
-shapecode_0_border_r=1.000
-shapecode_0_border_g=1.000
-shapecode_0_border_b=1.000
-shapecode_0_border_a=0.006
-shape_0_per_frame1=q1 = time/5;
-shape_0_per_frame2=q2 = time/6;
-shape_0_per_frame3=rad = 0.005+bass/90;
-shape_0_per_frame4=m5 = bass_att/70;
-shape_0_per_frame5=b2 = treb*0.7-bass/2;
-shape_0_per_frame6=r = instance/num_inst;
-shape_0_per_frame7=g = abs(treb_att/5-bass);
-shape_0_per_frame8=//b = abs(treb_att/5-bass);
-shape_0_per_frame9=size = 0.3+bass_att/300-(1-q5)*0.1;
-shape_0_per_frame10=
-shape_0_per_frame11=nc = sqrt(num_inst);
-shape_0_per_frame12=xs=sin(6.28*(instance%nc)/nc)*sin(3.14*int(instance/nc)/nc);
-shape_0_per_frame13=ys=cos(6.28*(instance%nc)/nc)*sin(3.14*int(instance/nc)/nc);
-shape_0_per_frame14=zs=cos(3.14*int(instance/nc)/nc);
-shape_0_per_frame15=
-shape_0_per_frame16=//modulate to allow rotation
-shape_0_per_frame17=y1 = ys*cos(q1)-zs*sin(q1);
-shape_0_per_frame18=z1 = ys*sin(q1)+zs*cos(q1);
-shape_0_per_frame19=x1 = z1*sin(q2)+xs*cos(q2);
-shape_0_per_frame20=z2 = z1*cos(q2)-xs*sin(q2);
-shape_0_per_frame21=x2 = x1*cos(q3)-y1*sin(q3);
-shape_0_per_frame22=y2 = y1*cos(q3)+x1*sin(q3);
-shape_0_per_frame23=
-shape_0_per_frame24=//translate shape
-shape_0_per_frame25=x3 = x2+q4;
-shape_0_per_frame26=y3 = y2;
-shape_0_per_frame27=z3 = z2+m5;
-shape_0_per_frame28=
-shape_0_per_frame29=x = 0.4 + size*(x3/(1+z3*size));
-shape_0_per_frame30=y = 0.5 + size*(y3/(1+z3*size));
-shape_0_per_frame31=a=below(z3,0);
-per_frame_init_1=decay=0.1;
-per_frame_1=sx=1.000;
-per_frame_2=sy=1.000;
-per_frame_3=
-per_frame_4=//dy=0.0058;
-per_frame_5=
-per_frame_6=q4=.5+.05*cos(time*.52)*cos(time*.39);
-per_frame_7=q5=.5+.05*sin(time*.44)*cos(time*.71);
-per_frame_8=
-per_frame_9=vol=bass_att*0.30;
-per_frame_10=vol=vol*vol;
-per_frame_11=musictime=musictime+vol*(75/fps);
-per_frame_12=q1 = time+musictime*0.3; //Code by Eo.S with a little modification of it.
-per_pixel_1=zoom=zoom+.01+.75*rad*(bass_att/8);
-warp_1=`sampler sampler_rand00;
-warp_2=`shader_body
-warp_3=`{
-warp_4=`
-warp_5=`    // motion blur by Geiss
-warp_6=`    // 'v' points exactly one pixel, in the direction of motion
-warp_7=`    float2 v = normalize(uv-uv_orig)*texsize.zw;
-warp_8=`    float3 s;
-warp_9=`    ret = max(ret, tex2D(sampler_main, uv+v)*0.97);
-warp_10=`    ret = max(ret, tex2D(sampler_main, uv-v)*0.97);
-warp_11=`    ret = max(ret, tex2D(sampler_main, uv+v*2)*0.90);
-warp_12=`    ret = max(ret, tex2D(sampler_main, uv-v*2)*0.90);
-warp_13=`
-warp_14=`
-warp_15=`ret -= .5*GetBlur1(uv);
-warp_16=`ret += tex2D(sampler_rand00,uv)*0.22;
-warp_17=`
-warp_18=`
-warp_19=`    // darken (decay) over time
-warp_20=`    ret = (ret-0.005)*0.68; //org *0.98
+b1ed=0.000
+per_frame_init_1=timeQ = 0;
+per_frame_init_2=progress_fade_in = 0;
+per_frame_init_3=
+per_frame_init_4=q1 = int(rand(2)); // Random Peaks toggle
+per_frame_init_5=q3 = int(rand(2)); // Random Oscilloscope toggle
+per_frame_init_6=q4 = .65; // FFT height
+per_frame_1=q2 = bass_att; // Pass bass for logo pulsing
+per_frame_2=timeQ += 1/fps;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    uv = uv_orig;
+warp_4=`    float num_bars = 24.0;
+warp_5=`    float num_blocks = 32.0;
+warp_6=`    float bar_spacing = 0.005;
+warp_7=`    float block_spacing = 0.01;
+warp_8=`
+warp_9=`    float total_unit = 1.0 / num_bars;
+warp_10=`    float actual_bar_width = total_unit - bar_spacing;
+warp_11=`    float bar_index = floor(uv.x / total_unit);
+warp_12=`    float bar_x_start = bar_index * total_unit + bar_spacing * 0.5;
+warp_13=`    float bar_x_end = bar_x_start + actual_bar_width;
+warp_14=`    float inside_bar = step(bar_x_start, uv.x) * step(uv.x, bar_x_end);
+warp_15=`
+warp_16=`    // Logarithmic hz mapping: 20 to 15000 Hz
+warp_17=`    float ratio = bar_index / (num_bars - 1.0);
+warp_18=`    float hz = 20.0 * pow(15000.0/20.0, ratio);
+warp_19=`    float fft_val = get_fft_hz(hz) * q4;
+warp_20=`    float num_lit_blocks = fft_val * num_blocks;
 warp_21=`
-warp_22=`
-warp_23=`}
+warp_22=`    // Mirror Y axis symmetrically: originate at center (0.5), pushing towards edges
+warp_23=`    float y_pos = abs(uv.y - 0.5) * 2.0;
+warp_24=`
+warp_25=`    float block_unit = 1.0 / num_blocks;
+warp_26=`    float block_index = floor(y_pos / block_unit);
+warp_27=`    float block_y_start = block_index * block_unit + block_spacing * 0.5;
+warp_28=`    float block_y_end = block_y_start + (block_unit - block_spacing);
+warp_29=`
+warp_30=`    float inside_block = step(block_y_start, y_pos) * step(y_pos, block_y_end);
+warp_31=`    float block_lit = step(block_index, num_lit_blocks - 1.0);
+warp_32=`
+warp_33=`    // Calculate peaks (toggled purely by q1)
+warp_34=`    float peak_val = get_fft_peak_hz(hz) * q4;
+warp_35=`    float peak_block = max(0.0, floor(peak_val * num_blocks - 1.0));
+warp_36=`    float is_peak = step(abs(block_index - peak_block), 0.1);
+warp_37=`
+warp_38=`    float block_active = saturate(block_lit + is_peak * q1);
+warp_39=`    float mask = inside_bar * inside_block * block_active;
+warp_40=`
+warp_41=`    // BeatDrop Gradient (Dark Purple -> Purple -> Violet)
+warp_42=`    float height_ratio = block_index / num_blocks;
+warp_43=`    float3 c1 = float3(.098, .0, .325); 
+warp_44=`    float3 c2 = float3(.2, .016, .627); 
+warp_45=`    float3 c3 = float3(.475, .161, .773); 
+warp_46=`    float3 c4 = float3(.5, .2, .8); 
+warp_47=`
+warp_48=`    float3 col1 = lerp(c1, c2, saturate(height_ratio / 0.33));
+warp_49=`    float3 col2 = lerp(c2, c3, saturate((height_ratio - 0.33) / 0.33));
+warp_50=`    float3 col3 = lerp(c3, c4, saturate((height_ratio - 0.66) / 0.34));
+warp_51=`
+warp_52=`    float r1 = 1.0 - step(0.33, height_ratio);
+warp_53=`    float r2 = step(0.33, height_ratio) * (1.0 - step(0.66, height_ratio));
+warp_54=`    float r3 = step(0.66, height_ratio);
+warp_55=`
+warp_56=`    float3 block_color = col1 * r1 + col2 * r2 + col3 * r3;
+warp_57=`    block_color += is_peak * q1 * 0.3; // Visually highlight peaks
+warp_58=`
+warp_59=`    ret = block_color * mask;
+warp_60=`}
 comp_1=`#define BeatDrop sampler_fc_BeatDropLogo
-comp_2=`
-comp_3=`sampler sampler_rand01;
-comp_4=`sampler BeatDrop;
-comp_5=`float4 texsize_BeatDropLogo;
-comp_6=`float2 scale, uv1, uv5, sz;
-comp_7=`
-comp_8=`shader_body
-comp_9=`{
-comp_10=`
-comp_11=`#ifdef mouse
-comp_12=`if (mouse.x > -1 || mouse.y > -1)
-comp_13=`   uv1 = (uv-0.5)*aspect.xy-(mouse.xy-.5)*float2(1, aspect.y/aspect.x);
-comp_14=`else
-comp_15=`   uv1 = (uv-0.5)*aspect.xy;
-comp_16=`#else
-comp_17=`uv1 = (uv-0.5)*aspect.xy;
-comp_18=`#endif
+comp_2=`sampler BeatDrop;
+comp_3=`float4 texsize_BeatDropLogo;
+comp_4=`
+comp_5=`shader_body
+comp_6=`{
+comp_7=`    // 1. Fetch Spectrum Background
+comp_8=`    float3 ret_bg = tex2D(sampler_main, uv).xyz;
+comp_9=`
+comp_10=`    // 2. Center Oscilloscope (toggled by q3)
+comp_11=`    float wave_val = get_wave(uv.x);
+comp_12=`    float wave_y = 0.5 - wave_val * 0.5;
+comp_13=`    float dist = abs(uv.y - wave_y);
+comp_14=`    float glow = 0.003 / (dist + 0.001);
+comp_15=`    float3 wave_col = lerp(float3(.2, .016, .627), float3(.475, .161, .773), uv.x);
+comp_16=`    float3 wave_render = wave_col * pow(glow, 1.2) * q3;
+comp_17=`
+comp_18=`    ret = ret_bg + wave_render;
 comp_19=`
-comp_20=`//float ang1 = atan2(uv1.y, uv1.x);
-comp_21=`//float rad1 = log(length(uv1)-0.1);
-comp_22=`
-comp_23=`float rad2 = length(uv1) + .1;
-comp_24=`float rad1 = .1/rad2 ;
+comp_20=`    // 3. BeatDrop Logo Layer
+comp_21=`    float2 sz = (texsize_BeatDropLogo/texsize).xy + 0.25;
+comp_22=`    float2 scale = texsize_BeatDropLogo.zw * texsize.xy * max(sz.x, sz.y) * 1.5;
+comp_23=`    float pulse = 1.05 - 0.1 * q2; // Scale responds directly to bass intensity
+comp_24=`    float2 uv_logo = (uv - 0.5) * scale * pulse + 0.5;
 comp_25=`
-comp_26=`float2 uv2 = float2 (ang/3.14, rad1);
-comp_27=`uv2.y = uv2.y  +0.1*q1;
-comp_28=`uv2.x = uv2.x  +.0*q1;
+comp_26=`    // Bound logic to prevent wrapping
+comp_27=`    float inside_logo = step(0.0, uv_logo.x) * step(uv_logo.x, 1.0) * step(0.0, uv_logo.y) * step(uv_logo.y, 1.0);
+comp_28=`    float3 logo = tex2D(BeatDrop, uv_logo).xyz;
 comp_29=`
-comp_30=`float2 uv3 = float2 (ang/3.14, rad1*1.5);
-comp_31=`uv3.y = uv3.y  +0.08*q1 ;
-comp_32=`uv3.x = uv3.x  + time/5;
+comp_30=`    // Chroma Key logic (Extract elements brighter than the dark background)
+comp_31=`    float logo_lum = dot(logo, float3(0.33, 0.33, 0.33));
+comp_32=`    float alpha = smoothstep(0.02, 0.15, logo_lum) * inside_logo;
 comp_33=`
-comp_34=`float3 crisp = 2*GetPixel(uv2) + GetPixel(uv3);
-comp_35=`crisp += 2*GetBlur2(frac(uv2)) + 2*GetBlur2(frac(uv3));
-comp_36=`
-comp_37=`float3 lay1 = float3 (0,0,1)*uv.y*pow(1-rad,8);
-comp_38=`
-comp_39=`crisp = 3*crisp * pow(rad,1);
-comp_40=`
-comp_41=`float mask = saturate(1-2*rad);
-comp_42=`
-comp_43=`ret = crisp + lay1*mask + mask * GetPixel(uv); //Code by martin (Nitorami)
-comp_44=`ret += tex2D(sampler_rand01, uv).xyz-0.80;
-comp_45=`
-comp_46=`ret -= .75; //darkening
-comp_47=`
-comp_48=`if (bass>1.4)
-comp_49=`{ ret += .60; }
-comp_50=`
-comp_51=`sz    = (texsize_BeatDropLogo/texsize).xy+.25;
-comp_52=`scale = texsize_BeatDropLogo.zw*texsize.xy * max(sz.x,sz.y);
-comp_53=`uv5   = (1.05-0.04*bass_att*1.5)*scale*(uv-.5)+.5;
-comp_54=`
-comp_55=`float BeatDropLogoLum = lum(tex2D(BeatDrop, uv5).xyz);
-comp_56=`if (BeatDropLogoLum > 0.0001)
-comp_57=`    ret = tex2D(BeatDrop, uv5).xyz;
-comp_58=`}
+comp_34=`    // Combine final top layer
+comp_35=`    ret = lerp(ret, logo, alpha);
+comp_36=`}

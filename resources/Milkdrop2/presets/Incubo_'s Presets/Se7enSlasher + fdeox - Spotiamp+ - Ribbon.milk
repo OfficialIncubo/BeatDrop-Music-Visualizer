@@ -1,0 +1,113 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 24/07/2026 at 14:00:33.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+FFTAttack=1.000
+FFTDecay=0.700
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.235
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`/*
+warp_2=`This shader has been ported to BeatDrop/MilkDrop (HLSL) by Incubo_/Se7enSlasher/DJ XcitMosphere.
+warp_3=`Try Spotiamp+: https://github.com/fdeox/spotiamp-plus
+warp_4=`*/
+warp_5=`
+warp_6=`float3 pal(float x, float3 a, float3 b, float3 c, float3 d){ 
+warp_7=`    return a + b * cos(M_PI_2 * (c * x + d)); 
+warp_8=`}
+warp_9=`
+warp_10=`shader_body
+warp_11=`{
+warp_12=`    float3 col = 0;
+warp_13=`    float t = time * 0.25;
+warp_14=`
+warp_15=`    //Obligatory Y flipping
+warp_16=`    uv.y = 1-uv.y;
+warp_17=`    uv = (uv-.5)*2;
+warp_18=`
+warp_19=`    float w = 0.0;
+warp_20=`    for (int k=1;k<=4;k++){
+warp_21=`      float fk=float(k);
+warp_22=`      w += sin(uv.x*(2.0+fk*2.5) + t*(1.0+fk*0.4))*get_fft(fk/5.0)*0.35/fk;
+warp_23=`    }
+warp_24=`    float d = abs(uv.y - w);
+warp_25=`    float thick = 0.06+vol*0.10;
+warp_26=`    col = pal(frac(uv.x*0.35+t*0.08), float3(0.5,0.45,0.5), float3(.45,.45,.45), float3(1,1,1), float3(0.0,0.2,0.45));
+warp_27=`    col *= smoothstep(thick,thick*0.2,d)*0.75 + smoothstep(0.012,0.0, abs(d-thick))*1.7;
+warp_28=`    ret = col;
+warp_29=`}
+comp_1=`shader_body
+comp_2=`{ ret = GetPixel(uv); }

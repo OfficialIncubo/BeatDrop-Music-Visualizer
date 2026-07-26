@@ -1,0 +1,159 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 14/07/2026 at 11:43:44.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.870
+fDecay=0.970
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.630
+fWaveParam=-1.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=q1=0.0;
+per_frame_init_2=q2=40.0;
+per_frame_init_3=q5=0.0;
+per_frame_init_4=q6=0.0;
+per_frame_init_5=time_delay=0.0;
+per_frame_init_6=rand_laser=rand(160);
+per_frame_init_7=temp1 = 0;
+per_frame_init_8=temp2 = 0;
+per_frame_1=// SKELETON (kept intact, slow retrigger fits the flowing silk-ribbon pacing)
+per_frame_2=time_delay = if(time_delay >= .42 && bass > 2, 0, time_delay += 1/fps);
+per_frame_3=rand_laser = if(time_delay == 0, rand(160), rand_laser);
+per_frame_4=
+per_frame_5=// Custom variable mapping to feed the Comp Shader
+per_frame_6=q1 = rand_laser;                          // color palette seed
+per_frame_7=q2 = time_delay;                          // beat clock (0 = beat)
+per_frame_8=temp1 += (0.35 + mid_att*0.25)/fps;       // ribbon undulation/drift clock
+per_frame_9=temp2 += (0.12 + treb_att*0.15)/fps;      // slow amplitude/width breathing clock
+per_frame_10=q3 = temp1;
+per_frame_11=q4 = temp2;
+per_frame_12=q6 = 0.5 + 0.5*sin(time*0.22 + rand_laser*0.04); // slow color drift phase
+warp_1=`shader_body {}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float aspect = texsize.x * texsize.z;
+comp_4=`    float2 p = uv;
+comp_5=`
+comp_6=`    float col_sel = fmod(q1 * 2.0, 4.0);
+comp_7=`    float3 col1, col2;
+comp_8=`    if (col_sel < 1.0) { col1 = float3(1.0, 0.1, 0.5); col2 = float3(0.0, 0.8, 1.0); }
+comp_9=`    else if (col_sel < 2.0) { col1 = float3(0.9, 0.5, 0.0); col2 = float3(0.5, 0.0, 0.9); }
+comp_10=`    else if (col_sel < 3.0) { col1 = float3(0.1, 0.9, 0.4); col2 = float3(1.0, 0.2, 0.9); }
+comp_11=`    else { col1 = float3(1.0, 1.0, 1.0); col2 = float3(0.3, 0.6, 1.0); }
+comp_12=`
+comp_13=`    float beat_strike = exp(-q2 * 4.0);
+comp_14=`
+comp_15=`    // 1. RIBBON TRAILS
+comp_16=`    // Wide flowing bands (not thin lines) drawn as a sine-undulating centerline
+comp_17=`    // with a soft cross-section profile, like silk ribbons waving through the
+comp_18=`    // air. Several ribbons run at different heights/phases and drift slowly
+comp_19=`    // sideways via q3; their undulation amplitude breathes with treble.
+comp_20=`    float3 lasers = float3(0,0,0);
+comp_21=`    int RIBBONS = 4;
+comp_22=`    for (int i = 0; i < RIBBONS; i++) {
+comp_23=`        float f = float(i) / float(RIBBONS-1);
+comp_24=`        float base_y = 0.15 + f * 0.7;
+comp_25=`        float phase = f * 4.0;
+comp_26=`        float amp = 0.06 + 0.04*sin(q4 + phase);
+comp_27=`
+comp_28=`        float wave_y = base_y + sin(p.x * 4.0 + q3 * 1.3 + phase) * amp
+comp_29=`                               + sin(p.x * 9.0 - q3 * 0.7 + phase) * amp * 0.3;
+comp_30=`
+comp_31=`        float d = abs(p.y - wave_y);
+comp_32=`        float ribbon_width = 0.028 + 0.012*sin(q3*0.4 + phase);
+comp_33=`        // soft-edged band profile rather than a thin core+glow line
+comp_34=`        float band = smoothstep(ribbon_width, ribbon_width*0.3, d);
+comp_35=`        float band_glow = exp(-d/(ribbon_width*2.5)) * 0.3;
+comp_36=`
+comp_37=`        // subtle cross-band shimmer gives a silky sheen
+comp_38=`        float sheen = 0.7 + 0.3*sin(p.x * 30.0 + q4*2.0 + phase*3.0);
+comp_39=`
+comp_40=`        float3 col = lerp(col1, col2, f);
+comp_41=`        lasers += col * (band + band_glow) * sheen;
+comp_42=`    }
+comp_43=`
+comp_44=`    // 2. Smoke from MilkDrop's blur buffer, blended generously since ribbons read well over haze
+comp_45=`    float3 smoke = GetBlur2(uv).rgb * 0.75;
+comp_46=`    float3 bg = smoke * col2 * 0.16;
+comp_47=`
+comp_48=`    // 3. Beat impulse: a brief shimmer ripple added across all ribbons, additive not multiplicative
+comp_49=`    float3 flash = lerp(col1,col2,0.5) * beat_strike * 0.25;
+comp_50=`
+comp_51=`    // 4. Smooth non-seizure breathing
+comp_52=`    float breathe = 0.84 + 0.16*sin(time*0.4 + q6*M_PI);
+comp_53=`
+comp_54=`    float3 final_rgb = (lasers * breathe) + bg + flash;
+comp_55=`    ret = final_rgb;
+comp_56=`}

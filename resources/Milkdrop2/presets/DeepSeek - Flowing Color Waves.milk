@@ -1,0 +1,127 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 28/06/2026 at 20:18:54.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000
+fGammaAdj=1.000
+fDecay=0.980
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=smooth_reaction = int(rand(2))
+per_frame_1=time = time * 0.5;
+per_frame_2=zoom = 1 + sin(time*0.7)*0.1;
+per_frame_3=warp = 0;
+per_frame_4=rot = 0.1*sin(time*0.3);
+per_frame_5=q1 = smooth_reaction
+per_pixel_1=x = x + 0.03*sin(time*1.2 + y*10);
+per_pixel_2=y = y + 0.02*cos(time*1.5 + x*8);
+warp_1=`shader_body
+warp_2=`{
+warp_3=`
+warp_4=`if (q1)
+warp_5=`{
+warp_6=`    bass = bass_att;
+warp_7=`    mid = mid_att;
+warp_8=`    treb = treb_att;
+warp_9=`    vol = vol_att;
+warp_10=`}
+warp_11=`
+warp_12=`uv = uv.xy - 0.5;
+warp_13=`//uv.x *= aspect_ratio;
+warp_14=`
+warp_15=`float dist = length(uv) * 3;
+warp_16=`float angle = atan2(uv.y, uv.x);
+warp_17=`float t = time * 0.75;
+warp_18=`
+warp_19=`float3 color = 0;
+warp_20=`for(int i=0; i<3; i++) {
+warp_21=`    float fi = float(i)*0.3;
+warp_22=`    float wave = sin(dist * 4 - t*4 + fi) * 0.5;
+warp_23=`    wave += sin(angle*3 + t*2 + fi) * 0.3;
+warp_24=`    wave += sin((dist*2 + angle*2) - t*3 + fi) * 0.2;
+warp_25=`    
+warp_26=`    color[i] = 0.7 / (0.1 + abs(wave)) * (1 - dist*0.3);
+warp_27=`}
+warp_28=`
+warp_29=`color = lerp(color, color.gbr, sin(t)*0.3 + 0.3);
+warp_30=`color *= .1 + vol/2;
+warp_31=`
+warp_32=`ret = float4(color * (0.8 + 0.3*sin(t + uv.x*5)),1);
+warp_33=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    ret = GetPixel(uv);
+comp_4=`}

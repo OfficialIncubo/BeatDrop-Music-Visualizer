@@ -1,0 +1,233 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 20/04/2026 at 16:49:16.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=2
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+FFTAttack=0.350
+FFTDecay=0.850
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.235
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`/*
+warp_2=`Volumetric Lines by Inigo Quilez
+warp_3=`Converted from ShaderToy to MilkDrop by DeepSeek, modified by me
+warp_4=`Original ShaderToy shader link: https://www.shadertoy.com/view/4slGz4
+warp_5=`*/
+warp_6=`
+warp_7=`/*
+warp_8=`Inigo Quilez:
+warp_9=`I am the sole copyright owner of this Work.
+warp_10=`You cannot host, display, distribute or share this Work neither
+warp_11=`as it is or altered, here on Shadertoy or anywhere else, in any
+warp_12=`form including physical and digital. You cannot use this Work in any
+warp_13=`commercial or non-commercial product, website or project. You cannot
+warp_14=`sell this Work and you cannot mint an NFTs of it or train a neural
+warp_15=`network with it without permission. I share this Work for educational
+warp_16=`purposes, and you can link to it, through an URL, proper attribution
+warp_17=`and unmodified screenshot, as part of your educational material. If
+warp_18=`these conditions are too restrictive please contact me and we'll
+warp_19=`definitely work it out.
+warp_20=`*/
+warp_21=`
+warp_22=`/*
+warp_23=`IQ, if you're reading this, let me know if I'll remove this preset or not.
+warp_24=`Sincerely, DJ XcitMosphere/Incubo_/Se7enSlasher
+warp_25=`*/
+warp_26=`
+warp_27=`float3 hash3(float n)
+warp_28=`{
+warp_29=`    return frac(sin(float3(n, n + 1.0, n + 2.0)) * float3(43758.5453123, 22578.1459123, 19642.3490423));
+warp_30=`}
+warp_31=`
+warp_32=`float3 snoise3(float x)
+warp_33=`{
+warp_34=`    float p = floor(x);
+warp_35=`    float f = frac(x);
+warp_36=`    f = f * f * (3.0 - 2.0 * f);
+warp_37=`    return -1.0 + 2.0 * lerp(hash3(p), hash3(p + 1.0), f);
+warp_38=`}
+warp_39=`
+warp_40=`float freqs[16];
+warp_41=`
+warp_42=`float3 distanceLines(float3 a, float3 b, float3 o, float3 d)
+warp_43=`{
+warp_44=`    float3 ba = b - a;
+warp_45=`    float3 oa = o - a;
+warp_46=`    
+warp_47=`    float oad = dot(oa, d);
+warp_48=`    float dba = dot(d, ba);
+warp_49=`    float baba = dot(ba, ba);
+warp_50=`    float oaba = dot(oa, ba);
+warp_51=`    
+warp_52=`    float2 th = float2(-oad * baba + dba * oaba, oaba - oad * dba) / (baba - dba * dba);
+warp_53=`    
+warp_54=`    th.x = max(th.x, 0.0);
+warp_55=`    th.y = clamp(th.y, 0.0, 1.0);
+warp_56=`    
+warp_57=`    float3 p = a + ba * th.y;
+warp_58=`    float3 q = o + d * th.x;
+warp_59=`    
+warp_60=`    return float3(length(p - q), th);
+warp_61=`}
+warp_62=`
+warp_63=`float3 castRay(float3 ro, float3 rd, float linesSpeed)
+warp_64=`{
+warp_65=`    float3 col = float3(0.0, 0.0, 0.0);
+warp_66=`    
+warp_67=`    float mindist = 10000.0;
+warp_68=`    float3 p = float3(0.2, 0.2, 0.2);
+warp_69=`    float h = 0.0;
+warp_70=`    float radius = 0.04 + 0.15 * freqs[0];
+warp_71=`    float mint = 0.0;
+warp_72=`    
+warp_73=`    for (int i = 0; i < 128; i++)
+warp_74=`    {
+warp_75=`        float3 op = p;
+warp_76=`        p = 1.25 * normalize(snoise3(64.0 * h + linesSpeed * 0.015 * time));
+warp_77=`        
+warp_78=`        float3 dis = distanceLines(op, p, ro, rd);
+warp_79=`        
+warp_80=`        float3 lcol = 0.6 + 0.4 * sin(10.0 * M_PI_2 * h + float3(0.0, 0.6, 0.9));
+warp_81=`        
+warp_82=`        // Use get_fft() for audio reactivity - sample at normalized frequency position
+warp_83=`        float fftVal = get_fft(h * 0.5);
+warp_84=`        float m = pow(fftVal, 2.0) * (1.0 + 2.0 * h);
+warp_85=`        
+warp_86=`        float f = 1.0 - 4.0 * dis.z * (1.0 - dis.z);
+warp_87=`        float width = 1240.0 - 1000.0 * f;
+warp_88=`        width *= 0.25;
+warp_89=`        float ff = exp(-0.06 * dis.y * dis.y * dis.y);
+warp_90=`        ff *= m;
+warp_91=`        col += 0.3 * lcol * exp(-0.3 * width * dis.x * dis.x) * ff;
+warp_92=`        col += 0.5 * lcol * exp(-8.0 * width * dis.x * dis.x) * ff;
+warp_93=`        h += 1.0 / 128.0;
+warp_94=`    }
+warp_95=`    
+warp_96=`    return col;
+warp_97=`}
+warp_98=`
+warp_99=`shader_body
+warp_100=`{
+warp_101=`    float2 q = uv;
+warp_102=`    float2 p = -1.0 + 2.0 * q;
+warp_103=`    p *= aspect.xy;
+warp_104=`        
+warp_105=`    // Sample FFT data into freqs array using get_fft()
+warp_106=`    for (int i = 0; i < 16; i++)
+warp_107=`    {
+warp_108=`        float fftPos = 0.05 + 0.5 * float(i) / 16.0;
+warp_109=`        freqs[i] = clamp(1.9 * pow(get_fft(fftPos), 3.0), 0.0, 1.0);
+warp_110=`    }
+warp_111=`    
+warp_112=`    // camera
+warp_113=`    float3 ta = float3(0.0, 0.0, 0.0);
+warp_114=`    
+warp_115=`    float isFast = 0.0;
+warp_116=`    float camSpeed = 1.0 + 40.0 * isFast;
+warp_117=`    
+warp_118=`    float beat = floor(max((time - 35.7 + 0.4) / 0.81, 0.0));
+warp_119=`    time += beat*10.0*isFast;
+warp_120=`    camSpeed *= lerp(1.0, sign(sin(beat * 1.0)), isFast);
+warp_121=`    
+warp_122=`    float linesSpeed = 0.0;
+warp_123=`    
+warp_124=`    ta = 0.2 * float3(cos(0.1 * time), 0.0 * sin(0.1 * time), sin(0.07 * time));
+warp_125=`    
+warp_126=`    float3 ro = float3(cos(camSpeed * 0.05 * time), 0.0, sin(camSpeed * 0.05 * time));
+warp_127=`    float roll = 0.25 * sin(camSpeed * 0.01 * time);
+warp_128=`    
+warp_129=`    // camera tx
+warp_130=`    float3 cw = normalize(ta - ro);
+warp_131=`    float3 cp = float3(sin(roll), cos(roll), 0.0);
+warp_132=`    float3 cu = normalize(cross(cw, cp));
+warp_133=`    float3 cv = normalize(cross(cu, cw));
+warp_134=`    float3 rd = normalize(p.x * cu + p.y * cv + 1.2 * cw);
+warp_135=`    
+warp_136=`    float curve = 0.0;
+warp_137=`    rd.xy += curve * 0.025 * float2(sin(34.0 * q.y), cos(34.0 * q.x));
+warp_138=`    rd = normalize(rd);
+warp_139=`    
+warp_140=`    ro *= 1.0 - linesSpeed * 0.5 * freqs[1];
+warp_141=`    
+warp_142=`    float3 col = castRay(ro, rd, 1.0 + 20.0 * linesSpeed);
+warp_143=`    col = 0.5 * (col + col * col);
+warp_144=`    
+warp_145=`    // fade to black
+warp_146=`    col *= 0.15 + 0.85 * pow(16.0 * q.x * q.y * (1.0 - q.x) * (1.0 - q.y), 0.15);
+warp_147=`    
+warp_148=`    ret = float4(col, 1.0);
+warp_149=`}
+comp_1=`shader_body
+comp_2=`{ ret = GetPixel(uv); }

@@ -1,0 +1,28 @@
+[preset00]
+fRating=5.0
+fGammaAdj=1.9
+fDecay=0.98
+fVideoEchoZoom=1.0
+fVideoEchoAlpha=0.0
+nWaveMode=6
+bAdditiveWaves=1
+bWaveDots=0
+fWaveAlpha=1.0
+fWaveScale=1.6
+fWaveSmoothing=0.8
+zoom=1.0
+rot=0.0
+warp=0.4
+cx=0.5
+cy=0.5
+wave_x=0.5
+wave_y=0.5
+per_frame_1=zoom = 1.0 + 0.01*sin(time*0.3);
+per_frame_2=warp = 0.3 + 0.4*mid_att;
+per_frame_3=decay = 0.97 + 0.015*bass_att;
+per_frame_4=wave_r = 0.3 + 0.3*sin(time*0.5);
+per_frame_5=wave_g = 0.5 + 0.35*sin(time*0.6 + 2.0);
+per_frame_6=wave_b = 0.7 + 0.3*sin(time*0.4 + 4.0);
+per_frame_7=wave_y = 0.5 + 0.2*sin(time*0.25);
+per_pixel_1=dx = 0.012*sin(y*9.42 + time*1.2)*bass;
+per_pixel_2=dy = 0.004*sin(x*6.28 - time*0.8)*mid;
