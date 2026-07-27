@@ -185,7 +185,7 @@ shapecode_2_border_r=1.000000
 shapecode_2_border_g=1.000000
 shapecode_2_border_b=1.000000
 shapecode_2_border_a=0.200000
-shape_2_per_frame1=rad=((treb_att*100%5)*.2);
+shape_2_per_frame1=rad=(((treb_att*100)%5)*.2);
 shape_2_per_frame2=border_a=treb_att*.02;
 shapecode_3_enabled=0
 shapecode_3_sides=4

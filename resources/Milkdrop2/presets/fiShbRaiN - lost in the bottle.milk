@@ -74,7 +74,7 @@ wavecode_0_r=1.000000
 wavecode_0_g=1.000000
 wavecode_0_b=1.000000
 wavecode_0_a=0.100000
-wave_0_per_point1=r=rand(100)*.01;
+wave_0_per_point1=r=int(rand(100))*.01;
 wave_0_per_point2=g=r;
 wave_0_per_point3=b=r;
 wavecode_1_enabled=0

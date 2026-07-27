@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 20/03/2026 at 22:49:13.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 25/04/2026 at 12:22:33.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -147,13 +147,13 @@ comp_62=`  float sLen = 0.41;
 comp_63=`  float sProj = saturate(dot(p, sD) / sLen);
 comp_64=`  float sDist = length(p - sD * sProj * sLen);
 comp_65=`  float sMask = step(0.001, dot(p, sD)) * step(sProj, 0.99);
-comp_66=`  float3 sCol = float3(1.0, 0.2, 0.5) * exp(-sDist * sDist / 0.00006) * sMask * (0.7 + trebR);
+comp_66=`  float3 sCol = float3(1.0, 0.2, 0.5) * exp(-sDist * sDist / 0.00006) * sMask * (0.7 + bassR);
 comp_67=`
 comp_68=`  // Neon trail behind second hand
 comp_69=`  float trailAngle = fmod(-angle - sA - TAU * .75, TAU);
 comp_70=`  float trail = exp(-abs(trailAngle) * 8.0) * exp(-abs(r - 0.4) * 20.0);
 comp_71=`  trail = min(trail, 0.6);
-comp_72=`  float3 trailCol = float3(1.0, 0.4, 0.8) * trail * trebR;
+comp_72=`  float3 trailCol = float3(1.0, 0.4, 0.8) * trail * bassR;
 comp_73=`
 comp_74=`  // Minute hand
 comp_75=`  float mA = mins * TAU / 60.0;
@@ -171,7 +171,7 @@ comp_86=`  float hLen = 0.28;
 comp_87=`  float hProj = saturate(dot(p, hD) / hLen);
 comp_88=`  float hDist = length(p - hD * hProj * hLen);
 comp_89=`  float hMask = step(0.001, dot(p, hD)) * step(hProj, 0.99);
-comp_90=`  float3 hCol = float3(0.5, 0.3, 1.0) * exp(-hDist * hDist / 0.00015) * hMask * (0.5 + bassR);
+comp_90=`  float3 hCol = float3(0.5, 0.3, 1.0) * exp(-hDist * hDist / 0.00015) * hMask * (0.5 + trebR);
 comp_91=`
 comp_92=`  // Center neon node
 comp_93=`  float centerGlow = exp(-r * r / 0.00012) * (0.8 + bassR * 0.5);

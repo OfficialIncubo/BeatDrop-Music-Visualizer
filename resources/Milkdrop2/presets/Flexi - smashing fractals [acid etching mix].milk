@@ -317,9 +317,9 @@ shape_1_init1=xx = 0.5;
 shape_1_init2=yy = 0.4;
 shape_1_per_frame1=d = sqrt( sqr(xx-q4)+sqr(yy-q8));
 shape_1_per_frame2=
-shape_1_per_frame3=xx = if(below(d,0.15),0.4+rand(200)/1000,xx);
-shape_1_per_frame4=yy = if(below(d,0.15),0.3+rand(400)/1000,yy);
-shape_1_per_frame5=aang = if(below(d,0.12),rand(1000)/1000,aang);
+shape_1_per_frame3=xx = if(below(d,0.15),0.4+int(rand(200))/1000,xx);
+shape_1_per_frame4=yy = if(below(d,0.15),0.3+int(rand(400))/1000,yy);
+shape_1_per_frame5=aang = if(below(d,0.12),int(rand(1000))/1000,aang);
 shape_1_per_frame6=ang =aang*4*asin(1);
 shape_1_per_frame7=x = xx;
 shape_1_per_frame8=y = yy;
@@ -351,9 +351,9 @@ shape_2_init1=xx = 0.5;
 shape_2_init2=yy = 0.4;
 shape_2_per_frame1=d = sqrt( sqr(xx-q4)+sqr(yy-q8));
 shape_2_per_frame2=
-shape_2_per_frame3=xx = if(below(d,0.15),0.4+rand(200)/1000,xx);
-shape_2_per_frame4=yy = if(below(d,0.15),0.3+rand(400)/1000,yy);
-shape_2_per_frame5=aang = if(below(d,0.12),rand(1000)/1000,aang);
+shape_2_per_frame3=xx = if(below(d,0.15),0.4+int(rand(200))/1000,xx);
+shape_2_per_frame4=yy = if(below(d,0.15),0.3+int(rand(400))/1000,yy);
+shape_2_per_frame5=aang = if(below(d,0.12),int(rand(1000))/1000,aang);
 shape_2_per_frame6=ang =aang*4*asin(1);
 shape_2_per_frame7=x = xx;
 shape_2_per_frame8=y = yy;
