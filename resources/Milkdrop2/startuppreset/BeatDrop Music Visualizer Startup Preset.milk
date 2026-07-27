@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 26/07/2026 at 11:38:34.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 27/07/2026 at 08:22:32.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -88,6 +88,7 @@ per_frame_init_5=q3 = int(rand(2)); // Random Oscilloscope toggle
 per_frame_init_6=q4 = .65; // FFT height
 per_frame_1=q2 = bass_att; // Pass bass for logo pulsing
 per_frame_2=timeQ += 1/fps;
+per_frame_3=q5 = min(timeQ * 1.5, 1);
 warp_1=`shader_body
 warp_2=`{
 warp_3=`    uv = uv_orig;
@@ -179,7 +180,7 @@ comp_28=`    float3 logo = tex2D(BeatDrop, uv_logo).xyz;
 comp_29=`
 comp_30=`    // Chroma Key logic (Extract elements brighter than the dark background)
 comp_31=`    float logo_lum = dot(logo, float3(0.33, 0.33, 0.33));
-comp_32=`    float alpha = smoothstep(0.02, 0.15, logo_lum) * inside_logo;
+comp_32=`    float alpha = smoothstep(0.02, 0.15, logo_lum) * inside_logo * q5;
 comp_33=`
 comp_34=`    // Combine final top layer
 comp_35=`    ret = lerp(ret, logo, alpha);
