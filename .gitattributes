@@ -4,6 +4,24 @@
 # Denote all files that are truly binary and should not be modified.
 *.png binary
 *.jpg binary
+*.jfif binary
 *.gif binary
+*.tga binary
+*.dds binary
 *.ico binary
 *.o binary
+*.webm binary
+*.mp4 binary
+*.3gp binary
+*.3g2 binary
+*.wmv binary
+*.mkv binary
+*.mxf binary
+*.mov binary
+*.flv binary
+*.mpg binary
+*.mpeg binary
+*.bmp binary
+*.dll binary
+*.exe binary
+*.lib binary

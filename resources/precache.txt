@@ -32,6 +32,5 @@
 
 BeatDrop Resources\presets\*
 BeatDrop Resources\presets\Butterchurn Presets\*
-BeatDrop Resources\presets\Incubo_'s Picks\*
 BeatDrop Resources\presets\Incubo_'s Presets\*
 BeatDrop Resources\presets\MilkDrop2077 Presets\*

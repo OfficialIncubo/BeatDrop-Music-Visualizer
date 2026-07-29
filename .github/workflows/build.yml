@@ -90,11 +90,11 @@ jobs:
         cp vis_milk2/Release/BeatDrop_OldOS.exe BeatDrop/
 
     - name: Post-Build Packaging
-      shell: bash
+      shell: powershell
       run: |
-        mkdir -p "BeatDrop/BeatDrop Resources"
-        cp -R resources/Milkdrop2/* "BeatDrop/BeatDrop Resources/"
-        cp resources/precache.txt BeatDrop/
+        New-Item -ItemType Directory -Force -Path "BeatDrop\BeatDrop Resources"
+        Copy-Item -Path "resources\Milkdrop2\*" -Destination "BeatDrop\BeatDrop Resources" -Recurse -Force
+        Copy-Item -Path "resources\precache.txt" -Destination "BeatDrop\" -Force
 
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v7
