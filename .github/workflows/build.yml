@@ -1,4 +1,4 @@
-# Generated with Gemini Pro 3.1
+# Generated with Gemini Pro 3.1, modified by Claude and (sometimes) me
 
 name: Build
 
@@ -29,8 +29,20 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+    - name: Harden Git line-ending handling before checkout
+      shell: bash
+      run: git config --global core.autocrlf false
+
     - name: Checkout Repository
       uses: actions/checkout@v6
+
+    - name: Hash source resources (diagnostic baseline)
+      shell: pwsh
+      run: |
+        $hashes = Get-ChildItem -Path "resources" -Recurse -File | Get-FileHash -Algorithm SHA256 |
+          Select-Object Hash, @{N='Path'; E={ $_.Path.Substring((Resolve-Path resources).Path.Length + 1) }}
+        $hashes | Export-Csv -Path "$env:RUNNER_TEMP\source-resource-hashes.csv" -NoTypeInformation
+        Write-Host "Hashed $($hashes.Count) files under resources/."
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v3
@@ -94,10 +106,38 @@ jobs:
       run: |
         New-Item -ItemType Directory -Force -Path "BeatDrop\BeatDrop Resources"
         Copy-Item -Path "resources\Milkdrop2\*" -Destination "BeatDrop\BeatDrop Resources" -Recurse -Force
+        Copy-Item -Path "resources\beatdrop.ini" -Destination "BeatDrop\" -Force
+        Copy-Item -Path "resources\beatdrop_img.ini" -Destination "BeatDrop\" -Force
+        Copy-Item -Path "resources\beatdrop_msg.ini" -Destination "BeatDrop\" -Force
         Copy-Item -Path "resources\precache.txt" -Destination "BeatDrop\" -Force
+
+    - name: Verify packaged resources are byte-identical to checkout
+      shell: pwsh
+      run: |
+        $baseline = Import-Csv "$env:RUNNER_TEMP\source-resource-hashes.csv"
+        $problems = @()
+        foreach ($row in $baseline) {
+          $target = Join-Path "BeatDrop\BeatDrop Resources" $row.Path
+          if (-not (Test-Path -LiteralPath $target)) {
+            $problems += "MISSING: $($row.Path)"
+            continue
+          }
+          $actualHash = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash
+          if ($actualHash -ne $row.Hash) {
+            $problems += "HASH MISMATCH: $($row.Path)"
+          }
+        }
+        if ($problems.Count -gt 0) {
+          foreach ($p in $problems) { Write-Host "::error::$p" }
+          throw "$($problems.Count) resource file(s) differ between checkout and the packaged artifact. See the ::error:: lines above for exact paths."
+        }
+        Write-Host "Verified $($baseline.Count) resource files are byte-identical between checkout and package."
+        Copy-Item "$env:RUNNER_TEMP\source-resource-hashes.csv" "BeatDrop\resource-hashes.csv"
 
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v7
       with:
         name: ${{ matrix.artifact_name }}-${{ matrix.os }}
         path: BeatDrop/
+        if-no-files-found: error
+        compression-level: 0

@@ -2282,7 +2282,7 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 	else if (uMsg == WM_SETTINGCHANGE || uMsg == WM_DISPLAYCHANGE)
 	{
 		if (g_plugin.m_bDesktopMode)
-			SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 250, NULL); // Fast refresh for wallpaper
+			SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 100, NULL); // Fast refresh for wallpaper
 	}
 	// Execute the smooth refresh after the OS finishes its animations
 	else if (uMsg == WM_TIMER && wParam == TIMER_DESKTOP_REFRESH)
