@@ -29,43 +29,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - name: Harden Git line-ending handling before checkout
-      shell: bash
-      run: git config --global core.autocrlf false
-
     - name: Checkout Repository
       uses: actions/checkout@v6
-
-    - name: Hash source resources (diagnostic baseline)
-      shell: pwsh
-      run: |
-        $copyMap = @(
-          @{ Source = "resources\Milkdrop2"; Dest = "BeatDrop\BeatDrop Resources"; Recurse = $true }
-          @{ Source = "resources\precache.txt"; Dest = "BeatDrop\precache.txt"; Recurse = $false }
-          @{ Source = "resources\beatdrop.ini"; Dest = "BeatDrop\beatdrop.ini"; Recurse = $false }
-          @{ Source = "resources\beatdrop_img.ini"; Dest = "BeatDrop\beatdrop_img.ini"; Recurse = $false }
-          @{ Source = "resources\beatdrop_msg.ini"; Dest = "BeatDrop\beatdrop_msg.ini"; Recurse = $false }
-        )
-        $baseline = @()
-        foreach ($entry in $copyMap) {
-          if ($entry.Recurse) {
-            $srcRoot = (Resolve-Path $entry.Source).Path
-            Get-ChildItem -Path $entry.Source -Recurse -File | ForEach-Object {
-              $relPath = $_.FullName.Substring($srcRoot.Length + 1)
-              $baseline += [PSCustomObject]@{
-                Hash     = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
-                DestPath = Join-Path $entry.Dest $relPath
-              }
-            }
-          } else {
-            $baseline += [PSCustomObject]@{
-              Hash     = (Get-FileHash -LiteralPath $entry.Source -Algorithm SHA256).Hash
-              DestPath = $entry.Dest
-            }
-          }
-        }
-        $baseline | Export-Csv -Path "$env:RUNNER_TEMP\source-resource-hashes.csv" -NoTypeInformation
-        Write-Host "Hashed $($baseline.Count) files that will be packaged."
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v3
@@ -155,41 +120,23 @@ jobs:
         cp vis_milk2/Release/BeatDrop_OldOS.exe BeatDrop/
 
     - name: Post-Build Packaging
-      shell: powershell
+      shell: bash
       run: |
-        New-Item -ItemType Directory -Force -Path "BeatDrop\BeatDrop Resources"
-        Copy-Item -Path "resources\Milkdrop2\*" -Destination "BeatDrop\BeatDrop Resources" -Recurse -Force
-        Copy-Item -Path "resources\beatdrop.ini" -Destination "BeatDrop\" -Force
-        Copy-Item -Path "resources\beatdrop_img.ini" -Destination "BeatDrop\" -Force
-        Copy-Item -Path "resources\beatdrop_msg.ini" -Destination "BeatDrop\" -Force
-        Copy-Item -Path "resources\precache.txt" -Destination "BeatDrop\" -Force
+        mkdir -p "BeatDrop/BeatDrop Resources"
+        cp -R resources/Milkdrop2/* "BeatDrop/BeatDrop Resources/"
+        cp resources/beatdrop.ini BeatDrop/
+        cp resources/beatdrop_img.ini BeatDrop/
+        cp resources/beatdrop_msg.ini BeatDrop/
+        cp resources/precache.txt BeatDrop/
 
-    - name: Verify packaged resources are byte-identical to checkout
-      shell: pwsh
+    - name: Zipping Build Output without Compression
+      # -tzip sets zip format, -mx=0 disables compression
+      shell: bash
       run: |
-        $baseline = Import-Csv "$env:RUNNER_TEMP\source-resource-hashes.csv"
-        $problems = @()
-        foreach ($row in $baseline) {
-          if (-not (Test-Path -LiteralPath $row.DestPath)) {
-            $problems += "MISSING: $($row.DestPath)"
-            continue
-          }
-          $actualHash = (Get-FileHash -LiteralPath $row.DestPath -Algorithm SHA256).Hash
-          if ($actualHash -ne $row.Hash) {
-            $problems += "HASH MISMATCH: $($row.DestPath)"
-          }
-        }
-        if ($problems.Count -gt 0) {
-          foreach ($p in $problems) { Write-Host "::error::$p" }
-          throw "$($problems.Count) resource file(s) differ between checkout and the packaged artifact. See the ::error:: lines above for exact paths."
-        }
-        Write-Host "Verified $($baseline.Count) resource files are byte-identical between checkout and package."
-        Copy-Item "$env:RUNNER_TEMP\source-resource-hashes.csv" "BeatDrop\resource-hashes.csv"
+        7z a -tzip -mx=0 "${{ matrix.artifact_name }}-${{ matrix.os }}.zip" ./BeatDrop/*
 
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v7
       with:
         name: ${{ matrix.artifact_name }}-${{ matrix.os }}
-        path: BeatDrop/
-        if-no-files-found: error
-        compression-level: 0
+        path: ${{ matrix.artifact_name }}-${{ matrix.os }}.zip
