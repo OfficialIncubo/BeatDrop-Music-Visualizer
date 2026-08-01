@@ -1,0 +1,48 @@
+[preset00]
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=0
+PSVERSION_COMP=3
+fRating=5.000
+fWaveAlpha=0.000
+bTexWrap=1
+per_frame_1=mybass = mybass*0.85 + bass*0.15;
+per_frame_2=mytreb = mytreb*0.85 + treb*0.15;
+per_frame_3=pulse = pulse*0.7 + (bass - 1.0)*0.3;
+per_frame_4=drift = drift + 0.006 + 0.012*mybass;
+per_frame_5=q1 = drift;
+per_frame_6=q2 = mybass;
+per_frame_7=q3 = mytreb;
+per_frame_8=q4 = pulse;
+comp_1=`sampler sampler_froth;
+comp_2=`
+comp_3=`shader_body
+comp_4=`{
+comp_5=`   // foam texture, warped - the music drives the spiral, with a hue drift
+comp_6=`   float2 c = uv - 0.5;
+comp_7=`   float r = length(c);
+comp_8=`   float a = atan2(c.y, c.x);
+comp_9=`   // radius-dependent spiral: a slow self-breathing term plus the signed
+comp_10=`   // music pulse (q4~0 at rest) so bass winds it in and quiet lets it
+comp_11=`   // unwind - kept moderate so it flows without smearing the foam away
+comp_12=`   float spiral = 0.10*sin(time*0.13) + q4*2.5;
+comp_13=`   a += 0.20*sin(time*0.2) + spiral*(0.6 - r);
+comp_14=`   // music pulse also breathes the zoom forward/back
+comp_15=`   float zoomp = 1.0 - q4*0.18;
+comp_16=`   float2 suv = 0.5 + float2(cos(a), sin(a)) * r * zoomp;
+comp_17=`   // strong outward ripple (bass widens it further)
+comp_18=`   suv += c * sin(r*16.0 - time*1.4) * (0.035 + 0.070*q2);
+comp_19=`   float2 base = suv * 1.8 + float2(q1*0.05, time*0.010);
+comp_20=`   // domain warp: pre-sample the froth, use it to offset the resample;
+comp_21=`   // bass and treble nudge the offset a little
+comp_22=`   float3 pre = tex2D(sampler_froth, base);
+comp_23=`   float2 dw = (pre.xy - 0.5) * (0.020 + 0.040*q2 + 0.030*q3);
+comp_24=`   float3 col = tex2D(sampler_froth, base + dw);
+comp_25=`   // strong hue drift: rotate the colour around the grey axis (keeps
+comp_26=`   // brightness), cycling steadily over time with a bass push
+comp_27=`   float h = time*0.6 + 1.5*q4;
+comp_28=`   float cs = cos(h);
+comp_29=`   float sn = sin(h);
+comp_30=`   float3 kk = float3(0.57735, 0.57735, 0.57735);
+comp_31=`   ret = col*cs + cross(kk, col)*sn + kk*dot(kk, col)*(1.0 - cs);
+comp_32=`}

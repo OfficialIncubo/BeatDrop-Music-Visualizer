@@ -31,6 +31,8 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v6
+      with:
+        lfs: true
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v3
@@ -99,14 +101,10 @@ jobs:
         cp resources/beatdrop_msg.ini BeatDrop/
         cp resources/precache.txt BeatDrop/
       
-    - name: Zipping Build Output without Compression
-      shell: bash
-      # -tzip sets zip format, -mx=0 disables compression
-      run: |
-        7z a -tzip -mx=0 "${{ matrix.artifact_name }}-${{ matrix.os }}.zip" ./BeatDrop/*
-
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v7
       with:
         name: ${{ matrix.artifact_name }}-${{ matrix.os }}
-        path: ${{ matrix.artifact_name }}-${{ matrix.os }}.zip
+        path: BeatDrop/
+        if-no-files-found: error
+        compression-level: 0

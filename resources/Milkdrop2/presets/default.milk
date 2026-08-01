@@ -1,0 +1,82 @@
+[preset00]
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=0
+PSVERSION_COMP=0
+fRating=5.000
+fGammaAdj=1.700
+fDecay=0.970
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.250
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveThick=1
+bMaximizeWaveColor=1
+bTexWrap=1
+fWaveScale=1.300
+fWaveSmoothing=0.750
+zoom=1.0100
+rot=0.0200
+cx=0.500
+cy=0.500
+warp=1.000
+sx=1.000
+sy=1.000
+wave_r=0.900
+wave_g=0.700
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+per_frame_1=mybass = mybass*0.85 + bass*0.15;
+per_frame_2=zoom = 1.0 + 0.018 + 0.012*mybass;
+per_frame_3=rot = 0.02*sin(time*0.31) + 0.01*mybass;
+per_frame_4=warp = 0.6 + 0.4*sin(time*0.273);
+per_frame_5=wave_r = 0.5 + 0.5*sin(time*0.91);
+per_frame_6=wave_g = 0.5 + 0.5*sin(time*0.74 + 2.1);
+per_frame_7=wave_b = 0.5 + 0.5*sin(time*0.63 + 4.2);
+per_frame_8=dx = 0.003*sin(time*0.41);
+per_frame_9=dy = 0.003*cos(time*0.37);
+per_pixel_1=zoom = zoom + 0.03*sin(rad*8.0 - time*1.3)*(0.5 - rad);
+per_pixel_2=rot = rot + 0.04*(0.5 - rad);
+shapecode_0_enabled=1
+shapecode_0_sides=6
+shapecode_0_additive=1
+shapecode_0_thickOutline=1
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.150
+shapecode_0_r=0.100
+shapecode_0_g=0.000
+shapecode_0_b=0.300
+shapecode_0_a=0.300
+shapecode_0_r2=0.400
+shapecode_0_g2=0.100
+shapecode_0_b2=0.600
+shapecode_0_a2=0.000
+shapecode_0_border_r=1.000
+shapecode_0_border_g=0.800
+shapecode_0_border_b=1.000
+shapecode_0_border_a=0.400
+shape_0_per_frame1=rad = 0.12 + 0.06*bass;
+shape_0_per_frame2=ang = time*0.5;
+shape_0_per_frame3=r = 0.5 + 0.5*sin(time*0.7);
+shape_0_per_frame4=b = 0.5 + 0.5*cos(time*0.5);
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1.000
+wavecode_0_smoothing=0.500
+wavecode_0_r=1.000
+wavecode_0_g=0.700
+wavecode_0_b=0.400
+wavecode_0_a=1.000
+wave_0_per_frame1=t1 = time*0.3;
+wave_0_per_point1=rad = 0.35 + 0.15*value1;
+wave_0_per_point2=ang = sample*6.2832 + t1;
+wave_0_per_point3=x = 0.5 + rad*cos(ang)*0.75;
+wave_0_per_point4=y = 0.5 + rad*sin(ang);

@@ -1,0 +1,42 @@
+[preset00]
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+fRating=5.000
+fDecay=0.980
+nWaveMode=0
+bAdditiveWaves=1
+bTexWrap=1
+fWaveScale=1.300
+zoom=1.0150
+rot=0.0150
+warp=0.800
+wave_r=0.900
+wave_g=0.700
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+per_frame_1=mybass = mybass*0.85 + bass*0.15;
+per_frame_2=zoom = 1.0 + 0.02 + 0.01*mybass;
+per_frame_3=rot = 0.015*sin(time*0.3);
+per_frame_4=q1 = mybass;
+per_frame_5=q2 = 0.5 + 0.5*sin(time*0.37);
+per_pixel_1=zoom = zoom + 0.02*sin(rad*10.0 - time)*(0.5 - rad);
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   ret = tex2D(sampler_main, uv).xyz;
+warp_4=`   ret *= 0.965;
+warp_5=`   ret += GetBlur1(uv) * 0.03;
+warp_6=`   ret = lerp(ret, ret.yzx, 0.02);
+warp_7=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`   ret = tex2D(sampler_main, uv).xyz;
+comp_4=`   float3 blur = GetBlur1(uv);
+comp_5=`   ret += blur * (0.35 + 0.25*q1);
+comp_6=`   ret *= 0.85 + 0.20*bass;
+comp_7=`   float m = 0.5 + 0.5*sin(time*0.27);
+comp_8=`   ret = lerp(ret, ret.zyx, m*q2);
+comp_9=`   ret = saturate(ret);
+comp_10=`}

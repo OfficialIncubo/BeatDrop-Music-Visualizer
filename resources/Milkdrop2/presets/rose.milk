@@ -1,0 +1,41 @@
+[preset00]
+MILKDROP_PRESET_VERSION=201
+PSVERSION_WARP=0
+PSVERSION_COMP=0
+fRating=5.000
+fGammaAdj=1.700
+fDecay=0.955
+nWaveMode=0
+fWaveAlpha=0.001
+bTexWrap=1
+zoom=1.0040
+rot=0.0000
+cx=0.500
+cy=0.500
+warp=0.000
+sx=1.000
+sy=1.000
+per_frame_1=petals = 3 + floor(2 + 2*sin(time*0.23));
+per_frame_2=i = 0;
+per_frame_3=loop(512, gmegabuf(i) = 0.30*abs(cos(petals*(i/512)*3.14159)) + 0.06; i = i + 1);
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=1
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1.000
+wavecode_0_smoothing=0.000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wave_0_per_frame1=t1 = time*0.11;
+wave_0_per_point1=j = sample*511;
+wave_0_per_point2=rad = gmegabuf(j);
+wave_0_per_point3=ang = sample*6.2832 + t1;
+wave_0_per_point4=x = 0.5 + rad*cos(ang)*0.75;
+wave_0_per_point5=y = 0.5 + rad*sin(ang);
+wave_0_per_point6=r = 0.30 + 2.2*rad;
+wave_0_per_point7=g = 0.95 - 1.8*rad;
+wave_0_per_point8=b = 1;
