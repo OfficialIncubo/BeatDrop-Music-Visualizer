@@ -39,10 +39,33 @@ jobs:
     - name: Hash source resources (diagnostic baseline)
       shell: pwsh
       run: |
-        $hashes = Get-ChildItem -Path "resources" -Recurse -File | Get-FileHash -Algorithm SHA256 |
-          Select-Object Hash, @{N='Path'; E={ $_.Path.Substring((Resolve-Path resources).Path.Length + 1) }}
-        $hashes | Export-Csv -Path "$env:RUNNER_TEMP\source-resource-hashes.csv" -NoTypeInformation
-        Write-Host "Hashed $($hashes.Count) files under resources/."
+        $copyMap = @(
+          @{ Source = "resources\Milkdrop2"; Dest = "BeatDrop\BeatDrop Resources"; Recurse = $true }
+          @{ Source = "resources\precache.txt"; Dest = "BeatDrop\precache.txt"; Recurse = $false }
+          @{ Source = "resources\beatdrop.ini"; Dest = "BeatDrop\beatdrop.ini"; Recurse = $false }
+          @{ Source = "resources\beatdrop_img.ini"; Dest = "BeatDrop\beatdrop_img.ini"; Recurse = $false }
+          @{ Source = "resources\beatdrop_msg.ini"; Dest = "BeatDrop\beatdrop_msg.ini"; Recurse = $false }
+        )
+        $baseline = @()
+        foreach ($entry in $copyMap) {
+          if ($entry.Recurse) {
+            $srcRoot = (Resolve-Path $entry.Source).Path
+            Get-ChildItem -Path $entry.Source -Recurse -File | ForEach-Object {
+              $relPath = $_.FullName.Substring($srcRoot.Length + 1)
+              $baseline += [PSCustomObject]@{
+                Hash     = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash
+                DestPath = Join-Path $entry.Dest $relPath
+              }
+            }
+          } else {
+            $baseline += [PSCustomObject]@{
+              Hash     = (Get-FileHash -LiteralPath $entry.Source -Algorithm SHA256).Hash
+              DestPath = $entry.Dest
+            }
+          }
+        }
+        $baseline | Export-Csv -Path "$env:RUNNER_TEMP\source-resource-hashes.csv" -NoTypeInformation
+        Write-Host "Hashed $($baseline.Count) files that will be packaged."
 
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v3
@@ -117,14 +140,13 @@ jobs:
         $baseline = Import-Csv "$env:RUNNER_TEMP\source-resource-hashes.csv"
         $problems = @()
         foreach ($row in $baseline) {
-          $target = Join-Path "BeatDrop\BeatDrop Resources" $row.Path
-          if (-not (Test-Path -LiteralPath $target)) {
-            $problems += "MISSING: $($row.Path)"
+          if (-not (Test-Path -LiteralPath $row.DestPath)) {
+            $problems += "MISSING: $($row.DestPath)"
             continue
           }
-          $actualHash = (Get-FileHash -LiteralPath $target -Algorithm SHA256).Hash
+          $actualHash = (Get-FileHash -LiteralPath $row.DestPath -Algorithm SHA256).Hash
           if ($actualHash -ne $row.Hash) {
-            $problems += "HASH MISMATCH: $($row.Path)"
+            $problems += "HASH MISMATCH: $($row.DestPath)"
           }
         }
         if ($problems.Count -gt 0) {
