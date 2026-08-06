@@ -10160,7 +10160,7 @@ static unsigned int WINAPI __UpdatePresetList(void* lpVoid)
 {
     // NOTE - this is run in a separate thread!!!
 
-    DWORD flags = (DWORD)lpVoid;
+    DWORD flags = static_cast<DWORD>(reinterpret_cast<ULONG_PTR>(lpVoid));
     bool bForce = (flags & 1) ? true : false;
     bool bTryReselectCurrentPreset = (flags & 2) ? true : false;
 
@@ -10502,7 +10502,8 @@ void CPlugin::UpdatePresetList(bool bBackground, bool bForce, bool bTryReselectC
     DWORD flags = (bForce ? 1 : 0) | (bTryReselectCurrentPreset ? 2 : 0);
     g_bThreadShouldQuit = false;
     g_bThreadAlive = true;
-    g_hThread = (HANDLE)_beginthreadex(NULL,0,__UpdatePresetList,(void*)flags,0,0);
+    g_hThread = (HANDLE)_beginthreadex(NULL, 0, __UpdatePresetList,
+        reinterpret_cast<void*>(static_cast<ULONG_PTR>(flags)), 0, 0);
 
     if (!bBackground)
     {

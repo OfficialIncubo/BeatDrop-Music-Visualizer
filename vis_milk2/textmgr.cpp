@@ -100,8 +100,8 @@ void CTextManager::DrawBox(LPRECT pRect, DWORD boxColor)
     if (!pRect)
         return;
 
-    if ((m_nMsg[m_b] < MAX_MSGS) && 
-        (DWORD)m_next_msg_start_ptr - (DWORD)g_szMsgPool[m_b] + 0 + 1 < MAX_MSG_CHARS)
+    if ((m_nMsg[m_b] < MAX_MSGS) &&
+        m_next_msg_start_ptr - g_szMsgPool[m_b] + 1 < MAX_MSG_CHARS)
     {
         *m_next_msg_start_ptr = 0;
 
@@ -132,8 +132,8 @@ int CTextManager::DrawText(LPD3DXFONT pFont, char* szText, RECT* pRect, DWORD fl
 
     int len = strlen(szText);
 
-    if ((m_nMsg[m_b] < MAX_MSGS) && 
-        (DWORD)m_next_msg_start_ptr - (DWORD)g_szMsgPool[m_b] + len + 1 < MAX_MSG_CHARS)
+    if ((m_nMsg[m_b] < MAX_MSGS) &&
+        m_next_msg_start_ptr - g_szMsgPool[m_b] + len + 1 < MAX_MSG_CHARS)
     {
         wcscpy(m_next_msg_start_ptr, AutoWide(szText));
 
@@ -184,8 +184,8 @@ int CTextManager::DrawTextW(LPD3DXFONT pFont, wchar_t* szText, RECT* pRect, DWOR
 
     int len = wcslen(szText);
 
-    if ((m_nMsg[m_b] < MAX_MSGS) && 
-        (DWORD)m_next_msg_start_ptr - (DWORD)g_szMsgPool[m_b] + len + 1 < MAX_MSG_CHARS)
+    if ((m_nMsg[m_b] < MAX_MSGS) &&
+        m_next_msg_start_ptr - g_szMsgPool[m_b] + len + 1 < MAX_MSG_CHARS)
     {
         wcscpy(m_next_msg_start_ptr, szText);
 

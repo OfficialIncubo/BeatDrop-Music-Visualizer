@@ -165,7 +165,7 @@ Now it can get the song information from any media players using SMTC, sending i
 
 ![BeatDropRealTimeSongInfoDemo](https://github.com/user-attachments/assets/6cc5cb3d-f82e-4526-b686-94670e3483b8)
 
-Note that it only works for Windows 10 or Windows 11. For Windows Vista, 7, 8 and 8.1 users, please run BeatDrop_OldOS.exe, which it doesn't use this feature and makes it better support for old Windows OS.
+Note that the standard builds work on Windows 10 or Windows 11. For Windows Vista, 7, 8 and 8.1, use the matching `BeatDrop_OldOS_x86.exe` or `BeatDrop_OldOS_x64.exe` build, which omits this feature for better compatibility.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## INTEGRATED WITH [PROJECTM-EVAL](https://github.com/projectM-visualizer/projectm-eval) FOR OPTIMIZATION
@@ -202,15 +202,26 @@ BeatDrop's video support uses FFmpeg through vcpkg. These steps are the shortest
 
 1. Install Visual Studio 2022 or higher with the Desktop development with C++ workload, CMake tools, the Windows 10/11 SDK, and the [DirectX SDK June 2010](https://www.microsoft.com/en-us/download/details.aspx?id=6812).
 2. Make sure the `vcpkg package manager` is checked on any workflows.
-3. Vcpkg's manifest mode is enabled by default, run the command by the following: `vcpkg install --triplet x86-windows`, else run `vcpkg install ffmpeg:x86-windows`
+3. Vcpkg's manifest mode is enabled by default. Install dependencies for the architecture you are building: `vcpkg install --triplet x86-windows` or `vcpkg install --triplet x64-windows`.
 4. Make sure `lib\projectM_eval.lib` and `lib\projectM_ns-eel2.lib` exist. If they are missing, build/copy them using the projectM-eval steps below.
-5. Open `BeatDrop.sln` in Visual Studio, select `Release` or `Release_OldOS` configurations, and build. Or build from Developer PowerShell:
+5. Open `BeatDrop.sln` in Visual Studio and select one of these configurations:
+
+   | Configuration | Platform | Executable |
+   | --- | --- | --- |
+   | `Release_x86` | `Win32` | `BeatDrop_x86.exe` |
+   | `Release_OldOS_x86` | `Win32` | `BeatDrop_OldOS_x86.exe` |
+   | `Release_x64` | `x64` | `BeatDrop_x64.exe` |
+   | `Release_OldOS_x64` | `x64` | `BeatDrop_OldOS_x64.exe` |
+
+   Or build from a Developer PowerShell:
 ```
-msbuild BeatDrop.sln /m /p:Configuration=Release /p:Platform=Win32
-msbuild BeatDrop.sln /m /p:Configuration=Release_OldOS /p:Platform=Win32
+msbuild BeatDrop.sln /m /p:Configuration=Release_x86 /p:Platform=Win32
+msbuild BeatDrop.sln /m /p:Configuration=Release_OldOS_x86 /p:Platform=Win32
+msbuild BeatDrop.sln /m /p:Configuration=Release_x64 /p:Platform=x64
+msbuild BeatDrop.sln /m /p:Configuration=Release_OldOS_x64 /p:Platform=x64
 ```
-6. The post-build step copies `vis_milk2\Release\BeatDrop[_OldOS].exe` to `BeatDrop\BeatDrop[_OldOS].exe` and copies these FFmpeg runtime DLLs beside it: `avcodec-62.dll`, `avformat-62.dll`, `avutil-60.dll`, `swresample-6.dll`, and `swscale-9.dll`.
-7. Run `BeatDrop[_OldOS].exe` from the `BeatDrop` folder so it can find `beatdrop.ini`, `beatdrop_img.ini`, resources, presets, and the FFmpeg DLLs.
+6. Each configuration writes to its own directory under `vis_milk2` and copies its executable plus FFmpeg runtime DLLs to `BeatDrop`. Build and run one architecture at a time locally because x86 and x64 FFmpeg DLLs have the same filenames. GitHub Actions produces separate, self-contained artifacts for each architecture.
+7. Run the matching executable from the `BeatDrop` folder so it can find `beatdrop.ini`, `beatdrop_img.ini`, resources, presets, and the FFmpeg DLLs.
 
 ⚠️  Please note that disabling vcpkg manifest mode will give you some errors or missing libraries, so you need to manually install libraries with the command line.
 
@@ -220,10 +231,10 @@ msbuild BeatDrop.sln /m /p:Configuration=Release_OldOS /p:Platform=Win32
 2. First update your baseline by clicking View -> Terminal, then type vcpkg x-update-baseline.
 3. Compile your code. Vcpkg automatically generates the projectM-eval library using CMake.
 4. It will receive an error about one of the libraries: `Invalid or corrupt file: cannot read at 0x536E` (projectM_ns-eel2.lib).
-5. The generated files are in vcpkg_installed folder. Copy both libraries from vcpkg_installed\x86-windows-static\x86-windows-static\lib, then paste them to lib folder from the main source code folder.
+5. The generated files are in `vcpkg_installed\<triplet>\lib`. Copy both libraries for the architecture you are building, then paste them into the `lib` folder from the main source code folder.
 6. (Optional) Copy the ns-eel header from the same step from 5., but in include\projectm-eval\ns-eel2, then paste it to ns-eel-shim folder, still from the main source code folder.
-7. Now build/compile the code and you are ready to go. If you see that your output gives "1 up to date", just delete BeatDrop.exe from vis_milk2 -> Release folder. Compile it again.
-8. Check your generated .exe file in vis_milk2/Release/BeatDrop.exe, then copy it in your BeatDrop folder.
+7. Now build/compile the code and you are ready to go. If you see that your output gives "1 up to date", clean the selected configuration and compile it again.
+8. Check the generated executable in its matching `vis_milk2\Release_*` directory; the post-build step copies it into the `BeatDrop` folder.
 
 ## Second method: Using [CMake](https://cmake.org) (for latest version build)
 
@@ -249,6 +260,7 @@ For example: `option(BUILD_NS_EEL_SHIM "Build and install the ns-eel2 compatibil
 mkdir your_build_folder
 cd your_build_folder
 cmake -A Win32 ..
+# Use `cmake -A x64 ..` when building the x64 projectM-eval libraries.
 cmake --build . --config "Release" --parallel
 cmake --install . --prefix your-installation-folder-name-here.
 ```

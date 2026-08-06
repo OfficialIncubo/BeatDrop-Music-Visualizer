@@ -6,14 +6,20 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BeatDrop", "vis_milk2/plugi
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Release_OldOS|Win32 = Release_OldOS|Win32
-		Release|Win32 = Release|Win32
+		Release_x86|Win32 = Release_x86|Win32
+		Release_OldOS_x86|Win32 = Release_OldOS_x86|Win32
+		Release_x64|x64 = Release_x64|x64
+		Release_OldOS_x64|x64 = Release_OldOS_x64|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{881FB534-7396-485A-ADC2-6FBEBED7A0F4}.Release_OldOS|Win32.ActiveCfg = Release_OldOS|Win32
-		{881FB534-7396-485A-ADC2-6FBEBED7A0F4}.Release_OldOS|Win32.Build.0 = Release_OldOS|Win32
-		{881FB534-7396-485A-ADC2-6FBEBED7A0F4}.Release|Win32.ActiveCfg = Release|Win32
-		{881FB534-7396-485A-ADC2-6FBEBED7A0F4}.Release|Win32.Build.0 = Release|Win32
+		{881FB534-7396-485A-ADC2-6FBEBED7A0F4}.Release_x86|Win32.ActiveCfg = Release_x86|Win32
+		{881FB534-7396-485A-ADC2-6FBEBED7A0F4}.Release_x86|Win32.Build.0 = Release_x86|Win32
+		{881FB534-7396-485A-ADC2-6FBEBED7A0F4}.Release_OldOS_x86|Win32.ActiveCfg = Release_OldOS_x86|Win32
+		{881FB534-7396-485A-ADC2-6FBEBED7A0F4}.Release_OldOS_x86|Win32.Build.0 = Release_OldOS_x86|Win32
+		{881FB534-7396-485A-ADC2-6FBEBED7A0F4}.Release_x64|x64.ActiveCfg = Release_x64|x64
+		{881FB534-7396-485A-ADC2-6FBEBED7A0F4}.Release_x64|x64.Build.0 = Release_x64|x64
+		{881FB534-7396-485A-ADC2-6FBEBED7A0F4}.Release_OldOS_x64|x64.ActiveCfg = Release_OldOS_x64|x64
+		{881FB534-7396-485A-ADC2-6FBEBED7A0F4}.Release_OldOS_x64|x64.Build.0 = Release_OldOS_x64|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

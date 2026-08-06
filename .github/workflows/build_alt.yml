@@ -1,4 +1,4 @@
-# Generated with Gemini Pro 3.1, modified by Claude and (sometimes) me
+# Generated with Gemini Pro 3.1
 
 name: Alternate Build
 
@@ -11,21 +11,36 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.build_name }} (${{ matrix.os }})
+    name: ${{ matrix.config }} (${{ matrix.arch }}, ${{ matrix.os }})
     strategy:
+      fail-fast: false
       matrix:
         os: [windows-2022, windows-2025]
         config: [release, release-oldos, full-package]
+        arch: [x86, x64]
         include:
-          - config: release
-            build_name: "Build Release Only"
-            artifact_name: "BeatDrop-Release"
-          - config: release-oldos
-            build_name: "Build Release_OldOS Only"
-            artifact_name: "BeatDrop-Release-OldOS"
-          - config: full-package
-            build_name: "Build Full Package"
-            artifact_name: "BeatDrop-Full-Package"
+          - arch: x86
+            platform: Win32
+            triplet: x86-windows
+            directx_lib: x86
+            cmake_generator_arch: Win32
+            release_configuration: Release_x86
+            oldos_configuration: Release_OldOS_x86
+            release_output: Release_x86
+            oldos_output: Release_OldOS_x86
+            release_executable: BeatDrop_x86.exe
+            oldos_executable: BeatDrop_OldOS_x86.exe
+          - arch: x64
+            platform: x64
+            triplet: x64-windows
+            directx_lib: x64
+            cmake_generator_arch: x64
+            release_configuration: Release_x64
+            oldos_configuration: Release_OldOS_x64
+            release_output: Release_x64
+            oldos_output: Release_OldOS_x64
+            release_executable: BeatDrop_x64.exe
+            oldos_executable: BeatDrop_OldOS_x64.exe
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -37,94 +52,71 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v3
 
-    - name: Cache vcpkg binary archives
+    - name: Cache ${{ matrix.arch }} vcpkg binary archives
       uses: actions/cache@v6
       with:
         path: C:\Users\runneradmin\AppData\Local\vcpkg\archives
-        key: vcpkg-archives-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+        key: vcpkg-archives-${{ runner.os }}-${{ matrix.triplet }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
         restore-keys: |
-          vcpkg-archives-${{ runner.os }}-
+          vcpkg-archives-${{ runner.os }}-${{ matrix.triplet }}-
 
-    - name: Update vcpkg baseline and install dependencies
+    - name: Install ${{ matrix.arch }} dependencies
       shell: bash
       run: |
         vcpkg integrate install
         vcpkg x-update-baseline
-        vcpkg install --triplet x86-windows
+        vcpkg install --triplet ${{ matrix.triplet }}
 
-    - name: Clone and Build projectM-eval
+    - name: Clone and build ${{ matrix.arch }} projectM-eval
       shell: bash
       run: |
-        # Clone projectM-eval
         git clone https://github.com/projectM-visualizer/projectm-eval.git
-        cd projectm-eval
-        git fetch --all
-        
-        # Setup build directories
-        mkdir projectm-eval-build
-        cd projectm-eval-build
-        
-        # Generate project files and force BUILD_NS_EEL_SHIM to ON
-        cmake -A Win32 -DBUILD_NS_EEL_SHIM=ON ..
-        
-        # Build and install
-        cmake --build . --config "Release" --parallel
-        cmake --install . --prefix projectm-eval-install
+        cmake -S projectm-eval -B projectm-eval-build -A ${{ matrix.cmake_generator_arch }} -DBUILD_NS_EEL_SHIM=ON
+        cmake --build projectm-eval-build --config Release --parallel
+        cmake --install projectm-eval-build --prefix projectm-eval-install
 
-    - name: Copy projectM-eval libraries
+    - name: Copy ${{ matrix.arch }} projectM-eval libraries
       shell: bash
       run: |
-        mkdir -p lib
-        mkdir -p ns-eel2-shim
-        cp projectm-eval/projectm-eval-build/projectm-eval-install/lib/projectM_eval.lib lib/
-        cp projectm-eval/projectm-eval-build/projectm-eval-install/lib/projectM_ns-eel2.lib lib/
-        cp projectm-eval/projectm-eval-build/projectm-eval-install/include/projectm-eval/ns-eel2/ns-eel.h ns-eel2-shim/
+        mkdir -p lib ns-eel2-shim
+        cp projectm-eval-install/lib/projectM_eval.lib lib/
+        cp projectm-eval-install/lib/projectM_ns-eel2.lib lib/
+        cp projectm-eval-install/include/projectm-eval/ns-eel2/ns-eel.h ns-eel2-shim/
 
     - name: Install Legacy DirectX SDK
       shell: powershell
       run: |
         choco install directx-sdk -y
-        # Setting environment variables for the current session
         echo "DXSDK_DIR=C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)" >> $env:GITHUB_ENV
 
-    - name: Build BeatDrop (Release)
+    - name: Build BeatDrop (${{ matrix.release_configuration }})
       if: matrix.config == 'release' || matrix.config == 'full-package'
       shell: cmd
       env:
-        INCLUDE: 'C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;%INCLUDE%'
-        LIB: 'C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;%LIB%'
-      run: |
-        :: Build the main project solution using the Release configuration
-        msbuild BeatDrop.sln /p:Configuration="Release" /p:Platform="Win32" /m
+        INCLUDE: C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;%INCLUDE%
+        LIB: C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\${{ matrix.directx_lib }};%LIB%
+      run: msbuild BeatDrop.sln /p:Configuration="${{ matrix.release_configuration }}" /p:Platform="${{ matrix.platform }}" /m
 
-    - name: Copy BeatDrop executable to package
-      if: matrix.config == 'release' || matrix.config == 'full-package'
-      shell: bash
-      run: |
-        mkdir -p BeatDrop
-        cp vis_milk2/Release/BeatDrop.exe BeatDrop/
-
-    - name: Build BeatDrop (Release_OldOS)
+    - name: Build BeatDrop (${{ matrix.oldos_configuration }})
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
       shell: cmd
       env:
-        INCLUDE: 'C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;%INCLUDE%'
-        LIB: 'C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\x86;%LIB%'
-      run: |
-        :: Build the main project solution using the Release_OldOS configuration
-        msbuild BeatDrop.sln /p:Configuration="Release_OldOS" /p:Platform="Win32" /m
+        INCLUDE: C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;%INCLUDE%
+        LIB: C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\${{ matrix.directx_lib }};%LIB%
+      run: msbuild BeatDrop.sln /p:Configuration="${{ matrix.oldos_configuration }}" /p:Platform="${{ matrix.platform }}" /m
 
-    - name: Copy BeatDrop_OldOS executable to package
-      if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
-      shell: bash
-      run: |
-        mkdir -p BeatDrop
-        cp vis_milk2/Release/BeatDrop_OldOS.exe BeatDrop/
-
-    - name: Post-Build Packaging
+    - name: Package ${{ matrix.arch }} build
       shell: bash
       run: |
         mkdir -p "BeatDrop/BeatDrop Resources"
+        if [[ "${{ matrix.config }}" == "release" || "${{ matrix.config }}" == "full-package" ]]; then
+          cp "vis_milk2/${{ matrix.release_output }}/${{ matrix.release_executable }}" BeatDrop/
+          cp vis_milk2/${{ matrix.release_output }}/*.dll BeatDrop/
+        fi
+        if [[ "${{ matrix.config }}" == "release-oldos" || "${{ matrix.config }}" == "full-package" ]]; then
+          cp "vis_milk2/${{ matrix.oldos_output }}/${{ matrix.oldos_executable }}" BeatDrop/
+          cp vis_milk2/${{ matrix.oldos_output }}/*.dll BeatDrop/
+        fi
         cp -R resources/Milkdrop2/* "BeatDrop/BeatDrop Resources/"
         cp resources/beatdrop.ini BeatDrop/
         cp resources/beatdrop_img.ini BeatDrop/
@@ -134,7 +126,7 @@ jobs:
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v7
       with:
-        name: ${{ matrix.artifact_name }}-${{ matrix.os }}
+        name: BeatDrop-${{ matrix.config }}-${{ matrix.arch }}-${{ matrix.os }}
         path: BeatDrop/
         if-no-files-found: error
         compression-level: 0
