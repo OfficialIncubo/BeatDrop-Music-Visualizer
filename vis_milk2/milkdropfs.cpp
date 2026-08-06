@@ -103,7 +103,12 @@ static void MungeFPCW( WORD *pwOldCW )
 
 void RestoreFPCW(WORD wSave)
 {
+#if defined(_M_IX86)
     __asm fldcw wSave
+#else
+    // x64 uses SSE2 floating-point control; the legacy x87 control word is irrelevant.
+    (void)wSave;
+#endif
 }
 
 int GetNumToSpawn(float fTime, float fDeltaT, float fRate, float fRegularity, int iNumSpawnedSoFar)
