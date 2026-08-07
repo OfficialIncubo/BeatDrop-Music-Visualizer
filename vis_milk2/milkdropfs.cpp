@@ -4631,7 +4631,7 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 			float repeatx = min(100.0f, max(0.01f, (float)(*m_texmgr.m_tex[iSlot].var_repeatx) ));
 			float repeaty = min(100.0f, max(0.01f, (float)(*m_texmgr.m_tex[iSlot].var_repeaty) ));
 
-			int blendmode = min(4, max(0, ((int)(*m_texmgr.m_tex[iSlot].var_blendmode))));
+			int blendmode = min(10, max(0, ((int)(*m_texmgr.m_tex[iSlot].var_blendmode))));
 			float r = min(1.0f, max(0.0f, ((float)(*m_texmgr.m_tex[iSlot].var_r))));
 			float g = min(1.0f, max(0.0f, ((float)(*m_texmgr.m_tex[iSlot].var_g))));
 			float b = min(1.0f, max(0.0f, ((float)(*m_texmgr.m_tex[iSlot].var_b))));
@@ -4847,6 +4847,80 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 					}
 				}
 				break;
+			case 5:
+				// multiply
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_DESTCOLOR);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+				// Modulate color allows for fading the multiplication effect
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r, g, b, a);
+				break;
+
+			case 6:
+				// subtract
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r*a, g*a, b*a, a);
+				break;
+
+			case 7:
+				// invert
+				lpDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+				//lpDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+				//lpDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
+				lpDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TEXTURE);
+
+				lpDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_ALPHAREF, 0x80); // Cutoff threshold
+				lpDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
+
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r, g, b, a);
+				break;
+
+			case 8:
+				// Cut-off (Colorkeyed / Stencil)
+				// Punches a black hole where the sprite is opaque.
+				// Logic: Dest = 0*Src + Dest*(1-SrcAlpha)
+
+				// Setup Texture Stage for Colorkey
+				lpDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+				lpDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TEXTURE);
+
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ZERO);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+				// Color doesn't affect the "cut", but Alpha does (so we pass 'a')
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r, g, b, a);
+				break;
+
+			case 9:
+				// Darken
+				// Dest = min(Src, Dest)
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MIN);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r*a, g*a, b*a, a);
+				break;
+
+			case 10:
+				// Vivid (High Contrast / Glow)
+				// Approximation: Dest = Src*Dest + Dest (Boosts brightness/contrast)
+				// Or Lighten: D3DBLENDOP_MAX
+				// Using DestColor + One creates a "Color Dodge" like vivid glow.
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MAX);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r*a, g*a, b*a, a);
+				break;
 			}
 
 			lpDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, (LPVOID)v3, sizeof(SPRITEVERTEX));
@@ -4887,6 +4961,13 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 		}
 	}
 
+	/*
+	It's obligatory to reset the blend option to add after invoking a sprite with any blend modes.
+	This should fix the affected visual (e.g min, max etc blend options affects the entire visual
+	incl. any sprites with different images).
+	*/
+	lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD); // <-
+	lpDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 	lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
 	lpDevice->SetPixelShader(NULL);
