@@ -11,34 +11,22 @@ on:
 
 jobs:
   build:
-    name: ${{ matrix.config }} (${{ matrix.arch }}, ${{ matrix.os }})
+    name: ${{ matrix.build_name }} (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
         os: [windows-2022, windows-2025]
         config: [release, release-oldos, full-package]
-        arch: [x86, x64]
         include:
-          - arch: x86
-            platform: Win32
-            triplet: x86-windows
-            directx_lib: x86
-            release_configuration: Release_x86
-            oldos_configuration: Release_OldOS_x86
-            release_output: Release_x86
-            oldos_output: Release_OldOS_x86
-            release_executable: BeatDrop_x86.exe
-            oldos_executable: BeatDrop_OldOS_x86.exe
-          - arch: x64
-            platform: x64
-            triplet: x64-windows
-            directx_lib: x64
-            release_configuration: Release_x64
-            oldos_configuration: Release_OldOS_x64
-            release_output: Release_x64
-            oldos_output: Release_OldOS_x64
-            release_executable: BeatDrop_x64.exe
-            oldos_executable: BeatDrop_OldOS_x64.exe
+          - config: release
+            build_name: "Build Release Only"
+            artifact_name: "BeatDrop-Release"
+          - config: release-oldos
+            build_name: "Build Release_OldOS Only"
+            artifact_name: "BeatDrop-Release-OldOS"
+          - config: full-package
+            build_name: "Build Full Package"
+            artifact_name: "BeatDrop-Full-Package"
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -50,66 +38,92 @@ jobs:
     - name: Add MSBuild to PATH
       uses: microsoft/setup-msbuild@v3
 
-    - name: Install ${{ matrix.arch }} dependencies
-      shell: bash
-      run: |
-        vcpkg integrate install
-        vcpkg x-update-baseline
-        vcpkg install --triplet ${{ matrix.triplet }}
-
-    - name: Copy ${{ matrix.arch }} projectM-eval libraries
-      shell: bash
-      run: |
-        mkdir -p lib ns-eel2-shim
-        triplet_root="vcpkg_installed/${{ matrix.triplet }}"
-        find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_eval.lib' -type f -exec cp {} lib/ \;
-        find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_ns-eel2.lib' -type f -exec cp {} lib/ \;
-        find "$triplet_root" -name 'ns-eel.h' -type f -exec cp {} ns-eel2-shim/ \;
-
     - name: Install Legacy DirectX SDK
       shell: powershell
       run: |
         choco install directx-sdk -y
         echo "DXSDK_DIR=C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)" >> $env:GITHUB_ENV
 
-    - name: Build BeatDrop (${{ matrix.release_configuration }})
+    - name: Install x86 dependencies and build Release_x86
       if: matrix.config == 'release' || matrix.config == 'full-package'
-      shell: cmd
-      env:
-        INCLUDE: C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;%INCLUDE%
-        LIB: C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\${{ matrix.directx_lib }};%LIB%
-      run: msbuild BeatDrop.sln /p:Configuration="${{ matrix.release_configuration }}" /p:Platform="${{ matrix.platform }}" /m
-
-    - name: Build BeatDrop (${{ matrix.oldos_configuration }})
-      if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
-      shell: cmd
-      env:
-        INCLUDE: C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;%INCLUDE%
-        LIB: C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Lib\${{ matrix.directx_lib }};%LIB%
-      run: msbuild BeatDrop.sln /p:Configuration="${{ matrix.oldos_configuration }}" /p:Platform="${{ matrix.platform }}" /m
-
-    - name: Package ${{ matrix.arch }} build
       shell: bash
       run: |
-        mkdir -p "BeatDrop/BeatDrop Resources"
+        vcpkg integrate install
+        vcpkg x-update-baseline
+        vcpkg install --triplet x86-windows
+        mkdir -p lib ns-eel2-shim
+        triplet_root="vcpkg_installed/x86-windows"
+        find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_eval.lib' -type f -exec cp {} lib/ \;
+        find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_ns-eel2.lib' -type f -exec cp {} lib/ \;
+        find "$triplet_root" -name 'ns-eel.h' -type f -exec cp {} ns-eel2-shim/ \;
+        cmd //c 'msbuild BeatDrop.sln /p:Configuration="Release_x86" /p:Platform="Win32" /m'
+
+    - name: Install x86 dependencies and build Release_OldOS_x86
+      if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
+      shell: bash
+      run: |
+        vcpkg integrate install
+        vcpkg x-update-baseline
+        vcpkg install --triplet x86-windows
+        mkdir -p lib ns-eel2-shim
+        triplet_root="vcpkg_installed/x86-windows"
+        find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_eval.lib' -type f -exec cp {} lib/ \;
+        find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_ns-eel2.lib' -type f -exec cp {} lib/ \;
+        find "$triplet_root" -name 'ns-eel.h' -type f -exec cp {} ns-eel2-shim/ \;
+        cmd //c 'msbuild BeatDrop.sln /p:Configuration="Release_OldOS_x86" /p:Platform="Win32" /m'
+
+    - name: Install x64 dependencies and build Release_x64
+      if: matrix.config == 'release' || matrix.config == 'full-package'
+      shell: bash
+      run: |
+        vcpkg install --triplet x64-windows
+        mkdir -p lib ns-eel2-shim
+        triplet_root="vcpkg_installed/x64-windows"
+        find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_eval.lib' -type f -exec cp {} lib/ \;
+        find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_ns-eel2.lib' -type f -exec cp {} lib/ \;
+        find "$triplet_root" -name 'ns-eel.h' -type f -exec cp {} ns-eel2-shim/ \;
+        cmd //c 'msbuild BeatDrop.sln /p:Configuration="Release_x64" /p:Platform="x64" /m'
+
+    - name: Install x64 dependencies and build Release_OldOS_x64
+      if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
+      shell: bash
+      run: |
+        vcpkg install --triplet x64-windows
+        mkdir -p lib ns-eel2-shim
+        triplet_root="vcpkg_installed/x64-windows"
+        find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_eval.lib' -type f -exec cp {} lib/ \;
+        find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_ns-eel2.lib' -type f -exec cp {} lib/ \;
+        find "$triplet_root" -name 'ns-eel.h' -type f -exec cp {} ns-eel2-shim/ \;
+        cmd //c 'msbuild BeatDrop.sln /p:Configuration="Release_OldOS_x64" /p:Platform="x64" /m'
+
+    - name: Post-Build Packaging
+      shell: bash
+      run: |
+        package_arch() {
+          local arch="$1"
+          local output="$2"
+          local executable="$3"
+          mkdir -p "package/$arch"
+          cp "vis_milk2/$output/$executable" "package/$arch/"
+          cp vis_milk2/$output/*.dll "package/$arch/"
+        }
         if [[ "${{ matrix.config }}" == "release" || "${{ matrix.config }}" == "full-package" ]]; then
-          cp "vis_milk2/${{ matrix.release_output }}/${{ matrix.release_executable }}" BeatDrop/
-          cp vis_milk2/${{ matrix.release_output }}/*.dll BeatDrop/
+          package_arch x86 Release_x86 BeatDrop_x86.exe
+          package_arch x64 Release_x64 BeatDrop_x64.exe
         fi
         if [[ "${{ matrix.config }}" == "release-oldos" || "${{ matrix.config }}" == "full-package" ]]; then
-          cp "vis_milk2/${{ matrix.oldos_output }}/${{ matrix.oldos_executable }}" BeatDrop/
-          cp vis_milk2/${{ matrix.oldos_output }}/*.dll BeatDrop/
+          package_arch x86 Release_OldOS_x86 BeatDrop_OldOS_x86.exe
+          package_arch x64 Release_OldOS_x64 BeatDrop_OldOS_x64.exe
         fi
-        cp -R resources/Milkdrop2/* "BeatDrop/BeatDrop Resources/"
-        cp resources/beatdrop.ini BeatDrop/
-        cp resources/beatdrop_img.ini BeatDrop/
-        cp resources/beatdrop_msg.ini BeatDrop/
-        cp resources/precache.txt BeatDrop/
+        for arch in x86 x64; do
+          cp -R resources/Milkdrop2 "package/$arch/BeatDrop Resources"
+          cp resources/beatdrop.ini resources/beatdrop_img.ini resources/beatdrop_msg.ini resources/precache.txt "package/$arch/"
+        done
 
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v7
       with:
-        name: BeatDrop-${{ matrix.config }}-${{ matrix.arch }}-${{ matrix.os }}
-        path: BeatDrop/
+        name: ${{ matrix.artifact_name }}-${{ matrix.os }}
+        path: package/
         if-no-files-found: error
         compression-level: 0
