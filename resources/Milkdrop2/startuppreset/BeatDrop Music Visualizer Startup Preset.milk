@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 30/07/2026 at 20:33:54.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 07/08/2026 at 09:58:43.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -82,10 +82,7 @@ b3x=1.000
 b1ed=0.000
 per_frame_init_1=timeQ = 0;
 per_frame_init_2=progress_fade_in = 0;
-per_frame_init_3=
-per_frame_init_4=q1 = int(rand(2)); // Random Peaks toggle
-per_frame_init_5=q3 = int(rand(2)); // Random Oscilloscope toggle
-per_frame_init_6=q4 = .625; // FFT height
+per_frame_init_3=q4 = .625; // FFT height
 per_frame_1=q2 = bass_att; // Pass bass for logo pulsing
 per_frame_2=timeQ += 1/fps;
 per_frame_3=q5 = min(timeQ * 1.5, 1);
@@ -126,7 +123,7 @@ warp_34=`    float peak_val = get_fft_peak_hz(hz) * q4;
 warp_35=`    float peak_block = max(0.0, floor(peak_val * num_blocks - 1.0));
 warp_36=`    float is_peak = step(abs(block_index - peak_block), 0.1);
 warp_37=`
-warp_38=`    float block_active = saturate(block_lit + is_peak * q1);
+warp_38=`    float block_active = saturate(block_lit + is_peak * int(rand_preset.y*2));
 warp_39=`    float mask = inside_bar * inside_block * block_active;
 warp_40=`
 warp_41=`    // BeatDrop Gradient (Dark Purple -> Purple -> Violet)
@@ -164,7 +161,7 @@ comp_12=`    float wave_y = 0.5 - wave_val * 0.5;
 comp_13=`    float dist = abs(uv.y - wave_y);
 comp_14=`    float glow = 0.005 / (dist + 0.001);
 comp_15=`    float3 wave_col = lerp(float3(.2, .016, .627), float3(.475, .161, .773), uv.x);
-comp_16=`    float3 wave_render = wave_col * pow(glow, 1.2) * q3;
+comp_16=`    float3 wave_render = wave_col * pow(glow, 1.2) * int(rand_preset.z*2);
 comp_17=`
 comp_18=`    ret = ret_bg + wave_render;
 comp_19=`
