@@ -75,7 +75,7 @@ jobs:
       shell: cmd
       run: |
         if exist BeatDrop rmdir /s /q BeatDrop
-        msbuild BeatDrop.sln /p:Configuration="Release_x86" /p:Platform="Win32" /m
+        msbuild BeatDrop.sln /p:Configuration=Release_x86 /p:Platform=Win32 /m
 
     - name: Package Release_x86
       if: matrix.config == 'release' || matrix.config == 'full-package'
@@ -90,7 +90,7 @@ jobs:
       shell: cmd
       run: |
         if exist BeatDrop rmdir /s /q BeatDrop
-        msbuild BeatDrop.sln /p:Configuration="Release_OldOS_x86" /p:Platform="Win32" /m
+        msbuild BeatDrop.sln /p:Configuration=Release_OldOS_x86 /p:Platform=Win32 /m
 
     - name: Package Release_OldOS_x86
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
@@ -117,7 +117,7 @@ jobs:
       shell: cmd
       run: |
         if exist BeatDrop rmdir /s /q BeatDrop
-        msbuild BeatDrop.sln /p:Configuration="Release_x64" /p:Platform="x64" /m
+        msbuild BeatDrop.sln /p:Configuration=Release_x64 /p:Platform=x64 /m
 
     - name: Package Release_x64
       if: matrix.config == 'release' || matrix.config == 'full-package'
@@ -132,7 +132,7 @@ jobs:
       shell: cmd
       run: |
         if exist BeatDrop rmdir /s /q BeatDrop
-        msbuild BeatDrop.sln /p:Configuration="Release_OldOS_x64" /p:Platform="x64" /m
+        msbuild BeatDrop.sln /p:Configuration=Release_OldOS_x64 /p:Platform=x64 /m
 
     - name: Package Release_OldOS_x64
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'

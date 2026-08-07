@@ -57,7 +57,7 @@ jobs:
         find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_ns-eel2.lib' -type f -exec cp {} lib/ \;
         find "$triplet_root" -name 'ns-eel.h' -type f -exec cp {} ns-eel2-shim/ \;
         rm -rf BeatDrop
-        cmd.exe /D /C msbuild BeatDrop.sln /p:Configuration=Release_x86 /p:Platform=Win32 /m
+        cmd.exe //D //C 'msbuild BeatDrop.sln /p:Configuration=Release_x86 /p:Platform=Win32 /m'
 
     - name: Package Release_x86
       if: matrix.config == 'release' || matrix.config == 'full-package'
@@ -80,7 +80,7 @@ jobs:
         find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_ns-eel2.lib' -type f -exec cp {} lib/ \;
         find "$triplet_root" -name 'ns-eel.h' -type f -exec cp {} ns-eel2-shim/ \;
         rm -rf BeatDrop
-        cmd.exe /D /C msbuild BeatDrop.sln /p:Configuration=Release_OldOS_x86 /p:Platform=Win32 /m
+        cmd.exe //D //C 'msbuild BeatDrop.sln /p:Configuration=Release_OldOS_x86 /p:Platform=Win32 /m'
 
     - name: Package Release_OldOS_x86
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
@@ -101,7 +101,7 @@ jobs:
         find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_ns-eel2.lib' -type f -exec cp {} lib/ \;
         find "$triplet_root" -name 'ns-eel.h' -type f -exec cp {} ns-eel2-shim/ \;
         rm -rf BeatDrop
-        cmd.exe /D /C msbuild BeatDrop.sln /p:Configuration=Release_x64 /p:Platform=x64 /m
+        cmd.exe //D //C 'msbuild BeatDrop.sln /p:Configuration=Release_x64 /p:Platform=x64 /m'
 
     - name: Package Release_x64
       if: matrix.config == 'release' || matrix.config == 'full-package'
@@ -122,7 +122,7 @@ jobs:
         find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_ns-eel2.lib' -type f -exec cp {} lib/ \;
         find "$triplet_root" -name 'ns-eel.h' -type f -exec cp {} ns-eel2-shim/ \;
         rm -rf BeatDrop
-        cmd.exe /D /C msbuild BeatDrop.sln /p:Configuration=Release_OldOS_x64 /p:Platform=x64 /m
+        cmd.exe //D //C 'msbuild BeatDrop.sln /p:Configuration=Release_OldOS_x64 /p:Platform=x64 /m'
 
     - name: Package Release_OldOS_x64
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
