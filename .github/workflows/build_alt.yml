@@ -73,12 +73,32 @@ jobs:
     - name: Build Release_x86
       if: matrix.config == 'release' || matrix.config == 'full-package'
       shell: cmd
-      run: msbuild BeatDrop.sln /p:Configuration="Release_x86" /p:Platform="Win32" /m
+      run: |
+        if exist BeatDrop rmdir /s /q BeatDrop
+        msbuild BeatDrop.sln /p:Configuration="Release_x86" /p:Platform="Win32" /m
+
+    - name: Package Release_x86
+      if: matrix.config == 'release' || matrix.config == 'full-package'
+      shell: bash
+      run: |
+        mkdir -p package/x86
+        cp BeatDrop/BeatDrop_x86.exe package/x86/
+        cp BeatDrop/*.dll package/x86/
 
     - name: Build Release_OldOS_x86
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
       shell: cmd
-      run: msbuild BeatDrop.sln /p:Configuration="Release_OldOS_x86" /p:Platform="Win32" /m
+      run: |
+        if exist BeatDrop rmdir /s /q BeatDrop
+        msbuild BeatDrop.sln /p:Configuration="Release_OldOS_x86" /p:Platform="Win32" /m
+
+    - name: Package Release_OldOS_x86
+      if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
+      shell: bash
+      run: |
+        mkdir -p package/x86
+        cp BeatDrop/BeatDrop_OldOS_x86.exe package/x86/
+        cp BeatDrop/*.dll package/x86/
 
     - name: Build x64 projectM-eval and dependencies
       shell: bash
@@ -95,35 +115,41 @@ jobs:
     - name: Build Release_x64
       if: matrix.config == 'release' || matrix.config == 'full-package'
       shell: cmd
-      run: msbuild BeatDrop.sln /p:Configuration="Release_x64" /p:Platform="x64" /m
+      run: |
+        if exist BeatDrop rmdir /s /q BeatDrop
+        msbuild BeatDrop.sln /p:Configuration="Release_x64" /p:Platform="x64" /m
+
+    - name: Package Release_x64
+      if: matrix.config == 'release' || matrix.config == 'full-package'
+      shell: bash
+      run: |
+        mkdir -p package/x64
+        cp BeatDrop/BeatDrop_x64.exe package/x64/
+        cp BeatDrop/*.dll package/x64/
 
     - name: Build Release_OldOS_x64
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
       shell: cmd
-      run: msbuild BeatDrop.sln /p:Configuration="Release_OldOS_x64" /p:Platform="x64" /m
+      run: |
+        if exist BeatDrop rmdir /s /q BeatDrop
+        msbuild BeatDrop.sln /p:Configuration="Release_OldOS_x64" /p:Platform="x64" /m
+
+    - name: Package Release_OldOS_x64
+      if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
+      shell: bash
+      run: |
+        mkdir -p package/x64
+        cp BeatDrop/BeatDrop_OldOS_x64.exe package/x64/
+        cp BeatDrop/*.dll package/x64/
 
     - name: Post-Build Packaging
       shell: bash
       run: |
-        package_arch() {
-          local arch="$1"
-          local output="$2"
-          local executable="$3"
-          mkdir -p "package/$arch"
-          cp "vis_milk2/$output/$executable" "package/$arch/"
-          cp vis_milk2/$output/*.dll "package/$arch/"
-        }
-        if [[ "${{ matrix.config }}" == "release" || "${{ matrix.config }}" == "full-package" ]]; then
-          package_arch x86 Release_x86 BeatDrop_x86.exe
-          package_arch x64 Release_x64 BeatDrop_x64.exe
-        fi
-        if [[ "${{ matrix.config }}" == "release-oldos" || "${{ matrix.config }}" == "full-package" ]]; then
-          package_arch x86 Release_OldOS_x86 BeatDrop_OldOS_x86.exe
-          package_arch x64 Release_OldOS_x64 BeatDrop_OldOS_x64.exe
-        fi
         for arch in x86 x64; do
-          cp -R resources/Milkdrop2 "package/$arch/BeatDrop Resources"
-          cp resources/beatdrop.ini resources/beatdrop_img.ini resources/beatdrop_msg.ini resources/precache.txt "package/$arch/"
+          if [ -d "package/$arch" ]; then
+            cp -R resources/Milkdrop2 "package/$arch/BeatDrop Resources"
+            cp resources/beatdrop.ini resources/beatdrop_img.ini resources/beatdrop_msg.ini resources/precache.txt "package/$arch/"
+          fi
         done
 
     - name: Upload Build Artifact
