@@ -4867,20 +4867,11 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 
 			case 7:
 				// invert
-				lpDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
-				//lpDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-				//lpDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE);
-				lpDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TEXTURE);
-
-				lpDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-				lpDevice->SetRenderState(D3DRS_ALPHAREF, 0x80); // Cutoff threshold
-				lpDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
-
 				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 				lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
 				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
-				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r, g, b, a);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(a, a, a, a);
 				break;
 
 			case 8:
@@ -4955,31 +4946,34 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 				KillSprite(iSlot);
 			}
 
+			/*
+			Reset every piece of pipeline state that any blendmode case above might have
+			touched (D3DRS_BLENDOP, D3DRS_ALPHATESTENABLE, D3DRS_ALPHAREF/FUNC, the texture
+			stage states, and the colorkey pixel shader from case 4). This has to happen here,
+			once per sprite, INSIDE the loop - not just once after the whole for-loop ends.
+			Otherwise a sprite that doesn't set a particular state (e.g. a normal-blend sprite
+			doesn't touch D3DRS_BLENDOP) silently inherits whatever a previous sprite in the
+			same loop left behind (e.g. BLENDOP_MIN from a Darken sprite), so two sprites with
+			different blendmodes drawn back-to-back would incorrectly share state.
+			*/
+			lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+			lpDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+			lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+
+			// Undo the pixel shader bound for a Spout sprite's blendmode-4 colorkey
+			// so it can't stay bound and affect the next sprite in the loop.
+			lpDevice->SetPixelShader(NULL);
+
+			// reset these to the standard safe mode:
+	        lpDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	        lpDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
+	        lpDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
+	        lpDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	        lpDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1 );
             lpDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );
             lpDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 		}
 	}
-
-	/*
-	It's obligatory to reset the blend option to add after invoking a sprite with any blend modes.
-	This should fix the affected visual (e.g min, max etc blend options affects the entire visual
-	incl. any sprites with different images).
-	*/
-	lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD); // <-
-	lpDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-	lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-
-	lpDevice->SetPixelShader(NULL);
-
-    // reset these to the standard safe mode:
-    lpDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
-	lpDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
-	lpDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
-    lpDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
-	lpDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1 );
-    lpDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );
-    lpDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 }
 
 void CPlugin::UvToMathSpace(float u, float v, float* rad, float* ang)
