@@ -86,7 +86,7 @@ per_frame_22=warp=0;q8=55/FPS;
 per_frame_23=q7=min((frame-lastBeat)/interval,1);
 per_frame_24=aa=aa+beat;
 per_frame_25=wave_g=q7;wave_b=q7;
-per_frame_26=curang=.97*curang- (q1*(.4+max(bass,1.5)*rand(20)/100)*(-1+2*(aa%2)))*q8;
+per_frame_26=curang=.97*curang- (q1*(.4+max(bass,1.5)*int(rand(20))/100)*(-1+2*(aa%2)))*q8;
 per_frame_27=cursc=1+.97*curscale+q8*.3*beat;
 per_frame_28=sx=cursc;
 per_frame_29=sy=1-(cursc-1);

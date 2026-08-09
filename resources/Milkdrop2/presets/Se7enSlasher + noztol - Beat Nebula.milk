@@ -1,0 +1,156 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 09/08/2026 at 17:25:02.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=2
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.000
+fDecay=0.980
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.000
+fWaveSmoothing=0.000
+fWaveParam=0.000
+fModWaveAlphaStart=0.000
+fModWaveAlphaEnd=0.000
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`shader_body {}
+comp_1=`shader_body {
+comp_2=`    // 1. Map Coordinates (Aspect Ratio Corrected)
+comp_3=`    float2 my_uv = uv * 2.0 - 1.0;
+comp_4=`    my_uv.x *= (aspect.x / aspect.y);
+comp_5=`
+comp_6=`    // 2. Sample 9 distinct frequency bands across the spectrum
+comp_7=`    // BASS: Sub-rumble (R), Kick drum (G), High bass (B)
+comp_8=`    float3 bassV = float3(get_fft(0.005), get_fft(0.020), get_fft(0.050));
+comp_9=`    
+comp_10=`    // MIDS: Low-mid (R), True mid (G), High-mid (B)
+comp_11=`    float3 midV = float3(get_fft(0.150), get_fft(0.300), get_fft(0.500));
+comp_12=`    
+comp_13=`    // TREBLE: Low-treble (R), True treble (G), Air/Sizzle (B)
+comp_14=`    float3 trebleV = float3(get_fft(0.650), get_fft(0.800), get_fft(0.950));
+comp_15=`
+comp_16=`    // Add a gain to scale up brightness (Using abs() for safe HLSL powers)
+comp_17=`    bassV   = pow(abs(bassV), float3(3.0, 3.0, 3.0)) * 2.5;
+comp_18=`    midV    = pow(abs(midV), float3(3.0, 3.0, 3.0)) * 2.5;
+comp_19=`    trebleV = pow(abs(trebleV), float3(3.0, 3.0, 3.0)) * 2.5;
+comp_20=`
+comp_21=`    // 3. Time & Volumetric Raymarching Setup
+comp_22=`    float3 o = float3(0.0, 0.0, 0.0);
+comp_23=`    float d = 0.0;
+comp_24=`    float s = 0.0;
+comp_25=`    float t = -time;
+comp_26=`    
+comp_27=`    float maxSteps = 60.0 + 40.0 * sin(time * 0.5);
+comp_28=`    bool marching = true;
+comp_29=`
+comp_30=`    // 4. Main Raymarching Loop
+comp_31=`    for (int i = 0; i < 101; i++) {
+comp_32=`        if ((float)i > maxSteps) marching = false;
+comp_33=`        
+comp_34=`        if (marching) {
+comp_35=`            s = 0.006 + abs(s) * 0.3;
+comp_36=`            d += s;
+comp_37=`
+comp_38=`            float3 p = float3(my_uv * d, d + time + (bassV.x * 0.2));
+comp_39=`
+comp_40=`            // Separate the 9 colors spatially
+comp_41=`            float3 colorB = sin(d * 1.0 + float3(0.3, 0.9, 0.5 + p.z)) * bassV;
+comp_42=`            float3 colorM = sin(d * 1.5 + float3(0.9, 0.5, 0.3 + p.x)) * midV;
+comp_43=`            float3 colorT = sin(d * 2.0 + float3(0.5, 0.3, 0.9 + p.y)) * trebleV;
+comp_44=`
+comp_45=`            // Add all 9 frequencies into the final volumetric accumulation
+comp_46=`            o += (colorB + colorM + colorT) / (abs(s) + 1e-4);
+comp_47=`
+comp_48=`            // Symmetric space folding and oscillatory deformation (Matrix Unroll)
+comp_49=`            float angle = 0.02 * t + p.z * 0.2;
+comp_50=`            float cosA = cos(angle);
+comp_51=`            float sinA = sin(angle);
+comp_52=`            
+comp_53=`            float2 tempXY = p.xy;
+comp_54=`            p.x = tempXY.x * cosA - tempXY.y * sinA;
+comp_55=`            p.y = tempXY.x * sinA + tempXY.y * cosA;
+comp_56=`
+comp_57=`            s = sin(2.0 + p.y + p.x);
+comp_58=`
+comp_59=`            // Pseudo-fractal detail via nested sin(dot) layers
+comp_60=`            float n = 2.0;
+comp_61=`            for (int j = 0; j < 4; j++) {
+comp_62=`                float3 freq = p * n;
+comp_63=`                float3 timeMod = float3(0.8, 2.5 + sin(time * 0.25) * 0.2, 1.5 + sin(time * 0.1) * 0.5);
+comp_64=`                s -= abs(dot(0.2 * sin(freq), timeMod)) / n;
+comp_65=`                n *= 2.0;
+comp_66=`            }
+comp_67=`        }
+comp_68=`    }
+comp_69=`
+comp_70=`    // Tone mapping and gamma correction
+comp_71=`    o = pow(tanh(o * o / 2.5e7), float3(0.4545, 0.4545, 0.4545));
+comp_72=`    ret = float4(o, 1.0);
+comp_73=`}
