@@ -4903,14 +4903,38 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 
 			case 10:
 				// Vivid (High Contrast / Glow)
-				// Approximation: Dest = Src*Dest + Dest (Boosts brightness/contrast)
-				// Or Lighten: D3DBLENDOP_MAX
-				// Using DestColor + One creates a "Color Dodge" like vivid glow.
+				// True "Vivid Light" is Color Dodge/Burn, which needs a divide the
+				// fixed-function D3D9 blender can't do, so this stays an approximation.
+				// Reverted to MAX-based Lighten (Dest = max(Src, Dest)): the previous
+				// DESTCOLOR-multiplicative attempt (Dest += Src*Dest) evaluates to a flat
+				// zero wherever the destination is black - i.e. the sprite completely
+				// vanished over any black/dark background (confirmed: spectrum-analyzer
+				// test showed nothing at all). MAX never has that failure mode, since
+				// max(Src, 0) = Src, so the sprite stays fully visible over black.
+				//
+				// Same texture-alpha fix as Darken above, but fading toward BLACK - the
+				// identity element for MAX (max(0,x)=x) - so transparent/faded texels
+				// correctly have no effect instead of forcing visible dark edges.
+				lpDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+				lpDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+				lpDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+				lpDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+				lpDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+				lpDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+
+				lpDevice->SetRenderState(D3DRS_TEXTUREFACTOR, D3DCOLOR_RGBA_01(0, 0, 0, 1)); // black = MAX identity
+				lpDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_BLENDCURRENTALPHA);
+				lpDevice->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_CURRENT);
+				lpDevice->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_TFACTOR);
+				lpDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+				lpDevice->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
+				lpDevice->SetTextureStageState(2, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+
 				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 				lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MAX);
 				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
 				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r*a, g*a, b*a, a);
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r, g, b, a);
 				break;
 			}
 
@@ -4969,9 +4993,11 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 	        lpDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
 	        lpDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_TEXTURE);
 	        lpDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	        lpDevice->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
 	        lpDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1 );
             lpDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_DIFFUSE );
             lpDevice->SetTextureStageState(1, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
+            lpDevice->SetTextureStageState(2, D3DTSS_ALPHAOP, D3DTOP_DISABLE);
 		}
 	}
 }
