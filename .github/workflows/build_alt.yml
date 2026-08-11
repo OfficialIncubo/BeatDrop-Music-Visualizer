@@ -73,9 +73,7 @@ jobs:
     - name: Build Release_x86
       if: matrix.config == 'release' || matrix.config == 'full-package'
       shell: cmd
-      run: |
-        if exist BeatDrop rmdir /s /q BeatDrop
-        msbuild BeatDrop.sln /p:Configuration=Release_x86 /p:Platform=Win32 /m
+      run: msbuild BeatDrop.sln /p:Configuration=Release_x86 /p:Platform=Win32 /m
 
     - name: Package Release_x86
       if: matrix.config == 'release' || matrix.config == 'full-package'
@@ -88,9 +86,7 @@ jobs:
     - name: Build Release_OldOS_x86
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
       shell: cmd
-      run: |
-        if exist BeatDrop rmdir /s /q BeatDrop
-        msbuild BeatDrop.sln /p:Configuration=Release_OldOS_x86 /p:Platform=Win32 /m
+      run: msbuild BeatDrop.sln /p:Configuration=Release_OldOS_x86 /p:Platform=Win32 /m
 
     - name: Package Release_OldOS_x86
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
@@ -115,9 +111,7 @@ jobs:
     - name: Build Release_x64
       if: matrix.config == 'release' || matrix.config == 'full-package'
       shell: cmd
-      run: |
-        if exist BeatDrop rmdir /s /q BeatDrop
-        msbuild BeatDrop.sln /p:Configuration=Release_x64 /p:Platform=x64 /m
+      run: msbuild BeatDrop.sln /p:Configuration=Release_x64 /p:Platform=x64 /m
 
     - name: Package Release_x64
       if: matrix.config == 'release' || matrix.config == 'full-package'
@@ -130,9 +124,7 @@ jobs:
     - name: Build Release_OldOS_x64
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
       shell: cmd
-      run: |
-        if exist BeatDrop rmdir /s /q BeatDrop
-        msbuild BeatDrop.sln /p:Configuration=Release_OldOS_x64 /p:Platform=x64 /m
+      run: msbuild BeatDrop.sln /p:Configuration=Release_OldOS_x64 /p:Platform=x64 /m
 
     - name: Package Release_OldOS_x64
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
@@ -147,6 +139,9 @@ jobs:
       run: |
         for arch in x86 x64; do
           if [ -d "package/$arch" ]; then
+            cp -R BeatDrop/Redist "package/$arch/"
+            cp BeatDrop/LICENSE.txt "package/$arch/"
+            cp BeatDrop/dxwebsetup.exe "package/$arch/"
             cp -R resources/Milkdrop2 "package/$arch/BeatDrop Resources"
             cp resources/beatdrop.ini resources/beatdrop_img.ini resources/beatdrop_msg.ini resources/precache.txt "package/$arch/"
           fi

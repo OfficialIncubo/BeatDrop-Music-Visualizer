@@ -56,7 +56,6 @@ jobs:
         find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_eval.lib' -type f -exec cp {} lib/ \;
         find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_ns-eel2.lib' -type f -exec cp {} lib/ \;
         find "$triplet_root" -name 'ns-eel.h' -type f -exec cp {} ns-eel2-shim/ \;
-        rm -rf BeatDrop
         cmd.exe //D //C 'msbuild BeatDrop.sln /p:Configuration=Release_x86 /p:Platform=Win32 /m'
 
     - name: Package Release_x86
@@ -79,7 +78,6 @@ jobs:
         find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_eval.lib' -type f -exec cp {} lib/ \;
         find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_ns-eel2.lib' -type f -exec cp {} lib/ \;
         find "$triplet_root" -name 'ns-eel.h' -type f -exec cp {} ns-eel2-shim/ \;
-        rm -rf BeatDrop
         cmd.exe //D //C 'msbuild BeatDrop.sln /p:Configuration=Release_OldOS_x86 /p:Platform=Win32 /m'
 
     - name: Package Release_OldOS_x86
@@ -100,7 +98,6 @@ jobs:
         find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_eval.lib' -type f -exec cp {} lib/ \;
         find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_ns-eel2.lib' -type f -exec cp {} lib/ \;
         find "$triplet_root" -name 'ns-eel.h' -type f -exec cp {} ns-eel2-shim/ \;
-        rm -rf BeatDrop
         cmd.exe //D //C 'msbuild BeatDrop.sln /p:Configuration=Release_x64 /p:Platform=x64 /m'
 
     - name: Package Release_x64
@@ -121,7 +118,6 @@ jobs:
         find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_eval.lib' -type f -exec cp {} lib/ \;
         find "$triplet_root" -path '*/debug/*' -prune -o -name 'projectM_ns-eel2.lib' -type f -exec cp {} lib/ \;
         find "$triplet_root" -name 'ns-eel.h' -type f -exec cp {} ns-eel2-shim/ \;
-        rm -rf BeatDrop
         cmd.exe //D //C 'msbuild BeatDrop.sln /p:Configuration=Release_OldOS_x64 /p:Platform=x64 /m'
 
     - name: Package Release_OldOS_x64
@@ -137,6 +133,9 @@ jobs:
       run: |
         for arch in x86 x64; do
           if [ -d "package/$arch" ]; then
+            cp -R BeatDrop/Redist "package/$arch/"
+            cp BeatDrop/LICENSE.txt "package/$arch/"
+            cp BeatDrop/dxwebsetup.exe "package/$arch/"
             cp -R resources/Milkdrop2 "package/$arch/BeatDrop Resources"
             cp resources/beatdrop.ini resources/beatdrop_img.ini resources/beatdrop_msg.ini resources/precache.txt "package/$arch/"
           fi
