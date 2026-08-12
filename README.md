@@ -320,7 +320,13 @@ If you want to have all the MilkDrop presets in your own, just download [this Me
 
 # STAR HISTORY
 
-[![Star History Chart](https://star-history.dera.page/svg?repos=OfficialIncubo/BeatDrop-Music-Visualizer&type=Date)](https://star-history.dera.page/#OfficialIncubo/BeatDrop-Music-Visualizer&Date)
+<a href="https://star-history.dera.page/#OfficialIncubo/BeatDrop-Music-Visualizer&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=OfficialIncubo/BeatDrop-Music-Visualizer&type=date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=OfficialIncubo/BeatDrop-Music-Visualizer&type=date" />
+   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=OfficialIncubo/BeatDrop-Music-Visualizer&type=date" />
+ </picture>
+</a>
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
