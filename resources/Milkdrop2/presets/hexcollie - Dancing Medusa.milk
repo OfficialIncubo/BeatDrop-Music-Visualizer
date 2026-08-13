@@ -373,7 +373,7 @@ per_pixel_1=bend = cos(   x*3.14*q2*above(q1,q2) + (rad*3.14*q2-3.14*q3)*above(q
 per_pixel_2=zoom = zoom+bend*.05*above(q4+q5,.8);
 per_pixel_3=something=if(above(q5,0),shift,q3*0.2*cos((rad+q1)*3.14+q2));
 per_pixel_4=rot=if(above(zoom-1,.03*q1),if(above(q4,0),rad*.2*q5,something),(x*2-1)*q5);
-per_pixel_5=grid=x*100%(above(q1,q4)+above(q2,q5)+above(q3,q4)) + y*100%(above(q1,q5)+above(q2,q4)+above(q3,q5));
+per_pixel_5=grid=(x*10)%(above(q1,q4)+above(q2,q5)+above(q3,q4)) + (y*10)%(above(q1,q5)+above(q2,q4)+above(q3,q5));
 per_pixel_6=zoom=if(grid,zoom-.17*cos(rad*3.14+x*q1*3.14+y*q2*3.14)*(q5+q4),zoom);
 per_pixel_7=g1=sin(q2*.04*q5);
 per_pixel_8=g2=sin(q2*.05*q5);
