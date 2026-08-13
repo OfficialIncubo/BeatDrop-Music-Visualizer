@@ -1,0 +1,184 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+[preset00]
+# Combustion Digital -- WINAMP TUNING TWIN. Not for Poweramp.
+#
+# Poweramp's bars_* spectrum renderer is a maxmpz extension that does not
+# exist in Milkdrop, so "Combustion Digital" shows fire rising off an empty
+# screen in Winamp. This file replaces that fuel source with a standard
+# Milkdrop custom wave in spectrum mode, which renders anywhere.
+#
+# EVERYTHING ELSE IS BYTE-IDENTICAL to "Combustion Digital": same per-frame,
+# same per-pixel convection, same warp and composite shaders. So any value you
+# settle on here transfers straight back 1:1. Tune live in Winamp with M
+# (edit menu) and Ctrl+Enter to apply, then tell me the numbers and I'll port
+# them to the Poweramp file.
+#
+# WHERE THE STAND-IN DIFFERS FROM POWERAMP -- worth knowing so you don't chase
+# a difference that isn't real:
+#   * This draws a staircase OUTLINE tracing the top of each band. Poweramp
+#     draws FILLED bars, so Poweramp has substantially more hot area feeding
+#     the fire. Expect Poweramp's flames to run taller and brighter at
+#     identical settings; don't over-correct brightness here.
+#   * Milkdrop's FFT binning, scaling and smoothing are its own. Band
+#     positions and how twitchy they look will not match Poweramp exactly.
+#   * bars_smooth / bars_sensitivity have no equivalent here at all. Those
+#     remain Poweramp-only and still need a device test.
+# Flame shape, palette, cooling rate, pixel-grid chunkiness and posterisation
+# all translate faithfully. Those are the ones worth tuning here.
+fRating=5.000
+fGammaAdj=1.000
+fDecay=0.955
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.000
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.400
+fWarpScale=2.600
+fZoomExponent=1.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.000
+mv_r=0.000
+mv_g=0.000
+mv_b=0.000
+mv_a=0.000
+zoom=1.000
+rot=0.000
+cx=0.500
+cy=1.000
+dx=0.000
+dy=0.000
+warp=0.000
+sx=1.000
+sy=1.000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+
+# ---------------------------------------------------------------------------
+# CUSTOM WAVE 0 -- spectrum stand-in for Poweramp's bars.
+# bSpectrum=1 makes value1 the FFT magnitude at this point rather than the
+# waveform sample. 128 points are consumed two at a time to give 64 bands,
+# matching bars_num_x=64 in the Poweramp file.
+# ---------------------------------------------------------------------------
+wavecode_0_enabled=1
+wavecode_0_samples=128
+wavecode_0_sep=0
+wavecode_0_bSpectrum=1
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1.000
+wavecode_0_smoothing=0.000
+wavecode_0_r=1.000
+wavecode_0_g=0.900
+wavecode_0_b=0.700
+wavecode_0_a=1.000
+
+# Each band gets two points at the SAME height -- one at its left edge, one at
+# its right. Consecutive bands then join with a purely vertical segment, so
+# the polyline traces a staircase histogram rather than a zigzag. Using one
+# point per band instead would produce diagonal connectors that read as a
+# lattice and seed fire in the wrong places.
+#
+# NOTE: custom wave y is 0=BOTTOM, 1=TOP -- inverted from the per-pixel warp
+# mesh below, where y=0 is the top. Getting this backwards hangs the spectrum
+# from the ceiling.
+#
+# The floor(...+0.5) rounds to the nearest integer rather than truncating:
+# sample*127 lands on values like 41.9999 in floating point, and a bare
+# floor() would drop those a whole band.
+wave_0_per_point1=i = floor(sample*127 + 0.5);
+wave_0_per_point2=n = floor(i*0.5);
+wave_0_per_point3=f = i - n*2;
+wave_0_per_point4=x = (n + f)/64;
+wave_0_per_point5=y = 0.015 + abs(value1)*2.200;
+# Hot white at the base fading to deep red at the tip, matching the
+# bars_color_b / bars_color_t gradient in the Poweramp file.
+wave_0_per_point6=hgt = min(y*1.6, 1);
+wave_0_per_point7=r = 1;
+wave_0_per_point8=g = 1 - hgt*0.62;
+wave_0_per_point9=b = 1 - hgt*0.90;
+
+# ---------------------------------------------------------------------------
+# PER-FRAME -- identical to Combustion Digital
+# ---------------------------------------------------------------------------
+per_frame_1=q1 = 0.60 + 0.55*bass_att;
+per_frame_2=q2 = 0.50 + 0.55*treb_att;
+per_frame_3=decay = 0.9550 + 0.0200*bass_att;
+per_frame_4=decay = min(decay, 0.9850);
+
+# ---------------------------------------------------------------------------
+# PER-PIXEL -- identical to Combustion Digital
+# y=0 is TOP, y=1 is BOTTOM; ht is height above the bed; dy negative = up.
+# ---------------------------------------------------------------------------
+per_pixel_1=ht = 1 - y;
+per_pixel_2=dy = -(0.0025 + 0.0060*ht)*q1;
+per_pixel_3=dx = 0.0040*ht*ht*sin(x*14.0 + time*2.4 + ht*5.5);
+per_pixel_4=dx = dx + 0.0022*ht*sin(x*31.0 - time*3.6)*q2;
+per_pixel_5=sy = 1 + 0.004*ht;
+per_pixel_6=warp = 0.05*ht;
+
+# ---------------------------------------------------------------------------
+# WARP SHADER -- identical to Combustion Digital. Blackbody cooling.
+# ---------------------------------------------------------------------------
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    float3 c = tex2D(sampler_fc_main, uv).xyz;
+warp_4=`    c *= float3(0.9840, 0.9440, 0.9020);
+warp_5=`    c = max(c - 0.0060, 0.0);
+warp_6=`    ret = c;
+warp_7=`}
+
+# ---------------------------------------------------------------------------
+# COMPOSITE SHADER -- identical to Combustion Digital.
+# Pixel-grid quantisation + palette posterisation.
+# comp_3  1.0/128.0  = grid size. 1.0/64.0 doubles block size.
+# comp_9  12.0       = posterise steps. Lower = harder colour banding.
+# ---------------------------------------------------------------------------
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float bw = 1.0/128.0;
+comp_4=`    float2 blk = float2(bw, bw * texsize.x / texsize.y);
+comp_5=`    float2 puv = (floor(uv/blk) + 0.5) * blk;
+comp_6=`    float3 c = tex2D(sampler_fc_main, puv).xyz;
+comp_7=`    c += GetBlur1(puv) * 0.32;
+comp_8=`    c = 1.0 - exp(-c * 1.85);
+comp_9=`    c = floor(c * 12.0 + 0.5) / 12.0;
+comp_10=`    ret = c;
+comp_11=`}
