@@ -148,14 +148,14 @@ shapecode_0_border_r=1.000
 shapecode_0_border_g=1.000
 shapecode_0_border_b=1.000
 shapecode_0_border_a=0.000
-shape_0_per_frame1=x = 0.2 + 0.6*rand(100)*0.01;
-shape_0_per_frame2=y = 0.2 + 0.6*rand(100)*0.01;
-shape_0_per_frame3=r = rand(100)*0.01;
-shape_0_per_frame4=g = rand(100)*0.01;
-shape_0_per_frame5=b = rand(100)*0.01;
-shape_0_per_frame6=r2 = rand(100)*0.01;
-shape_0_per_frame7=g2 = rand(100)*0.01;
-shape_0_per_frame8=b2 = rand(100)*0.01;
+shape_0_per_frame1=x = 0.2 + 0.6*int(rand(100))*0.01;
+shape_0_per_frame2=y = 0.2 + 0.6*int(rand(100))*0.01;
+shape_0_per_frame3=r = int(rand(100))*0.01;
+shape_0_per_frame4=g = int(rand(100))*0.01;
+shape_0_per_frame5=b = int(rand(100))*0.01;
+shape_0_per_frame6=r2 = int(rand(100))*0.01;
+shape_0_per_frame7=g2 = int(rand(100))*0.01;
+shape_0_per_frame8=b2 = int(rand(100))*0.01;
 shape_0_per_frame9=a  = max(0, bass_att - 1.3);
 shape_0_per_frame10=a2 = a;
 shapecode_1_enabled=0

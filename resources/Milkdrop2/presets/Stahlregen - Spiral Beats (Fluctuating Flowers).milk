@@ -237,7 +237,7 @@ per_frame_13=peak = is_beat * beat + (1-is_beat)*peak*dec_med;
 per_frame_14=
 per_frame_15=x = if(is_beat,int(rand(60))*0.01 + 0.2,x);
 per_frame_16=y = if(is_beat,int(rand(60))*0.01 + 0.2,y);
-per_frame_17=z = if(is_beat,rand(2)-1,z);
+per_frame_17=z = if(is_beat,int(rand(2))-1,z);
 per_frame_18=wave_mystery = if(above(x,y),0,-1);
 per_frame_19=q1 = x;
 per_frame_20=q2 = y;

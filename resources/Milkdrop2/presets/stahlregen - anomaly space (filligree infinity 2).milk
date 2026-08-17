@@ -227,7 +227,7 @@ per_frame_4=
 per_frame_5=//ib_r = ob_g;
 per_frame_6=//ib_g = ob_b;
 per_frame_7=//ib_b = ob_r;
-per_frame_8=wave_mystery = rand(100)*.01;
+per_frame_8=wave_mystery = int(rand(100))*.01;
 per_frame_9=
 per_frame_10=
 per_frame_11=count = count+1;
@@ -245,10 +245,10 @@ per_frame_22=is_beat = if(above(reha,0),0,is_beat);
 per_frame_23=reha = if(is_beat,fps*.25,if(below(reha,1),0,reha-1));
 per_frame_24=
 per_frame_25=
-per_frame_26=xrand = if(is_beat,.25+rand(500)/1000,xrand);
+per_frame_26=xrand = if(is_beat,.25+int(rand(500))/1000,xrand);
 per_frame_27=xpos = xpos+bass_att*(xrand-xpos)/40;
 per_frame_28=
-per_frame_29=yrand = if(is_beat,.3+rand(400)/1000,yrand);
+per_frame_29=yrand = if(is_beat,.3+int(rand(400))/1000,yrand);
 per_frame_30=ypos = ypos+bass_att*(yrand-ypos)/40;
 per_frame_31=
 per_frame_32=dx = 2* xpos/ypos;

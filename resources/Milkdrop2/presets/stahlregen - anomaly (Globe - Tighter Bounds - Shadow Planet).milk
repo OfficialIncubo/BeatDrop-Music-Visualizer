@@ -224,10 +224,10 @@ per_frame_1=wave_r = .5-.5*sin(time);
 per_frame_2=wave_b = .5-.5*cos(time*1.13);
 per_frame_3=wave_g = .5+.5*sin(time*1.45);
 per_frame_4=
-per_frame_5=xrand = if(above(xpos,xrand-.05),if(below(xpos,xrand+.05),(275+rand(425))/1000,xrand),xrand);
+per_frame_5=xrand = if(above(xpos,xrand-.05),if(below(xpos,xrand+.05),(275+int(rand(425)))/1000,xrand),xrand);
 per_frame_6=xpos = xpos+(xrand-xpos)/40;
 per_frame_7=
-per_frame_8=yrand = if(above(ypos,yrand-.05),if(below(ypos,yrand+.05),(275+rand(425))/1000,yrand),yrand);
+per_frame_8=yrand = if(above(ypos,yrand-.05),if(below(ypos,yrand+.05),(275+int(rand(425)))/1000,yrand),yrand);
 per_frame_9=ypos = ypos+(yrand-ypos)/40;
 per_frame_10=
 per_frame_11=

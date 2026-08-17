@@ -260,10 +260,10 @@ per_frame_13=is_beat = if(above(bb*.9,bc/count),1*bimp,if(above(bt*.9,tc/count),
 per_frame_14=is_beat = if(above(reha,0),0,is_beat);
 per_frame_15=reha = if(is_beat,fps*.25,if(below(reha,1),0,reha-1));
 per_frame_16=
-per_frame_17=xrand = if(is_beat,.1+rand(800)/1000,xrand);
+per_frame_17=xrand = if(is_beat,.1+int(rand(800))/1000,xrand);
 per_frame_18=xpos = xpos+bass_att*(xrand-xpos)/40;
 per_frame_19=
-per_frame_20=yrand = if(is_beat,.1+rand(800)/1000,yrand);
+per_frame_20=yrand = if(is_beat,.1+int(rand(800))/1000,yrand);
 per_frame_21=ypos = ypos+bass_att*(yrand-ypos)/40;
 per_frame_22=
 per_frame_23=q1 = xpos;
