@@ -1,5 +1,9 @@
 [![Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build.yml)
 [![Alternate Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_alt.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_alt.yml)
+[![vcpkg Version](https://img.shields.io/github/v/release/microsoft/vcpkg?label=vcpkg&color=blue)](https://github.com/microsoft/vcpkg)
+[![CMake Version](https://img.shields.io/github/v/release/Kitware/CMake?label=CMake&color=blue)](https://cmake.org)
+[![projectM-eval Version](https://img.shields.io/github/v/release/projectM-visualizer/projectm-eval?label=projectM-eval&color=blue)](https://github.com/projectM-visualizer/projectm-eval)
+[![FFmpeg Version](https://img.shields.io/github/v/tag/FFmpeg/FFmpeg?label=FFmpeg&color=blue)](https://ffmpeg.org)
 
 ![Discord Shield](https://discord.com/api/guilds/1041603212798599168/widget.png?style=shield) [Chat with us on Discord!](https://discord.gg/rp5cBDtGuM)
 
@@ -8,6 +12,10 @@
 ![BeatDrop Logo](https://github.com/OfficialIncubo/The-Improved-and-Modified-Version-of-BeatDrop-Music-Visualizer/raw/master/Logos/BeatDrop%20New%20Logo%20GitGub%20ver.png) (logo design by Incubo_)
 
 [![BeatDrop Version](https://img.shields.io/github/v/release/OfficialIncubo/BeatDrop-Music-Visualizer?label=BeatDrop%20Version&color=8A2BE2)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/releases/latest)
+[![Latest Release Downloads](https://img.shields.io/github/downloads/OfficialIncubo/BeatDrop-Music-Visualizer/latest/total?label=Latest%20Release%20Downloads&color=8A2BE2)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/releases/latest)
+[![Total Downloads](https://img.shields.io/github/downloads/OfficialIncubo/BeatDrop-Music-Visualizer/total?label=Total%20Downloads&color=8A2BE2)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/releases)
+[![License](https://img.shields.io/github/license/OfficialIncubo/BeatDrop-Music-Visualizer?label=License&color=8A2BE2)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/blob/master/LICENSE)
+[![Total Stars](https://img.shields.io/github/stars/OfficialIncubo/BeatDrop-Music-Visualizer?style=flat&label=Stars&color=yellow)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/stargazers)
 
 # BeatDrop Music Visualizer
 
