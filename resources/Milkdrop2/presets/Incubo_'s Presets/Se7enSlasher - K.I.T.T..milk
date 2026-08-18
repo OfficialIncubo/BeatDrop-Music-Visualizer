@@ -1,0 +1,256 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 18/08/2026 at 19:22:39.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=2
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=1.000
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=vol = (bass_att+mid_att+treb_att)/5;
+per_frame_2=q1 = vol;
+warp_1=`shader_body {}
+comp_1=`// Floating-point 3x5 font renderer (No bitwise operators)
+comp_2=`float draw_char(float2 buv, float val) {
+comp_3=`    float bounds = step(0.0, buv.x) * step(buv.x, 1.0) * step(0.0, buv.y) * step(buv.y, 1.0);
+comp_4=`    float bit = floor(buv.y * 5.0) * 3.0 + floor(buv.x * 3.0);
+comp_5=`    return bounds * fmod(floor(val / exp2(bit)), 2.0);
+comp_6=`}
+comp_7=`
+comp_8=`float draw_2_chars(float2 buv, float c1, float c2) {
+comp_9=`    float2 cuv;
+comp_10=`    cuv.y = (buv.y + 0.4) / 0.8;
+comp_11=`    float t = 0.0;
+comp_12=`    cuv.x = (buv.x + 0.35) / 0.3; t += draw_char(cuv, c1);
+comp_13=`    cuv.x = (buv.x - 0.05) / 0.3; t += draw_char(cuv, c2);
+comp_14=`    return t;
+comp_15=`}
+comp_16=`
+comp_17=`float draw_3_chars(float2 buv, float c1, float c2, float c3) {
+comp_18=`    float2 cuv;
+comp_19=`    cuv.y = (buv.y + 0.4) / 0.8;
+comp_20=`    float t = 0.0;
+comp_21=`    cuv.x = (buv.x + 0.55) / 0.3; t += draw_char(cuv, c1);
+comp_22=`    cuv.x = (buv.x + 0.15) / 0.3; t += draw_char(cuv, c2);
+comp_23=`    cuv.x = (buv.x - 0.25) / 0.3; t += draw_char(cuv, c3);
+comp_24=`    return t;
+comp_25=`}
+comp_26=`
+comp_27=`float draw_6_chars(float2 buv, float y_offset, float c1, float c2, float c3, float c4, float c5, float c6) {
+comp_28=`    float2 cuv;
+comp_29=`    cuv.y = (buv.y - y_offset) / 0.7;
+comp_30=`    float t = 0.0;
+comp_31=`    cuv.x = (buv.x + 0.875) / 0.25; t += draw_char(cuv, c1);
+comp_32=`    cuv.x = (buv.x + 0.575) / 0.25; t += draw_char(cuv, c2);
+comp_33=`    cuv.x = (buv.x + 0.275) / 0.25; t += draw_char(cuv, c3);
+comp_34=`    cuv.x = (buv.x - 0.025) / 0.25; t += draw_char(cuv, c4);
+comp_35=`    cuv.x = (buv.x - 0.325) / 0.25; t += draw_char(cuv, c5);
+comp_36=`    cuv.x = (buv.x - 0.625) / 0.25; t += draw_char(cuv, c6);
+comp_37=`    return t;
+comp_38=`}
+comp_39=`
+comp_40=`shader_body
+comp_41=`{
+comp_42=`    uv.y = 1.0 - uv.y; // UV flip
+comp_43=`    float2 uvo = uv;
+comp_44=`    float aspect = texsize.x / texsize.y;
+comp_45=`    uvo.x = (uvo.x - .5) * (aspect / (6.0 / 9.0)) + .5;
+comp_46=`    
+comp_47=`    // Background: Dark matte dashboard plastic panel
+comp_48=`    float3 col = float3(0.025, 0.025, 0.03);
+comp_49=`
+comp_50=`    // Side and center panel bezels (dark gray borders)
+comp_51=`    if (abs(uvo.x - 0.5) < 0.32 && uvo.y > 0.18 && uvo.y < 0.88) {
+comp_52=`        col = float3(0.06, 0.06, 0.07);
+comp_53=`    }
+comp_54=`    if (abs(uvo.x - 0.5) < 0.15 && uvo.y > 0.32 && uvo.y < 0.84) {
+comp_55=`        // Inner voice box inset frame (deep black glass)
+comp_56=`        float vignette = 1.0 - length((uvo - float2(0.5, 0.58)) * float2(2.0, 1.0));
+comp_57=`        col = float3(0.015, 0.015, 0.018) * saturate(vignette); 
+comp_58=`    }
+comp_59=`
+comp_60=`    // -------------------------------------------------------------------
+comp_61=`    // 1. AUDIO REACTIVE VOICE BOX (VINTAGE GLOWING LED BARS)
+comp_62=`    // -------------------------------------------------------------------
+comp_63=`    // Sample FFT frequencies (Low-Mid, Center-Vocal, High-Mid)
+comp_64=`    float fft_left   = saturate(q1 * .75 - .3);
+comp_65=`    float fft_center = saturate(q1 * .75);
+comp_66=`    float fft_right  = saturate(q1 * .75 - .3);
+comp_67=`
+comp_68=`    float bar_center_y = 0.58;
+comp_69=`    float dist_y = abs(uvo.y - bar_center_y);
+comp_70=`    float bar_half_height = 0.218;
+comp_71=`    
+comp_72=`    // Softened LED Segment Grill Mask
+comp_73=`    float segment_y = frac(uvo.y * 64.0);
+comp_74=`    float segment_grid = smoothstep(0.1, 0.3, segment_y) * smoothstep(0.9, 0.7, segment_y);
+comp_75=`    
+comp_76=`    // LED Bar positions
+comp_77=`    float3 bar_x = float3(0.415, 0.50, 0.585);
+comp_78=`    float3 ffts  = float3(fft_left, fft_center, fft_right);
+comp_79=`    
+comp_80=`    for(int b = 0; b < 3; b++) {
+comp_81=`        float dx = abs(uvo.x - bar_x[b]);
+comp_82=`        float is_in_bar = step(dx, 0.025) * step(dist_y, bar_half_height);
+comp_83=`        float is_active = step(dist_y, ffts[b] * bar_half_height);
+comp_84=`        
+comp_85=`        // Base LED colors
+comp_86=`        float3 unlit_col = float3(0.15, 0.01, 0.0) * segment_grid;
+comp_87=`        float3 lit_col   = float3(1.0, 0.12, 0.02) * 2.5 * segment_grid;
+comp_88=`        
+comp_89=`        // Exponential glow falloff mimicking vintage bulb bleed
+comp_90=`        float glow_dist = length(float2(max(0.0, dx - 0.015), max(0.0, dist_y - ffts[b] * bar_half_height)));
+comp_91=`        float3 glow_col = float3(1.0, 0.05, 0.0) * exp(-glow_dist * 45.0) * ffts[b];
+comp_92=`        
+comp_93=`        float3 final_bar = lerp(unlit_col, lit_col, is_active) * is_in_bar;
+comp_94=`        col += final_bar + glow_col * 0.35;
+comp_95=`    }
+comp_96=`
+comp_97=`    // -------------------------------------------------------------------
+comp_98=`    // 2. DASHBOARD BUTTON PANELS WITH TEXT SDF
+comp_99=`    // -------------------------------------------------------------------
+comp_100=`    float3 amber_btn = float3(0.95, 0.65, 0.10);
+comp_101=`    float3 red_btn   = float3(0.85, 0.15, 0.10);
+comp_102=`
+comp_103=`    float2 left_btn_pos[4];
+comp_104=`    left_btn_pos[0] = float2(0.28, 0.76); // AIR
+comp_105=`    left_btn_pos[1] = float2(0.28, 0.63); // OIL
+comp_106=`    left_btn_pos[2] = float2(0.28, 0.50); // P1
+comp_107=`    left_btn_pos[3] = float2(0.28, 0.37); // P2
+comp_108=`
+comp_109=`    for (int i = 0; i < 4; i++) {
+comp_110=`        float2 buv = (uvo - left_btn_pos[i]) / float2(0.055, 0.035);
+comp_111=`        float d = length(buv);
+comp_112=`        if (d < 1.0) {
+comp_113=`            float3 btn_col = (i < 2) ? amber_btn : red_btn;
+comp_114=`            btn_col += smoothstep(0.8, 0.0, length(buv - float2(0.0, -0.3))) * 0.3; // 3D Plastic Highlight
+comp_115=`            
+comp_116=`            float txt = 0.0;
+comp_117=`            if (i == 0) txt = draw_3_chars(buv, 11245, 29847, 15085); // AIR
+comp_118=`            if (i == 1) txt = draw_3_chars(buv, 31599, 29847,  4687); // OIL
+comp_119=`            if (i == 2) txt = draw_2_chars(buv, 15049,  9879);        // P1
+comp_120=`            if (i == 3) txt = draw_2_chars(buv, 15049, 31183);        // P2
+comp_121=`            
+comp_122=`            btn_col = lerp(btn_col, float3(0.05, 0.05, 0.05), saturate(txt)); // Black text
+comp_123=`            col = lerp(btn_col, float3(0.02, 0.02, 0.02), step(0.85, d));     // Bezel Border
+comp_124=`        }
+comp_125=`    }
+comp_126=`
+comp_127=`    float2 right_btn_pos[4];
+comp_128=`    right_btn_pos[0] = float2(0.72, 0.76); // S1
+comp_129=`    right_btn_pos[1] = float2(0.72, 0.63); // S2
+comp_130=`    right_btn_pos[2] = float2(0.72, 0.50); // P3
+comp_131=`    right_btn_pos[3] = float2(0.72, 0.37); // P4
+comp_132=`
+comp_133=`    for (int j = 0; j < 4; j++) {
+comp_134=`        float2 buv = (uvo - right_btn_pos[j]) / float2(0.055, 0.035);
+comp_135=`        float d = length(buv);
+comp_136=`        if (d < 1.0) {
+comp_137=`            float3 btn_col = (j < 2) ? amber_btn : red_btn;
+comp_138=`            btn_col += smoothstep(0.8, 0.0, length(buv - float2(0.0, -0.3))) * 0.3;
+comp_139=`            
+comp_140=`            float txt = 0.0;
+comp_141=`            if (j == 0) txt = draw_2_chars(buv, 29671,  9879); // S1
+comp_142=`            if (j == 1) txt = draw_2_chars(buv, 29671, 31183); // S2
+comp_143=`            if (j == 2) txt = draw_2_chars(buv, 15049, 31207); // P3
+comp_144=`            if (j == 3) txt = draw_2_chars(buv, 15049, 23524); // P4
+comp_145=`            
+comp_146=`            btn_col = lerp(btn_col, float3(0.05, 0.05, 0.05), saturate(txt));
+comp_147=`            col = lerp(btn_col, float3(0.02, 0.02, 0.02), step(0.85, d));
+comp_148=`        }
+comp_149=`    }
+comp_150=`
+comp_151=`    // Center "NORMAL CRUISE" Rectangular Button
+comp_152=`    float2 nc_center = float2(0.50, 0.25);
+comp_153=`    float2 nc_dist = abs(uvo - nc_center);
+comp_154=`    if (nc_dist.x < 0.075 && nc_dist.y < 0.025) {
+comp_155=`        float2 buv = (uvo - nc_center) / float2(0.075, 0.025);
+comp_156=`        
+comp_157=`        float3 btn_col = amber_btn;
+comp_158=`        btn_col += smoothstep(0.8, 0.0, length(buv - float2(0.0, -0.5))) * 0.25; 
+comp_159=`        
+comp_160=`        // Draw Text: NORMAL (Top Line), CRUISE (Bottom Line)
+comp_161=`        float txt = draw_6_chars(buv, 0.1, 24429, 31599, 15085, 24557, 11245, 4687); 
+comp_162=`        txt += draw_6_chars(buv, -0.8, 29263, 15085, 23407, 29847, 29671, 29647); 
+comp_163=`        
+comp_164=`        btn_col = lerp(btn_col, float3(0.05, 0.05, 0.05), saturate(txt));
+comp_165=`        
+comp_166=`        float border = step(0.9, max(abs(buv.x), abs(buv.y)));
+comp_167=`        col = lerp(btn_col, float3(0.02, 0.02, 0.02), border);
+comp_168=`    }
+comp_169=`
+comp_170=`    ret = col;
+comp_171=`}
