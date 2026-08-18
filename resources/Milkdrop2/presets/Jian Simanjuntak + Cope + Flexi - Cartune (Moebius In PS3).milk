@@ -352,10 +352,10 @@ comp_44=`{
 comp_45=`float2 uvo = uv;
 comp_46=`uv = 0.5+(uv-0.5)*aspect.wz;
 comp_47=`uv = uv_bipolar_logarithmic(uv, float2(0,0.5), float2(1,0.5), 4, 0.55, float2(q26,0.1*q27));
-comp_48=`uv = 0.5 + (1.0 - abs( frac( uv * 0.7 ) * 2 - 1.0 )-0.5)*0.995; // Eo.S. mirror code with cutted borders
+comp_48=`uv = 0.5 + (1.0 - abs( frac( uv * 0.5 ) * 2 - 1.0 )-0.5)*0.995; // Eo.S. mirror code with cutted borders
 comp_49=`uv = uv_lens_half_sphere(uv, 0.5, 0.5, 3).yx;
 comp_50=`uv = uv_bipolar_logarithmic(uv, float2(0,0.5), float2(1,0.5), 4, 0.55, float2(q26,0.1*q27)).yx;
-comp_51=`uv = 0.5 + (1.0 - abs( frac( uv * 0.7 ) * 2 - 1.0 )-0.5)*0.995; // Eo.S. mirror code with cutted borders
+comp_51=`uv = 0.5 + (1.0 - abs( frac( uv * 0.5 ) * 2 - 1.0 )-0.5)*0.995; // Eo.S. mirror code with cutted borders
 comp_52=`
 comp_53=`    ret = tex2D(sampler_main, uv).xyz;
 comp_54=`    ret *= 1.00; //gamma
