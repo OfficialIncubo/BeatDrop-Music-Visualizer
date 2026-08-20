@@ -1347,7 +1347,7 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
 	    }
     }
 
-    FILE* f = BeatDropOpenFile(szIniFile, L"rb");
+    FILE* f = _wfopen(szIniFile, L"rb");
     if (!f)
         return false;
 

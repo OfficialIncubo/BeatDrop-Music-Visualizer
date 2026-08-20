@@ -2,21 +2,11 @@
 
 ## Experimental build
 
-This branch contains the experimental x64 preset-loader and lyrics-module work for BeatDrop Music Visualizer.
+This branch contains the experimental lyrics-module work for BeatDrop Music Visualizer.
 
 Repository: `OfficialIncubo/BeatDrop-Music-Visualizer`
 
 Build target: `Release_x64`
-
-## Preset loading changes
-
-- Preset discovery now walks the entire preset tree recursively, including nested subfolders.
-- Preset and state-file access uses Windows long-path prefixes where needed.
-- Preset enumeration no longer depends on a single `MAX_PATH`-sized path buffer.
-- The original preset ordering behavior remains unchanged; sequential ordering is not forced on.
-- The production diagnostic scan logging was removed after verification.
-
-These changes address both nested preset packs and preset paths/file names longer than the traditional Windows path limit.
 
 ## Lyrics module changes
 
@@ -71,13 +61,13 @@ The resulting executable is `vis_milk2\Release_x64\BeatDrop_x64.exe`. Deployment
 ## Verification performed
 
 - Clean x64 builds succeeded after restoring the DirectX SDK path and fixing the current Windows SDK JPEG type conflict.
-- Recursive preset loading was tested against nested preset folders.
 - LRCLIB lookup was verified with Tool / The Pot and the synchronized result was cached locally.
 - SMTC position tracing verified advancing playback positions while a browser reported Playing.
 - The experimental executable was launched after the final x64 build.
 
 ## Notes for the next developer
 
+- This branch intentionally does not include the experimental preset-loader/path changes.
 - Do not replace the Lrcdrop-derived editor handlers with simplified status-only implementations.
 - When changing metadata normalization, inspect the raw SMTC trace at `%TEMP%\\BeatDropSMTC.log` and the lyrics trace at `%TEMP%\\BeatDropLyrics.log`.
 - Keep the editor’s RichEdit range formatting and selection behavior aligned with `Project Lrcdrop\\vendor\\aimp_projectM\\sources\\LyricsOverlay.cpp`.

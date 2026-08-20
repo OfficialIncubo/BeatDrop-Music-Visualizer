@@ -495,7 +495,6 @@ public:
         CState		*m_pNewState;			// points to the coming CState - we're not yet blending to it b/c we're still compiling the shaders for it!
         int         m_nLoadingPreset;
         wchar_t     m_szLoadingPreset[MAX_PATH];
-        std::wstring m_loadingPresetLong;
         float       m_fLoadingPresetBlendTime;
         int         m_nPresetsLoadedTotal; //important for texture eviction age-tracking...
         CState		m_state_DO_NOT_USE[3];	// do not use; use pState and pOldState instead.
@@ -531,7 +530,6 @@ public:
 								        //   Note that this is NOT the same as the currently-highlighted preset! (that's m_nPresetListCurPos)
 								        //   Be careful - this can be -1 if the user changed dir. & a new preset hasn't been loaded yet.
         wchar_t		m_szCurrentPresetFile[512];	// w/o path.  this is always valid (unless no presets were found)
-        std::wstring m_currentPresetFileLong;
         PresetList  m_presets;
 	    void		UpdatePresetList(bool bBackground=false, bool bForce=false, bool bTryReselectCurrentPreset=true);
         wchar_t     m_szUpdatePresetMask[MAX_PATH];
