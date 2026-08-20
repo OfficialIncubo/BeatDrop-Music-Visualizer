@@ -24,9 +24,9 @@ extern "C"
 #include <libswscale/swscale.h>
 }
 
-// The June 2010 DirectX SDK dxgitype.h can be picked before the Windows SDK
-// version. Newer wincodec.h declares JPEG interfaces with these structs.
-#if defined(__dxgitype_h__) && defined(DXGI_USAGE_UNORDERED_ACCESS)
+// The June 2010 DirectX SDK's dxgitype.h predates the JPEG table types that
+// the current Windows SDK's wincodec.h references.  Supply those declarations
+// when building against that legacy header set.
 typedef struct DXGI_JPEG_DC_HUFFMAN_TABLE
 {
     BYTE CodeCounts[12];
@@ -43,7 +43,6 @@ typedef struct DXGI_JPEG_QUANTIZATION_TABLE
 {
     BYTE Elements[64];
 } DXGI_JPEG_QUANTIZATION_TABLE;
-#endif
 
 #pragma push_macro("_WIN32_WINNT")
 #undef _WIN32_WINNT

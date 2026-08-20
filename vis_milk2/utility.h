@@ -34,6 +34,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <crtdefs.h>
 #include <d3d9.h>
 #include <d3dx9.h>
+#include <string>
 
 #define SafeRelease(x) { if (x) {x->Release(); x=NULL;} }
 #define SafeDelete(x) { if (x) {delete x; x=NULL;} }
@@ -89,5 +90,30 @@ bool ReadCBValue(HWND hwnd, DWORD ctrl_id, int* pRetValue);
 void* GetTextResource(UINT id, int no_fallback);
 
 intptr_t myOpenURL(HWND hwnd, wchar_t *loc);
+
+// Convert an absolute Windows path to the extended-length form when needed.
+// This allows Win32 file APIs to handle paths beyond the legacy MAX_PATH limit.
+inline std::wstring BeatDropLongPath(const std::wstring& path)
+{
+    if (path.rfind(L"\\\\?\\", 0) == 0)
+        return path;
+    if (path.size() < MAX_PATH)
+        return path;
+    if (path.rfind(L"\\\\", 0) == 0)
+        return L"\\\\?\\UNC\\" + path.substr(2);
+    return L"\\\\?\\" + path;
+}
+
+inline DWORD BeatDropGetFileAttributes(const std::wstring& path)
+{
+    const std::wstring longPath = BeatDropLongPath(path);
+    return GetFileAttributesW(longPath.c_str());
+}
+
+inline FILE* BeatDropOpenFile(const std::wstring& path, const wchar_t* mode)
+{
+    const std::wstring longPath = BeatDropLongPath(path);
+    return _wfopen(longPath.c_str(), mode);
+}
 
 #endif

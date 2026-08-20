@@ -42,6 +42,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "support.h"
 #include "texmgr.h"
 #include "state.h"
+#include "lyrics_manager.h"
+#include "lyrics_editor.h"
 #include <vector>
 #include <random>
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
@@ -402,6 +404,7 @@ public:
         bool        m_bAutoLockPresetWhenNoMusic;
         bool        m_bEnableSongTitlePoll;
         bool        m_bEnableSongTitlePollExplicit;
+        bool        m_bEnableLyrics;
         bool        m_bScreenDependentRenderMode;
         bool        m_bShaderCaching = true;
         bool        m_bShaderPrecachingAtStartup = true;
@@ -492,6 +495,7 @@ public:
         CState		*m_pNewState;			// points to the coming CState - we're not yet blending to it b/c we're still compiling the shaders for it!
         int         m_nLoadingPreset;
         wchar_t     m_szLoadingPreset[MAX_PATH];
+        std::wstring m_loadingPresetLong;
         float       m_fLoadingPresetBlendTime;
         int         m_nPresetsLoadedTotal; //important for texture eviction age-tracking...
         CState		m_state_DO_NOT_USE[3];	// do not use; use pState and pOldState instead.
@@ -527,6 +531,7 @@ public:
 								        //   Note that this is NOT the same as the currently-highlighted preset! (that's m_nPresetListCurPos)
 								        //   Be careful - this can be -1 if the user changed dir. & a new preset hasn't been loaded yet.
         wchar_t		m_szCurrentPresetFile[512];	// w/o path.  this is always valid (unless no presets were found)
+        std::wstring m_currentPresetFileLong;
         PresetList  m_presets;
 	    void		UpdatePresetList(bool bBackground=false, bool bForce=false, bool bTryReselectCurrentPreset=true);
         wchar_t     m_szUpdatePresetMask[MAX_PATH];
@@ -582,6 +587,8 @@ public:
         char		m_szDebugMessage[512];
         wchar_t		m_szSongTitle    [512];
         wchar_t		m_szSongTitlePrev[512];
+        wchar_t		m_szLyricsLine   [512];
+        double          m_fLastLyricsPositionSeconds = -1.0;
 
         // stuff for menu system:
         CMilkMenu	*m_pCurMenu;	// should always be valid!
@@ -702,6 +709,7 @@ public:
 	    void		LaunchCustomMessage(int nMsgNum);
 	    void		ReadCustomMessages();
 	    void		LaunchSongTitleAnim();
+	    void		LaunchLyricsLine(const wchar_t* line);
         void        CaptureScreenshot();
         bool        CaptureScreenshotWithFilename(wchar_t* outFilename, size_t outFilenameSize);
 

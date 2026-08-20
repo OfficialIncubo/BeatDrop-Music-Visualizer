@@ -177,7 +177,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>windowsapp.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>windowsapp.lib;winhttp.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
@@ -250,7 +250,7 @@ copy /y /v "$(OutDir)*.dll" "..\BeatDrop\"</Command>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winhttp.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
@@ -318,7 +318,7 @@ copy /y /v "$(OutDir)*.dll" "..\BeatDrop\"</Command>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>windowsapp.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>windowsapp.lib;winhttp.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -362,6 +362,8 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClCompile Include="plugin.cpp" />
     <ClCompile Include="pluginshell.cpp" />
     <ClCompile Include="songtitlegetter.cpp" />
+    <ClCompile Include="lyrics_manager.cpp" />
+    <ClCompile Include="lyrics_editor.cpp" />
     <ClCompile Include="state.cpp" />
     <ClCompile Include="support.cpp" />
     <ClCompile Include="texmgr.cpp" />
@@ -402,7 +404,9 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClInclude Include="pluginshell.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="shell_defines.h" />
-    <ClInclude Include="songtitlegetter.h" />
+      <ClInclude Include="songtitlegetter.h" />
+      <ClInclude Include="lyrics_manager.h" />
+      <ClInclude Include="lyrics_editor.h" />
     <ClInclude Include="state.h" />
     <ClInclude Include="support.h" />
     <ClInclude Include="texmgr.h" />
