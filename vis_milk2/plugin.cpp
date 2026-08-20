@@ -622,6 +622,7 @@ SPOUT :
 #include "shell_defines.h"
 #include "wasabi.h"
 #include <assert.h>
+#include <algorithm>
 #include <cctype>
 #include <process.h>  // for beginthread, etc.
 #include <shellapi.h>
@@ -10156,11 +10157,60 @@ char* NextLine(char* p)
     return s;
 }
 
+static std::wstring GetExtendedPath(const std::wstring& path)
+{
+    if (path.size() < MAX_PATH || path.compare(0, 4, L"\\\\?\\") == 0)
+        return path;
+
+    if (path.size() >= 2 && path[0] == L'\\' && path[1] == L'\\')
+        return L"\\\\?\\UNC\\" + path.substr(2);
+
+    return L"\\\\?\\" + path;
+}
+
+static FILE* OpenPresetFileForRead(const std::wstring& path)
+{
+    FILE* f = _wfopen(path.c_str(), L"r");
+    if (!f && path.size() >= MAX_PATH)
+    {
+        const std::wstring extendedPath = GetExtendedPath(path);
+        f = _wfopen(extendedPath.c_str(), L"r");
+    }
+    return f;
+}
+
+static bool ReadPresetRatingFromFile(FILE* f, float* rating)
+{
+    if (!f || !rating || fseek(f, 0, SEEK_SET) != 0)
+        return false;
+
+    char line[4096];
+    bool inPreset00 = false;
+    while (fgets(line, sizeof(line), f))
+    {
+        char* p = line;
+        while (*p && isspace(static_cast<unsigned char>(*p)))
+            p++;
+
+        if (*p == '[')
+        {
+            inPreset00 = (_strnicmp(p, "[preset00]", 10) == 0);
+            continue;
+        }
+
+        if (inPreset00 && _strnicmp(p, "fRating=", 8) == 0)
+            return _sscanf_l(p + 8, "%f", g_use_C_locale, rating) == 1;
+    }
+
+    return false;
+}
+
 static unsigned int WINAPI __UpdatePresetList(void* lpVoid)
 {
     // NOTE - this is run in a separate thread!!!
 
-    DWORD flags = (DWORD)lpVoid;
+    ULONG_PTR flagsPtr = reinterpret_cast<ULONG_PTR>(lpVoid);
+    DWORD flags = static_cast<DWORD>(flagsPtr);
     bool bForce = (flags & 1) ? true : false;
     bool bTryReselectCurrentPreset = (flags & 2) ? true : false;
 
@@ -10233,7 +10283,6 @@ retry:
         return 0;
     }
 
-    int  nMaxPSVersion = g_plugin.m_nMaxPSVersion;
     wchar_t szPresetDir[MAX_PATH];
     lstrcpyW(szPresetDir, g_plugin.m_szPresetDir);
 
@@ -10271,17 +10320,16 @@ retry:
 			if (len < 5 || wcsicmp(fd.cFileName + len - 5, L".milk") != 0)
 				bSkip = true;
 
-            // if it is .milk, make sure we know how to run its pixel shaders -
-            // otherwise we don't want to show it in the preset list!
+            // If it is .milk, read its header and rating before adding it to
+            // the list. Renderer capability is validated when the preset loads.
             if (!bSkip)
             {
                 // If the first line of the file is not "MILKDROP_PRESET_VERSION XXX",
                 //   then it's a MilkDrop 1 era preset, so it is definitely runnable. (no shaders)
                 // Otherwise, check for the value "PSVERSION".  It will be 0, 2, or 3.
                 //   If missing, assume it is 2.
-                wchar_t szFullPath[MAX_PATH];
-                swprintf(szFullPath, L"%s%s", szPresetDir, fd.cFileName);
-                FILE* f = _wfopen(szFullPath, L"r");
+                std::wstring szFullPath = std::wstring(szPresetDir) + fd.cFileName;
+                FILE* f = OpenPresetFileForRead(szFullPath);
                 if (!f)
                     bSkip = true;
                 else {
@@ -10314,13 +10362,14 @@ retry:
                         if (p && !strncmp(p, "PSVERSION", 9))
                         {
                             sscanf(&p[10], "%d", &ps_version);
-                            if (nMaxPSVersion > MD2_PS_NONE && ps_version > nMaxPSVersion)
-                                bSkip = true;
-                            else
-                            {
-                                p = NextLine(p);//fgets(p, sizeof(p)-1, f);
-                                bScanForPreset00AndRating = true;
-                            }
+                            // Keep reading the shader version here, but do not use the
+                            // renderer's capability as a directory-listing filter. The
+                            // x86 and x64 builds can report different capabilities even
+                            // though they scan the same preset directory. Loading the
+                            // selected preset still performs the normal shader validation.
+                            (void)ps_version;
+                            p = NextLine(p);//fgets(p, sizeof(p)-1, f);
+                            bScanForPreset00AndRating = true;
                         }
                     }
                     else
@@ -10347,10 +10396,20 @@ retry:
                         p = NextLine(p);
                     }
 
-                    fclose(f);
-
                     if (!bRatingKnown)
-		                fRating = GetPrivateProfileFloatW(L"preset00", L"fRating", 3.0f, szFullPath);
+                    {
+                        if (szFullPath.size() >= MAX_PATH)
+                        {
+                            if (!ReadPresetRatingFromFile(f, &fRating))
+                                fRating = 3.0f;
+                        }
+                        else
+                        {
+                            std::wstring profilePath = szFullPath;
+		                    fRating = GetPrivateProfileFloatW(L"preset00", L"fRating", 3.0f, &profilePath[0]);
+                        }
+                    }
+                    fclose(f);
                     fRating = max(0.0f, min(5.0f, fRating));
                 }
             }
@@ -10502,7 +10561,7 @@ void CPlugin::UpdatePresetList(bool bBackground, bool bForce, bool bTryReselectC
     DWORD flags = (bForce ? 1 : 0) | (bTryReselectCurrentPreset ? 2 : 0);
     g_bThreadShouldQuit = false;
     g_bThreadAlive = true;
-    g_hThread = (HANDLE)_beginthreadex(NULL, 0, __UpdatePresetList, (void*)flags, 0, 0);
+    g_hThread = (HANDLE)_beginthreadex(NULL, 0, __UpdatePresetList, reinterpret_cast<void*>(static_cast<ULONG_PTR>(flags)), 0, 0); // Safe: ULONG_PTR → void*
 
     if (!bBackground)
     {
@@ -10554,72 +10613,21 @@ void CPlugin::UpdatePresetList(bool bBackground, bool bForce, bool bTryReselectC
 
 void CPlugin::MergeSortPresets(int left, int right)
 {
-	// note: left..right range is inclusive
-	int nItems = right-left+1;
+	// Keep directories (the entries prefixed with '*') before files while
+	// sorting the whole list in O(n log n). The old in-place merge moved every
+	// item one position at a time and could become quadratic for large packs.
+	if (left < 0 || right <= left)
+		return;
 
-	if (nItems > 2)
-	{
-		// recurse to sort 2 halves (but don't actually recurse on a half if it only has 1 element)
-		int mid = (left+right)/2;
-		/*if (mid   != left) */ MergeSortPresets(left, mid);
-		/*if (mid+1 != right)*/ MergeSortPresets(mid+1, right);
-
-		// then merge results
-		int a = left;
-		int b = mid + 1;
-		while (a <= mid && b <= right)
+	std::stable_sort(m_presets.begin() + left, m_presets.begin() + right + 1,
+		[](const PresetInfo& a, const PresetInfo& b)
 		{
-			bool bSwap;
-
-			// merge the sorted arrays; give preference to strings that start with a '*' character
-			int nSpecial = 0;
-			if (m_presets[a].szFilename.c_str()[0] == '*') nSpecial++;
-			if (m_presets[b].szFilename.c_str()[0] == '*') nSpecial++;
-
-			if (nSpecial == 1)
-			{
-				bSwap = (m_presets[b].szFilename.c_str()[0] == '*');
-			}
-			else
-			{
-				bSwap = (mystrcmpiW(m_presets[a].szFilename.c_str(), m_presets[b].szFilename.c_str()) > 0);
-			}
-
-			if (bSwap)
-			{
-				PresetInfo temp = m_presets[b];
-				for (int k=b; k>a; k--)
-					m_presets[k] = m_presets[k-1];
-				m_presets[a] = temp;
-				mid++;
-				b++;
-			}
-			a++;
-		}
-	}
-	else if (nItems == 2)
-	{
-		// sort 2 items; give preference to 'special' strings that start with a '*' character
-		int nSpecial = 0;
-		if (m_presets[left].szFilename.c_str()[0] == '*') nSpecial++;
-		if (m_presets[right].szFilename.c_str()[0] == '*') nSpecial++;
-
-		if (nSpecial == 1)
-		{
-			if (m_presets[right].szFilename.c_str()[0] == '*')
-			{
-                PresetInfo temp = m_presets[left];
-				m_presets[left] = m_presets[right];
-				m_presets[right] = temp;
-			}
-		}
-		else if (mystrcmpiW(m_presets[left].szFilename.c_str(), m_presets[right].szFilename.c_str()) > 0)
-		{
-            PresetInfo temp = m_presets[left];
-			m_presets[left] = m_presets[right];
-			m_presets[right] = temp;
-		}
-	}
+			const bool aIsDirectory = !a.szFilename.empty() && a.szFilename[0] == L'*';
+			const bool bIsDirectory = !b.szFilename.empty() && b.szFilename[0] == L'*';
+			if (aIsDirectory != bIsDirectory)
+				return aIsDirectory;
+			return mystrcmpiW(a.szFilename.c_str(), b.szFilename.c_str()) < 0;
+		});
 }
 
 void CPlugin::WaitString_NukeSelection()
