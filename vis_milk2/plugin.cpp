@@ -624,6 +624,7 @@ SPOUT :
 #include <assert.h>
 #include <algorithm>
 #include <cctype>
+#include <cwctype>
 #include <process.h>  // for beginthread, etc.
 #include <shellapi.h>
 #include <strsafe.h>
@@ -1277,6 +1278,7 @@ void CPlugin::MyPreInitialize()
     m_szSongTitle[0]    = 0;
     m_szSongTitlePrev[0] = 0;
     m_szLyricsLine[0]    = 0;
+	m_supertext.bIsLyrics = false;
 
 	m_lpVS[0]				= NULL;
 	m_lpVS[1]				= NULL;
@@ -1376,6 +1378,7 @@ void CPlugin::MyReadConfig()
     m_bEnableSongTitlePollExplicit = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePollExplicit", m_bEnableSongTitlePollExplicit, pIni);
     m_bEnableLyrics = GetPrivateProfileBoolW(L"settings", L"bEnableLyrics", m_bEnableLyrics, pIni);
     #endif
+    m_bEnableLyrics = GetPrivateProfileBoolW(L"settings", L"bEnableLyrics", m_bEnableLyrics, pIni);
     m_bScreenDependentRenderMode = GetPrivateProfileBoolW(L"settings", L"bScreenDependentRenderMode", m_bScreenDependentRenderMode, pIni);
     m_bShaderCaching = GetPrivateProfileBoolW(L"settings", L"bShaderCaching", m_bShaderCaching, pIni);
     m_bShaderPrecachingAtStartup = GetPrivateProfileBoolW(L"settings", L"bShaderPrecachingAtStartup", m_bShaderPrecachingAtStartup, pIni);
@@ -1515,6 +1518,7 @@ void CPlugin::MyWriteConfig()
 	// ================================
 
 	WritePrivateProfileIntW(m_bSongTitleAnims,		L"bSongTitleAnims",		pIni, L"settings");
+	WritePrivateProfileIntW(m_bEnableLyrics,		L"bEnableLyrics",		pIni, L"settings");
 	WritePrivateProfileIntW(m_bHardCutsDisabled,	    L"bHardCutsDisabled",	pIni, L"settings");
 	WritePrivateProfileIntW(m_bEnableRating,		    L"bEnableRating",		pIni, L"settings");
 	//WritePrivateProfileIntW(m_bInstaScan,            "bInstaScan",		    pIni, "settings");
@@ -4779,7 +4783,9 @@ void CPlugin::MyRenderFn(int redraw)
             const double position = songtitlegetter.currentPositionSeconds;
             if (m_fLastLyricsPositionSeconds >= 0.0 &&
                 position + 1.0 < m_fLastLyricsPositionSeconds)
+            {
                 m_szLyricsLine[0] = 0;
+            }
             m_fLastLyricsPositionSeconds = position;
             const std::wstring lyricLine = lyricsmanager.CurrentLine(position);
             if (lyricLine != m_szLyricsLine)
@@ -6262,6 +6268,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 
     case WM_CHAR:   // plain & simple alphanumeric keys
         nRepeat = LOWORD(lParam);
+
 		if (m_waitstring.bActive)	// if user is in the middle of editing a string
 		{
 			if ((wParam >= ' ' && wParam <= 'z') || wParam=='{' || wParam=='}')
@@ -6540,7 +6547,31 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
         //   at the end of pluginshell.cpp for which ones).
         // For a complete list of virtual-key codes, look up the keyphrase
         //   "virtual-key codes [win32]" in the msdn help.
+
         nRepeat = LOWORD(lParam);
+
+        if (wParam == 'L' && bCtrlHeldDown)
+        {
+            m_bEnableLyrics = !m_bEnableLyrics;
+            m_fLastLyricsPositionSeconds = -1.0;
+            m_szLyricsLine[0] = 0;
+            if (m_bEnableLyrics)
+            {
+                lyricsmanager.UpdateTrack(songtitlegetter.currentArtist,
+                                           songtitlegetter.currentTitle,
+                                           songtitlegetter.currentAlbum,
+                                           songtitlegetter.currentDurationSeconds);
+                AddNotif(L"Lyrics enabled");
+            }
+            else
+            {
+                m_supertext.fStartTime = -1.0f;
+                AddNotif(L"Lyrics disabled");
+            }
+            WritePrivateProfileIntW(m_bEnableLyrics, L"bEnableLyrics",
+                                    GetConfigIniFile(), L"settings");
+            return 0;
+        }
 
         if (wParam == 'E' && bCtrlHeldDown && bShiftHeldDown)
         {
@@ -6548,7 +6579,6 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                               songtitlegetter.currentTitle);
             return 0;
         }
-
 		// SPOUT DEBUG
 		// Special case for F1 help display in pluginshell
 		// to clear the vj screen of any existing text
@@ -11274,6 +11304,7 @@ void CPlugin::LaunchCustomMessage(int nMsgNum)
 
 	m_supertext.bRedrawSuperText = true;
 	m_supertext.bIsSongTitle = false;
+	m_supertext.bIsLyrics = false;
 	lstrcpyW(m_supertext.szTextW, m_CustomMessage[nMsgNum].szText);
 
 	// regular properties:
@@ -11331,6 +11362,7 @@ void CPlugin::LaunchSongTitleAnim()
 {
 	m_supertext.bRedrawSuperText = true;
 	m_supertext.bIsSongTitle = true;
+	m_supertext.bIsLyrics = false;
 	lstrcpyW(m_supertext.szTextW, m_szSongTitle);
 	//lstrcpy(m_supertext.szText, " ");
 	lstrcpyW(m_supertext.nFontFace, m_fontinfo[SONGTITLE_FONT].szFace);
@@ -11352,6 +11384,7 @@ void CPlugin::LaunchLyricsLine(const wchar_t* line)
 {
     m_supertext.bRedrawSuperText = true;
     m_supertext.bIsSongTitle = true;
+    m_supertext.bIsLyrics = true;
     lstrcpynW(m_supertext.szTextW, line ? line : L"", 512);
     lstrcpyW(m_supertext.nFontFace, m_fontinfo[SONGTITLE_FONT].szFace);
     m_supertext.fFontSize = (float)m_fontinfo[SONGTITLE_FONT].nSize;
@@ -11360,9 +11393,9 @@ void CPlugin::LaunchLyricsLine(const wchar_t* line)
     m_supertext.fX = 0.5f;
     m_supertext.fY = 0.72f;
     m_supertext.fGrowth = 1.0f;
-    m_supertext.fDuration = 10.0f;
-    m_supertext.nColorR = 255;
-    m_supertext.nColorG = 255;
+    m_supertext.fDuration = (std::max)(1.0f, (std::min)(4.0f, m_fSongTitleAnimDuration));
+    m_supertext.nColorR = 180;
+    m_supertext.nColorG = 0;
     m_supertext.nColorB = 255;
     m_supertext.fStartTime = GetTime();
 }

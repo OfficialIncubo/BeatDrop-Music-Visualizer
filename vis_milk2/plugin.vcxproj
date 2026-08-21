@@ -177,7 +177,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>windowsapp.lib;winhttp.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>windowsapp.lib;winhttp.lib;bcrypt.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
@@ -250,7 +250,7 @@ copy /y /v "$(OutDir)*.dll" "..\BeatDrop\"</Command>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>winhttp.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winhttp.lib;bcrypt.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
@@ -318,7 +318,7 @@ copy /y /v "$(OutDir)*.dll" "..\BeatDrop\"</Command>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>windowsapp.lib;winhttp.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>windowsapp.lib;winhttp.lib;bcrypt.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

@@ -155,8 +155,9 @@ typedef struct
 {
 	int 	bRedrawSuperText;	// true if it needs redraw
 	int 	bIsSongTitle;		// false for custom message, true for song title
+	int 	bIsLyrics;			// true when the song-title surface contains a lyric line
 	//char	szText[256];
-	wchar_t	szTextW[256];
+	wchar_t	szTextW[512];
 	wchar_t	nFontFace[128];
 	int 	bBold;
 	int 	bItal;
@@ -707,7 +708,7 @@ public:
 	    void		LaunchCustomMessage(int nMsgNum);
 	    void		ReadCustomMessages();
 	    void		LaunchSongTitleAnim();
-	    void		LaunchLyricsLine(const wchar_t* line);
+        void        LaunchLyricsLine(const wchar_t* line);
         void        CaptureScreenshot();
         bool        CaptureScreenshotWithFilename(wchar_t* outFilename, size_t outFilenameSize);
 

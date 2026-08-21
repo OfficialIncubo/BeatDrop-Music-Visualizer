@@ -1,3 +1,4 @@
+#include <chrono>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -31,8 +32,8 @@ public:
 	std::wstring currentArtist;
 	std::wstring currentTitle;
 	std::wstring currentAlbum;
-	double currentDurationSeconds = 0.0;
 	double currentPositionSeconds = 0.0;
+	double currentDurationSeconds = 0.0;
 
 	#if SUPPORT_SMTC
 	std::chrono::steady_clock::time_point start_time;
@@ -52,6 +53,6 @@ public:
 	SongTitleGetter();
 	void Init();
 	void PollMediaInfo();
-	bool SeekRelative(double seconds);
-	bool SeekTo(double seconds);
+	bool SeekTo(double positionSeconds);
+	bool SeekRelative(double deltaSeconds);
 };

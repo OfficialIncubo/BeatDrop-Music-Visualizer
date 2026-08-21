@@ -51,6 +51,7 @@ private:
     BeatDropLyricsManager* m_manager = nullptr;
     std::wstring m_artist;
     std::wstring m_title;
+    std::wstring m_lastLoadedLrc;
     std::vector<std::wstring> m_undo;
     std::vector<std::wstring> m_redo;
     int m_selectedLine = -1;

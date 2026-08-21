@@ -253,8 +253,15 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
     if (!lpDevice)
         return false;
 
-	wchar_t szTextToDraw[512];
-	swprintf(szTextToDraw, L" %s ", m_supertext.szTextW);  //add a space @ end for italicized fonts; and at start, too, because it's centered!
+	wchar_t szTextToDraw[514] = {};
+	szTextToDraw[0] = L' ';
+	lstrcpynW(szTextToDraw + 1, m_supertext.szTextW, ARRAYSIZE(szTextToDraw) - 2);
+	const size_t textLength = wcslen(szTextToDraw);
+	if (textLength + 1 < ARRAYSIZE(szTextToDraw))
+	{
+		szTextToDraw[textLength] = L' ';
+		szTextToDraw[textLength + 1] = L'\0';
+	}
 
     // Remember the original backbuffer and zbuffer
     LPDIRECT3DSURFACE9 pBackBuffer=NULL;//, pZBuffer=NULL;
@@ -412,6 +419,40 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
     }
     else // song title
     {
+        LPD3DXFONT lyricsFont = NULL;
+        LPD3DXFONT drawFont = m_d3dx_title_font_doublesize;
+        if (m_supertext.bIsLyrics)
+        {
+            int fontHeight = m_fontinfo[SONGTITLE_FONT].nSize * m_nTitleTexSizeX / 256;
+            if (fontHeight < 6) fontHeight = 6;
+            for (int attempt = 0; attempt < 16; ++attempt)
+            {
+                LPD3DXFONT candidate = NULL;
+                if (D3DXCreateFontW(lpDevice, fontHeight, 0,
+                                    m_supertext.bBold ? 900 : 400, 1,
+                                    m_supertext.bItal, DEFAULT_CHARSET,
+                                    OUT_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
+                                    DEFAULT_PITCH, m_supertext.nFontFace,
+                                    &candidate) != D3D_OK)
+                    break;
+
+                RECT measured = rect;
+                const int measuredHeight = candidate->DrawTextW(
+                    NULL, szTextToDraw, -1, &measured,
+                    DT_SINGLELINE | DT_CALCRECT | DT_NOPREFIX, 0xFFFFFFFF);
+                if (measured.right - measured.left <= (rect.right * 95) / 100 || fontHeight <= 6)
+                {
+                    lyricsFont = candidate;
+                    (void)measuredHeight;
+                    break;
+                }
+                SafeRelease(candidate);
+                fontHeight = (std::max)(6, (fontHeight * 85) / 100);
+            }
+            if (lyricsFont)
+                drawFont = lyricsFont;
+        }
+
         wchar_t* str = m_supertext.szTextW;
 
         // clip the text manually...
@@ -419,7 +460,22 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
         int h;
         int max_its = 6;
         int it = 0;
-        while (it < max_its)
+        if (m_supertext.bIsLyrics && lyricsFont)
+        {
+            RECT measured = rect;
+            h = drawFont->DrawTextW(NULL, szTextToDraw, -1, &measured,
+                                    DT_SINGLELINE | DT_CALCRECT | DT_NOPREFIX,
+                                    0xFFFFFFFF);
+            RECT draw = measured;
+            draw.left = 0;
+            draw.right = m_nTitleTexSizeX;
+            draw.top = m_nTitleTexSizeY / 2 - h / 2;
+            draw.bottom = m_nTitleTexSizeY / 2 + h / 2;
+            m_supertext.nFontSizeUsed = drawFont->DrawTextW(
+                NULL, szTextToDraw, -1, &draw,
+                DT_SINGLELINE | DT_NOPREFIX | DT_CENTER, 0xFFFFFFFF);
+        }
+        else while (it < max_its)
         {
             it++;
 
@@ -427,7 +483,7 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
                 break;
 
             RECT temp = rect;
-            h = m_d3dx_title_font_doublesize->DrawTextW(NULL, str, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX | DT_END_ELLIPSIS*/, 0xFFFFFFFF);
+            h = drawFont->DrawTextW(NULL, str, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX | DT_END_ELLIPSIS*/, 0xFFFFFFFF);
             if (temp.right-temp.left <= m_nTitleTexSizeX)
                 break;
 
@@ -458,7 +514,9 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
         temp.bottom = m_nTitleTexSizeY/2 + h/2;
 
         // NOTE: DT_END_ELLIPSIS CAUSES NOTHING TO DRAW, IF YOU USE W/D3DX9!
-	    m_supertext.nFontSizeUsed = m_d3dx_title_font_doublesize->DrawTextW(NULL, str, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX | DT_END_ELLIPSIS*/ | DT_CENTER , 0xFFFFFFFF);
+        if (!(m_supertext.bIsLyrics && lyricsFont))
+            m_supertext.nFontSizeUsed = drawFont->DrawTextW(NULL, str, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX | DT_END_ELLIPSIS*/ | DT_CENTER , 0xFFFFFFFF);
+        SafeRelease(lyricsFont);
     }
 
     // Change the rendertarget back to the original setup

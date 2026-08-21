@@ -129,6 +129,8 @@ void BeatDropLyricsManager::UpdateTrack(const std::wstring& artist, const std::w
     if (artist.empty() && title.empty())
     {
         std::lock_guard<std::mutex> lock(m_mutex);
+        ++m_generation;
+        m_requestPending = false;
         m_artist.clear();
         m_title.clear();
         m_album.clear();

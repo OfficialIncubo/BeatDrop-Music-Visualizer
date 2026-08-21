@@ -118,13 +118,6 @@ namespace
             DEFAULT_PITCH | FF_DONTCARE, L"Segoe UI");
         return f;
     }
-    HFONT UndoFont()
-    {
-        static HFONT f = CreateFontW(-17, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
-            DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY,
-            DEFAULT_PITCH | FF_DONTCARE, L"Segoe UI Symbol");
-        return f;
-    }
     void DarkTheme(HWND control)
     {
         if (HMODULE theme = LoadLibraryW(L"uxtheme.dll"))
@@ -147,6 +140,45 @@ namespace
         info.lpszText = const_cast<wchar_t*>(text);
         SendMessageW(tip, TTM_ADDTOOLW, 0, reinterpret_cast<LPARAM>(&info));
     }
+
+    void DrawHistoryIcon(HDC dc, const RECT& bounds, bool redo)
+    {
+        const int cx = bounds.left + 16;
+        const int cy = (bounds.top + bounds.bottom) / 2;
+        const COLORREF color = RGB(235, 235, 235);
+        HPEN pen = CreatePen(PS_SOLID, 2, color);
+        HBRUSH brush = CreateSolidBrush(color);
+        HGDIOBJ oldPen = SelectObject(dc, pen);
+        HGDIOBJ oldBrush = SelectObject(dc, GetStockObject(NULL_BRUSH));
+
+        // Arc endpoints are mirrored so Undo reads counter-clockwise and Redo
+        // reads clockwise, independent of the button label font.
+        if (redo)
+            Arc(dc, cx - 9, cy - 9, cx + 9, cy + 9, cx - 6, cy + 6, cx + 6, cy - 6);
+        else
+            Arc(dc, cx - 9, cy - 9, cx + 9, cy + 9, cx + 6, cy + 6, cx - 6, cy - 6);
+
+        SelectObject(dc, brush);
+        POINT arrow[3] = {};
+        if (redo)
+        {
+            arrow[0] = {cx + 10, cy - 4};
+            arrow[1] = {cx + 2, cy - 8};
+            arrow[2] = {cx + 4, cy + 1};
+        }
+        else
+        {
+            arrow[0] = {cx - 10, cy - 4};
+            arrow[1] = {cx - 2, cy - 8};
+            arrow[2] = {cx - 4, cy + 1};
+        }
+        Polygon(dc, arrow, 3);
+
+        SelectObject(dc, oldBrush);
+        SelectObject(dc, oldPen);
+        DeleteObject(brush);
+        DeleteObject(pen);
+    }
 }
 
 void BeatDropLyricsEditor::Open(HWND owner, BeatDropLyricsManager* manager,
@@ -157,16 +189,19 @@ void BeatDropLyricsEditor::Open(HWND owner, BeatDropLyricsManager* manager,
     {
         WNDCLASSW wc = {};
         wc.lpfnWndProc = WindowProc; wc.hInstance = GetModuleHandleW(nullptr);
-        wc.hCursor = LoadCursorW(nullptr, MAKEINTRESOURCEW(IDC_ARROW)); wc.hbrBackground = WindowBrush();
+        wc.hCursor = LoadCursorW(nullptr, MAKEINTRESOURCEW(32512)); wc.hbrBackground = WindowBrush();
         wc.lpszClassName = CLASS_NAME; RegisterClassW(&wc);
         m_hwnd = CreateWindowExW(WS_EX_APPWINDOW, CLASS_NAME, L"BeatDrop Lyrics Editor",
             WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 1160, 720,
             owner, nullptr, wc.hInstance, this);
+        if (m_hwnd)
+            SetWindowTextW(m_hwnd, (L"BeatDrop Lyrics Editor - " + m_artist + L" - " + m_title).c_str());
     }
     else
     {
         SetWindowTextW(m_hwnd, (L"BeatDrop Lyrics Editor - " + m_artist + L" - " + m_title).c_str());
         const std::wstring lrc = m_manager ? m_manager->CurrentLrc() : L"";
+        m_lastLoadedLrc = lrc;
         Write(m_input, lrc); Write(m_parsed, lrc); m_undo.clear(); m_redo.clear();
         ShowWindow(m_hwnd, SW_SHOWNORMAL); SetForegroundWindow(m_hwnd);
     }
@@ -223,17 +258,18 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT msg, WPARAM wp, LPARAM lp)
     case WM_CREATE:
     {
         LoadLibraryW(L"Msftedit.dll");
-        m_input = CreateWindowExW(0, L"EDIT", L"", WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN, 0, 0, 0, 0, m_hwnd, (HMENU)ID_INPUT, nullptr, nullptr);
-        m_parsed = CreateWindowExW(0, MSFTEDIT_CLASS, L"", WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN, 0, 0, 0, 0, m_hwnd, (HMENU)ID_PARSED, nullptr, nullptr);
+        const auto menuId = [](int id) { return reinterpret_cast<HMENU>(static_cast<INT_PTR>(id)); };
+        m_input = CreateWindowExW(0, L"EDIT", L"", WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN, 0, 0, 0, 0, m_hwnd, menuId(ID_INPUT), nullptr, nullptr);
+        m_parsed = CreateWindowExW(0, MSFTEDIT_CLASS, L"", WS_CHILD | WS_VISIBLE | WS_VSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN, 0, 0, 0, 0, m_hwnd, menuId(ID_PARSED), nullptr, nullptr);
         SetWindowLongPtrW(m_parsed, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
         m_oldParsedProc = reinterpret_cast<WNDPROC>(SetWindowLongPtrW(m_parsed, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(ParsedEditProc)));
         const DWORD style = WS_CHILD | WS_VISIBLE | BS_OWNERDRAW;
-        const auto button = [&](const wchar_t* text, int id) { return CreateWindowW(L"BUTTON", text, style, 0, 0, 1, 1, m_hwnd, (HMENU)id, nullptr, nullptr); };
+        const auto button = [&](const wchar_t* text, int id) { return CreateWindowW(L"BUTTON", text, style, 0, 0, 1, 1, m_hwnd, menuId(id), nullptr, nullptr); };
         button(L"Parse text", ID_PARSE); button(L"Import LRC", ID_IMPORT); button(L"Delete line", ID_DELETE); button(L"Insert silence", ID_INSERT); button(L"Reset editor", ID_RESET); button(L"Undo", ID_UNDO); button(L"Redo", ID_REDO); button(L"Seek to line", ID_SEEK); button(L"Upload to LRCLIB", 1018);
         button(L"\x25B2", ID_UP); button(L"\x25BC", ID_DOWN); button(L"Capture timestamp", ID_CAPTURE); button(L"-30s", ID_MINUS30); button(L"-10s", ID_MINUS10); button(L"-5s", ID_MINUS5); button(L"+5s", ID_PLUS5); button(L"+10s", ID_PLUS10); button(L"+30s", ID_PLUS30); button(L"Save local LRC", ID_SAVE); button(L"Close", ID_CLOSE);
-        CreateWindowW(L"STATIC", L"Input", WS_CHILD | WS_VISIBLE, 0, 0, 1, 1, m_hwnd, (HMENU)1020, nullptr, nullptr);
-        CreateWindowW(L"STATIC", L"Parsed Text", WS_CHILD | WS_VISIBLE, 0, 0, 1, 1, m_hwnd, (HMENU)1021, nullptr, nullptr);
-        m_status = CreateWindowW(L"STATIC", L"Edit timed lyrics, then save them to the local cache.", WS_CHILD | WS_VISIBLE, 0, 0, 1, 1, m_hwnd, (HMENU)ID_STATUS, nullptr, nullptr);
+        CreateWindowW(L"STATIC", L"Input", WS_CHILD | WS_VISIBLE, 0, 0, 1, 1, m_hwnd, menuId(1020), nullptr, nullptr);
+        CreateWindowW(L"STATIC", L"Parsed Text", WS_CHILD | WS_VISIBLE, 0, 0, 1, 1, m_hwnd, menuId(1021), nullptr, nullptr);
+        m_status = CreateWindowW(L"STATIC", L"Edit timed lyrics, then save them to the local cache.", WS_CHILD | WS_VISIBLE, 0, 0, 1, 1, m_hwnd, menuId(ID_STATUS), nullptr, nullptr);
         for (int id : {ID_PARSE, ID_IMPORT, ID_DELETE, ID_INSERT, ID_RESET, ID_UNDO, ID_REDO, ID_SEEK, ID_UP, ID_DOWN, ID_CAPTURE, ID_MINUS30, ID_MINUS10, ID_MINUS5, ID_PLUS5, ID_PLUS10, ID_PLUS30, ID_SAVE, ID_CLOSE}) RoundButton(GetDlgItem(m_hwnd, id), 120);
         for (HWND c : {m_input, m_parsed, GetDlgItem(m_hwnd, 1020), GetDlgItem(m_hwnd, 1021), m_status}) { SendMessageW(c, WM_SETFONT, (WPARAM)EditorFont(), TRUE); DarkTheme(c); }
         if (HWND tooltip = CreateWindowExW(WS_EX_TOPMOST, TOOLTIPS_CLASSW, nullptr,
@@ -247,11 +283,26 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT msg, WPARAM wp, LPARAM lp)
             Tooltip(tooltip, GetDlgItem(m_hwnd, ID_CAPTURE), L"Stamp the selected line with the current playback position and advance.");
         }
         SendMessageW(m_parsed, EM_SETBKGNDCOLOR, 0, RGB(43, 43, 43));
-        Write(m_input, m_manager ? m_manager->CurrentLrc() : L""); Write(m_parsed, Read(m_input)); FormatParsedText(); m_selectedLine = 0; SetTimer(m_hwnd, 1, 500, nullptr);
+        m_lastLoadedLrc = m_manager ? m_manager->CurrentLrc() : L"";
+        Write(m_input, m_lastLoadedLrc); Write(m_parsed, Read(m_input)); FormatParsedText(); m_selectedLine = 0; SetTimer(m_hwnd, 1, 500, nullptr);
         ResizeControls(); return 0;
     }
     case WM_SIZE: ResizeControls(); return 0;
-    case WM_TIMER: if (m_status && m_manager) SetWindowTextW(m_status, m_manager->Status().c_str()); return 0;
+    case WM_TIMER:
+        if (m_status && m_manager)
+        {
+            SetWindowTextW(m_status, m_manager->Status().c_str());
+            const std::wstring lrc = m_manager->CurrentLrc();
+            if (!lrc.empty() && lrc != m_lastLoadedLrc &&
+                Read(m_input) == m_lastLoadedLrc && Read(m_parsed) == m_lastLoadedLrc)
+            {
+                m_lastLoadedLrc = lrc;
+                Write(m_input, lrc);
+                Write(m_parsed, lrc);
+                FormatParsedText();
+            }
+        }
+        return 0;
     case WM_ERASEBKGND: { RECT r; GetClientRect(m_hwnd, &r); FillRect((HDC)wp, &r, WindowBrush()); return 1; }
     case WM_CTLCOLORSTATIC: { HDC dc = (HDC)wp; SetTextColor(dc, RGB(224,224,224)); SetBkColor(dc, RGB(35,35,35)); return (LRESULT)WindowBrush(); }
     case WM_CTLCOLOREDIT: { HDC dc = (HDC)wp; SetBkColor(dc, RGB(43,43,43)); if ((HWND)lp != m_parsed) SetTextColor(dc, RGB(224,224,224)); return (LRESULT)PaneBrush(); }
@@ -260,27 +311,16 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT msg, WPARAM wp, LPARAM lp)
         auto* item = reinterpret_cast<DRAWITEMSTRUCT*>(lp); if (!item) return 0;
         const bool primary = item->CtlID == ID_SAVE; const bool pressed = (item->itemState & ODS_SELECTED) != 0;
         HBRUSH fill = CreateSolidBrush(primary ? (pressed ? RGB(120,0,255) : RGB(180,0,255)) : (pressed ? RGB(70,70,70) : RGB(53,53,53)));
-        FillRect(item->hDC, &item->rcItem, WindowBrush()); SelectObject(item->hDC, fill); RoundRect(item->hDC, item->rcItem.left, item->rcItem.top, item->rcItem.right, item->rcItem.bottom, 16, 16); DeleteObject(fill);
+        FillRect(item->hDC, &item->rcItem, WindowBrush());
+        HGDIOBJ oldBrush = SelectObject(item->hDC, fill);
+        RoundRect(item->hDC, item->rcItem.left, item->rcItem.top, item->rcItem.right, item->rcItem.bottom, 16, 16);
+        SelectObject(item->hDC, oldBrush);
+        DeleteObject(fill);
         SetBkMode(item->hDC, TRANSPARENT); SetTextColor(item->hDC, RGB(235,235,235));
         wchar_t text[128] = {}; GetWindowTextW(item->hwndItem, text, 128);
         if (item->CtlID == ID_UNDO || item->CtlID == ID_REDO)
         {
-            SelectObject(item->hDC, UndoFont());
-            const int cx = item->rcItem.left + 22;
-            const int cy = (item->rcItem.top + item->rcItem.bottom) / 2;
-            Arc(item->hDC, cx - 9, cy - 9, cx + 9, cy + 9,
-                item->CtlID == ID_UNDO ? cx - 9 : cx + 9, cy - 4,
-                item->CtlID == ID_UNDO ? cx + 4 : cx - 4, cy - 9);
-            POINT arrow[3] = {};
-            if (item->CtlID == ID_UNDO)
-            {
-                arrow[0] = {cx - 9, cy - 4}; arrow[1] = {cx - 2, cy - 7}; arrow[2] = {cx - 4, cy + 1};
-            }
-            else
-            {
-                arrow[0] = {cx + 9, cy - 4}; arrow[1] = {cx + 2, cy - 7}; arrow[2] = {cx + 4, cy + 1};
-            }
-            Polygon(item->hDC, arrow, 3);
+            DrawHistoryIcon(item->hDC, item->rcItem, item->CtlID == ID_REDO);
             RECT label = item->rcItem; label.left += 34;
             SelectObject(item->hDC, EditorFont()); DrawTextW(item->hDC, text, -1, &label, DT_LEFT | DT_VCENTER | DT_SINGLELINE);
         }
