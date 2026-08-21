@@ -404,9 +404,9 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClInclude Include="pluginshell.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="shell_defines.h" />
-      <ClInclude Include="songtitlegetter.h" />
-      <ClInclude Include="lyrics_manager.h" />
-      <ClInclude Include="lyrics_editor.h" />
+    <ClInclude Include="songtitlegetter.h" />
+    <ClInclude Include="lyrics_manager.h" />
+    <ClInclude Include="lyrics_editor.h" />
     <ClInclude Include="state.h" />
     <ClInclude Include="support.h" />
     <ClInclude Include="texmgr.h" />

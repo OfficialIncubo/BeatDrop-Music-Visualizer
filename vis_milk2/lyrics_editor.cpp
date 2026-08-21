@@ -259,7 +259,7 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT msg, WPARAM wp, LPARAM lp)
     {
         auto* item = reinterpret_cast<DRAWITEMSTRUCT*>(lp); if (!item) return 0;
         const bool primary = item->CtlID == ID_SAVE; const bool pressed = (item->itemState & ODS_SELECTED) != 0;
-        HBRUSH fill = CreateSolidBrush(primary ? (pressed ? RGB(180,88,18) : RGB(214,104,22)) : (pressed ? RGB(70,70,70) : RGB(53,53,53)));
+        HBRUSH fill = CreateSolidBrush(primary ? (pressed ? RGB(120,0,255) : RGB(180,0,255)) : (pressed ? RGB(70,70,70) : RGB(53,53,53)));
         FillRect(item->hDC, &item->rcItem, WindowBrush()); SelectObject(item->hDC, fill); RoundRect(item->hDC, item->rcItem.left, item->rcItem.top, item->rcItem.right, item->rcItem.bottom, 16, 16); DeleteObject(fill);
         SetBkMode(item->hDC, TRANSPARENT); SetTextColor(item->hDC, RGB(235,235,235));
         wchar_t text[128] = {}; GetWindowTextW(item->hwndItem, text, 128);
