@@ -1,5 +1,18 @@
 #include "songtitlegetter.h"
 
+namespace
+{
+    void TraceTimeline(const std::wstring& artist, const std::wstring& title,
+                       double position, double duration)
+    {
+        wchar_t temp[MAX_PATH] = {};
+        const DWORD length = GetTempPathW(MAX_PATH, temp);
+        if (!length || length >= MAX_PATH) return;
+        std::wofstream file(std::wstring(temp, length) + L"BeatDropSMTC.log", std::ios::app);
+        file << L"artist=" << artist << L" title=" << title
+             << L" position=" << position << L" duration=" << duration << L"\n";
+    }
+}
 #include <algorithm>
 #include <cstdint>
 
