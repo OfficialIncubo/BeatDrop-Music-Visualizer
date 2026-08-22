@@ -1278,7 +1278,7 @@ void CPlugin::MyPreInitialize()
     m_szSongTitle[0]    = 0;
     m_szSongTitlePrev[0] = 0;
     m_szLyricsLine[0]    = 0;
-	m_supertext.bIsLyrics = false;
+    m_supertext.bIsLyrics = false;
 
 	m_lpVS[0]				= NULL;
 	m_lpVS[1]				= NULL;
@@ -1310,6 +1310,7 @@ void CPlugin::MyPreInitialize()
     texmgr      m_texmgr;		// for user sprites
 
 	m_supertext.bRedrawSuperText = false;
+	m_supertext.bIsLyrics = false;
 	m_supertext.fStartTime = -1.0f;
 
 	// --------------------other init--------------------
@@ -11304,7 +11305,7 @@ void CPlugin::LaunchCustomMessage(int nMsgNum)
 
 	m_supertext.bRedrawSuperText = true;
 	m_supertext.bIsSongTitle = false;
-	m_supertext.bIsLyrics = false;
+    m_supertext.bIsLyrics = false;
 	lstrcpyW(m_supertext.szTextW, m_CustomMessage[nMsgNum].szText);
 
 	// regular properties:
@@ -11387,13 +11388,13 @@ void CPlugin::LaunchLyricsLine(const wchar_t* line)
     m_supertext.bIsLyrics = true;
     lstrcpynW(m_supertext.szTextW, line ? line : L"", 512);
     lstrcpyW(m_supertext.nFontFace, m_fontinfo[SONGTITLE_FONT].szFace);
-    m_supertext.fFontSize = (float)m_fontinfo[SONGTITLE_FONT].nSize;
+    m_supertext.fFontSize = 1.25;
     m_supertext.bBold = m_fontinfo[SONGTITLE_FONT].bBold;
     m_supertext.bItal = m_fontinfo[SONGTITLE_FONT].bItalic;
     m_supertext.fX = 0.5f;
     m_supertext.fY = 0.72f;
     m_supertext.fGrowth = 1.0f;
-    m_supertext.fDuration = (std::max)(1.0f, (std::min)(4.0f, m_fSongTitleAnimDuration));
+    m_supertext.fDuration = 5;
     m_supertext.nColorR = 180;
     m_supertext.nColorG = 0;
     m_supertext.nColorB = 255;

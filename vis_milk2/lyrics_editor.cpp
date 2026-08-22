@@ -184,6 +184,14 @@ namespace
 void BeatDropLyricsEditor::Open(HWND owner, BeatDropLyricsManager* manager,
                                 const std::wstring& artist, const std::wstring& title)
 {
+#if !SUPPORT_SMTC
+    MessageBoxW(owner,
+                L"Lyrics are not supported in the OldOS build. Use the standard Release build to use synchronized lyrics and the lyrics editor.",
+                L"BeatDrop Lyrics",
+                MB_OK | MB_ICONINFORMATION);
+    return;
+#endif
+
     m_manager = manager; m_artist = artist; m_title = title;
     if (!m_hwnd)
     {
