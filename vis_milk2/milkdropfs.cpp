@@ -253,8 +253,15 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
     if (!lpDevice)
         return false;
 
-	wchar_t szTextToDraw[512];
-	swprintf(szTextToDraw, L" %s ", m_supertext.szTextW);  //add a space @ end for italicized fonts; and at start, too, because it's centered!
+	wchar_t szTextToDraw[514] = {};
+	szTextToDraw[0] = L' ';
+	lstrcpynW(szTextToDraw + 1, m_supertext.szTextW, ARRAYSIZE(szTextToDraw) - 2);
+	const size_t textLength = wcslen(szTextToDraw);
+	if (textLength + 1 < ARRAYSIZE(szTextToDraw))
+	{
+		szTextToDraw[textLength] = L' ';
+		szTextToDraw[textLength + 1] = L'\0';
+	}
 
     // Remember the original backbuffer and zbuffer
     LPDIRECT3DSURFACE9 pBackBuffer=NULL;//, pZBuffer=NULL;
@@ -416,10 +423,10 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
 
         // clip the text manually...
         // NOTE: DT_END_ELLIPSIS CAUSES NOTHING TO DRAW, IF YOU USE W/D3DX9!
-        int h;
+        int h = 0;
         int max_its = 6;
         int it = 0;
-        while (it < max_its)
+		while (it < max_its)
         {
             it++;
 
@@ -443,10 +450,10 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
             }*/
 
             // no more stuff to chop off the front; chop off the end w/ ...
-            int len = wcslen(str);
-            float fPercentToKeep = 0.91f * m_nTitleTexSizeX / (float)(temp.right-temp.left);
-            if (len > 8)
-                lstrcpyW( &str[ (int)(len*fPercentToKeep) ], L"...");
+            //int len = wcslen(str);
+            //float fPercentToKeep = 0.91f * m_nTitleTexSizeX / (float)(temp.right-temp.left);
+            //if (len > 8)
+            //    lstrcpyW( &str[ (int)(len*fPercentToKeep) ], L"...");
             break;
         }
 
@@ -458,7 +465,7 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
         temp.bottom = m_nTitleTexSizeY/2 + h/2;
 
         // NOTE: DT_END_ELLIPSIS CAUSES NOTHING TO DRAW, IF YOU USE W/D3DX9!
-	    m_supertext.nFontSizeUsed = m_d3dx_title_font_doublesize->DrawTextW(NULL, str, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX | DT_END_ELLIPSIS*/ | DT_CENTER , 0xFFFFFFFF);
+		m_supertext.nFontSizeUsed = m_d3dx_title_font_doublesize->DrawTextW(NULL, str, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX | DT_END_ELLIPSIS*/ | DT_CENTER, 0xFFFFFFFF);
     }
 
     // Change the rendertarget back to the original setup

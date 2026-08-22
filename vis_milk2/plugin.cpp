@@ -624,6 +624,7 @@ SPOUT :
 #include <assert.h>
 #include <algorithm>
 #include <cctype>
+#include <cwctype>
 #include <process.h>  // for beginthread, etc.
 #include <shellapi.h>
 #include <strsafe.h>
@@ -647,6 +648,8 @@ std::mt19937_64 gen(rd());
 #define clamp(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
 
 SongTitleGetter songtitlegetter;
+BeatDropLyricsManager lyricsmanager;
+BeatDropLyricsEditor lyricseditor;
 int ToggleFPSNumPressed = 7;			// Default is Unlimited FPS.
 int HardcutMode = 0;
 int TransitionLimit = 18;
@@ -1268,11 +1271,14 @@ void CPlugin::MyPreInitialize()
 	m_bShowSongTitle	= false;
 	m_bShowSongTime		= false;
 	m_bShowSongLen		= false;
+	m_bEnableLyrics         = true;
 	m_fShowRatingUntilThisTime = -1.0f;
 	ClearErrors();
 	m_szDebugMessage[0]	= 0;
     m_szSongTitle[0]    = 0;
     m_szSongTitlePrev[0] = 0;
+    m_szLyricsLine[0]    = 0;
+    m_supertext.bIsLyrics = false;
 
 	m_lpVS[0]				= NULL;
 	m_lpVS[1]				= NULL;
@@ -1304,6 +1310,7 @@ void CPlugin::MyPreInitialize()
     texmgr      m_texmgr;		// for user sprites
 
 	m_supertext.bRedrawSuperText = false;
+	m_supertext.bIsLyrics = false;
 	m_supertext.fStartTime = -1.0f;
 
 	// --------------------other init--------------------
@@ -1370,7 +1377,9 @@ void CPlugin::MyReadConfig()
     #if SUPPORT_SMTC
     m_bEnableSongTitlePoll = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePoll", m_bEnableSongTitlePoll, pIni);
     m_bEnableSongTitlePollExplicit = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePollExplicit", m_bEnableSongTitlePollExplicit, pIni);
+    m_bEnableLyrics = GetPrivateProfileBoolW(L"settings", L"bEnableLyrics", m_bEnableLyrics, pIni);
     #endif
+    m_bEnableLyrics = GetPrivateProfileBoolW(L"settings", L"bEnableLyrics", m_bEnableLyrics, pIni);
     m_bScreenDependentRenderMode = GetPrivateProfileBoolW(L"settings", L"bScreenDependentRenderMode", m_bScreenDependentRenderMode, pIni);
     m_bShaderCaching = GetPrivateProfileBoolW(L"settings", L"bShaderCaching", m_bShaderCaching, pIni);
     m_bShaderPrecachingAtStartup = GetPrivateProfileBoolW(L"settings", L"bShaderPrecachingAtStartup", m_bShaderPrecachingAtStartup, pIni);
@@ -1510,6 +1519,7 @@ void CPlugin::MyWriteConfig()
 	// ================================
 
 	WritePrivateProfileIntW(m_bSongTitleAnims,		L"bSongTitleAnims",		pIni, L"settings");
+	WritePrivateProfileIntW(m_bEnableLyrics,		L"bEnableLyrics",		pIni, L"settings");
 	WritePrivateProfileIntW(m_bHardCutsDisabled,	    L"bHardCutsDisabled",	pIni, L"settings");
 	WritePrivateProfileIntW(m_bEnableRating,		    L"bEnableRating",		pIni, L"settings");
 	//WritePrivateProfileIntW(m_bInstaScan,            "bInstaScan",		    pIni, "settings");
@@ -4768,6 +4778,24 @@ void CPlugin::MyRenderFn(int redraw)
             if (m_bSongTitleAnims)
                 LaunchSongTitleAnim();
         }
+#if SUPPORT_SMTC
+        if (m_bEnableLyrics)
+        {
+            const double position = songtitlegetter.currentPositionSeconds;
+            if (m_fLastLyricsPositionSeconds >= 0.0 &&
+                position + 1.0 < m_fLastLyricsPositionSeconds)
+            {
+                m_szLyricsLine[0] = 0;
+            }
+            m_fLastLyricsPositionSeconds = position;
+            const std::wstring lyricLine = lyricsmanager.CurrentLine(position);
+            if (lyricLine != m_szLyricsLine)
+            {
+                lstrcpynW(m_szLyricsLine, lyricLine.c_str(), 512);
+                LaunchLyricsLine(m_szLyricsLine);
+            }
+        }
+#endif
     }
 
     // 2. Clear the background:
@@ -6241,6 +6269,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 
     case WM_CHAR:   // plain & simple alphanumeric keys
         nRepeat = LOWORD(lParam);
+
 		if (m_waitstring.bActive)	// if user is in the middle of editing a string
 		{
 			if ((wParam >= ' ' && wParam <= 'z') || wParam=='{' || wParam=='}')
@@ -6519,8 +6548,38 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
         //   at the end of pluginshell.cpp for which ones).
         // For a complete list of virtual-key codes, look up the keyphrase
         //   "virtual-key codes [win32]" in the msdn help.
+
         nRepeat = LOWORD(lParam);
 
+        if (wParam == 'L' && bCtrlHeldDown)
+        {
+            m_bEnableLyrics = !m_bEnableLyrics;
+            m_fLastLyricsPositionSeconds = -1.0;
+            m_szLyricsLine[0] = 0;
+            if (m_bEnableLyrics)
+            {
+                lyricsmanager.UpdateTrack(songtitlegetter.currentArtist,
+                                           songtitlegetter.currentTitle,
+                                           songtitlegetter.currentAlbum,
+                                           songtitlegetter.currentDurationSeconds);
+                AddNotif(L"Lyrics enabled");
+            }
+            else
+            {
+                m_supertext.fStartTime = -1.0f;
+                AddNotif(L"Lyrics disabled");
+            }
+            WritePrivateProfileIntW(m_bEnableLyrics, L"bEnableLyrics",
+                                    GetConfigIniFile(), L"settings");
+            return 0;
+        }
+
+        if (wParam == 'E' && bCtrlHeldDown && bShiftHeldDown)
+        {
+            lyricseditor.Open(hWnd, &lyricsmanager, songtitlegetter.currentArtist,
+                              songtitlegetter.currentTitle);
+            return 0;
+        }
 		// SPOUT DEBUG
 		// Special case for F1 help display in pluginshell
 		// to clear the vj screen of any existing text
@@ -11246,6 +11305,7 @@ void CPlugin::LaunchCustomMessage(int nMsgNum)
 
 	m_supertext.bRedrawSuperText = true;
 	m_supertext.bIsSongTitle = false;
+    m_supertext.bIsLyrics = false;
 	lstrcpyW(m_supertext.szTextW, m_CustomMessage[nMsgNum].szText);
 
 	// regular properties:
@@ -11303,6 +11363,7 @@ void CPlugin::LaunchSongTitleAnim()
 {
 	m_supertext.bRedrawSuperText = true;
 	m_supertext.bIsSongTitle = true;
+	m_supertext.bIsLyrics = false;
 	lstrcpyW(m_supertext.szTextW, m_szSongTitle);
 	//lstrcpy(m_supertext.szText, " ");
 	lstrcpyW(m_supertext.nFontFace, m_fontinfo[SONGTITLE_FONT].szFace);
@@ -11318,6 +11379,26 @@ void CPlugin::LaunchSongTitleAnim()
 	m_supertext.nColorB     = 255;
 
 	m_supertext.fStartTime = GetTime();
+}
+
+void CPlugin::LaunchLyricsLine(const wchar_t* line)
+{
+    m_supertext.bRedrawSuperText = true;
+    m_supertext.bIsSongTitle = true;
+    m_supertext.bIsLyrics = true;
+    lstrcpynW(m_supertext.szTextW, line ? line : L"", 512);
+    lstrcpyW(m_supertext.nFontFace, m_fontinfo[SONGTITLE_FONT].szFace);
+    m_supertext.fFontSize = 1.25;
+    m_supertext.bBold = m_fontinfo[SONGTITLE_FONT].bBold;
+    m_supertext.bItal = m_fontinfo[SONGTITLE_FONT].bItalic;
+    m_supertext.fX = 0.5f;
+    m_supertext.fY = 0.72f;
+    m_supertext.fGrowth = 1.0f;
+    m_supertext.fDuration = 5;
+    m_supertext.nColorR = 180;
+    m_supertext.nColorG = 0;
+    m_supertext.nColorB = 255;
+    m_supertext.fStartTime = GetTime();
 }
 
 bool CPlugin::LaunchSprite(int nSpriteNum, int nSlot)
@@ -11882,6 +11963,67 @@ void CPlugin::GenCompPShaderText(char *szShaderText, float brightness, float ve_
 }
 
 
+static std::wstring NormalizeNowPlayingArtist(const std::wstring& rawArtist)
+{
+    std::wstring artist = rawArtist;
+    const std::wstring topicSuffix = L" - Topic";
+    if (artist.size() >= topicSuffix.size())
+    {
+        bool matches = true;
+        const size_t start = artist.size() - topicSuffix.size();
+        for (size_t i = 0; i < topicSuffix.size(); ++i)
+            if (towlower(artist[start + i]) != towlower(topicSuffix[i])) matches = false;
+        if (matches) artist.resize(start);
+    }
+    if (artist.size() > 4)
+    {
+        const std::wstring suffix = artist.substr(artist.size() - 4);
+        if (suffix == L"VEVO" || suffix == L"vevo")
+            artist.resize(artist.size() - 4);
+    }
+    const size_t separator = artist.find(L" - ");
+    if (separator != std::wstring::npos)
+    {
+        const std::wstring prefix = artist.substr(0, separator);
+        if (prefix.find(L"VEVO") != std::wstring::npos ||
+            prefix.find(L"vevo") != std::wstring::npos ||
+            prefix.find(L"Official") != std::wstring::npos)
+            return artist.substr(separator + 3);
+    }
+    return artist;
+}
+
+static std::wstring NormalizeNowPlayingTitle(const std::wstring& rawTitle,
+                                             const std::wstring& artist)
+{
+    std::wstring title = rawTitle;
+    const std::wstring prefix = artist + L" - ";
+    auto startsWithInsensitive = [](const std::wstring& value, const std::wstring& start) {
+        if (value.size() < start.size()) return false;
+        for (size_t i = 0; i < start.size(); ++i)
+            if (towlower(value[i]) != towlower(start[i])) return false;
+        return true;
+    };
+    if (startsWithInsensitive(title, prefix))
+        title.erase(0, prefix.size());
+    if (startsWithInsensitive(title, L"topic - "))
+        title.erase(0, 8);
+    const wchar_t* suffixes[] = {
+        L" (Official Audio)", L" [Official Audio]",
+        L" (Official Music Video)", L" [Official Music Video]"
+    };
+    for (const wchar_t* suffix : suffixes)
+    {
+        const size_t length = wcslen(suffix);
+        if (title.size() >= length && title.compare(title.size() - length, length, suffix) == 0)
+        {
+            title.resize(title.size() - length);
+            break;
+        }
+    }
+    return title;
+}
+
 void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
 {
     szSongTitle[0] = 0;
@@ -11916,8 +12058,8 @@ void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
                 cachedTitle.clear();
 
                 // Direct string access without buffers
-                const auto& artist = songtitlegetter.currentArtist;
-                const auto& title = songtitlegetter.currentTitle;
+                const std::wstring artist = NormalizeNowPlayingArtist(songtitlegetter.currentArtist);
+                const std::wstring title = NormalizeNowPlayingTitle(songtitlegetter.currentTitle, artist);
 
                 if (artist.empty() && title.empty())
                 {
@@ -11935,6 +12077,10 @@ void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
                 {
                     cachedTitle = artist + L" - " + title;
                 }
+
+                if (m_bEnableLyrics)
+                    lyricsmanager.UpdateTrack(artist, title, songtitlegetter.currentAlbum,
+                                               songtitlegetter.currentDurationSeconds);
 
                 songtitlegetter.updated = false;
             }
