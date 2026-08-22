@@ -4631,7 +4631,7 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 			float repeatx = min(100.0f, max(0.01f, (float)(*m_texmgr.m_tex[iSlot].var_repeatx) ));
 			float repeaty = min(100.0f, max(0.01f, (float)(*m_texmgr.m_tex[iSlot].var_repeaty) ));
 
-			int blendmode = min(4, max(0, ((int)(*m_texmgr.m_tex[iSlot].var_blendmode))));
+			int blendmode = min(10, max(0, ((int)(*m_texmgr.m_tex[iSlot].var_blendmode))));
 			float r = min(1.0f, max(0.0f, ((float)(*m_texmgr.m_tex[iSlot].var_r))));
 			float g = min(1.0f, max(0.0f, ((float)(*m_texmgr.m_tex[iSlot].var_g))));
 			float b = min(1.0f, max(0.0f, ((float)(*m_texmgr.m_tex[iSlot].var_b))));
@@ -4744,6 +4744,17 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 			// printf("blendmode = %d : opacity = %f\n", blendmode, a);
 
 			// blendmode = 3; // for testing
+			// IMPORTANT: reset the render states that the extra blend modes (5-10) can leave
+			// behind (D3DRS_BLENDOP, D3DRS_ALPHATESTENABLE) BEFORE applying this sprite's own
+			// blendmode. Previously these were only reset once, AFTER the whole sprite loop
+			// finished (see bottom of DrawUserSprites), so a sprite using BLENDOP_MIN/MAX/
+			// REVSUBTRACT (Darken/Vivid/Subtract) or ALPHATESTENABLE (Invert) would silently
+			// leave that state active for every sprite drawn AFTER it in the same frame, even
+			// if the next sprite used a completely different (and non-overriding) blendmode.
+			// This is what caused blendmode 10 (Vivid) to 'stick' to later sprites.
+			lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+			lpDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+
 			switch(blendmode)
 			{
 			case 0:
@@ -4847,6 +4858,83 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 					}
 				}
 				break;
+			case 5:
+				// multiply
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_DESTCOLOR);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+				// Modulate color allows for fading the multiplication effect
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r, g, b, a);
+				break;
+
+			case 6:
+				// subtract
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r*a, g*a, b*a, a);
+				break;
+
+			case 7:
+				// invert
+				// A true |Src-Dest| 'difference' invert can't be expressed in a single
+				// fixed-function blend pass (no per-pixel abs() without a pixel shader).
+				// Exclusion is the closest single-pass equivalent and reads as an
+				// inversion/negative effect. We still alpha-test out fully-transparent
+				// texels (ref lowered from 0x80/50% to 0x01) so we don't chop off the
+				// sprite's soft/anti-aliased edges - the old 50% cutoff is likely why
+				// this mode looked shrunken/dim compared to MilkDrop3.
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r, g, b, a);
+				break;
+
+			case 8:
+				// Cut-off (Colorkeyed / Stencil)
+				// Punches a black hole where the sprite is opaque.
+				// Logic: Dest = 0*Src + Dest*(1-SrcAlpha)
+
+				// Setup Texture Stage for Colorkey
+				lpDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+				lpDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TEXTURE);
+
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ZERO);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+				// Color doesn't affect the "cut", but Alpha does (so we pass 'a')
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r, g, b, a);
+				break;
+
+			case 9:
+				// Darken
+				// Dest = min(Src, Dest)
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MIN);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r, g, b, a);
+				break;
+
+			case 10:
+				// Vivid (Screen-based glow): Result = Src + Dest - Src*Dest
+				// True Photoshop 'Vivid Light' conditionally dodges/burns per-pixel
+				// (branches on whether Src is above/below 0.5), which needs a pixel
+				// shader - not expressible as a fixed-function blend state. Screen is
+				// the closest single-pass formula with the same 'boosted brightness /
+				// glow' character, and unlike the old MAX/Lighten approach, it fades
+				// correctly to Dest (no effect) as 'a' drops to 0, since premultiplying
+				// Src by 'a' pushes DESTBLEND's (1-Src) factor toward 1.
+
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r*a, g*a, b*a, a);
+				break;
 			}
 
 			lpDevice->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, (LPVOID)v3, sizeof(SPRITEVERTEX));
@@ -4887,8 +4975,21 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 		}
 	}
 
+	/*
+	Safety net: the REAL fix is now the per-sprite reset at the top of the blendmode switch
+	above (each sprite resets D3DRS_BLENDOP/D3DRS_ALPHATESTENABLE before applying its own
+	blendmode, so state from a previous sprite in the same frame can never leak forward).
+	This end-of-loop reset just makes sure nothing drawn AFTER DrawUserSprites() this frame
+	(borders, waveform, etc.) can inherit a leftover MIN/MAX/REVSUBTRACT/alpha-test state either.
+	*/
+	lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD); // <-
+	lpDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 	lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
+	// Undo the pixel shader bound for a Spout sprite's blendmode-4 colorkey
+	// (see case 4 above) so it can't stay bound and affect anything drawn
+	// after this - every other sprite blendmode, and everything else in the
+	// renderer, expects the fixed-function pixel pipeline to be in control.
 	lpDevice->SetPixelShader(NULL);
 
     // reset these to the standard safe mode:
