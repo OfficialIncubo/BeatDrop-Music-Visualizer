@@ -3254,8 +3254,14 @@ void CPlugin::UpdateLiveTextures()
     }
 }
 
-std::wstring texture_exts[] = { L"jpg", L"jpeg", L"jfif", L"dds", L"png", L"tga", L"bmp", L"dib", L"gif", L"3gp", L"3g2", L"mp4", L"wmv", L"mkv", L"avi", L"mxf", L"mov", L"webm", L"flv", L"mpg", L"mpeg"};
-const wchar_t szExtsWithSlashes[] = L".jpg|.png|.dds|.gif|.mp4|.wmv|.avi|.mov|etc.";
+std::wstring texture_exts[] = {
+    L"jpg", L"jpeg", L"jfif", L"dds", L"png", L"webp", L"tga", L"bmp", L"dib", L"gif",
+    L"webm", L"mkv", L"flv", L"vob", L"ogv", L"mng", L"avi", L"mts", L"m2ts", L"ts",
+    L"mov", L"qt", L"wmv", L"yuv", L"rm", L"rmvb", L"viv", L"asf", L"amv", L"mp4",
+    L"m4p", L"mp2", L"mpe", L"mpv", L"mpg", L"mpeg", L"m2v", L"m4v", L"svi", L"3gp",
+    L"3g2", L"mxf", L"roq", L"nsv", L"f4v", L"f4p", L"f4a", L"f4b"
+};
+const wchar_t szExtsWithSlashes[] = L".jpg|.png|.webp|.dds|.tga|.gif|.webm|.mkv|.mp4|.avi|.mov|etc.";
 typedef std::vector<std::wstring> StringVec;
 bool PickRandomTexture(const wchar_t* prefix, wchar_t* szRetTextureFilename)  //should be MAX_PATH chars
 {

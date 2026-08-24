@@ -83,7 +83,7 @@ Presets can now load GIF, video and image textures in a simple way. It detects a
 
 <video autoplay loop muted playsinline src="https://github.com/user-attachments/assets/6dd2d72a-008f-4fa1-91d9-c3ce35107b57" alt="BeatDrop GIF and Video Sprite Support Demo" width="100%" height="auto"></video>
 
-New supported formats: gif, 3gp, 3g2, mp4, wmv, mkv, avi, mxf, mov, webm, flv, mpg, mpeg
+Supported animated/static media formats: gif, webp, webm, mkv, flv, vob, ogv, mng, avi, mts, m2ts, ts, mov, qt, wmv, yuv, rm, rmvb, viv, asf, amv, mp4, m4p, mp2, mpe, mpv, mpg, mpeg, m2v, m4v, svi, 3gp, 3g2, mxf, roq, nsv, f4v, f4p, f4a, f4b
 
 ### Spout Input Sprites
 

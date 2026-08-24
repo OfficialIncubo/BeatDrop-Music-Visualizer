@@ -333,8 +333,14 @@ bool MediaTexture::IsVideoFile(const wchar_t* path)
 {
     static const wchar_t* const videoExts[] =
     {
-        L"3gp", L"3g2", L"mp4", L"wmv", L"mkv", L"avi", L"mxf",
-        L"mov", L"webm", L"flv", L"mpg", L"mpeg"
+        // These containers are decoded by the bundled FFmpeg libraries. WebP
+        // is included here deliberately so both static and animated WebP use
+        // the same decoder path instead of the legacy D3DX image loader.
+        L"webm", L"mkv", L"flv", L"vob", L"ogv", L"mng", L"avi",
+        L"mts", L"m2ts", L"ts", L"mov", L"qt", L"wmv", L"yuv", L"rm",
+        L"rmvb", L"viv", L"asf", L"amv", L"mp4", L"m4p", L"mp2", L"mpe",
+        L"mpv", L"mpg", L"mpeg", L"m2v", L"m4v", L"svi", L"3gp", L"3g2",
+        L"mxf", L"roq", L"nsv", L"f4v", L"f4p", L"f4a", L"f4b", L"webp"
     };
     return path && HasAnyExt(path, videoExts, sizeof(videoExts) / sizeof(videoExts[0]));
 }
