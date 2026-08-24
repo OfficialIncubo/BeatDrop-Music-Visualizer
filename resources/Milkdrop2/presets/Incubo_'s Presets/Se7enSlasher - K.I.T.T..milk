@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 18/08/2026 at 19:22:39.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 21/08/2026 at 14:29:50.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -80,7 +80,7 @@ b1x=1.000
 b2x=1.000
 b3x=1.000
 b1ed=0.250
-per_frame_1=vol = (bass_att+mid_att+treb_att)/5;
+per_frame_1=vol = (bass_att+mid_att+treb_att)*.3333;
 per_frame_2=q1 = vol;
 warp_1=`shader_body {}
 comp_1=`// Floating-point 3x5 font renderer (No bitwise operators)
@@ -146,9 +146,9 @@ comp_60=`    // ----------------------------------------------------------------
 comp_61=`    // 1. AUDIO REACTIVE VOICE BOX (VINTAGE GLOWING LED BARS)
 comp_62=`    // -------------------------------------------------------------------
 comp_63=`    // Sample FFT frequencies (Low-Mid, Center-Vocal, High-Mid)
-comp_64=`    float fft_left   = saturate(q1 * .75 - .3);
-comp_65=`    float fft_center = saturate(q1 * .75);
-comp_66=`    float fft_right  = saturate(q1 * .75 - .3);
+comp_64=`    float fft_left   = saturate(vol * .5 - .3);
+comp_65=`    float fft_center = saturate(vol * .5);
+comp_66=`    float fft_right  = saturate(vol * .5 - .3);
 comp_67=`
 comp_68=`    float bar_center_y = 0.58;
 comp_69=`    float dist_y = abs(uvo.y - bar_center_y);
