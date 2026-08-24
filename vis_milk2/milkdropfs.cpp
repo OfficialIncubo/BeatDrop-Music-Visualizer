@@ -4744,6 +4744,12 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 			// printf("blendmode = %d : opacity = %f\n", blendmode, a);
 
 			// blendmode = 3; // for testing
+
+			// A Spout colorkey uses a pixel shader, while every other sprite
+			// blend mode uses the fixed-function pipeline. Reset this per slot
+			// so a previous Spout sprite cannot affect the current sprite.
+			lpDevice->SetPixelShader(NULL);
+			
 			// IMPORTANT: reset the render states that the extra blend modes (5-10) can leave
 			// behind (D3DRS_BLENDOP, D3DRS_ALPHATESTENABLE) BEFORE applying this sprite's own
 			// blendmode. Previously these were only reset once, AFTER the whole sprite loop
