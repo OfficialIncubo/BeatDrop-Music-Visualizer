@@ -76,6 +76,11 @@ namespace
     const size_t kVideoQueueMaxBytes = 64 * 1024 * 1024; // enough for three 4K BGRA frames
     const size_t kVideoFreeBufferMaxFrames = 1;
     const double kVideoTimestampToleranceSeconds = 0.0005;
+    // BeatDrop filters long render pauses in its own animation clock. The
+    // media clock is wall-clock based, so rebase it after a long gap instead
+    // of making the decoder race through hours of missed video.
+    const double kVideoRenderGapResetSeconds = 0.5;
+    const double kVideoMaxResumeAdvanceSeconds = 0.25;
 
     template <class T>
     void SafeReleaseLocal(T*& p)
@@ -283,6 +288,8 @@ MediaTexture::MediaTexture(LPDIRECT3DDEVICE9EX device)
     , m_videoReachedEnd(false)
     , m_videoStopWorker(false)
     , m_videoHavePlaybackStart(false)
+    , m_videoHaveLastUpdateClock(false)
+    , m_videoDisplayedPresentationSeconds(0.0)
     , m_videoTimeBaseSeconds(0.0)
     , m_videoTimestampOriginSeconds(0.0)
     , m_videoHaveTimestampOrigin(false)
@@ -465,6 +472,8 @@ void MediaTexture::ReleaseVideo()
     m_videoSrcFormat = -1;
     m_videoReachedEnd = false;
     m_videoHavePlaybackStart = false;
+    m_videoHaveLastUpdateClock = false;
+    m_videoDisplayedPresentationSeconds = 0.0;
     m_videoTimeBaseSeconds = 0.0;
     m_videoTimestampOriginSeconds = 0.0;
     m_videoHaveTimestampOrigin = false;
@@ -619,6 +628,9 @@ bool MediaTexture::UploadPendingVideoFrame(double targetPresentationSeconds)
         return false;
 
     bool uploaded = UploadPixels(frame.pixels.data(), frame.width, frame.height, m_videoColorKey, m_videoApplyColorKey, false);
+    if (uploaded)
+        m_videoDisplayedPresentationSeconds = frame.presentationSeconds;
+
     {
         std::lock_guard<std::mutex> lock(m_videoMutex);
         if (m_videoFreeBuffers.size() < kVideoFreeBufferMaxFrames)
@@ -1008,6 +1020,7 @@ bool MediaTexture::InitVideo(const wchar_t* path, unsigned int colorKey)
     m_videoLastPresentationSeconds = 0.0;
     m_videoLastFrameDurationSeconds = m_videoFrameSeconds;
     m_videoHavePresentation = false;
+    m_videoDisplayedPresentationSeconds = 0.0;
 
     if (m_width > 0 && m_height > 0 && !CreateDynamicTexture(m_width, m_height))
         return false;
@@ -1332,14 +1345,37 @@ bool MediaTexture::Update(float now, bool* shouldKill, bool wantColorKeyThisFram
     {
         m_videoApplyColorKey = wantColorKeyThisFrame;
 
+        const std::chrono::steady_clock::time_point currentClock = std::chrono::steady_clock::now();
         if (!m_videoHavePlaybackStart)
         {
-            m_videoPlaybackStartClock = std::chrono::steady_clock::now();
+            m_videoPlaybackStartClock = currentClock;
             m_videoHavePlaybackStart = true;
         }
 
+        if (m_videoHaveLastUpdateClock)
+        {
+            const double renderGapSeconds = std::chrono::duration<double>(
+                currentClock - m_videoLastUpdateClock).count();
+            if (!std::isfinite(renderGapSeconds) || renderGapSeconds > kVideoRenderGapResetSeconds)
+            {
+                // Continue from the frame currently shown. This prevents a
+                // minimized/suspended window from causing a fast-forward burst
+                // when rendering resumes.
+                const double resumeAdvance = std::isfinite(renderGapSeconds) ?
+                    min(renderGapSeconds, kVideoMaxResumeAdvanceSeconds) :
+                    kVideoMaxResumeAdvanceSeconds;
+                const double resumePosition = max(0.0, m_videoDisplayedPresentationSeconds) + resumeAdvance;
+                const std::chrono::steady_clock::duration resumeOffset =
+                    std::chrono::duration_cast<std::chrono::steady_clock::duration>(
+                        std::chrono::duration<double>(resumePosition));
+                m_videoPlaybackStartClock = currentClock - resumeOffset;
+            }
+        }
+        m_videoLastUpdateClock = currentClock;
+        m_videoHaveLastUpdateClock = true;
+
         double elapsedSeconds = std::chrono::duration<double>(
-            std::chrono::steady_clock::now() - m_videoPlaybackStartClock).count();
+            currentClock - m_videoPlaybackStartClock).count();
         if (elapsedSeconds < 0.0)
             elapsedSeconds = 0.0; // guard against a theoretical clock anomaly
 

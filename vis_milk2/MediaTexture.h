@@ -124,7 +124,10 @@ private:
     std::deque<VideoFrame> m_videoQueue;
     std::deque<std::vector<unsigned char> > m_videoFreeBuffers;
     std::chrono::steady_clock::time_point m_videoPlaybackStartClock;
+    std::chrono::steady_clock::time_point m_videoLastUpdateClock;
     bool m_videoHavePlaybackStart;
+    bool m_videoHaveLastUpdateClock;
+    double m_videoDisplayedPresentationSeconds;
     double m_videoTimeBaseSeconds;
     double m_videoTimestampOriginSeconds;
     bool m_videoHaveTimestampOrigin;
