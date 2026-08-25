@@ -647,17 +647,31 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
             if (wParam == VK_F4) { // SPOUT ??
                 PostQuitMessage(0);
+                return 0;
             }
             else if (wParam == 'S' || wParam == 's')
         	{
             	ToggleStretch(hWnd);
+                return 0;
         	}
              else if (wParam == VK_RETURN) {
                  ToggleFullScreen(hWnd);
+                 return 0;
              }
             else {
-                g_plugin.PluginShellWindowProc(hWnd, uMsg, wParam, lParam);
+                return g_plugin.PluginShellWindowProc(hWnd, uMsg, wParam, lParam);
             }
+        }
+
+        // The keydown handler above owns these Alt shortcuts. Consume the
+        // corresponding system key/character messages as well, otherwise
+        // DefWindowProc can treat them as unhandled menu commands and play
+        // the Windows default notification sound.
+        case WM_SYSKEYUP:
+        case WM_SYSCHAR:
+        {
+            if (wParam == VK_RETURN || wParam == 'S' || wParam == 's')
+                return 0;
             break;
         }
 
