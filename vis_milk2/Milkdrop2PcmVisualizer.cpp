@@ -158,6 +158,83 @@ bool fullscreen = false;
 bool stretch = false;
 bool borderless = false;
 
+namespace
+{
+    const DWORD kCursorHideDelayMs = 3000;
+    bool g_cursorHiddenByAutoHide = false;
+    bool g_cursorHaveLastPosition = false;
+    POINT g_cursorLastPosition = { 0, 0 };
+    DWORD g_cursorLastActivityTick = 0;
+
+    void SetProcessCursorVisible(bool visible)
+    {
+        // ShowCursor uses a process-wide display counter. Drive it to a
+        // known state so fullscreen/stretch transitions cannot inherit a
+        // hidden cursor from an earlier unmatched call.
+        if (visible)
+        {
+            while (ShowCursor(TRUE) < 0)
+                ;
+        }
+        else
+        {
+            while (ShowCursor(FALSE) >= 0)
+                ;
+        }
+    }
+
+    void ResetCursorAutoHide(bool forceVisible)
+    {
+        POINT cursorPosition;
+        if (GetCursorPos(&cursorPosition))
+        {
+            g_cursorLastPosition = cursorPosition;
+            g_cursorHaveLastPosition = true;
+        }
+
+        g_cursorLastActivityTick = GetTickCount();
+        if (forceVisible || g_cursorHiddenByAutoHide)
+            SetProcessCursorVisible(true);
+        g_cursorHiddenByAutoHide = false;
+    }
+
+    void UpdateCursorAutoHide()
+    {
+        if ((!fullscreen && !stretch) || g_plugin.m_bShowCursorOnFullscreenOrStretch)
+        {
+            if (g_cursorHiddenByAutoHide)
+                SetProcessCursorVisible(true);
+            g_cursorHiddenByAutoHide = false;
+            return;
+        }
+
+        POINT cursorPosition;
+        if (GetCursorPos(&cursorPosition))
+        {
+            if (!g_cursorHaveLastPosition ||
+                cursorPosition.x != g_cursorLastPosition.x ||
+                cursorPosition.y != g_cursorLastPosition.y)
+            {
+                g_cursorLastPosition = cursorPosition;
+                g_cursorHaveLastPosition = true;
+                g_cursorLastActivityTick = GetTickCount();
+                if (g_cursorHiddenByAutoHide)
+                {
+                    SetProcessCursorVisible(true);
+                    g_cursorHiddenByAutoHide = false;
+                }
+            }
+        }
+
+        if (!g_cursorHiddenByAutoHide &&
+            (DWORD)(GetTickCount() - g_cursorLastActivityTick) >= kCursorHideDelayMs)
+        {
+            SetProcessCursorVisible(false);
+            g_cursorHiddenByAutoHide = true;
+        }
+    }
+}
+
 // SPOUT
 // ===============================================
 static int nBeatDrops = 0; // Number of beatdrop instances already running
@@ -290,9 +367,7 @@ void ToggleStretch(HWND hwnd) {
         g_plugin.ToggleDesktopMode(hwnd, false);
 
     if (!stretch) {
-
-        if (!g_plugin.m_bShowCursorOnFullscreenOrStretch)
-            ShowCursor(FALSE);
+        ResetCursorAutoHide(true);
 
         int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
         int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
@@ -322,9 +397,7 @@ void ToggleStretch(HWND hwnd) {
         stretch = true;
     }
     else {
-
-        if (!g_plugin.m_bShowCursorOnFullscreenOrStretch)
-            ShowCursor(TRUE);
+        ResetCursorAutoHide(true);
 
         int x = lastRect.left;
         int y = lastRect.top;
@@ -361,9 +434,7 @@ void ToggleFullScreen(HWND hwnd) {
         g_plugin.ToggleDesktopMode(hwnd, false);
 
     if (!fullscreen) {
-
-        if (!g_plugin.m_bShowCursorOnFullscreenOrStretch)
-            ShowCursor(FALSE);
+        ResetCursorAutoHide(true);
 
         if (!stretch) {
             lastWindowStyle = GetWindowLong(hwnd, GWL_STYLE);
@@ -397,9 +468,7 @@ void ToggleFullScreen(HWND hwnd) {
         fullscreen = true;
     }
     else {
-
-        if (!g_plugin.m_bShowCursorOnFullscreenOrStretch)
-            ShowCursor(TRUE);
+        ResetCursorAutoHide(true);
 
         int x = lastRect.left;
         int y = lastRect.top;
@@ -614,6 +683,13 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             return 0;
         }
 
+        case WM_MOUSEMOVE:
+        {
+            if (fullscreen || stretch)
+                ResetCursorAutoHide(false);
+            break;
+        }
+
         default:
             return g_plugin.PluginShellWindowProc(hWnd, uMsg, wParam, lParam);
     }
@@ -622,6 +698,8 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 }
 
 void RenderFrame() {
+
+    UpdateCursorAutoHide();
 
     {
         std::unique_lock<std::mutex> lock(pcmMutex);
