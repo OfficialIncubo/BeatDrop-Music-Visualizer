@@ -643,7 +643,7 @@ SPOUT :
 std::random_device rd;
 std::mt19937_64 gen(rd());
 
-#define FRAND ((rand() % 7381)/7380.0f)
+#define FRAND (std::uniform_real_distribution<float>(0.0f, 1.0f)(gen))
 #define clamp(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
 
 SongTitleGetter songtitlegetter;
