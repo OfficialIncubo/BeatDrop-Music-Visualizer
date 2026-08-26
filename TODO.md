@@ -29,7 +29,7 @@
 # User-proposed features:
 * \[ ] _madmads_ on Discord: A hotkey to disable animated song title (or real-time song title feature)
 * \[x] Fumbling_Foo: Freeze/unfreeze beat detection
-* \[ ] Fumbling_Foo: Enable/Disable Mashup Functionality
+* \[ ] Fumbling_Foo: Enable/Disable Mashup Functionality (CAN'T DO)
 * \[ ] [@MilkDrop2077](https://github.com/milkdrop2077): Add "fft" in init, per-frame and per-vertex variables, using actual FFT texture. (NOT PLANNED)
 
 # MilkDrop BETA Feature Revival

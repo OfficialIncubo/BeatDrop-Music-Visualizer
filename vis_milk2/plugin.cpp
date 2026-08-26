@@ -1252,6 +1252,8 @@ void CPlugin::MyPreInitialize()
     myfft.Init(MY_FFT_WINDOW, MY_FFT_SAMPLES, -1);
     myfftshader.Init(MY_FFT_SHADER_WINDOW, MY_FFT_SHADER_SAMPLES, 0);
 	memset(&mysound, 0, sizeof(mysound));
+    m_bFreezeBeatDetection = false;
+    memset(m_frozenBeatDetection, 0, sizeof(m_frozenBeatDetection));
 
     for (int i=0; i<PRESET_HIST_LEN; i++)
         m_presetHistory[i] = L"";
