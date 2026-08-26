@@ -5040,8 +5040,6 @@ void CPlugin::MyRenderUI(
         }
         if (m_bShowDebugInfo) //If show debug info is enabled, it entirely shows it, else it's hidden.
         {
-            swprintf(buf, L"BeatDrop v1.5 Developer Preview 2");
-            MyTextOut_Shadow(buf, MTO_LOWER_RIGHT);
             swprintf(buf, L"%s %d ", L"Time (s):", (int)(GetTime()));
             MyTextOut_Shadow(buf, MTO_LOWER_RIGHT);
         }

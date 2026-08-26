@@ -92,12 +92,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Maxim Volskiy & Incubo_"
             VALUE "FileDescription", "BeatDrop Music Visualizer"
-            VALUE "FileVersion", "1.5dev1"
+            VALUE "FileVersion", "1.5"
             VALUE "InternalName", "BeatDrop"
-            VALUE "LegalCopyright", "Copyright © 2026 BeatDrop development team"
+            VALUE "LegalCopyright", "Copyright Â© 2026 BeatDrop development team"
             VALUE "OriginalFilename", "BeatDrop.exe"
             VALUE "ProductName", "BeatDrop"
-            VALUE "ProductVersion", "1.5dev1"
+            VALUE "ProductVersion", "1.5"
         END
     END
     BLOCK "VarFileInfo"
