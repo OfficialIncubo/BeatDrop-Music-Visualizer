@@ -14,6 +14,7 @@
    Q                    reset audio sensitivity
    UP                   increase audio sensitivity
    DOWN                 decrease audio sensitivity
+   U                    freeze/unfreeze beat detection
 
  PRESETS:
 

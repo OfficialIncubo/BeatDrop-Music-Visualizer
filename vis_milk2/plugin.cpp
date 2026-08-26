@@ -6525,6 +6525,12 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
         //   "virtual-key codes [win32]" in the msdn help.
         nRepeat = LOWORD(lParam);
 
+        if (wParam == 'U' && (lParam & (1L << 30)) == 0)
+        {
+            ToggleBeatDetectionFreeze();
+            return 0;
+        }
+
 		// SPOUT DEBUG
 		// Special case for F1 help display in pluginshell
 		// to clear the vj screen of any existing text
@@ -11813,6 +11819,36 @@ void CPlugin::DoCustomSoundAnalysis()
         else
             mysound.avg_rel[i] = mysound.avg[i] / mysound.long_avg[i];
 	}
+
+    // Keep every consumer of the six public beat variables on the same frozen
+    // sample. The raw spectrum and waveform remain live while frozen.
+    if (m_bFreezeBeatDetection)
+    {
+        for (i = 0; i < 3; i++)
+        {
+            mysound.imm_rel[i] = m_frozenBeatDetection[i];
+            mysound.avg_rel[i] = m_frozenBeatDetection[i + 3];
+        }
+    }
+}
+
+void CPlugin::ToggleBeatDetectionFreeze()
+{
+    m_bFreezeBeatDetection = !m_bFreezeBeatDetection;
+
+    if (m_bFreezeBeatDetection)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            m_frozenBeatDetection[i] = mysound.imm_rel[i];
+            m_frozenBeatDetection[i + 3] = mysound.avg_rel[i];
+        }
+        AddNotif(L"Beat detection frozen");
+    }
+    else
+    {
+        AddNotif(L"Beat detection unfrozen");
+    }
 }
 
 void CPlugin::GenWarpPShaderText(char *szShaderText, float decay, bool bWrap)
