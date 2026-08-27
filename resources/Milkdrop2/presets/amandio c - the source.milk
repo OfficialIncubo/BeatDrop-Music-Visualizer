@@ -115,8 +115,8 @@ wave_1_per_point9=
 wave_1_per_point10=y=y*if(above(y,1),.5,1);
 wave_1_per_point11=r = .5 + sin( col +.1 + .1*sin(.03*time))*.5;
 wave_1_per_point12=g = .5 + sin( col + 1 + .1*sin(.04*time))*.5;
-wave_1_per_point13=b = .5 + sin( col + 2 + .3*sin(.02*time))*.5*above(19,(3*time%22));
-wave_1_per_point14=r = r- above((3*time%50),48);
+wave_1_per_point13=b = .5 + sin( col + 2 + .3*sin(.02*time))*.5*above(19,((3*time)%22));
+wave_1_per_point14=r = r- above(((3*time)%50),48);
 wave_1_per_point15=
 wavecode_2_enabled=1
 wavecode_2_samples=60

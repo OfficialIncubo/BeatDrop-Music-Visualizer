@@ -306,11 +306,11 @@ per_frame_17=res = beat*(vol+2*diff) + (1-beat)*(res - (diff*0.04 + 0.12)*60/fps
 per_frame_18=res = max(0,res);
 per_frame_19=monitor = res;
 per_frame_20=//beat = 0;
-per_frame_21=r = if(beat, 0.015*(rand(200)-100)*0.01,r);
+per_frame_21=r = if(beat, 0.015*(int(rand(200))-100)*0.01,r);
 per_frame_22=rot = r;
 per_frame_23=
-per_frame_24=c_x = if(beat,0.5 + 0.5*(rand(200)-100)*0.01, c_x);
-per_frame_25=c_y = if(beat,0.5 + 0.5*(rand(200)-100)*0.01, c_y);
+per_frame_24=c_x = if(beat,0.5 + 0.5*(int(rand(200))-100)*0.01, c_x);
+per_frame_25=c_y = if(beat,0.5 + 0.5*(int(rand(200))-100)*0.01, c_y);
 per_frame_26=
 per_frame_27=
 per_frame_28=q3 = c_x;

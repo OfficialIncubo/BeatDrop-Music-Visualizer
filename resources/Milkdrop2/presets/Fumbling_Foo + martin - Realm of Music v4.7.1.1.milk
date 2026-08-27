@@ -1,0 +1,329 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+FFTAttack=0.500
+FFTDecay=0.500
+fRating=4.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=5
+bAdditiveWaves=0
+bWaveDots=1
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=5.552
+fWaveSmoothing=0.504
+fWaveParam=-1.000
+fModWaveAlphaStart=0.710
+fModWaveAlphaEnd=1.300
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99990
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=0.99990
+sy=1.00000
+wave_r=1.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.010
+ob_r=1.000
+ob_g=1.000
+ob_b=1.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=//Thanks to Grok for algorithms synthesized from base preset code
+per_frame_init_2=vol = 0; avg = 0; peak = 0; t0 = 0;
+per_frame_init_3=index0 = 0; index2 = 0; index3 = 0;
+per_frame_init_4=v2 = 0; sw = 0; p1 = 0; p2 = 0;
+per_frame_init_5=movez = 0; rota = 0; trel = rand(1000);
+per_frame_init_6=vt_ = 0; v3 = 0; mb = 0;
+per_frame_init_7=maxeng_s = 0;
+per_frame_init_8=maxeng2 = 0; maxind2 = 0;          // 2nd strongest
+per_frame_init_9=maxvel  = 0; maxvelind = 0;        // highest velocity
+per_frame_init_10=maxpos  = 0; maxposind = 0;        // highest |position|
+per_frame_init_11=
+per_frame_init_12=
+per_frame_init_13=// simple resonator bank (optional, lighter than original 512)
+per_frame_init_14=MINBPM = 15; MAXBPM = 360; num_res = 256;
+per_frame_init_15=index = 0;
+per_frame_init_16=loop(num_res,
+per_frame_init_17=n = index*4;
+per_frame_init_18=megabuf(n)   = MINBPM * pow(MAXBPM/MINBPM, index/(num_res-1)); // freq in BPM
+per_frame_init_19=megabuf(n+1) = 0; // velocity
+per_frame_init_20=megabuf(n+2) = 0; // position
+per_frame_init_21=megabuf(n+3) = 0; // energy
+per_frame_init_22=index += 1;
+per_frame_init_23=);
+per_frame_1=// --- FPS-independent decays ---
+per_frame_2=fp_ = max(15, fps);
+per_frame_3=dec_med  = pow(0.96, 30/fp_);
+per_frame_4=dec_slow = pow(0.98, 30/fp_);
+per_frame_5=dt = min(1/fp_, 0.05);
+per_frame_6=
+per_frame_7=// --- Simple energy beat ---
+per_frame_8=vol  = (bass + mid + treb)*0.333;
+per_frame_9=avg  = avg*dec_slow + vol*(1-dec_slow);
+per_frame_10=is_beat = above(vol, 0.55 + avg + peak) * above(time, t0 + 0.12);
+per_frame_11=t0   = is_beat*time + (1-is_beat)*t0;
+per_frame_12=peak = is_beat*vol + (1-is_beat)*peak*dec_med;
+per_frame_13=
+per_frame_14=index0 = (index0 + is_beat) % 8;
+per_frame_15=index2 = (index2 + is_beat*bnot(index0)) % 2;
+per_frame_16=index3 = (index3 + is_beat*bnot(index0)*bnot(index2)) % 2;
+per_frame_17=
+per_frame_18=// --- Useful q-vars from simple detector ---
+per_frame_19=q20 = avg;
+per_frame_20=q21 = vol;
+per_frame_21=q22 = .5*pow(peak, .3);
+per_frame_22=q23 = index0;
+per_frame_23=q26 = max(atan(vol - avg*0.8), 0.25);
+per_frame_24=q27 = index0 + 1;
+per_frame_25=
+per_frame_26=sw = sw*dec_med + (1-dec_med)*(index2%2);
+per_frame_27=q28 = sw;
+per_frame_28=
+per_frame_29=// rotation helpers driven by beat index
+per_frame_30=k1 = is_beat * bnot(index0);
+per_frame_31=p1 = k1*(p1+1) + (1-k1)*p1;
+per_frame_32=p2 = dec_slow*p2 + (1-dec_slow)*p1;
+per_frame_33=rott = p2 * 1.5708;
+per_frame_34=
+per_frame_35=// slow continuous rotation (kept for compatibility)
+per_frame_36=q5 = cos(time*0.1667);
+per_frame_37=q6 = -sin(time*0.1667);
+per_frame_38=q7 = -q6;
+per_frame_39=q8 = q5;
+per_frame_40=
+per_frame_41=// ========== RESONATOR BANK ==========
+per_frame_42=exc = max(0, vol - avg) * 4.0;
+per_frame_43=
+per_frame_44=index = 0;
+per_frame_45=maxeng = 0;
+per_frame_46=maxind = 0;
+per_frame_47=maxeng2 = 0;
+per_frame_48=maxind2 = 0;
+per_frame_49=maxvel = 0;
+per_frame_50=maxvelind = 0;
+per_frame_51=maxpos = 0;
+per_frame_52=maxposind = 0;
+per_frame_53=
+per_frame_54=loop(num_res,
+per_frame_55=  n = index * 4;
+per_frame_56=  w = megabuf(n) * 0.10472;
+per_frame_57=
+per_frame_58=  megabuf(n+1) = megabuf(n+1) * (1.0 - 0.25*dt);
+per_frame_59=  megabuf(n+1) = megabuf(n+1) + (exc - w*w * megabuf(n+2)) * dt;
+per_frame_60=  megabuf(n+2) = megabuf(n+2) + megabuf(n+1) * dt;
+per_frame_61=
+per_frame_62=  eng = abs(megabuf(n+1)) + abs(megabuf(n+2) * w);
+per_frame_63=  megabuf(n+3) = megabuf(n+3) * 0.985 + eng * 0.08;
+per_frame_64=
+per_frame_65=  // primary winner
+per_frame_66=  maxind = if(megabuf(n+3) >= maxeng, n, maxind);
+per_frame_67=  maxeng = max(maxeng, megabuf(n+3));
+per_frame_68=
+per_frame_69=  // 2nd strongest
+per_frame_70=  maxind2 = if(megabuf(n+3) > maxeng2 && n != maxind, n, maxind2);
+per_frame_71=  maxeng2 = if(megabuf(n+3) > maxeng2 && n != maxind, megabuf(n+3), maxeng2);
+per_frame_72=
+per_frame_73=  // highest velocity
+per_frame_74=  maxvel = max(maxvel, abs(megabuf(n+1)));
+per_frame_75=  maxvelind = if(abs(megabuf(n+1)) >= maxvel, n, maxvelind);
+per_frame_76=
+per_frame_77=  // highest |position|
+per_frame_78=  maxpos = max(maxpos, abs(megabuf(n+2)));
+per_frame_79=  maxposind = if(abs(megabuf(n+2)) >= maxpos, n, maxposind);
+per_frame_80=
+per_frame_81=  index = index + 1;
+per_frame_82=);
+per_frame_83=
+per_frame_84=// heavy smoothing of peak energy
+per_frame_85=maxeng_s = maxeng_s * 0.94 + maxeng * 0.06;
+per_frame_86=
+per_frame_87=// unique musical sources
+per_frame_88=BPM = megabuf(maxind);
+per_frame_89=mb  = megabuf(maxind+1);
+per_frame_90=
+per_frame_91=e1 = megabuf(maxind+3);           // winner energy
+per_frame_92=e2 = megabuf(maxind2+3);          // 2nd energy
+per_frame_93=v1 = abs(megabuf(maxvelind+1));   // strongest velocity
+per_frame_94=p1 = megabuf(maxposind+2);        // strongest position
+per_frame_95=
+per_frame_96=// --- final clean & independent q-vars ---
+per_frame_97=q17 = pow(BPM, .7);                    // pure tempo / angular density
+per_frame_98=
+per_frame_99=q24 = sign(e1)*pow(abs(e1), .8);                                 // primary energy
+per_frame_100=q15 = sign(e2)*pow(abs(e2), .7);                            // secondary energy
+per_frame_101=q9  = sign(v1)*pow(abs(v1), .8);                            // pure onset / velocity
+per_frame_102=
+per_frame_103=// phase
+per_frame_104=trel += (BPM/60.0)*6.2832*dt;
+per_frame_105=q19 = 0.5 + 0.5*sin(trel);
+per_frame_106=
+per_frame_107=// smoothed overall energy
+per_frame_108=vt_ = vt_*dec_med + (1-dec_med)*min(1, max(0, vol*1.35 - 0.25));
+per_frame_109=q16 = vt_;
+per_frame_110=
+per_frame_111=// more independent drivers
+per_frame_112=q2  = .4*maxeng2; // overall energy + slow phase
+per_frame_113=//q2 = min(megabuf(5), 20);
+per_frame_114=q1  = p1;     // secondary energy + onset
+per_frame_115=
+per_frame_116=q31 = pow(maxeng_s, .7); // crystal density
+per_frame_117=
+per_frame_118=q32 = -.3 + (BPM/60)*6.2832*dt;
+per_frame_119=
+per_frame_120=// supporting signals
+per_frame_121=q10 = sin(trel*0.5);
+per_frame_122=q11 = 0.5 + 0.5*sin(trel*2.0);
+per_frame_123=q12 = pow(sin(trel*0.25), 3.0);
+per_frame_124=q13 = .5*sqrt(mb);
+per_frame_125=
+per_frame_126=// camera motion
+per_frame_127=movez = movez + 0.004*(.05*maxeng2 + 1.1)*30/fps;
+per_frame_128=rota  = rota  + 0.0025*(2.0 - .05*maxeng2)*30/fps;
+per_frame_129=q29 = movez;
+per_frame_130=q30 = rota;
+per_frame_131=
+per_frame_132=monitor = q24;
+warp_1=`float3 mus;
+warp_2=`float2 rs, uv1, uv6, uv7, uv8;
+warp_3=`float dx,dy;
+warp_4=`shader_body {
+warp_5=`uv = uv_orig;
+warp_6=`uv1 = (uv-.5) * aspect.xy;
+warp_7=`
+warp_8=`//BACKGROUND
+warp_9=`float2 z = lerp(q1*uv1, q15*mul(uv1,float2x2(_qb)), length(uv1));
+warp_10=`float2 uvn =normalize(uv1);
+warp_11=`rs = clamp(tan(lerp(q1*uv1, q15*mul(uv1,float2x2(_qb)), length(uv1)))*normalize(uv1),-30,30)/2;
+warp_12=`
+warp_13=`//CRYSTAL
+warp_14=`float mult = q31;
+warp_15=`uv8 = asin(tan(uv1)*mult);
+warp_16=`//uv8 = uv7;
+warp_17=`float2 dist = mul(asin(tan(uv1)*mult), float2x2(_qb));
+warp_18=`dist *= uv1.x + uv1.y + q32;
+warp_19=`
+warp_20=`//float2 ang2 = atan2 (sin(uv1*mult).yx,z.xy);
+warp_21=`//ang2 =  floor (q17* atan2 (sin(uv1*mult).yx,z.xy))/(8*q16);
+warp_22=`float2 dir = mul(.5*uv8,float4(cos(floor (q17* atan2 (asin(tan(uv1)*mult).yx,z.xy))/(8*q16)), sin(floor (q17* atan2 (asin(tan(uv1)*mult).yx,z.xy))/(8*q16))));
+warp_23=`
+warp_24=`
+warp_25=`z = 1-cos(8*dist);
+warp_26=`z = saturate (z);
+warp_27=`
+warp_28=`//ADD
+warp_29=`float2 mask = (z.x + z.y >= .8/q24); //momentan beliebig
+warp_30=`//rs = q28*rs + (1-q28)*rs.yx;
+warp_31=`uv +=  .09*rs.yx - .09*mask*rs.yx + .5*mask*z*normalize(dir);
+warp_32=`
+warp_33=`//ZENTRALSTRAHL
+warp_34=`uv6 = mul(uv1,float2x2(_qb));
+warp_35=`mus = 0.01/(sqrt(uv6.x)+.001)*(.35 + .2*rad);
+warp_36=`
+warp_37=`//DOTS
+warp_38=`float2 uv2 = .5*uv1 + .5*sin(q2*uv1 + 4*float2(q5,q6));
+warp_39=`uv2 *= .1*q9;
+warp_40=`//float3 n = tex3D(sampler_noisevol_hq, tex2D(sampler_main, frac(uv2)));
+warp_41=`float3 dots = .001*q22 /(tex3D(sampler_noisevol_hq, tex2D(sampler_main, frac(uv2))) + .007);
+warp_42=`
+warp_43=`//float3 dots = .2*saturate(.001/(tex3D(sampler_noisevol_hq, tex2D(sampler_main, frac(uv2)))));
+warp_44=`float3 blur = tex2D(sampler_pw_main, uv);
+warp_45=`float3 crisp= tex2D(sampler_main, frac(uv));
+warp_46=`float3 diff = crisp - blur/2;
+warp_47=`float3 ret1 = crisp + mus + dots;
+warp_48=`
+warp_49=`float3 mod = tex2D (sampler_noise_hq,.5*(uv_orig + .09*rs.yx - .09*mask*rs.yx + .5*mask*z*normalize(dir)) +time*.01)-.05;
+warp_50=`mod = 1-mod*diff;
+warp_51=`
+warp_52=`ret = ret1*mod - tex2D(sampler_main, mask)*ret1*mod - .02 + mod*tex2D(sampler_main, frac(mask))*ret1;
+warp_53=`
+warp_54=`}
+comp_1=`float3 ret1, neu, crisp, blur;
+comp_2=`float2 uv2, uv3;
+comp_3=`
+comp_4=`shader_body
+comp_5=`{
+comp_6=`float ang2, c, s;
+comp_7=`uv = (uv -= 0.5)* aspect.xy;    
+comp_8=`
+comp_9=`float2 tmp = uv;
+comp_10=`float dist = 1;
+comp_11=`float inten = 1;
+comp_12=`float mask = 0;
+comp_13=`ret1 = 0;
+comp_14=`int anz = 3;
+comp_15=`float n = 0;
+comp_16=`float t_rel = q30;
+comp_17=`while (n <= anz) {
+comp_18=`    ang2 = M_PI_2*n/anz+q30;
+comp_19=`    c = cos(ang2);
+comp_20=`    s = sin(ang2);
+comp_21=`    uv2.x =  uv.x*c - uv.y*s;
+comp_22=`    uv2.y =  uv.x*s + uv.y*c;
+comp_23=`    uv2*= aspect.yx;
+comp_24=`
+comp_25=`    dist = 1-frac(n/anz+t_rel); //evtl sqrt !
+comp_26=`
+comp_27=`    inten =  4*dist*(1-dist*dist);
+comp_28=`    uv3 = 3*uv2*dist + 0.5+.0*float2(q5,q6);
+comp_29=`    crisp = tex2D(sampler_main, frac(3*uv2*dist + 0.5));
+comp_30=`    blur = tex2D(sampler_fc_main, frac(uv3));
+comp_31=`    ret1 = max(ret1,(crisp+blur)*inten);
+comp_32=`n++;
+comp_33=`}
+comp_34=`
+comp_35=`
+comp_36=`//float3 ret1;
+comp_37=`
+comp_38=`ret = ret1;
+comp_39=`//ret1 = GetPixel(.5+uv_orig*aspect.yx*1.2);
+comp_40=`
+comp_41=`
+comp_42=`//ret = ret1-.1;
+comp_43=`
+comp_44=`}

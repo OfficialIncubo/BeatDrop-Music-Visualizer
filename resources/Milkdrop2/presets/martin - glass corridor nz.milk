@@ -425,7 +425,7 @@ comp_2=`sampler sampler_rand00;
 comp_3=`float4 texsize_clouds2;
 comp_4=`shader_body
 comp_5=`{
-comp_6=`uv *= aspect.xy;
+comp_6=`//uv *= aspect.xy;
 comp_7=`float2 uv1 = (uv-.5);
 comp_8=`
 comp_9=`float2 hor = float2 (texsize.z,0);
