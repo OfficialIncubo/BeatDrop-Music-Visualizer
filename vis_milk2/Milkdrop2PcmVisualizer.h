@@ -8,6 +8,7 @@ extern bool borderless;
 void ToggleFullScreen(HWND hwnd);
 void ToggleStretch(HWND hwnd);
 void ToggleBorderlessWindow(HWND hwnd);
+void RestoreRenderWindowIcon(HWND hwnd);
 
 void PrecachePresetShaders(std::wstring& wLine, std::wofstream& compiledList, int& compiledShaders);
 void DeleteShaderCacheDirectory();

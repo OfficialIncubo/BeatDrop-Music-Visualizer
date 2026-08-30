@@ -82,6 +82,9 @@ public:
     void RestoreAfterExternalDeviceReset();
     void ReplaceRenderWindow(HWND hwnd);
     void StartDesktopModeRecoveryTimers(HWND hwnd);
+    void ResetTimeVariable();
+    void SetMaxFPS(int fps);
+    int  GetMaxFPS() const;
 
 protected:
 
@@ -122,9 +125,9 @@ protected:
     int          m_start_fullscreen;        // 0 or 1
     int          m_start_desktop;           // 0 or 1
     int          m_fake_fullscreen_mode;    // 0 or 1
-    int          m_max_fps_fs;              // 1-120, or 0 for 'unlimited'
-    int          m_max_fps_dm;              // 1-120, or 0 for 'unlimited'
-    int          m_max_fps_w;               // 1-120, or 0 for 'unlimited'
+    int          m_max_fps_fs;              // 1-360, or 0 for 'unlimited'
+    int          m_max_fps_dm;              // 1-360, or 0 for 'unlimited'
+    int          m_max_fps_w;               // 1-360, or 0 for 'unlimited'
     int          m_show_press_f1_msg;       // 0 or 1
     int          m_allow_page_tearing_w;    // 0 or 1
     int          m_allow_page_tearing_fs;   // 0 or 1

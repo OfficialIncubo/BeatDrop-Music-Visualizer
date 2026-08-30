@@ -12492,6 +12492,7 @@ void CPlugin::ToggleDesktopMode(HWND hwnd, bool isRefresh /*= false*/)
         SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
 
         m_bDesktopMode = false;
+        RestoreRenderWindowIcon(hwnd);
         UpdateTrayIconForShownWindow();
         // AddNotif(L"Desktop Mode OFF");
 

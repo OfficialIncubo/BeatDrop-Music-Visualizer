@@ -186,7 +186,10 @@ HWND g_hWnd = NULL;
 bool trayIconRegistered = false;
 
 void UpdateTrayIconForHiddenWindow();
+void UpdateTrayIconForShownWindow();
 void UpdateTrayIconForDesktopMode();
+static const UINT WM_TRAY_MENU_COMMAND = WM_APP + 10;
+static volatile LONG trayMenuOpen = 0;
 
 static void EnsureTrayIconRegistered()
 {
@@ -205,6 +208,208 @@ static void EnsureTrayIconRegistered()
 		// The shell can forget an icon without destroying our window.
 		trayIconRegistered = false;
 		EnsureTrayIconRegistered();
+	}
+}
+
+enum TrayMenuCommand
+{
+	TRAY_MENU_SHOW_WINDOW = 2000,
+	TRAY_MENU_SPOUT,
+	TRAY_MENU_LOCK_PRESET,
+	TRAY_MENU_ORDER,
+	TRAY_MENU_NEXT_PRESET,
+	TRAY_MENU_NEXT_PRESET_SOFTCUT,
+	TRAY_MENU_PREVIOUS_PRESET,
+	TRAY_MENU_RESET_TIME,
+	TRAY_MENU_FREEZE_BEAT,
+	TRAY_MENU_AUDIO_DEVICE,
+	TRAY_MENU_SCREENSHOT,
+	TRAY_MENU_EXIT,
+	TRAY_MENU_AUDIO_SENSITIVITY_BASE = 2100,
+	TRAY_MENU_FPS_BASE = 2200
+};
+
+static void ToggleTraySpout()
+{
+	g_plugin.bSpoutChanged = true;
+	g_plugin.bSpoutOut = !g_plugin.bSpoutOut;
+	if (g_plugin.bInitialized)
+	{
+		g_plugin.spoutsender.ReleaseDX9sender();
+		g_plugin.bInitialized = false;
+	}
+}
+
+static void ExecuteTrayMenuCommand(HWND hwnd, UINT command);
+
+static void ShowTrayContextMenu(HWND hwnd)
+{
+	HMENU menu = CreatePopupMenu();
+	HMENU sensitivityMenu = CreatePopupMenu();
+	HMENU fpsMenu = CreatePopupMenu();
+	if (!menu || !sensitivityMenu || !fpsMenu)
+	{
+		if (menu) DestroyMenu(menu);
+		if (sensitivityMenu) DestroyMenu(sensitivityMenu);
+		if (fpsMenu) DestroyMenu(fpsMenu);
+		return;
+	}
+
+	const bool desktopMode = g_plugin.m_bDesktopMode;
+	const wchar_t* showText = renderWindowHidden
+		? L"Show visual window"
+		: (desktopMode ? L"Switch to normal visual window" : L"Show visual window");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_SHOW_WINDOW, showText);
+	AppendMenuW(menu, MF_SEPARATOR, 0, NULL);
+	AppendMenuW(menu, MF_STRING | (g_plugin.bSpoutOut ? MF_CHECKED : MF_UNCHECKED),
+		TRAY_MENU_SPOUT, L"Spout output");
+
+	for (int value = 0; value <= 25; ++value)
+	{
+		wchar_t text[32];
+		swprintf_s(text, L"%d", value);
+		AppendMenuW(sensitivityMenu,
+			MF_STRING | (static_cast<int>(g_plugin.m_nAudioSensitivity + 0.5f) == value ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_AUDIO_SENSITIVITY_BASE + value, text);
+	}
+	AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(sensitivityMenu), L"Audio sensitivity");
+
+	const int fpsValues[] = { 0, 30, 60, 90, 120, 144, 180, 210, 240, 270, 300, 330, 360 };
+	for (int value : fpsValues)
+	{
+		wchar_t text[32];
+		swprintf_s(text, value == 0 ? L"Unlimited (0)" : L"%d FPS", value);
+		AppendMenuW(fpsMenu,
+			MF_STRING | (g_plugin.GetMaxFPS() == value ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_FPS_BASE + value, text);
+	}
+	AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(fpsMenu), L"FPS limit");
+
+	AppendMenuW(menu, MF_STRING | (g_plugin.m_bPresetLockedByUser ? MF_CHECKED : MF_UNCHECKED),
+		TRAY_MENU_LOCK_PRESET, L"Lock current preset");
+	AppendMenuW(menu, MF_STRING | (!g_plugin.m_bSequentialPresetOrder ? MF_CHECKED : MF_UNCHECKED),
+		TRAY_MENU_ORDER, L"Random preset order");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_NEXT_PRESET, L"Next preset");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_NEXT_PRESET_SOFTCUT, L"Next preset (Softcut)");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_PREVIOUS_PRESET, L"Previous preset");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_RESET_TIME, L"Reset time variable");
+	AppendMenuW(menu, MF_STRING | (g_plugin.m_bFreezeBeatDetection ? MF_CHECKED : MF_UNCHECKED),
+		TRAY_MENU_FREEZE_BEAT, L"Freeze beat detection");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_AUDIO_DEVICE,
+		g_plugin.m_bCaptureMic ? L"Switch to speaker device" : L"Switch to microphone device");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_SCREENSHOT, L"Save screenshot");
+	AppendMenuW(menu, MF_SEPARATOR, 0, NULL);
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_EXIT, L"Exit");
+
+	POINT point;
+	GetCursorPos(&point);
+	// TrackPopupMenu must be owned by a window on this menu thread.  Using the
+	// renderer window here makes the popup close immediately on some Windows versions.
+	HWND menuOwner = CreateWindowExW(WS_EX_TOOLWINDOW, L"STATIC", L"",
+		WS_POPUP, point.x, point.y, 1, 1, NULL, NULL, GetModuleHandle(NULL), NULL);
+	if (menuOwner)
+	{
+		ShowWindow(menuOwner, SW_SHOWNOACTIVATE);
+		SetForegroundWindow(menuOwner);
+	}
+	const UINT command = TrackPopupMenu(menu,
+		TPM_RETURNCMD | TPM_NONOTIFY | TPM_RIGHTBUTTON,
+		point.x, point.y, 0, menuOwner, NULL);
+	if (menuOwner)
+		DestroyWindow(menuOwner);
+
+	if (command != 0)
+		PostMessage(hwnd, WM_TRAY_MENU_COMMAND, command, 0);
+
+	DestroyMenu(fpsMenu);
+	DestroyMenu(sensitivityMenu);
+	DestroyMenu(menu);
+}
+
+static DWORD WINAPI TrayContextMenuThreadProc(void* parameter)
+{
+	ShowTrayContextMenu(static_cast<HWND>(parameter));
+	InterlockedExchange(&trayMenuOpen, 0);
+	return 0;
+}
+
+static void BeginTrayContextMenu(HWND hwnd)
+{
+	if (InterlockedCompareExchange(&trayMenuOpen, 1, 0) != 0)
+		return;
+
+	HANDLE thread = CreateThread(NULL, 0, TrayContextMenuThreadProc, hwnd, 0, NULL);
+	if (thread)
+		CloseHandle(thread);
+	else
+		InterlockedExchange(&trayMenuOpen, 0);
+}
+
+static void ExecuteTrayMenuCommand(HWND hwnd, UINT command)
+{
+	HWND rendererWindow = hwnd;
+
+	if (command == TRAY_MENU_SHOW_WINDOW)
+	{
+		if (renderWindowHidden)
+		{
+			ShowWindow(rendererWindow, SW_SHOW);
+			RestoreRenderWindowIcon(rendererWindow);
+			UpdateTrayIconForShownWindow();
+		}
+		else if (g_plugin.m_bDesktopMode)
+		{
+			g_plugin.m_mouseDown = 0;
+			g_plugin.ToggleDesktopMode(rendererWindow);
+		}
+	}
+	else if (command == TRAY_MENU_SPOUT)
+		ToggleTraySpout();
+	else if (command >= TRAY_MENU_AUDIO_SENSITIVITY_BASE && command < TRAY_MENU_AUDIO_SENSITIVITY_BASE + 26)
+	{
+		g_plugin.m_nAudioSensitivity = static_cast<float>(command - TRAY_MENU_AUDIO_SENSITIVITY_BASE);
+		g_fAudioSensitivity = g_plugin.m_nAudioSensitivity;
+	}
+	else if (command >= TRAY_MENU_FPS_BASE && command <= TRAY_MENU_FPS_BASE + 360)
+		g_plugin.SetMaxFPS(command - TRAY_MENU_FPS_BASE);
+	else if (command == TRAY_MENU_LOCK_PRESET)
+		g_plugin.m_bPresetLockedByUser = !g_plugin.m_bPresetLockedByUser;
+	else if (command == TRAY_MENU_ORDER)
+	{
+		g_plugin.m_bSequentialPresetOrder = !g_plugin.m_bSequentialPresetOrder;
+
+		// erase all history, too:
+		g_plugin.m_presetHistory[0] = g_plugin.m_szCurrentPresetFile;
+		g_plugin.m_presetHistoryPos = 0;
+		g_plugin.m_presetHistoryFwdFence = 1;
+		g_plugin.m_presetHistoryBackFence = 0;
+	}
+	else if (command == TRAY_MENU_NEXT_PRESET)
+		g_plugin.NextPreset(0.0f);
+	else if (command == TRAY_MENU_NEXT_PRESET_SOFTCUT)
+		g_plugin.NextPreset(g_plugin.m_fBlendTimeUser);
+	else if (command == TRAY_MENU_PREVIOUS_PRESET)
+		g_plugin.PrevPreset(0.0f);
+	else if (command == TRAY_MENU_RESET_TIME)
+		g_plugin.ResetTimeVariable();
+	else if (command == TRAY_MENU_FREEZE_BEAT)
+		g_plugin.ToggleBeatDetectionFreeze();
+	else if (command == TRAY_MENU_AUDIO_DEVICE)
+	{
+		g_plugin.m_bCaptureMic = !g_plugin.m_bCaptureMic;
+		DetectSampleRate();
+	}
+	else if (command == TRAY_MENU_SCREENSHOT)
+		g_plugin.CaptureScreenshot();
+	else if (command == TRAY_MENU_EXIT)
+		PostMessage(hwnd, WM_CLOSE, 0, 0);
+
+	// The popup has its own temporary owner window. Restore keyboard focus to
+	// the renderer after actions that leave it as a normal interactive window.
+	if (command != TRAY_MENU_EXIT && !g_plugin.m_bDesktopMode && IsWindowVisible(rendererWindow))
+	{
+		SetForegroundWindow(rendererWindow);
+		SetFocus(rendererWindow);
 	}
 }
 
@@ -231,7 +436,7 @@ void InitializeTrayIcon(HWND hWnd)
 // Function to update tray icon when window is hidden
 void UpdateTrayIconForHiddenWindow()
 {
-	lstrcpy(nid.szTip, TEXT("BeatDrop Music Visualizer - Render window hidden\nLeft click to show. Right click to exit visualizer."));
+	lstrcpy(nid.szTip, TEXT("BeatDrop Music Visualizer - Render window hidden\nLeft click to show. Right click for options."));
 	EnsureTrayIconRegistered();
 	renderWindowHidden = true;
 }
@@ -246,7 +451,7 @@ void UpdateTrayIconForShownWindow()
 
 void UpdateTrayIconForDesktopMode()
 {
-	lstrcpy(nid.szTip, TEXT("BeatDrop Music Visualizer - Desktop Mode ON\nLeft click to restore. Right click to exit visualizer."));
+	lstrcpy(nid.szTip, TEXT("BeatDrop Music Visualizer - Desktop Mode ON\nLeft click to restore. Right click for options."));
 	EnsureTrayIconRegistered();
 }
 
@@ -869,6 +1074,31 @@ void CPluginShell::StartDesktopModeRecoveryTimers(HWND hwnd)
 {
 	SetTimer(hwnd, TIMER_DESKTOP_REFRESH, 250, NULL);
 	SetTimer(hwnd, TIMER_DESKTOP_WATCHDOG, 1000, NULL);
+}
+
+void CPluginShell::ResetTimeVariable()
+{
+	m_time = 0;
+	memset(m_time_hist, 0, sizeof(m_time_hist));
+	m_time_hist_pos = 0;
+	g_plugin.m_fPresetStartTime = g_plugin.GetTime();
+	g_plugin.m_fNextPresetTime = -1.0f;
+}
+
+void CPluginShell::SetMaxFPS(int fps)
+{
+	if (fps < 0)
+		fps = 0;
+	if (fps > 360)
+		fps = 360;
+	m_max_fps_fs = fps;
+	m_max_fps_dm = fps;
+	m_max_fps_w = fps;
+}
+
+int CPluginShell::GetMaxFPS() const
+{
+	return m_max_fps_w;
 }
 
 void CPluginShell::OnUserResizeTextWindow()
@@ -2452,8 +2682,12 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 		{
 			if (renderWindowHidden)
 			{
-				ShowWindow(GetPluginWindow(), SW_SHOW);
+				HWND rendererWindow = GetPluginWindow();
+				ShowWindow(rendererWindow, SW_SHOW);
+				RestoreRenderWindowIcon(rendererWindow);
 				UpdateTrayIconForShownWindow();
+				SetForegroundWindow(rendererWindow);
+				SetFocus(rendererWindow);
 			}
 			else if (g_plugin.m_bDesktopMode)
 			{
@@ -2461,9 +2695,13 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 				g_plugin.ToggleDesktopMode(GetPluginWindow());
 			}
 		}
-		else if (lParam == WM_RBUTTONUP)
-			PostMessage(hWnd, WM_CLOSE, 0, 0);
-		break;
+	else if (lParam == WM_RBUTTONUP)
+		BeginTrayContextMenu(hWnd);
+	break;
+
+	case WM_TRAY_MENU_COMMAND:
+		ExecuteTrayMenuCommand(hWnd, static_cast<UINT>(wParam));
+	break;
 
 	// benski> a little hack to get the window size correct. it seems to work
 	case WM_USER+555:
