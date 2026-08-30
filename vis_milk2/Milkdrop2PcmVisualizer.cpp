@@ -269,6 +269,36 @@ static unsigned char pcmRightOut[SAMPLE_SIZE];
 
 static HICON icon = nullptr;
 
+void RestoreRenderWindowIcon(HWND hwnd)
+{
+    if (!hwnd)
+        return;
+
+    // Recreate the normal top-level taskbar entry after fullscreen, borderless,
+    // or Desktop Mode changed the window's parent/style.
+    LONG_PTR exStyle = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
+    exStyle &= ~static_cast<LONG_PTR>(WS_EX_TOOLWINDOW);
+    exStyle |= WS_EX_APPWINDOW;
+    SetWindowLongPtrW(hwnd, GWL_EXSTYLE, exStyle);
+    SetWindowPos(hwnd, NULL, 0, 0, 0, 0,
+        SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE |
+        SWP_FRAMECHANGED);
+
+    if (!icon && module)
+        icon = LoadIconW(module, MAKEINTRESOURCEW(IDI_PLUGIN_ICON));
+
+    if (icon)
+    {
+        SendMessageW(hwnd, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(icon));
+        SendMessageW(hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(icon));
+    }
+
+    // Explorer only adds the taskbar button after a top-level app window is
+    // shown. This also refreshes the entry after an Explorer/display refresh.
+    ShowWindow(hwnd, SW_HIDE);
+    ShowWindow(hwnd, SW_SHOW);
+}
+
 
 // SPOUT
 // ===============================================
@@ -429,6 +459,7 @@ void ToggleStretch(HWND hwnd) {
         }
     }
     fullscreen = false;
+    RestoreRenderWindowIcon(hwnd);
 }
 
 void ToggleFullScreen(HWND hwnd) {
@@ -500,6 +531,7 @@ void ToggleFullScreen(HWND hwnd) {
         }
     }
     stretch = false;
+    RestoreRenderWindowIcon(hwnd);
 }
 
 void ToggleBorderlessWindow(HWND hwnd)
@@ -531,6 +563,7 @@ void ToggleBorderlessWindow(HWND hwnd)
         else
             SetWindowPos(hwnd, HWND_NOTOPMOST, x, y, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
         borderless = false;
+        RestoreRenderWindowIcon(hwnd);
     }
 }
 
