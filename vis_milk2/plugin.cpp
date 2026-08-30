@@ -654,6 +654,17 @@ float timetick = 0;
 float timetick2 = 0;
 float TimeToAutoLockPreset = 0;
 int beatcount;
+
+void CPlugin::SetHardcutMode(int mode)
+{
+    if (mode < 0 || mode > 12)
+        return;
+
+    HardcutMode = mode;
+    m_bHardCutsDisabled = mode != 1;
+    if (mode >= 10)
+        beatcount = -1;
+}
 int NumTotalPresetsLoaded = 0;
 bool AutoLockedPreset = false;
 //bool ShowPresetOnTitle = 0;

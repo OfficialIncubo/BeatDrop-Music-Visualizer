@@ -52,6 +52,7 @@ extern "C" int (*warand)(void);
 
 extern std::random_device rd;
 extern std::mt19937_64 gen;
+extern int HardcutMode;
 
 typedef enum { TEX_DISK, TEX_VS, TEX_FFT, TEX_WAVE, TEX_BLUR0, TEX_BLUR1, TEX_BLUR2, TEX_BLUR3, TEX_BLUR4, TEX_BLUR5, TEX_BLUR6, TEX_BLUR_LAST } tex_code;
 typedef enum { UI_REGULAR, UI_MENU, UI_LOAD, UI_LOAD_DEL, UI_LOAD_RENAME, UI_SAVEAS, UI_SAVE_OVERWRITE, UI_EDIT_MENU_STRING, UI_CHANGEDIR, UI_IMPORT_WAVE, UI_EXPORT_WAVE, UI_IMPORT_SHAPE, UI_EXPORT_SHAPE, UI_UPGRADE_PIXEL_SHADER, UI_MASHUP } ui_mode;
@@ -422,6 +423,10 @@ public:
         float       m_nFFTShaderNoiseFloor = .03;
         bool        m_bCaptureMic = false; // false = default output (speaker), true = default input (microphone)
         bool        m_IsAMD = false;
+
+    	// Applies a hardcut mode selected outside the keyboard handler (for example,
+    	// from the notification-area menu) while keeping its dependent state in sync.
+    	void SetHardcutMode(int mode);
 
         //bool		m_bAlways3D;
         //float       m_fStereoSep;

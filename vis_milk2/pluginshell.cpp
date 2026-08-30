@@ -226,7 +226,9 @@ enum TrayMenuCommand
 	TRAY_MENU_SCREENSHOT,
 	TRAY_MENU_EXIT,
 	TRAY_MENU_AUDIO_SENSITIVITY_BASE = 2100,
-	TRAY_MENU_FPS_BASE = 2200
+	TRAY_MENU_FPS_BASE = 2200,
+	TRAY_MENU_TRANSITION_BASE = 2600,
+	TRAY_MENU_HARDCUT_BASE = 2700
 };
 
 static void ToggleTraySpout()
@@ -247,11 +249,15 @@ static void ShowTrayContextMenu(HWND hwnd)
 	HMENU menu = CreatePopupMenu();
 	HMENU sensitivityMenu = CreatePopupMenu();
 	HMENU fpsMenu = CreatePopupMenu();
-	if (!menu || !sensitivityMenu || !fpsMenu)
+	HMENU transitionMenu = CreatePopupMenu();
+	HMENU hardcutMenu = CreatePopupMenu();
+	if (!menu || !sensitivityMenu || !fpsMenu || !transitionMenu || !hardcutMenu)
 	{
 		if (menu) DestroyMenu(menu);
 		if (sensitivityMenu) DestroyMenu(sensitivityMenu);
 		if (fpsMenu) DestroyMenu(fpsMenu);
+		if (transitionMenu) DestroyMenu(transitionMenu);
+		if (hardcutMenu) DestroyMenu(hardcutMenu);
 		return;
 	}
 
@@ -284,6 +290,35 @@ static void ShowTrayContextMenu(HWND hwnd)
 			TRAY_MENU_FPS_BASE + value, text);
 	}
 	AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(fpsMenu), L"FPS limit");
+
+	const wchar_t* transitionNames[] = {
+		L"Random", L"Fade", L"Directional Wipe", L"Plasma", L"Radial",
+		L"Clock", L"Spiral/Snail", L"Rhombus/Diamond", L"Nuclear Clock",
+		L"Square/Diamond", L"Checkerboard Wipe", L"Curtain", L"Bubble",
+		L"Kaleidoscope", L"Moebius Strip", L"Star", L"Disco Floor",
+		L"Fire/Flame", L"Whirlpool Drain", L"Julia Fractal"
+	};
+	for (int value = -1; value <= 18; ++value)
+	{
+		const int nameIndex = value + 1;
+		AppendMenuW(transitionMenu,
+			MF_STRING | (g_plugin.m_nTransitionBlendPattern == value ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_TRANSITION_BASE + nameIndex, transitionNames[nameIndex]);
+	}
+	AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(transitionMenu), L"Transition pattern");
+
+	const wchar_t* hardcutNames[] = {
+		L"OFF", L"Normal", L"Bass Blend", L"Bass", L"Middle", L"Treble",
+		L"Bass Fast Blend", L"Treble Fast Blend", L"Bass Blend and Hardcut Treble",
+		L"Rhythmic Hardcut", L"2 beats", L"4 beats", L"Kinetronix (Vizikord)"
+	};
+	for (int mode = 0; mode <= 12; ++mode)
+	{
+		AppendMenuW(hardcutMenu,
+			MF_STRING | (HardcutMode == mode ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_HARDCUT_BASE + mode, hardcutNames[mode]);
+	}
+	AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hardcutMenu), L"Hardcut mode");
 
 	AppendMenuW(menu, MF_STRING | (g_plugin.m_bPresetLockedByUser ? MF_CHECKED : MF_UNCHECKED),
 		TRAY_MENU_LOCK_PRESET, L"Lock current preset");
@@ -323,6 +358,8 @@ static void ShowTrayContextMenu(HWND hwnd)
 
 	DestroyMenu(fpsMenu);
 	DestroyMenu(sensitivityMenu);
+	DestroyMenu(transitionMenu);
+	DestroyMenu(hardcutMenu);
 	DestroyMenu(menu);
 }
 
@@ -372,6 +409,10 @@ static void ExecuteTrayMenuCommand(HWND hwnd, UINT command)
 	}
 	else if (command >= TRAY_MENU_FPS_BASE && command <= TRAY_MENU_FPS_BASE + 360)
 		g_plugin.SetMaxFPS(command - TRAY_MENU_FPS_BASE);
+	else if (command >= TRAY_MENU_TRANSITION_BASE && command <= TRAY_MENU_TRANSITION_BASE + 19)
+		g_plugin.m_nTransitionBlendPattern = static_cast<int>(command - TRAY_MENU_TRANSITION_BASE) - 1;
+	else if (command >= TRAY_MENU_HARDCUT_BASE && command <= TRAY_MENU_HARDCUT_BASE + 12)
+		g_plugin.SetHardcutMode(static_cast<int>(command - TRAY_MENU_HARDCUT_BASE));
 	else if (command == TRAY_MENU_LOCK_PRESET)
 		g_plugin.m_bPresetLockedByUser = !g_plugin.m_bPresetLockedByUser;
 	else if (command == TRAY_MENU_ORDER)
