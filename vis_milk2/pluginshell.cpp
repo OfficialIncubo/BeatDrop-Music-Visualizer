@@ -184,6 +184,10 @@ NOTIFYICONDATA nid = {};
 bool renderWindowHidden = false;
 HWND g_hWnd = NULL;
 bool trayIconRegistered = false;
+// Keep the HWND that owns the shell entry separately from nid.hWnd. During
+// desktop recovery the renderer HWND can be replaced before the old entry is
+// deleted, which otherwise leaves duplicate notification icons behind.
+static HWND trayIconOwnerHwnd = NULL;
 
 void UpdateTrayIconForHiddenWindow();
 void UpdateTrayIconForShownWindow();
@@ -196,12 +200,23 @@ static void EnsureTrayIconRegistered()
 	if (!nid.hWnd || !IsWindow(nid.hWnd))
 		return;
 
+	if (trayIconOwnerHwnd && trayIconOwnerHwnd != nid.hWnd)
+	{
+		NOTIFYICONDATA oldNid = nid;
+		oldNid.hWnd = trayIconOwnerHwnd;
+		Shell_NotifyIcon(NIM_DELETE, &oldNid);
+		trayIconOwnerHwnd = NULL;
+		trayIconRegistered = false;
+	}
+
 	if (!trayIconRegistered)
 	{
 		// Explorer may still be rebuilding the notification area after a restart.
 		// Keep the registration state so the desktop watchdog can retry safely.
 		Shell_NotifyIcon(NIM_DELETE, &nid);
 		trayIconRegistered = Shell_NotifyIcon(NIM_ADD, &nid) != FALSE;
+		if (trayIconRegistered)
+			trayIconOwnerHwnd = nid.hWnd;
 	}
 	else if (!Shell_NotifyIcon(NIM_MODIFY, &nid))
 	{
@@ -456,6 +471,13 @@ static void ExecuteTrayMenuCommand(HWND hwnd, UINT command)
 
 void InitializeTrayIcon(HWND hWnd)
 {
+	if (trayIconOwnerHwnd)
+	{
+		NOTIFYICONDATA oldNid = nid;
+		oldNid.hWnd = trayIconOwnerHwnd;
+		Shell_NotifyIcon(NIM_DELETE, &oldNid);
+		trayIconOwnerHwnd = NULL;
+	}
 	g_hWnd = hWnd;
 	trayIconRegistered = false;
 
@@ -485,7 +507,11 @@ void UpdateTrayIconForHiddenWindow()
 // Function to update tray icon when window is shown
 void UpdateTrayIconForShownWindow()
 {
-	Shell_NotifyIcon(NIM_DELETE, &nid);
+	NOTIFYICONDATA iconToDelete = nid;
+	if (trayIconOwnerHwnd)
+		iconToDelete.hWnd = trayIconOwnerHwnd;
+	Shell_NotifyIcon(NIM_DELETE, &iconToDelete);
+	trayIconOwnerHwnd = NULL;
 	trayIconRegistered = false;
 	renderWindowHidden = false;
 }
@@ -499,7 +525,11 @@ void UpdateTrayIconForDesktopMode()
 // Function to remove tray icon (call this when closing)
 void RemoveTrayIcon()
 {
-	Shell_NotifyIcon(NIM_DELETE, &nid);
+	NOTIFYICONDATA iconToDelete = nid;
+	if (trayIconOwnerHwnd)
+		iconToDelete.hWnd = trayIconOwnerHwnd;
+	Shell_NotifyIcon(NIM_DELETE, &iconToDelete);
+	trayIconOwnerHwnd = NULL;
 	trayIconRegistered = false;
 }
 
@@ -1106,6 +1136,13 @@ void CPluginShell::ReplaceRenderWindow(HWND hwnd)
 		// The replacement HWND is a new tray-icon owner after a shell refresh.
 		g_hWnd = hwnd;
 		nid.hWnd = hwnd;
+		if (trayIconOwnerHwnd && trayIconOwnerHwnd != hwnd)
+		{
+			NOTIFYICONDATA oldNid = nid;
+			oldNid.hWnd = trayIconOwnerHwnd;
+			Shell_NotifyIcon(NIM_DELETE, &oldNid);
+		}
+		trayIconOwnerHwnd = NULL;
 		trayIconRegistered = false;
 		UpdateTrayIconForDesktopMode();
 	}
@@ -2624,6 +2661,15 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 		if (g_plugin.m_bDesktopMode)
 		{
 			// Explorer removes notification icons while rebuilding the shell.
+			// Delete the known owner before marking the entry stale; this also
+			// prevents a replacement HWND from accumulating another icon.
+			if (trayIconOwnerHwnd)
+			{
+				NOTIFYICONDATA oldNid = nid;
+				oldNid.hWnd = trayIconOwnerHwnd;
+				Shell_NotifyIcon(NIM_DELETE, &oldNid);
+				trayIconOwnerHwnd = NULL;
+			}
 			trayIconRegistered = false;
 			UpdateTrayIconForDesktopMode();
 			// Explorer creates its replacement WorkerW asynchronously. The application
