@@ -149,17 +149,69 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma comment(lib,"winmm.lib")    // for timeGetTime
 
 extern CPlugin g_plugin;
+extern HWND g_hWorkerW;
 static UINT WM_TASKBARCREATED = 0;
 #define TIMER_DESKTOP_REFRESH 1024
+#define TIMER_DESKTOP_WATCHDOG 1025
+
+static bool IsDesktopModeAttached(HWND hwnd)
+{
+	return IsWindow(hwnd) && g_hWorkerW && IsWindow(g_hWorkerW) &&
+		GetParent(hwnd) == g_hWorkerW;
+}
+
+static bool IsDesktopSettingChange(WPARAM wParam, LPARAM lParam)
+{
+	if (wParam == SPI_SETDESKWALLPAPER || wParam == SPI_SETWORKAREA)
+		return true;
+
+	if (!lParam)
+		return false;
+
+	const wchar_t* area = reinterpret_cast<const wchar_t*>(lParam);
+	return _wcsicmp(area, L"Desktop") == 0 ||
+		_wcsicmp(area, L"Control Panel\\Desktop") == 0;
+}
+
+static void StopDesktopModeTimers(HWND hwnd)
+{
+	KillTimer(hwnd, TIMER_DESKTOP_REFRESH);
+	KillTimer(hwnd, TIMER_DESKTOP_WATCHDOG);
+}
 
 // Show/Hide Render Window Initializations
 NOTIFYICONDATA nid = {};
 bool renderWindowHidden = false;
 HWND g_hWnd = NULL;
+bool trayIconRegistered = false;
+
+void UpdateTrayIconForHiddenWindow();
+void UpdateTrayIconForDesktopMode();
+
+static void EnsureTrayIconRegistered()
+{
+	if (!nid.hWnd || !IsWindow(nid.hWnd))
+		return;
+
+	if (!trayIconRegistered)
+	{
+		// Explorer may still be rebuilding the notification area after a restart.
+		// Keep the registration state so the desktop watchdog can retry safely.
+		Shell_NotifyIcon(NIM_DELETE, &nid);
+		trayIconRegistered = Shell_NotifyIcon(NIM_ADD, &nid) != FALSE;
+	}
+	else if (!Shell_NotifyIcon(NIM_MODIFY, &nid))
+	{
+		// The shell can forget an icon without destroying our window.
+		trayIconRegistered = false;
+		EnsureTrayIconRegistered();
+	}
+}
 
 void InitializeTrayIcon(HWND hWnd)
 {
 	g_hWnd = hWnd;
+	trayIconRegistered = false;
 
 	nid.cbSize = sizeof(NOTIFYICONDATA);
 	nid.hWnd = hWnd;
@@ -167,13 +219,20 @@ void InitializeTrayIcon(HWND hWnd)
 	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
 	nid.uCallbackMessage = WM_USER + 1; // Custom message for tray events
 	nid.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_PLUGIN_ICON)); // Use your app icon
+
+	// A recovered render window has a new HWND. Re-register the tray icon
+	// immediately so Desktop Mode keeps its notification-area entry.
+	if (g_plugin.m_bDesktopMode)
+		UpdateTrayIconForDesktopMode();
+	else if (renderWindowHidden)
+		UpdateTrayIconForHiddenWindow();
 }
 
 // Function to update tray icon when window is hidden
 void UpdateTrayIconForHiddenWindow()
 {
 	lstrcpy(nid.szTip, TEXT("BeatDrop Music Visualizer - Render window hidden\nLeft click to show. Right click to exit visualizer."));
-	Shell_NotifyIcon(NIM_ADD, &nid);
+	EnsureTrayIconRegistered();
 	renderWindowHidden = true;
 }
 
@@ -181,20 +240,21 @@ void UpdateTrayIconForHiddenWindow()
 void UpdateTrayIconForShownWindow()
 {
 	Shell_NotifyIcon(NIM_DELETE, &nid);
+	trayIconRegistered = false;
 	renderWindowHidden = false;
 }
 
 void UpdateTrayIconForDesktopMode()
 {
 	lstrcpy(nid.szTip, TEXT("BeatDrop Music Visualizer - Desktop Mode ON\nLeft click to restore. Right click to exit visualizer."));
-	Shell_NotifyIcon(NIM_ADD, &nid);
-	Shell_NotifyIcon(NIM_MODIFY, &nid);
+	EnsureTrayIconRegistered();
 }
 
 // Function to remove tray icon (call this when closing)
 void RemoveTrayIcon()
 {
 	Shell_NotifyIcon(NIM_DELETE, &nid);
+	trayIconRegistered = false;
 }
 
 // STATE VALUES & VERTEX FORMATS FOR HELP SCREEN TEXTURE:
@@ -788,6 +848,27 @@ void CPluginShell::PrepareForExternalDeviceReset()
 void CPluginShell::RestoreAfterExternalDeviceReset()
 {
 	AllocateDX9Stuff();
+}
+
+void CPluginShell::ReplaceRenderWindow(HWND hwnd)
+{
+	m_hRenderWnd = hwnd;
+	if (m_lpDX)
+		m_lpDX->SetHwnd(hwnd);
+	if (g_plugin.m_bDesktopMode)
+	{
+		// The replacement HWND is a new tray-icon owner after a shell refresh.
+		g_hWnd = hwnd;
+		nid.hWnd = hwnd;
+		trayIconRegistered = false;
+		UpdateTrayIconForDesktopMode();
+	}
+}
+
+void CPluginShell::StartDesktopModeRecoveryTimers(HWND hwnd)
+{
+	SetTimer(hwnd, TIMER_DESKTOP_REFRESH, 250, NULL);
+	SetTimer(hwnd, TIMER_DESKTOP_WATCHDOG, 1000, NULL);
 }
 
 void CPluginShell::OnUserResizeTextWindow()
@@ -2271,26 +2352,58 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 	{
 		if (g_plugin.m_bDesktopMode)
 		{
-			// IMPORTANT: Set parent to NULL immediately to stop being a "child" 
-			// of a potentially zombie WorkerW process.
-			SetParent(hWnd, NULL);
-			// Give Explorer 2 seconds to fully rebuild the Desktop layers
-			SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 500, NULL);
+			// Explorer removes notification icons while rebuilding the shell.
+			trayIconRegistered = false;
+			UpdateTrayIconForDesktopMode();
+			// Explorer creates its replacement WorkerW asynchronously. The application
+			// window remains alive while the refresh recreates only its desktop surface.
+			SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 750, NULL);
+			SetTimer(hWnd, TIMER_DESKTOP_WATCHDOG, 1000, NULL);
 		}
 	}
-	// Catch Monitor/Resolution changes
-	else if (uMsg == WM_SETTINGCHANGE || uMsg == WM_DISPLAYCHANGE)
+	// Catch wallpaper/work-area changes without reacting to every system setting.
+	else if (uMsg == WM_SETTINGCHANGE && IsDesktopSettingChange(wParam, lParam))
 	{
 		if (g_plugin.m_bDesktopMode)
-			SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 100, NULL); // Fast refresh for wallpaper
+			SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 500, NULL);
 	}
-	// Execute the smooth refresh after the OS finishes its animations
+	// Catch monitor/resolution changes after Windows has settled the new layout.
+	else if (uMsg == WM_DISPLAYCHANGE)
+	{
+		if (g_plugin.m_bDesktopMode)
+			SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 500, NULL);
+	}
+	// Execute the refresh after Explorer has had time to rebuild its desktop.
 	else if (uMsg == WM_TIMER && wParam == TIMER_DESKTOP_REFRESH)
 	{
 		KillTimer(hWnd, TIMER_DESKTOP_REFRESH);
 		if (g_plugin.m_bDesktopMode)
+		{
 			// Trigger the refresh (pass 'true' to avoid saving bad window coordinates)
 			g_plugin.ToggleDesktopMode(hWnd, true);
+
+			// WorkerW can appear well after TaskbarCreated. Retry instead of leaving
+			// the renderer detached when the first attempt is too early.
+			if (!IsDesktopModeAttached(hWnd))
+				SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 500, NULL);
+		}
+	}
+	else if (uMsg == WM_TIMER && wParam == TIMER_DESKTOP_WATCHDOG)
+	{
+		if (!g_plugin.m_bDesktopMode)
+		{
+			StopDesktopModeTimers(hWnd);
+		}
+		else if (!IsDesktopModeAttached(hWnd))
+		{
+			// This also recovers if a shell replacement notification was missed.
+			SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 250, NULL);
+		}
+		else
+		{
+			// Retry registration while Explorer finishes rebuilding its tray.
+			UpdateTrayIconForDesktopMode();
+		}
 	}
 
 	switch (uMsg)
@@ -2314,10 +2427,12 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 		break;
 
 	case WM_CLOSE:
+		StopDesktopModeTimers(hWnd);
 		RemoveTrayIcon();
 		break;
 
 	case WM_DESTROY:
+		StopDesktopModeTimers(hWnd);
 		// note: don't post quit message here if the window is being destroyed
 		// and re-created on a switch between windowed & FAKE fullscreen modes.
 		if (!m_lpDX->TempIgnoreDestroyMessages())
@@ -2567,7 +2682,13 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 					*/
 				}
 				else if (GetKeyState(VK_SHIFT) & 0x8000)
-						g_plugin.ToggleDesktopMode(GetPluginWindow());
+				{
+					g_plugin.ToggleDesktopMode(GetPluginWindow());
+					if (g_plugin.m_bDesktopMode)
+						SetTimer(GetPluginWindow(), TIMER_DESKTOP_WATCHDOG, 1000, NULL);
+					else
+						StopDesktopModeTimers(GetPluginWindow());
+				}
 				return 0;
 
 		    case VK_ESCAPE:

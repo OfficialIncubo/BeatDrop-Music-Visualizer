@@ -80,6 +80,7 @@ public:
 
     void SaveWindow();
     HWND GetHwnd();
+    void SetHwnd(HWND hwnd) { m_hwnd = hwnd; }
     bool OnUserResizeWindow(RECT* w, RECT* c);
     bool TempIgnoreDestroyMessages();
     void FlushGPU();

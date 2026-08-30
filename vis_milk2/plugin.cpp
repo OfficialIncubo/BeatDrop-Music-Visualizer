@@ -6527,12 +6527,6 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
         //   "virtual-key codes [win32]" in the msdn help.
         nRepeat = LOWORD(lParam);
 
-        if (wParam == 'U' && (lParam & (1L << 30)) == 0)
-        {
-            ToggleBeatDetectionFreeze();
-            return 0;
-        }
-
 		// SPOUT DEBUG
 		// Special case for F1 help display in pluginshell
 		// to clear the vj screen of any existing text
@@ -7818,6 +7812,10 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                 AddNotif(buf);
             }
         break;
+
+        case 'U':
+            ToggleBeatDetectionFreeze();
+            break;
 
 		//case 'T':
   //          if (bCtrlHeldDown)
@@ -12404,7 +12402,7 @@ void CPlugin::ToggleDesktopMode(HWND hwnd, bool isRefresh /*= false*/)
             m_desktop_lastStyleEx = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
         }
 
-        // 1. Send the undocumented message to Progman to spawn/refresh WorkerW
+        // Send the undocumented message to Progman to spawn/refresh WorkerW
         HWND progman = FindWindowW(L"Progman", NULL);
         if (progman)
         {
@@ -12413,7 +12411,7 @@ void CPlugin::ToggleDesktopMode(HWND hwnd, bool isRefresh /*= false*/)
             SendMessageTimeout(progman, 0x052C, 0, 0, SMTO_NORMAL, 1000, NULL);
         }
 
-        // 2. Find the active background WorkerW
+        // Find the active background WorkerW
         g_hWorkerW = NULL;
         EnumWindows(EnumWindowsProc, 0);
 
@@ -12426,26 +12424,25 @@ void CPlugin::ToggleDesktopMode(HWND hwnd, bool isRefresh /*= false*/)
             return;
         }
 
-        // 3. Setup window styles
-        LONG_PTR newStyle = WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS;
-        LONG_PTR newStyleEx = WS_EX_TRANSPARENT | WS_EX_NOACTIVATE | WS_EX_LAYERED;
+        // Keep the stable renderer path: Direct3D presents directly to the
+        // WorkerW child, beneath Explorer's icon view.
+        const LONG_PTR newStyle = WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS;
+        const LONG_PTR newStyleEx = WS_EX_TRANSPARENT | WS_EX_NOACTIVATE | WS_EX_LAYERED;
         SetWindowLongPtr(hwnd, GWL_STYLE, newStyle);
         SetWindowLongPtr(hwnd, GWL_EXSTYLE, newStyleEx);
         SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
-
-        // 4. Reparent directly (doing this smoothly prevents visual flickering)
         SetParent(hwnd, g_hWorkerW);
 
-        // 5. Size and position the window locally to WorkerW
-        int x = GetSystemMetrics(SM_XVIRTUALSCREEN);
-        int y = GetSystemMetrics(SM_YVIRTUALSCREEN);
-        int cx = GetSystemMetrics(SM_CXVIRTUALSCREEN);
-        int cy = GetSystemMetrics(SM_CYVIRTUALSCREEN);
-        POINT pt = { x, y };
-        ScreenToClient(g_hWorkerW, &pt);
-        SetWindowPos(hwnd, HWND_TOP, pt.x, pt.y, cx, cy, SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_SHOWWINDOW);
+        const int x = GetSystemMetrics(SM_XVIRTUALSCREEN);
+        const int y = GetSystemMetrics(SM_YVIRTUALSCREEN);
+        const int cx = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+        const int cy = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+        POINT origin = { x, y };
+        ScreenToClient(g_hWorkerW, &origin);
+        SetWindowPos(hwnd, HWND_TOP, origin.x, origin.y, cx, cy,
+            SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_SHOWWINDOW);
 
-        // 6. Force the icon list-view to repaint itself on top
+        // Find the desktop icon view so it can be repainted above the renderer.
         HWND hShellDefView = NULL;
         if (progman)
             hShellDefView = FindWindowExW(progman, NULL, L"SHELLDLL_DefView", NULL);
@@ -12459,6 +12456,7 @@ void CPlugin::ToggleDesktopMode(HWND hwnd, bool isRefresh /*= false*/)
                 }, reinterpret_cast<LPARAM>(&hShellDefView));
         }
 
+        // Force the icon list-view to repaint itself on top.
         if (hShellDefView)
         {
             HWND hListView = FindWindowExW(hShellDefView, NULL, L"SysListView32", NULL);

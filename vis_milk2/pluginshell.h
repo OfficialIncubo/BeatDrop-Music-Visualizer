@@ -80,6 +80,8 @@ public:
 
     void PrepareForExternalDeviceReset();
     void RestoreAfterExternalDeviceReset();
+    void ReplaceRenderWindow(HWND hwnd);
+    void StartDesktopModeRecoveryTimers(HWND hwnd);
 
 protected:
 

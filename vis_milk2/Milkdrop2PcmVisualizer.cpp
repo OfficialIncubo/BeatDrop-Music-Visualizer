@@ -257,6 +257,8 @@ static HMODULE module = nullptr;
 static std::atomic<HANDLE> thread = nullptr;
 static std::atomic<HANDLE> threadPrecache = nullptr;
 static unsigned threadId = 0;
+static std::atomic<bool> desktopWindowDestroyed = false;
+static std::atomic<bool> intentionalWindowClose = false;
 static std::mutex pcmMutex;
 static unsigned char pcmLeftIn[SAMPLE_SIZE];
 static unsigned char pcmRightIn[SAMPLE_SIZE];
@@ -545,12 +547,17 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 if (g_plugin.m_bOneTimeClearShaderCache)
                     g_plugin.m_bClearShaderCacheAtExit = false;
             }
+            intentionalWindowClose = true;
             DestroyWindow( hWnd );
             UnregisterClassW(L"Direct3DWindowClass", NULL);
             return 0;
         }
 
         case WM_DESTROY: {
+            if (g_plugin.m_bDesktopMode && !intentionalWindowClose.load()) {
+                desktopWindowDestroyed = true;
+                return 0;
+            }
             PostQuitMessage(0);
             break;
         }
@@ -836,29 +843,33 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 	}
 	// ===============================================
 
+    auto createRenderWindow = [&]() -> HWND {
+        return CreateWindowW(
+	        L"Direct3DWindowClass",
+			// ===========================
+	        // L"BeatDrop Music Visualizer",
+			beatdroptitle,
+			// ===========================
+	        WS_OVERLAPPEDWINDOW, // SPOUT
+			//dwStyle,
+			//WindowPosLeft, // SPOUT
+			//WindowPosTop,
+			// CW_USEDEFAULT,
+			// CW_USEDEFAULT,
+			//(rc.right - rc.left),
+	        //(rc.bottom - rc.top),
+	        g_plugin.m_nWindowPosX,
+	        g_plugin.m_nWindowPosY,
+	        g_plugin.m_nWindowWidth,
+	        g_plugin.m_nWindowHeight,
+	        0,
+	        NULL,
+	        instance,
+	        0);
+    };
+
     // Create the render window
-    HWND hwnd = CreateWindowW(
-        L"Direct3DWindowClass",
-		// ===========================
-        // L"BeatDrop Music Visualizer",
-		beatdroptitle,
-		// ===========================
-        WS_OVERLAPPEDWINDOW, // SPOUT
-		//dwStyle,
-		//WindowPosLeft, // SPOUT
-		//WindowPosTop,
-		// CW_USEDEFAULT,
-		// CW_USEDEFAULT,
-		//(rc.right - rc.left),
-        //(rc.bottom - rc.top),
-        g_plugin.m_nWindowPosX,
-        g_plugin.m_nWindowPosY,
-        g_plugin.m_nWindowWidth,
-        g_plugin.m_nWindowHeight,
-        0,
-        NULL,
-        instance,
-        0);
+    HWND hwnd = createRenderWindow();
 	// ====================================================
 
     if (!hwnd) {
@@ -926,6 +937,36 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 
     PeekMessage(&msg, NULL, 0U, 0U, PM_NOREMOVE);
     while (WM_QUIT != msg.message) {
+        if (g_plugin.m_bDesktopMode && !intentionalWindowClose.load() && !IsWindow(hwnd))
+            desktopWindowDestroyed = true;
+
+        if (desktopWindowDestroyed.exchange(false)) {
+            HWND replacement = createRenderWindow();
+            if (!replacement) {
+                PostQuitMessage(0);
+                continue;
+            }
+
+            SendMessageW(replacement, WM_SETICON, ICON_BIG, (LPARAM)icon);
+            SendMessageW(replacement, WM_SETICON, ICON_SMALL, (LPARAM)icon);
+
+            g_plugin.PrepareForExternalDeviceReset();
+            d3dPp.hDeviceWindow = replacement;
+            g_plugin.ReplaceRenderWindow(replacement);
+            const HRESULT resetResult = pD3DDevice->Reset(&d3dPp);
+            if (FAILED(resetResult)) {
+                intentionalWindowClose = true;
+                DestroyWindow(replacement);
+                PostQuitMessage(0);
+                continue;
+            }
+
+            g_plugin.RestoreAfterExternalDeviceReset();
+            hwnd = replacement;
+            g_plugin.ToggleDesktopMode(hwnd, true);
+            g_plugin.StartDesktopModeRecoveryTimers(hwnd);
+        }
+
         if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE) != 0) {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
