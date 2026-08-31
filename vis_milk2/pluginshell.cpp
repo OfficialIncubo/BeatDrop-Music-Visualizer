@@ -2649,6 +2649,12 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 	if (WM_TASKBARCREATED == 0)
 		WM_TASKBARCREATED = RegisterWindowMessageW(L"TaskbarCreated");
 
+	// F10 is handled by Windows as a system-menu accelerator when it reaches
+	// DefWindowProc. BeatDrop has no F10 popup menu, so consume it here to keep
+	// the renderer out of the system menu modal state.
+	if ((uMsg == WM_KEYDOWN || uMsg == WM_SYSKEYDOWN) && wParam == VK_F10)
+		return 0;
+
 	USHORT mask = 1 << (sizeof(SHORT)*8 - 1);
 	//bool bShiftHeldDown = (GetKeyState(VK_SHIFT) & mask) != 0;
 	bool bCtrlHeldDown  = (GetKeyState(VK_CONTROL) & mask) != 0;

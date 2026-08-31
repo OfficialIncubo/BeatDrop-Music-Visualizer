@@ -8,15 +8,14 @@
 * \[x] Desktop Mode: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/20
 * \[ ] Config Panel Program (GUI based) - migrated to BeatDrop GUI/BeatDrop VJ; coming soon
 * \[ ] TCP relay support + Android/iOS Remote
+### New Hardcut Modes (0/2):
+* \[ ] BPM (1/4/8/16/32 beats)
+* \[ ] Improved Kinetronix (Visikord) Hardcut Mode (with BPM Algorithm)
 
 # For the next (or further) version of BeatDrop
 
 * \[ ] Window-Independent Spout Output (https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0)
 * \[x] Ability to change the audio device from output to input (microphone) and vice-versa by pressing B hotkey (now CTRL + D)
-* New Hardcut Modes (0/2):
-* \[ ] BPM (1/4/8/16/32 beats)
-* \[ ] Improved Kinetronix (Visikord) Hardcut Mode (with BPM Algorithm)
-
 * \[x] GIF Support for both Sprites and Textures: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/34 (HIGH PRIORITY)
 * \[x] Video Support for both Sprites and Textures (HIGH PRIORITY)
 * \[x] Webcam Support, blending the visual: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/4 (NOT PLANNED, Use as Spout Input Sprite instead)
@@ -34,7 +33,7 @@
 
 # MilkDrop BETA Feature Revival
 
-* \[ ] Revive color-based decay (decay_r, decay_g, decay_b) (Experimental; see the [new branch](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/tree/wip-color-based-decay) or [WIP Commit](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/commit/f2729112746ef7c04f7d4084fe366b37e57f9bbf)
+* \[ ] Revive color-based decay (decay_r, decay_g, decay_b) (Experimental; see the [new branch](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/tree/wip-color-based-decay) or [WIP Commit](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/commit/f2729112746ef7c04f7d4084fe366b37e57f9bbf))
 * \[ ] Revive tex_cx, tex_cy and tex_capture
 * \[ ] For more undocumented variables, check references below:
 - https://forums.winamp.com/forum/visualizations/milkdrop/milkdrop-development/213770-mini-update-beta-6-1
