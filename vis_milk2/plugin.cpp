@@ -11589,18 +11589,19 @@ void CPlugin::DoCustomSoundAnalysis()
     // Beat Detection Configuration
     // Look at the start of line 10566 for the new beat detection splitting algorithm.
     
-    memcpy(mysound.fWave[0], m_sound.fWaveform[0], sizeof(float)*MY_FFT_WINDOW);
-    memcpy(mysound.fWave[1], m_sound.fWaveform[1], sizeof(float)*MY_FFT_WINDOW);
+    // The simple-wave renderer exposes the captured 576-sample waveform.
+    // Keep that buffer bounded; the FFT below uses a larger zero-padded window.
+    memcpy(mysound.fWave[0], m_sound.fWaveform[0], sizeof(mysound.fWave[0]));
+    memcpy(mysound.fWave[1], m_sound.fWaveform[1], sizeof(mysound.fWave[1]));
 
     // do our own [UN-NORMALIZED] fft
-    float fWaveLeft[MY_FFT_WINDOW];
-    float fWaveRight[MY_FFT_WINDOW];
-
-    for (int i = 0; i < MY_FFT_WINDOW; i++)
-    {
-        fWaveLeft[i] = m_sound.fWaveform[0][i]; //left channel
-        fWaveRight[i] = m_sound.fWaveform[1][i]; //right channel
-    }
+    // m_sound.fWaveform contains 576 samples, while MY_FFT_WINDOW is 1024.
+    // Zero-padding the tail preserves the existing FFT size without reading
+    // beyond the captured waveform and avoids corrupting simple waveforms.
+    float fWaveLeft[MY_FFT_WINDOW] = {};
+    float fWaveRight[MY_FFT_WINDOW] = {};
+    memcpy(fWaveLeft, m_sound.fWaveform[0], sizeof(m_sound.fWaveform[0]));
+    memcpy(fWaveRight, m_sound.fWaveform[1], sizeof(m_sound.fWaveform[1]));
 
     //float fWaveLeft[MY_FFT_WINDOW];
     //float fWaveRight[MY_FFT_WINDOW];

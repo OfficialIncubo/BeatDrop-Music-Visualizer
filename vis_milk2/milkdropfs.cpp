@@ -2716,9 +2716,10 @@ void CPlugin::DrawCustomWaves()
             {
                 int nSamples = pState->m_wave[i].samples;
                 int max_samples = pState->m_wave[i].bSpectrum ? 512 : NUM_WAVEFORM_SAMPLES;
+                int separator = min(max(0, pState->m_wave[i].sep), max_samples - 1);
                 if (nSamples > max_samples)
                     nSamples = max_samples;
-                nSamples -= pState->m_wave[i].sep;
+                nSamples -= separator;
 
                 // 1. execute per-frame code
                 LoadCustomWavePerFrameEvallibVars(pState, i);
@@ -2744,7 +2745,13 @@ void CPlugin::DrawCustomWaves()
                     *pState->m_wave[i].var_pp_t[vi] = *pState->m_wave[i].var_pf_t[vi];
 
                 nSamples = (int)*pState->m_wave[i].var_pf_samples;
-                nSamples = min(512, nSamples);
+                // The source waveform has NUM_WAVEFORM_SAMPLES valid points
+                // (480 in this build), while the legacy custom-wave limit is
+                // 512. Clamp against the actual source buffer before j0 is
+                // calculated; otherwise a 512-sample custom wave reads before
+                // fWaveform[0] and creates large, non-musical spikes.
+                nSamples = min(max_samples, max(0, nSamples));
+                nSamples -= min(separator, nSamples);
 
                 if ((nSamples >= 2) || (pState->m_wave[i].bUseDots && nSamples >= 1))
                 {
@@ -2755,9 +2762,11 @@ void CPlugin::DrawCustomWaves()
                     float *pdata2 = (pState->m_wave[i].bSpectrum) ? m_sound.fSpectrum[1] : m_sound.fWaveform[1];
 
                     // initialize tempdata[2][512]
-                    int j0 = (pState->m_wave[i].bSpectrum) ? 0 : (max_samples - nSamples)/2/**(1-pState->m_wave[i].bSpectrum)*/ - pState->m_wave[i].sep/2;
-                    int j1 = (pState->m_wave[i].bSpectrum) ? 0 : (max_samples - nSamples)/2/**(1-pState->m_wave[i].bSpectrum)*/ + pState->m_wave[i].sep/2;
-                    float t = (pState->m_wave[i].bSpectrum) ? (max_samples - pState->m_wave[i].sep)/(float)nSamples : 1;
+                    int j0 = (pState->m_wave[i].bSpectrum) ? 0 : (max_samples - nSamples)/2/**(1-pState->m_wave[i].bSpectrum)*/ - separator/2;
+                    int j1 = (pState->m_wave[i].bSpectrum) ? 0 : (max_samples - nSamples)/2/**(1-pState->m_wave[i].bSpectrum)*/ + separator/2;
+                    j0 = max(0, min(max_samples - 1, j0));
+                    j1 = max(0, min(max_samples - 1, j1));
+                    float t = (pState->m_wave[i].bSpectrum) ? (max_samples - separator)/(float)nSamples : 1;
                     float mix1 = powf(pState->m_wave[i].smoothing*0.98f, 0.5f);  // lower exponent -> more default smoothing
                     float mix2 = 1-mix1;
                     // SMOOTHING:
