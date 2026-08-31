@@ -1779,7 +1779,10 @@ void CState::RecompileExpressions(int flags, int bReInit)
 			    {
 				    // now execute the code, save the values of q1..q32, and clean up the code!
 
-                    g_plugin.LoadPerFrameEvallibVars(g_plugin.m_pState);
+                    // This state may be compiled asynchronously as m_pNewState.
+                    // Populate the variables for the state being initialized,
+                    // rather than whichever state is currently on screen.
+                    g_plugin.LoadPerFrameEvallibVars(this);
 
 				    NSEEL_code_execute(pf_codehandle_init);
 
@@ -1845,7 +1848,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 			            {
 				            // now execute the code, save the values of t1..t8, and clean up the code!
 
-                            g_plugin.LoadCustomWavePerFrameEvallibVars(g_plugin.m_pState, i);
+                            g_plugin.LoadCustomWavePerFrameEvallibVars(this, i);
                                 // note: q values at this point will actually be same as
                                 //       q_values_after_init_code[], since no per-frame code
                                 //       has actually been executed yet!
@@ -1916,7 +1919,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 			            {
 				            // now execute the code, save the values of q1..q8, and clean up the code!
 
-                            g_plugin.LoadCustomShapePerFrameEvallibVars(g_plugin.m_pState, i, 0);
+                            g_plugin.LoadCustomShapePerFrameEvallibVars(this, i, 0);
                                 // note: q values at this point will actually be same as
                                 //       q_values_after_init_code[], since no per-frame code
                                 //       has actually been executed yet!

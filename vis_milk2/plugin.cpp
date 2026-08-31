@@ -10052,7 +10052,10 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
         ApplyFlags ^= (m_bWarpShaderLock ? STATE_WARP : 0);
         ApplyFlags ^= (m_bCompShaderLock ? STATE_COMP : 0);
 
-        m_pNewState->Import(szPresetFilename, GetTime(), m_pOldState, ApplyFlags);
+        // Import locked/omitted sections from the preset currently on screen.
+        // m_pOldState is the spare state here and may belong to an earlier
+        // preset, which makes soft cuts inherit stale code and parameters.
+        m_pNewState->Import(szPresetFilename, GetTime(), m_pState, ApplyFlags);
 
         m_nLoadingPreset = 1;   // this will cause LoadPresetTick() to get called over the next few frames...
 
