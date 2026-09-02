@@ -5608,10 +5608,9 @@ void CPlugin::MyRenderUI(
 							case 4: ApplyFlags = STATE_COMP; break;
                         }
 
-                        wchar_t szFile[MAX_PATH];
-                        swprintf(szFile, L"%s%s", m_szPresetDir, m_presets[m_nMashPreset[mash]].szFilename.c_str());
+                        std::wstring szFile = std::wstring(m_szPresetDir) + m_presets[m_nMashPreset[mash]].szFilename;
 
-                        m_pState->Import(szFile, GetTime(), m_pState, ApplyFlags);
+                        m_pState->Import(szFile.c_str(), GetTime(), m_pState, ApplyFlags);
 
                         if (ApplyFlags & STATE_WARP)
                             SafeRelease( m_shaders.warp.ptr );
@@ -7758,13 +7757,12 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 					m_nCurrentPreset = m_nPresetListCurPos;
 
 					// first take the filename and prepend the path.  (already has extension)
-					wchar_t s[MAX_PATH];
-					lstrcpyW(s, GetPresetDir());	// note: m_szPresetDir always ends with '\'
-					lstrcatW(s, m_presets[m_nCurrentPreset].szFilename.c_str());
+					std::wstring s;
+					s = std::wstring(GetPresetDir()) + m_presets[m_nCurrentPreset].szFilename;
 
 					// now load (and blend to) the new preset
                     m_presetHistoryPos = (m_presetHistoryPos+1) % PRESET_HIST_LEN;
-                    LoadPreset(s, (wParam==VK_SPACE) ? m_fBlendTimeUser : 0);
+                    LoadPreset(s.c_str(), (wParam==VK_SPACE) ? m_fBlendTimeUser : 0);
 				}
 				return 0; // we processed (or absorbed) the key
 			}
@@ -8031,12 +8029,11 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
         // randomize warp shader
         {
             bool bWarpLock = m_bWarpShaderLock;
-            wchar_t szOldPreset[MAX_PATH];
-		    lstrcpyW(szOldPreset, m_szCurrentPresetFile);
+            std::wstring szOldPreset = m_szCurrentPresetFile;
             m_bWarpShaderLock = false;
             LoadRandomPreset(0.0f);
             m_bWarpShaderLock = true;
-            LoadPreset(szOldPreset, 0.0f);
+            LoadPreset(szOldPreset.c_str(), 0.0f);
             m_bWarpShaderLock = bWarpLock;
         }
         break;
@@ -8044,12 +8041,11 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
         // randomize comp shader
         {
             bool bCompLock = m_bCompShaderLock;
-            wchar_t szOldPreset[MAX_PATH];
-		    lstrcpyW(szOldPreset, m_szCurrentPresetFile);
+            std::wstring szOldPreset = m_szCurrentPresetFile;
             m_bCompShaderLock = false;
             LoadRandomPreset(0.0f);
             m_bCompShaderLock = true;
-            LoadPreset(szOldPreset, 0.0f);
+            LoadPreset(szOldPreset.c_str(), 0.0f);
             m_bCompShaderLock = bCompLock;
         }
         break;
@@ -8630,11 +8626,9 @@ void CPlugin::PrevPreset(float fBlendTime)
         if (m_nCurrentPreset >= m_nPresets) // just in case
 			m_nCurrentPreset = m_nDirs;
 
-        wchar_t szFile[MAX_PATH];
-        lstrcpyW(szFile, m_szPresetDir);	// note: m_szPresetDir always ends with '\'
-        lstrcatW(szFile, m_presets[m_nCurrentPreset].szFilename.c_str());
+        std::wstring szFile = std::wstring(m_szPresetDir) + m_presets[m_nCurrentPreset].szFilename;
 
-    	LoadPreset(szFile, fBlendTime);
+    	LoadPreset(szFile.c_str(), fBlendTime);
     }
     else
     {
@@ -8762,14 +8756,12 @@ void CPlugin::LoadRandomPreset(float fBlendTime)
 
 	// m_pPresetAddr[m_nCurrentPreset] points to the preset file to load (w/o the path);
 	// first prepend the path, then load section [preset00] within that file
-	wchar_t szFile[MAX_PATH] = {0};
-	lstrcpyW(szFile, m_szPresetDir);	// note: m_szPresetDir always ends with '\'
-	lstrcatW(szFile, m_presets[m_nCurrentPreset].szFilename.c_str());
+	std::wstring szFile = std::wstring(m_szPresetDir) + m_presets[m_nCurrentPreset].szFilename;
 
     if (!bHistoryEmpty)
         m_presetHistoryPos = (m_presetHistoryPos+1) % PRESET_HIST_LEN;
 
-	LoadPreset(szFile, fBlendTime);
+	LoadPreset(szFile.c_str(), fBlendTime);
 }
 
 void CPlugin::RandomizeBlendPattern()
@@ -9962,13 +9954,27 @@ void CPlugin::CompilePresetShadersToFile(wchar_t* sPresetFile) {
 
 void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
 {
+    if (!szPresetFilename || !szPresetFilename[0])
+        return;
+
+    // Use the extended Windows path form for presets beyond MAX_PATH.
+    std::wstring presetPath(szPresetFilename);
+    if (presetPath.size() >= MAX_PATH && presetPath.rfind(L"\\\\?\\", 0) != 0)
+    {
+        if (presetPath.rfind(L"\\\\", 0) == 0)
+            presetPath = L"\\\\?\\UNC\\" + presetPath.substr(2);
+        else
+            presetPath = L"\\\\?\\" + presetPath;
+    }
+    const wchar_t *loadPresetFilename = presetPath.c_str();
+
     // clear old error msg...
     if (m_nFramesSinceResize > 4)
     	ClearErrors(ERR_PRESET);
 
     // make sure preset still exists.  (might not if they are using the "back"/fwd buttons
     //  in RANDOM preset order and a file was renamed or deleted!)
-    if (GetFileAttributesW(szPresetFilename) == 0xFFFFFFFF)
+    if (GetFileAttributesW(loadPresetFilename) == 0xFFFFFFFF)
     {
         const wchar_t *p = wcsrchr(szPresetFilename, L'\\');
         p = (p) ? p+1 : szPresetFilename;
@@ -9984,7 +9990,7 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
         if ( m_presetHistoryFwdFence == m_presetHistoryPos )
         {
             // we're at the forward frontier; add to history
-            m_presetHistory[m_presetHistoryPos] = szPresetFilename;
+            m_presetHistory[m_presetHistoryPos] = loadPresetFilename;
             m_presetHistoryFwdFence = (m_presetHistoryFwdFence+1) % PRESET_HIST_LEN;
 
             // don't let the two fences touch
@@ -10005,8 +10011,8 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
     if (fBlendTime == 0)
     {
         // do it all NOW!
-	    if (szPresetFilename != m_szCurrentPresetFile) //[sic]
-		    lstrcpyW(m_szCurrentPresetFile, szPresetFilename);
+	    if (wcscmp(loadPresetFilename, m_szCurrentPresetFile) != 0) //[sic]
+		    StringCchCopyW(m_szCurrentPresetFile, _countof(m_szCurrentPresetFile), loadPresetFilename);
 
 	    CState *temp = m_pState;
 	    m_pState = m_pOldState;
@@ -10016,7 +10022,7 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
         ApplyFlags ^= (m_bWarpShaderLock ? STATE_WARP : 0);
         ApplyFlags ^= (m_bCompShaderLock ? STATE_COMP : 0);
 
-        m_pState->Import(m_szCurrentPresetFile, GetTime(), m_pOldState, ApplyFlags);
+        m_pState->Import(loadPresetFilename, GetTime(), m_pOldState, ApplyFlags);
 
 	    if (fBlendTime >= 0.001f)
         {
@@ -10055,12 +10061,12 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
         // Import locked/omitted sections from the preset currently on screen.
         // m_pOldState is the spare state here and may belong to an earlier
         // preset, which makes soft cuts inherit stale code and parameters.
-        m_pNewState->Import(szPresetFilename, GetTime(), m_pState, ApplyFlags);
+        m_pNewState->Import(loadPresetFilename, GetTime(), m_pState, ApplyFlags);
 
         m_nLoadingPreset = 1;   // this will cause LoadPresetTick() to get called over the next few frames...
 
         m_fLoadingPresetBlendTime = fBlendTime;
-        lstrcpyW(m_szLoadingPreset, szPresetFilename);
+        StringCchCopyW(m_szLoadingPreset, _countof(m_szLoadingPreset), loadPresetFilename);
         NumTotalPresetsLoaded++;
     }
 }

@@ -2691,6 +2691,31 @@ int SmoothWave(WFVERTEX* vi, int nVertsIn, WFVERTEX* vo)
     return j;
 }
 
+// Keep one invalid or runaway preset point from turning a line strip into a
+// screen-sized spike. This is shared by simple and custom wave renderers.
+static void SanitizeWaveVertices(WFVERTEX* vertices, int count)
+{
+    for (int i = 0; i < count; ++i)
+    {
+        const bool invalid = (vertices[i].x != vertices[i].x) ||
+            (vertices[i].y != vertices[i].y) ||
+            fabsf(vertices[i].x) > 4.0f || fabsf(vertices[i].y) > 4.0f;
+        if (invalid)
+        {
+            if (i > 0)
+            {
+                vertices[i].x = vertices[i - 1].x;
+                vertices[i].y = vertices[i - 1].y;
+            }
+            else
+            {
+                vertices[i].x = 0.0f;
+                vertices[i].y = 0.0f;
+            }
+        }
+    }
+}
+
 void CPlugin::DrawCustomWaves()
 {
     LPDIRECT3DDEVICE9 lpDevice = GetDevice();
@@ -2847,6 +2872,8 @@ void CPlugin::DrawCustomWaves()
 		            pState->m_wave[i].t_values_after_init_code[6] = *pState->m_wave[i].var_pp_t7;
 		            pState->m_wave[i].t_values_after_init_code[7] = *pState->m_wave[i].var_pp_t8;
                     */
+
+                    SanitizeWaveVertices(v, nSamples);
 
                     // 3. smooth it
                     WFVERTEX v2[2048];
@@ -4094,6 +4121,10 @@ void CPlugin::DrawWave(float *fL, float *fR)
 					{
 						//float rad = 0.53f + 0.43f * fR[i] + fWaveParam2;	// unused
 						float ang = 0.5f*(fL[i + 32] + fR[i + 32]) * 1.57f + GetTime() * 2.0f;
+						// Avoid an infinite tangent when the animated angle crosses zero.
+						// A non-finite vertex can poison the whole line strip.
+						if (fabsf(ang) < 0.001f)
+							ang = (ang < 0.0f) ? -0.001f : 0.001f;
 						float t = GetTime() / ang;
 						//ball
 						//v[i].x = cosf(ang* GetTime())*3 * m_fAspectY/3 + fWavePosX;// 0.75 = adj. for aspect ratio
@@ -4125,7 +4156,15 @@ void CPlugin::DrawWave(float *fL, float *fR)
 						float phi0 = (floor(progress * 3.0f) + .5f) / 3.0f * 6.28f + angleOffset;
 						float angle = (progress * 6.28f) + angleOffset;
 						float edgeDistance = cosf(angle - phi0);
+						// The triangle's edge distance reaches zero at its corners. A
+						// raw division there creates an unbounded vertex and a visible
+						// spike. Preserve the shape while applying a small denominator
+						// floor around the singularity.
+						if (fabsf(edgeDistance) < 0.02f)
+							edgeDistance = (edgeDistance < 0.0f) ? -0.02f : 0.02f;
 						float radius = (.7f + (edgeDistance * (fL[i]+fR[i])*0.5f) + fWaveParam2) / (2.0f * edgeDistance);
+						if (radius > 2.0f) radius = 2.0f;
+						if (radius < -2.0f) radius = -2.0f;
 
 						if (m_bScreenDependentRenderMode)
 						{
@@ -4226,6 +4265,8 @@ void CPlugin::DrawWave(float *fL, float *fR)
 					}
 					break;
 		}
+
+		SanitizeWaveVertices(v, nVerts);
 
 		if (it==0)
 		{
