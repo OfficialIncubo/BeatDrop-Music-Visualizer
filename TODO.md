@@ -14,7 +14,7 @@
 
 # For the next (or further) version of BeatDrop
 
-* \[ ] Window-Independent Spout Output (https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0)
+* \[ ] Window-Independent Spout Output (https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0) (CAN'T DO)
 * \[x] Ability to change the audio device from output to input (microphone) and vice-versa by pressing B hotkey (now CTRL + D)
 * \[x] GIF Support for both Sprites and Textures: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/34 (HIGH PRIORITY)
 * \[x] Video Support for both Sprites and Textures (HIGH PRIORITY)
