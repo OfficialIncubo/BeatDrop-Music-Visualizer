@@ -2691,31 +2691,6 @@ int SmoothWave(WFVERTEX* vi, int nVertsIn, WFVERTEX* vo)
     return j;
 }
 
-// Keep one invalid or runaway preset point from turning a line strip into a
-// screen-sized spike. This is shared by simple and custom wave renderers.
-static void SanitizeWaveVertices(WFVERTEX* vertices, int count)
-{
-    for (int i = 0; i < count; ++i)
-    {
-        const bool invalid = (vertices[i].x != vertices[i].x) ||
-            (vertices[i].y != vertices[i].y) ||
-            fabsf(vertices[i].x) > 4.0f || fabsf(vertices[i].y) > 4.0f;
-        if (invalid)
-        {
-            if (i > 0)
-            {
-                vertices[i].x = vertices[i - 1].x;
-                vertices[i].y = vertices[i - 1].y;
-            }
-            else
-            {
-                vertices[i].x = 0.0f;
-                vertices[i].y = 0.0f;
-            }
-        }
-    }
-}
-
 void CPlugin::DrawCustomWaves()
 {
     LPDIRECT3DDEVICE9 lpDevice = GetDevice();
@@ -2776,7 +2751,6 @@ void CPlugin::DrawCustomWaves()
                 // calculated; otherwise a 512-sample custom wave reads before
                 // fWaveform[0] and creates large, non-musical spikes.
                 nSamples = min(max_samples, max(0, nSamples));
-                nSamples -= min(separator, nSamples);
 
                 if ((nSamples >= 2) || (pState->m_wave[i].bUseDots && nSamples >= 1))
                 {
@@ -2789,8 +2763,6 @@ void CPlugin::DrawCustomWaves()
                     // initialize tempdata[2][512]
                     int j0 = (pState->m_wave[i].bSpectrum) ? 0 : (max_samples - nSamples)/2/**(1-pState->m_wave[i].bSpectrum)*/ - separator/2;
                     int j1 = (pState->m_wave[i].bSpectrum) ? 0 : (max_samples - nSamples)/2/**(1-pState->m_wave[i].bSpectrum)*/ + separator/2;
-                    j0 = max(0, min(max_samples - 1, j0));
-                    j1 = max(0, min(max_samples - 1, j1));
                     float t = (pState->m_wave[i].bSpectrum) ? (max_samples - separator)/(float)nSamples : 1;
                     float mix1 = powf(pState->m_wave[i].smoothing*0.98f, 0.5f);  // lower exponent -> more default smoothing
                     float mix2 = 1-mix1;
@@ -2872,8 +2844,6 @@ void CPlugin::DrawCustomWaves()
 		            pState->m_wave[i].t_values_after_init_code[6] = *pState->m_wave[i].var_pp_t7;
 		            pState->m_wave[i].t_values_after_init_code[7] = *pState->m_wave[i].var_pp_t8;
                     */
-
-                    SanitizeWaveVertices(v, nSamples);
 
                     // 3. smooth it
                     WFVERTEX v2[2048];
@@ -4265,8 +4235,6 @@ void CPlugin::DrawWave(float *fL, float *fR)
 					}
 					break;
 		}
-
-		SanitizeWaveVertices(v, nVerts);
 
 		if (it==0)
 		{
