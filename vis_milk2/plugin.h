@@ -42,6 +42,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "support.h"
 #include "texmgr.h"
 #include "state.h"
+#include "lyrics_manager.h"
+#include "lyrics_editor.h"
 #include <vector>
 #include <random>
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
@@ -154,8 +156,9 @@ typedef struct
 {
 	int 	bRedrawSuperText;	// true if it needs redraw
 	int 	bIsSongTitle;		// false for custom message, true for song title
+	int 	bIsLyrics;			// true when the song-title surface contains a lyric line
 	//char	szText[256];
-	wchar_t	szTextW[256];
+	wchar_t	szTextW[512];
 	wchar_t	nFontFace[128];
 	int 	bBold;
 	int 	bItal;
@@ -403,6 +406,7 @@ public:
         bool        m_bAutoLockPresetWhenNoMusic;
         bool        m_bEnableSongTitlePoll;
         bool        m_bEnableSongTitlePollExplicit;
+        bool        m_bEnableLyrics;
         bool        m_bScreenDependentRenderMode;
         bool        m_bShaderCaching = true;
         bool        m_bShaderPrecachingAtStartup = true;
@@ -590,6 +594,8 @@ public:
         char		m_szDebugMessage[512];
         wchar_t		m_szSongTitle    [512];
         wchar_t		m_szSongTitlePrev[512];
+        wchar_t		m_szLyricsLine   [512];
+        double          m_fLastLyricsPositionSeconds = -1.0;
 
         // stuff for menu system:
         CMilkMenu	*m_pCurMenu;	// should always be valid!
@@ -710,6 +716,7 @@ public:
 	    void		LaunchCustomMessage(int nMsgNum);
 	    void		ReadCustomMessages();
 	    void		LaunchSongTitleAnim();
+        void        LaunchLyricsLine(const wchar_t* line);
         void        CaptureScreenshot();
         bool        CaptureScreenshotWithFilename(wchar_t* outFilename, size_t outFilenameSize);
 
