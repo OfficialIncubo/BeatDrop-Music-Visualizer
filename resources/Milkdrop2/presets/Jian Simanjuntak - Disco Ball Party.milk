@@ -390,7 +390,7 @@ comp_86=`
 comp_87=`uv *= aspect.xy;
 comp_88=`float uv_ball = lum(tex2D( sampler_disco_lights, mask*polar));
 comp_89=`
-comp_90=`if (uv_ball > .007 && bass+mid+treb) //Se7enSlasher - Added a functionality to not appear the texture when there's no music.
+comp_90=`if (uv_ball > .01 && bass+mid+treb) //Se7enSlasher - Added a functionality to not appear the texture when there's no music.
 comp_91=`   { ret = mask*tex2D(sampler_disco_lights, polar)*(bass_att*1.2); }
 comp_92=`
 comp_93=`// Thank you for edited by Jian Simanjuntak //

@@ -152,7 +152,7 @@ shape_0_per_frame3=///// torus
 shape_0_per_frame4=
 shape_0_per_frame5=a1=3;
 shape_0_per_frame6=b1=2;
-shape_0_per_frame7=r1=3+2*(5*bass%5);
+shape_0_per_frame7=r1=3+2*((5*bass)%5);
 shape_0_per_frame8=t1= 100*sample;
 shape_0_per_frame9=t2= 1*sample;
 shape_0_per_frame10=
@@ -228,7 +228,7 @@ shape_1_per_frame3=///// torus
 shape_1_per_frame4=
 shape_1_per_frame5=a1=3;
 shape_1_per_frame6=b1=2;
-shape_1_per_frame7=r1=3+2*(5*bass%5);
+shape_1_per_frame7=r1=3+2*((5*bass)%5);
 shape_1_per_frame8=t1= 100*sample;
 shape_1_per_frame9=t2= 1*sample;
 shape_1_per_frame10=
