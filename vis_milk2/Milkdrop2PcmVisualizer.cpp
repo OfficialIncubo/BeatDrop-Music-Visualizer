@@ -178,6 +178,13 @@ static void HandleTwoFingerTap(HWND hwnd)
     }
 }
 
+static bool IsPromotedTouchInput()
+{
+    // Mouse messages promoted from touch carry this signature. They must stay
+    // in the client area so two-finger gestures are not turned into a drag.
+    return (GetMessageExtraInfo() & 0xFFFFFF00) == 0xFF515700;
+}
+
 namespace
 {
     const DWORD kCursorHideDelayMs = 3000;
@@ -760,6 +767,20 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
             ToggleFullScreen(hWnd);
             return 0;
+        }
+
+        case WM_LBUTTONDOWN:
+        {
+            // Borderless mode uses a client-area hit test for touch support.
+            // Recreate the old caption drag for a real mouse without claiming
+            // touch input as a drag gesture.
+            if (borderless && !fullscreen && !stretch && !IsPromotedTouchInput())
+            {
+                ReleaseCapture();
+                SendMessageW(hWnd, WM_NCLBUTTONDOWN, HTCAPTION, lParam);
+                return 0;
+            }
+            break;
         }
 
         case WM_RBUTTONDBLCLK:
