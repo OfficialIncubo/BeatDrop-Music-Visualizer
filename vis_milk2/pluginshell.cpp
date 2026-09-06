@@ -235,10 +235,25 @@ enum TrayMenuCommand
 	TRAY_MENU_NEXT_PRESET,
 	TRAY_MENU_NEXT_PRESET_SOFTCUT,
 	TRAY_MENU_PREVIOUS_PRESET,
+	TRAY_MENU_RELOAD_PRESET,
 	TRAY_MENU_RESET_TIME,
 	TRAY_MENU_FREEZE_BEAT,
 	TRAY_MENU_AUDIO_DEVICE,
 	TRAY_MENU_SCREENSHOT,
+	TRAY_MENU_PLAY,
+	TRAY_MENU_PAUSE,
+	TRAY_MENU_STOP,
+	TRAY_MENU_PREVIOUS_TRACK,
+	TRAY_MENU_NEXT_TRACK,
+	TRAY_MENU_SEEK_LEFT,
+	TRAY_MENU_SEEK_RIGHT,
+	TRAY_MENU_FULLSCREEN,
+	TRAY_MENU_MONITOR_STRETCH,
+	TRAY_MENU_BORDERLESS,
+	TRAY_MENU_HIDE_WINDOW,
+	TRAY_MENU_DESKTOP_MODE,
+	TRAY_MENU_ALWAYS_ON_TOP,
+	TRAY_MENU_TRANSPARENCY,
 	TRAY_MENU_EXIT,
 	TRAY_MENU_AUDIO_SENSITIVITY_BASE = 2100,
 	TRAY_MENU_FPS_BASE = 2200,
@@ -259,7 +274,7 @@ static void ToggleTraySpout()
 
 static void ExecuteTrayMenuCommand(HWND hwnd, UINT command);
 
-static void ShowTrayContextMenu(HWND hwnd)
+static void ShowTrayContextMenu(HWND hwnd, bool visualWindowMenu)
 {
 	HMENU menu = CreatePopupMenu();
 	HMENU sensitivityMenu = CreatePopupMenu();
@@ -277,10 +292,31 @@ static void ShowTrayContextMenu(HWND hwnd)
 	}
 
 	const bool desktopMode = g_plugin.m_bDesktopMode;
-	const wchar_t* showText = renderWindowHidden
-		? L"Show visual window"
-		: (desktopMode ? L"Switch to normal visual window" : L"Show visual window");
-	AppendMenuW(menu, MF_STRING, TRAY_MENU_SHOW_WINDOW, showText);
+	if (renderWindowHidden || desktopMode)
+	{
+		const wchar_t* showText = renderWindowHidden
+			? L"Show visual window"
+			: L"Switch to normal visual window";
+		AppendMenuW(menu, MF_STRING, TRAY_MENU_SHOW_WINDOW, showText);
+	}
+	if (visualWindowMenu)
+	{
+		AppendMenuW(menu, MF_STRING | (fullscreen ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_FULLSCREEN, L"Full-screen mode");
+		AppendMenuW(menu, MF_STRING | (stretch ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_MONITOR_STRETCH, L"Monitor stretch mode");
+		UINT borderlessFlags = MF_STRING | (borderless ? MF_CHECKED : MF_UNCHECKED);
+		if (fullscreen || stretch)
+			borderlessFlags |= MF_GRAYED;
+		AppendMenuW(menu, borderlessFlags, TRAY_MENU_BORDERLESS, L"Borderless mode");
+		AppendMenuW(menu, MF_STRING, TRAY_MENU_HIDE_WINDOW, L"Hide visual window");
+		AppendMenuW(menu, MF_STRING | (desktopMode ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_DESKTOP_MODE, L"Desktop mode");
+		AppendMenuW(menu, MF_STRING | (g_plugin.m_bAlwaysOnTop ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_ALWAYS_ON_TOP, L"Always on top");
+		AppendMenuW(menu, MF_STRING | (g_plugin.TranspaMode ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_TRANSPARENCY, L"Transparency mode");
+	}
 	AppendMenuW(menu, MF_SEPARATOR, 0, NULL);
 	AppendMenuW(menu, MF_STRING | (g_plugin.bSpoutOut ? MF_CHECKED : MF_UNCHECKED),
 		TRAY_MENU_SPOUT, L"Spout output");
@@ -342,12 +378,21 @@ static void ShowTrayContextMenu(HWND hwnd)
 	AppendMenuW(menu, MF_STRING, TRAY_MENU_NEXT_PRESET, L"Next preset");
 	AppendMenuW(menu, MF_STRING, TRAY_MENU_NEXT_PRESET_SOFTCUT, L"Next preset (Softcut)");
 	AppendMenuW(menu, MF_STRING, TRAY_MENU_PREVIOUS_PRESET, L"Previous preset");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_RELOAD_PRESET, L"Reload preset");
 	AppendMenuW(menu, MF_STRING, TRAY_MENU_RESET_TIME, L"Reset time variable");
 	AppendMenuW(menu, MF_STRING | (g_plugin.m_bFreezeBeatDetection ? MF_CHECKED : MF_UNCHECKED),
 		TRAY_MENU_FREEZE_BEAT, L"Freeze beat detection");
 	AppendMenuW(menu, MF_STRING, TRAY_MENU_AUDIO_DEVICE,
 		g_plugin.m_bCaptureMic ? L"Switch to speaker device" : L"Switch to microphone device");
 	AppendMenuW(menu, MF_STRING, TRAY_MENU_SCREENSHOT, L"Save screenshot");
+	AppendMenuW(menu, MF_SEPARATOR, 0, NULL);
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_PLAY, L"Play");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_PAUSE, L"Pause");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_STOP, L"Stop");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_PREVIOUS_TRACK, L"Previous track");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_NEXT_TRACK, L"Next track");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_SEEK_LEFT, L"Seek left");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_SEEK_RIGHT, L"Seek right");
 	AppendMenuW(menu, MF_SEPARATOR, 0, NULL);
 	AppendMenuW(menu, MF_STRING, TRAY_MENU_EXIT, L"Exit");
 
@@ -378,23 +423,51 @@ static void ShowTrayContextMenu(HWND hwnd)
 	DestroyMenu(menu);
 }
 
+struct ContextMenuRequest
+{
+	HWND hwnd;
+	bool visualWindowMenu;
+};
+
 static DWORD WINAPI TrayContextMenuThreadProc(void* parameter)
 {
-	ShowTrayContextMenu(static_cast<HWND>(parameter));
+	ContextMenuRequest* request = static_cast<ContextMenuRequest*>(parameter);
+	ShowTrayContextMenu(request->hwnd, request->visualWindowMenu);
+	delete request;
 	InterlockedExchange(&trayMenuOpen, 0);
 	return 0;
 }
 
-static void BeginTrayContextMenu(HWND hwnd)
+static void BeginContextMenu(HWND hwnd, bool visualWindowMenu)
 {
 	if (InterlockedCompareExchange(&trayMenuOpen, 1, 0) != 0)
 		return;
 
-	HANDLE thread = CreateThread(NULL, 0, TrayContextMenuThreadProc, hwnd, 0, NULL);
+	ContextMenuRequest* request = new ContextMenuRequest{ hwnd, visualWindowMenu };
+	HANDLE thread = CreateThread(NULL, 0, TrayContextMenuThreadProc, request, 0, NULL);
 	if (thread)
 		CloseHandle(thread);
 	else
+	{
+		delete request;
 		InterlockedExchange(&trayMenuOpen, 0);
+	}
+}
+
+static void BeginTrayContextMenu(HWND hwnd)
+{
+	BeginContextMenu(hwnd, false);
+}
+
+void BeginVisualContextMenu(HWND hwnd)
+{
+	BeginContextMenu(hwnd, true);
+}
+
+static void SendMediaKey(WORD key)
+{
+	keybd_event(static_cast<BYTE>(key), 0, 0, 0);
+	keybd_event(static_cast<BYTE>(key), 0, KEYEVENTF_KEYUP, 0);
 }
 
 static void ExecuteTrayMenuCommand(HWND hwnd, UINT command)
@@ -446,6 +519,8 @@ static void ExecuteTrayMenuCommand(HWND hwnd, UINT command)
 		g_plugin.NextPreset(g_plugin.m_fBlendTimeUser);
 	else if (command == TRAY_MENU_PREVIOUS_PRESET)
 		g_plugin.PrevPreset(0.0f);
+	else if (command == TRAY_MENU_RELOAD_PRESET)
+		g_plugin.LoadPreset(g_plugin.m_szCurrentPresetFile, 0.0f);
 	else if (command == TRAY_MENU_RESET_TIME)
 		g_plugin.ResetTimeVariable();
 	else if (command == TRAY_MENU_FREEZE_BEAT)
@@ -457,6 +532,50 @@ static void ExecuteTrayMenuCommand(HWND hwnd, UINT command)
 	}
 	else if (command == TRAY_MENU_SCREENSHOT)
 		g_plugin.CaptureScreenshot();
+	else if (command == TRAY_MENU_PLAY || command == TRAY_MENU_PAUSE)
+		SendMediaKey(VK_MEDIA_PLAY_PAUSE);
+	else if (command == TRAY_MENU_STOP)
+		SendMediaKey(VK_MEDIA_STOP);
+	else if (command == TRAY_MENU_PREVIOUS_TRACK)
+		SendMediaKey(VK_MEDIA_PREV_TRACK);
+	else if (command == TRAY_MENU_NEXT_TRACK)
+		SendMediaKey(VK_MEDIA_NEXT_TRACK);
+	else if (command == TRAY_MENU_SEEK_LEFT)
+		SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_REWIND));
+	else if (command == TRAY_MENU_SEEK_RIGHT)
+		SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_FAST_FORWARD));
+	else if (command == TRAY_MENU_FULLSCREEN)
+		ToggleFullScreen(rendererWindow);
+	else if (command == TRAY_MENU_MONITOR_STRETCH)
+		ToggleStretch(rendererWindow);
+	else if (command == TRAY_MENU_BORDERLESS)
+	{
+		if (!fullscreen && !stretch)
+			ToggleBorderlessWindow(rendererWindow);
+	}
+	else if (command == TRAY_MENU_HIDE_WINDOW)
+	{
+		ShowWindow(rendererWindow, SW_HIDE);
+		UpdateTrayIconForHiddenWindow();
+	}
+	else if (command == TRAY_MENU_DESKTOP_MODE)
+	{
+		g_plugin.m_mouseDown = 0;
+		g_plugin.ToggleDesktopMode(rendererWindow);
+	}
+	else if (command == TRAY_MENU_ALWAYS_ON_TOP)
+	{
+		g_plugin.m_bAlwaysOnTop = !g_plugin.m_bAlwaysOnTop;
+		g_plugin.ToggleAlwaysOnTop(rendererWindow);
+	}
+	else if (command == TRAY_MENU_TRANSPARENCY)
+	{
+		if (!g_plugin.m_bDesktopMode)
+		{
+			g_plugin.TranspaMode = !g_plugin.TranspaMode;
+			ToggleTransparency(rendererWindow);
+		}
+	}
 	else if (command == TRAY_MENU_EXIT)
 		PostMessage(hwnd, WM_CLOSE, 0, 0);
 

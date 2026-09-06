@@ -157,6 +157,26 @@ char keyMappings[8];
 bool fullscreen = false;
 bool stretch = false;
 bool borderless = false;
+static bool suppressRightClickMenu = false;
+static bool twoFingerTouchDown = false;
+static bool twoFingerTapPending = false;
+static DWORD twoFingerTouchDownTick = 0;
+static int activeTouchCount = 0;
+
+static void HandleTwoFingerTap(HWND hwnd)
+{
+    if (twoFingerTapPending)
+    {
+        KillTimer(hwnd, BEATDROP_TIMER_TOUCH_MENU);
+        twoFingerTapPending = false;
+        ToggleStretch(hwnd);
+    }
+    else
+    {
+        twoFingerTapPending = true;
+        SetTimer(hwnd, BEATDROP_TIMER_TOUCH_MENU, GetDoubleClickTime(), NULL);
+    }
+}
 
 namespace
 {
@@ -547,6 +567,7 @@ void ToggleBorderlessWindow(HWND hwnd)
 
         SetWindowLongW(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
         SetWindowPos(hwnd, HWND_TOPMOST, x, y, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
+        RegisterTouchWindow(hwnd, 0);
         borderless = true;
     }
     else {
@@ -569,7 +590,16 @@ void ToggleBorderlessWindow(HWND hwnd)
 
 LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
-	switch(uMsg) {
+	 switch(uMsg) {
+
+        case WM_CREATE:
+            // Borderless windows do not consistently receive synthesized
+            // gestures, so request raw touch input as a fallback.
+            RegisterTouchWindow(hWnd, 0);
+            // WM_CREATE also initializes the notification-area icon in the
+            // plugin shell. Preserve that initialization path.
+            g_plugin.PluginShellWindowProc(hWnd, uMsg, wParam, lParam);
+            return 0;
 
         case WM_CLOSE: {
             if (!fullscreen && !stretch && !g_plugin.m_bDesktopMode)
@@ -678,7 +708,9 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                         return HTRIGHT;
                     else if (y > rect.bottom - rect.top - BORDERWIDTH)
                         return HTBOTTOM;
-                return HTCAPTION;
+                // Only the top strip is a drag area. Reporting the visual
+                // interior as a caption prevents client touch delivery.
+                return HTCLIENT;
             }
             break;
         }
@@ -733,8 +765,91 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         case WM_RBUTTONDBLCLK:
         case WM_NCRBUTTONDBLCLK:
         {
+            KillTimer(hWnd, BEATDROP_TIMER_RIGHT_CLICK_MENU);
+            suppressRightClickMenu = true;
             ToggleStretch(hWnd);
             return 0;
+        }
+
+        case WM_GESTURE:
+        {
+            GESTUREINFO gestureInfo = {};
+            gestureInfo.cbSize = sizeof(gestureInfo);
+            if (GetGestureInfo(reinterpret_cast<HGESTUREINFO>(lParam), &gestureInfo))
+            {
+                if (gestureInfo.dwID == GID_TWOFINGERTAP)
+                    HandleTwoFingerTap(hWnd);
+                CloseGestureInfoHandle(reinterpret_cast<HGESTUREINFO>(lParam));
+            }
+            return 0;
+        }
+
+        case WM_TOUCH:
+        {
+            const UINT touchCount = LOWORD(wParam);
+            if (touchCount > 0)
+            {
+                std::vector<TOUCHINPUT> touchInputs(touchCount);
+                if (GetTouchInputInfo(reinterpret_cast<HTOUCHINPUT>(lParam), touchCount,
+                    touchInputs.data(), sizeof(TOUCHINPUT)))
+                {
+                    for (const TOUCHINPUT& touchInput : touchInputs)
+                    {
+                        if (touchInput.dwFlags & TOUCHEVENTF_DOWN)
+                            ++activeTouchCount;
+                        if (touchInput.dwFlags & TOUCHEVENTF_UP)
+                            activeTouchCount = max(0, activeTouchCount - 1);
+                    }
+                    if (activeTouchCount >= 2 && !twoFingerTouchDown)
+                    {
+                        twoFingerTouchDown = true;
+                        twoFingerTouchDownTick = GetTickCount();
+                    }
+                    if (activeTouchCount == 0 && twoFingerTouchDown)
+                    {
+                        twoFingerTouchDown = false;
+                        if (GetTickCount() - twoFingerTouchDownTick <= GetDoubleClickTime())
+                            HandleTwoFingerTap(hWnd);
+                    }
+                }
+            }
+            CloseTouchInputHandle(reinterpret_cast<HTOUCHINPUT>(lParam));
+            return 0;
+        }
+
+        case WM_RBUTTONUP:
+        case WM_NCRBUTTONUP:
+        {
+            if (suppressRightClickMenu)
+            {
+                suppressRightClickMenu = false;
+                return 0;
+            }
+            // Delay the context menu so the existing double-right-click
+            // gesture remains available for Monitor stretch mode.
+            SetTimer(hWnd, BEATDROP_TIMER_RIGHT_CLICK_MENU, GetDoubleClickTime(), NULL);
+            return 0;
+        }
+
+        case WM_TIMER:
+        {
+            if (wParam == BEATDROP_TIMER_RIGHT_CLICK_MENU)
+            {
+                KillTimer(hWnd, BEATDROP_TIMER_RIGHT_CLICK_MENU);
+                BeginVisualContextMenu(hWnd);
+                return 0;
+            }
+            if (wParam == BEATDROP_TIMER_TOUCH_MENU)
+            {
+                KillTimer(hWnd, BEATDROP_TIMER_TOUCH_MENU);
+                if (twoFingerTapPending)
+                {
+                    twoFingerTapPending = false;
+                    BeginVisualContextMenu(hWnd);
+                }
+                return 0;
+            }
+            break;
         }
 
         case WM_MOUSEMOVE:

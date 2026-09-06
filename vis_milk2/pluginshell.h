@@ -43,6 +43,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define TIME_HIST_SLOTS 128     // # of slots used if fps > 60.  half this many if fps==30.
 #define MAX_SONGS_PER_PAGE 40
+#define BEATDROP_TIMER_RIGHT_CLICK_MENU 1026
+#define BEATDROP_TIMER_TOUCH_MENU 1027
 
 typedef struct
 {
@@ -348,5 +350,8 @@ protected:
     // CHANGES:
     friend class CShaderParams;
 };
+
+// Opens the same non-blocking command menu used by the notification icon.
+void BeginVisualContextMenu(HWND hwnd);
 
 #endif
