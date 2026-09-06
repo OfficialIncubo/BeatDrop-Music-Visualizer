@@ -295,7 +295,7 @@ static void ShowTrayContextMenu(HWND hwnd)
 	}
 	AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(sensitivityMenu), L"Audio sensitivity");
 
-	const int fpsValues[] = { 0, 30, 60, 90, 120, 144, 180, 210, 240, 270, 300, 330, 360 };
+	const int fpsValues[] = { 0, 24, 30, 50, 60, 90, 120, 144, 180, 200, 240, 360 };
 	for (int value : fpsValues)
 	{
 		wchar_t text[32];
