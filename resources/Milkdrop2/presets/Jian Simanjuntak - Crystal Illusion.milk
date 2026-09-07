@@ -216,9 +216,9 @@ shapecode_3_border_r=1.000000
 shapecode_3_border_g=0.000000
 shapecode_3_border_b=0.000000
 shapecode_3_border_a=0.000000
-per_frame_1=wave_r=rand(200)/200;
-per_frame_2=wave_g=rand(200)/200;
-per_frame_3=wave_b=rand(200)/200;
+per_frame_1=wave_r=int(rand(200))/200;
+per_frame_2=wave_g=int(rand(200))/200;
+per_frame_3=wave_b=int(rand(200))/200;
 per_frame_4=warp = 0;
 per_frame_5=ob_r = 1-abs(wave_r);
 per_frame_6=ob_g = 1-abs(wave_g);

@@ -220,9 +220,9 @@ shapecode_3_border_r=1.000
 shapecode_3_border_g=0.600
 shapecode_3_border_b=0.100
 shapecode_3_border_a=0.000
-per_frame_1=wave_r=rand(200)/200;
-per_frame_2=wave_g=rand(200)/200;
-per_frame_3=wave_b=rand(200)/200;
+per_frame_1=wave_r=int(rand(200))/200;
+per_frame_2=wave_g=int(rand(200))/200;
+per_frame_3=wave_b=int(rand(200))/200;
 per_frame_4=vol = 0.167*(bass+mid);
 per_frame_5=xamptarg = if(equal(frame%15,0),min(0.5*vol*bass_att,0.5),xamptarg);
 per_frame_6=xamp = xamp + 0.5*(xamptarg-xamp);
