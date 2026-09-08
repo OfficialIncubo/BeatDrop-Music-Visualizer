@@ -16,13 +16,15 @@
 [![Total Downloads](https://img.shields.io/github/downloads/OfficialIncubo/BeatDrop-Music-Visualizer/total?label=Total%20Downloads&color=8A2BE2)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/releases)
 [![License](https://img.shields.io/github/license/OfficialIncubo/BeatDrop-Music-Visualizer?label=License&color=8A2BE2)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/blob/master/LICENSE)
 [![Total Stars](https://img.shields.io/github/stars/OfficialIncubo/BeatDrop-Music-Visualizer?style=flat&label=Stars&color=yellow)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/stargazers)
+[![Support my hard work on Ko-fi!](https://img.shields.io/badge/Ko--fi-Support-8A2BE2?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/officialincubo_)
 
 # BeatDrop Music Visualizer
 
-BeatDrop Music Visualizer is a continued development of the [original inactive repository fork](https://github.com/mvsoft74/BeatDrop), a standalone music visualization based of the [Original MilkDrop2 Plug-in](https://www.geisswerks.com/milkdrop/) for [Winamp](https://winamp.com) that aims to add better features and bug fixes/optimizations for versatility, usability and amazing. This is also considered as an improvement of it.
+BeatDrop Music Visualizer is a continued development of the [original inactive repository fork](https://github.com/mvsoft74/BeatDrop), a nostalgia-modern fused standalone music visualization based of the [custom MilkDrop2 engine](https://www.geisswerks.com/milkdrop/) for [Winamp](https://winamp.com) that aims to add better features and bug fixes/optimizations for versatility, usability and amazing. This is also considered as an improvement of it.
 
 Highlights:
 - Based of the [Original MilkDrop2 Plug-in](https://www.geisswerks.com/milkdrop/), compatible with all the MilkDrop presets (.milk).
+- 7k+ bundled presets - nostalgic and modern!
 - Perfectly adjusted beat detection for better audio reaction (also configurable)
 - New waveforms and transitions
 - 16 custom shapes and waves limit
@@ -31,6 +33,9 @@ Highlights:
 - Fully supported Pixel Shader 4 (Shader Model 3) presets for AMD/ATI processor/graphic cards
 - FFT and Wave functions accessible via shaders!
 - Real-time system time and date variables/functions
+- Real-time song information and time
+- Desktop Mode (SHIFT + W)
+- 32-bit and 64-bit architecture support
 - [Spout](https://spout.zeal.co) integration
 - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library integration
 - Toggleable Speaker and Microphone Audio Source Modes
@@ -38,6 +43,7 @@ Highlights:
 - Interact presets with Mouse and Keyboard (CTRL + Arrow Keys)
 - GIF, Video and [Spout](https://spout.zeal.co) Input support for sprites and textures
 - Extended preset, texture, transition and noise generation randomization limit using [Mersenne Twister Pseudo-Random Number Generator](https://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/emt.html)
+- Engine fixes: preset state, custom wave samples, etc.
 - Hard Cut Modes, Transparency Mode, Playback Controls, Startup Preset etc.
 - And so much more!
 
@@ -336,6 +342,14 @@ If you want to have all the MilkDrop presets in your own, just download [this Me
  </picture>
 </a>
 
+# ☕ SUPPORT THE DEVELOPMENT
+
+BeatDrop Music Visualizer is free and open-source software built with dedication and hard work. If you find this project useful, consider supporting its ongoing maintenance, performance optimizations, and future feature development on Ko-fi!
+
+[![Support my hard work on Ko-fi!](https://img.shields.io/badge/Ko--fi-Support%20me!-8A2BE2?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/officialincubo_)
+
+*Every contribution helps keep the project active and continuously updated.*
+
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
 # ORIGINAL REPOSITORY DESCRIPTION
@@ -381,8 +395,9 @@ Special thanks to:
 * Lynn Jarvis ([@leadedge](https://github.com/leadedge)) - [BeatDrop for Spout](https://github.com/leadedge/BeatDrop), [Spout](https://spout.zeal.co), contributor
 * Patrick Pomerleau @ Nest Immersion ([@nestdome](https://www.instagram.com/nestdome)) - helper, contributor, feature integrations to NestDrop
 * [IkeC](https://github.com/IkeC) - contributor, [Milkwave](https://github.com/IkeC/Milkwave) Developer
-* [MilkDrop2077](https://github.com/milkdrop2077) - contributor
-* Me, [u/Decent-Tangerine4998](https://www.reddit.com/user/Decent-Tangerine4998), [martin (Nitorami)](https://forums.winamp.com/member/252823-nitorami) - Tester
+* [MilkDrop2077](https://github.com/milkdrop2077) - contributor and much inspiration from him, [MilkDrop 3](https://milkdrop3.com) developer
+* [thnikkaman (Goury on Discord)](https://github.com/thnikkaman), very good guy, contributor
+* Me, [u/Decent-Tangerine4998](https://www.reddit.com/user/Decent-Tangerine4998) and [martin (Nitorami)](https://forums.winamp.com/member/252823-nitorami) - Tester
 * [martin (Nitorami)](https://forums.winamp.com/member/252823-nitorami), the preset legend, tested the FFT shader audio processing and suggested me with a helpful RMS normalization & self-implemented to it
 * ...and all the preset authors and contributors!
 
