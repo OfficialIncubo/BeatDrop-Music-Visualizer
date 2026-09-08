@@ -37,7 +37,12 @@ public:
 
 	#if SUPPORT_SMTC
 	SongTimelineClock timeline_clock;
+	GlobalSystemMediaTransportControlsSessionManager smtc_manager{ nullptr };
 	GlobalSystemMediaTransportControlsSession timeline_session{ nullptr };
+	std::chrono::steady_clock::time_point last_manager_attempt;
+	std::chrono::steady_clock::time_point last_metadata_poll;
+	bool has_manager_attempt = false;
+	bool has_metadata_poll = false;
 	#endif
 
 	bool updated = false;
@@ -52,4 +57,5 @@ public:
 	void PollMediaInfo();
 	int64_t GetPositionMilliseconds() const;
 	int64_t GetDurationMilliseconds() const;
+	bool EnsureMediaManager();
 };

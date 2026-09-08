@@ -31,6 +31,31 @@ void SongTitleGetter::Init() {
 #endif
 }
 
+bool SongTitleGetter::EnsureMediaManager()
+{
+#if SUPPORT_SMTC
+    if (smtc_manager)
+        return true;
+
+    const auto now = std::chrono::steady_clock::now();
+    constexpr auto retryInterval = std::chrono::seconds(2);
+    if (has_manager_attempt && now - last_manager_attempt < retryInterval)
+        return false;
+
+    has_manager_attempt = true;
+    last_manager_attempt = now;
+    try {
+        smtc_manager = GlobalSystemMediaTransportControlsSessionManager::RequestAsync().get();
+        return static_cast<bool>(smtc_manager);
+    }
+    catch (const winrt::hresult_error&) {
+        return false;
+    }
+#else
+    return false;
+#endif
+}
+
 void SongTitleGetter::PollMediaInfo() {
 
     if (!SMTCSupported) return;
@@ -38,26 +63,34 @@ void SongTitleGetter::PollMediaInfo() {
 
     #if SUPPORT_SMTC
 
+    if (!EnsureMediaManager()) return;
+
     try {
-        auto smtcManager = winrt::Windows::Media::Control::GlobalSystemMediaTransportControlsSessionManager::RequestAsync().get();
-        auto currentSession = smtcManager.GetCurrentSession();
+        auto currentSession = smtc_manager.GetCurrentSession();
         updated = false;
         if (currentSession) {
             const bool sessionChanged = timeline_session != currentSession;
             timeline_session = currentSession;
-            auto properties = currentSession.TryGetMediaPropertiesAsync().get();
             bool trackChanged = sessionChanged;
-            if (properties) {
-                if (properties.Artist().c_str() != currentArtist || properties.Title().c_str() != currentTitle ||
-                    properties.AlbumTitle().c_str() != currentAlbum) {
-                    trackChanged = true;
-                    isSongChange = currentArtist.length() || currentTitle.length();
-                    currentArtist = properties.Artist().c_str();
-                    currentTitle = properties.Title().c_str();
-                    currentAlbum = properties.AlbumTitle().c_str();
 
-                    updated = true;
+            const auto now = std::chrono::steady_clock::now();
+            constexpr auto metadataPollInterval = std::chrono::seconds(1);
+            if (sessionChanged || doPollExplicit || !has_metadata_poll ||
+                now - last_metadata_poll >= metadataPollInterval) {
+                auto properties = currentSession.TryGetMediaPropertiesAsync().get();
+                if (properties) {
+                    if (properties.Artist().c_str() != currentArtist || properties.Title().c_str() != currentTitle ||
+                        properties.AlbumTitle().c_str() != currentAlbum) {
+                        trackChanged = true;
+                        isSongChange = currentArtist.length() || currentTitle.length();
+                        currentArtist = properties.Artist().c_str();
+                        currentTitle = properties.Title().c_str();
+                        currentAlbum = properties.AlbumTitle().c_str();
+                        updated = true;
+                    }
                 }
+                has_metadata_poll = true;
+                last_metadata_poll = now;
             }
 
             const auto timeline = currentSession.GetTimelineProperties();
@@ -81,6 +114,7 @@ void SongTitleGetter::PollMediaInfo() {
         else {
             timeline_clock.Reset();
             timeline_session = nullptr;
+			has_metadata_poll = false;
             if (currentArtist.length() || currentTitle.length()) {
                 currentArtist = L"";
                 currentTitle = L"";
@@ -95,6 +129,7 @@ void SongTitleGetter::PollMediaInfo() {
         // renderer safe and avoids showing stale time data.
         timeline_clock.Reset();
         timeline_session = nullptr;
+		has_metadata_poll = false;
     }
 #endif
 }
