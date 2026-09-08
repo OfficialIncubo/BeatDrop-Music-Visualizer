@@ -66,7 +66,7 @@ per_frame_2=vol_now =  .7*bass + 0.2 * (bass_att + treb + mid);
 per_frame_3=vol_mean =  if(equal(frame%50,0),vol_mean - 0.5 * (vol_mean-vol_now),0.1 * (vol_mean * 9 + vol_now));
 per_frame_4=beat = if(above(vol_now,vol_mean),1,0);
 per_frame_5=ying = if(below(ying,1),1,ying);
-per_frame_6=ying = if (beat,ying + bnot(time*10%3),ying);
+per_frame_6=ying = if (beat,ying + bnot((time*10)%3),ying);
 per_frame_7=yin = ying%2;
 per_frame_8=mytime = beat*ying;
 per_frame_9=ib_size = 0.02;
