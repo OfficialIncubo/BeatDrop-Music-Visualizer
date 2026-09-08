@@ -565,6 +565,7 @@ public:
         bool		m_bShowSongTitle;
         bool		m_bShowSongTime;
         bool		m_bShowSongLen;
+		int			m_nSongTimeDisplayMode;
         float		m_fShowRatingUntilThisTime;
 
         #define ERR_ALL    0
@@ -584,6 +585,8 @@ public:
 
 
         void GetSongTitle(wchar_t *szSongTitle, int nSize);
+		void CycleSongTimeDisplay();
+		bool GetSongTimeText(wchar_t *szSongTime, int nSize);
 
         //musik::core::sdk::IPlaybackService* playbackService;
         std::string emulatedWinampSongTitle;

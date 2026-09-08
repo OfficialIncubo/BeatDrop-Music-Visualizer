@@ -25,7 +25,7 @@ void SongTitleGetter::Init() {
         SMTCSupported = false;
         return;
     }
-    start_time = std::chrono::steady_clock::now();
+    timeline_clock.Reset();
 #else
     SMTCSupported = false;
 #endif
@@ -38,39 +38,82 @@ void SongTitleGetter::PollMediaInfo() {
 
     #if SUPPORT_SMTC
 
-    // Get the current time
-    auto current_time = std::chrono::steady_clock::now();
-
-    // Calculate the elapsed time in seconds
-    auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(current_time - start_time).count();
-
-    if (elapsed_seconds >= 0 || doPollExplicit) {
-
+    try {
         auto smtcManager = winrt::Windows::Media::Control::GlobalSystemMediaTransportControlsSessionManager::RequestAsync().get();
         auto currentSession = smtcManager.GetCurrentSession();
         updated = false;
         if (currentSession) {
+            const bool sessionChanged = timeline_session != currentSession;
+            timeline_session = currentSession;
             auto properties = currentSession.TryGetMediaPropertiesAsync().get();
+            bool trackChanged = sessionChanged;
             if (properties) {
-                if (doPollExplicit || properties.Artist().c_str() != currentArtist || properties.Title().c_str() != currentTitle) {
+                if (properties.Artist().c_str() != currentArtist || properties.Title().c_str() != currentTitle ||
+                    properties.AlbumTitle().c_str() != currentAlbum) {
+                    trackChanged = true;
                     isSongChange = currentArtist.length() || currentTitle.length();
                     currentArtist = properties.Artist().c_str();
                     currentTitle = properties.Title().c_str();
+                    currentAlbum = properties.AlbumTitle().c_str();
 
                     updated = true;
                 }
             }
+
+            const auto timeline = currentSession.GetTimelineProperties();
+            const auto playback = currentSession.GetPlaybackInfo();
+            const bool reportedPlaying = playback.PlaybackStatus() ==
+                GlobalSystemMediaTransportControlsSessionPlaybackStatus::Playing;
+            const auto rate = playback.PlaybackRate();
+            if (trackChanged)
+                timeline_clock.Reset();
+
+            const int64_t start = timeline.StartTime().count() / 10000;
+            timeline_clock.Update(
+                timeline.Position().count() / 10000 - start,
+                timeline.EndTime().count() / 10000 - start,
+                timeline.LastUpdatedTime().time_since_epoch().count() / 10000,
+                winrt::clock::now().time_since_epoch().count() / 10000,
+                std::chrono::duration_cast<std::chrono::milliseconds>(
+                    std::chrono::steady_clock::now().time_since_epoch()).count(),
+                reportedPlaying, rate ? rate.Value() : 1.0);
         }
         else {
+            timeline_clock.Reset();
+            timeline_session = nullptr;
             if (currentArtist.length() || currentTitle.length()) {
                 currentArtist = L"";
                 currentTitle = L"";
+                currentAlbum = L"";
                 updated = true;
             }
         }
-
-        // Reset the start time to the current time
-        start_time = current_time;
     }
+    catch (const winrt::hresult_error&) {
+        // A media player can close or replace its SMTC session between calls.
+        // WinRT objects are automatic here; clearing this state keeps the
+        // renderer safe and avoids showing stale time data.
+        timeline_clock.Reset();
+        timeline_session = nullptr;
+    }
+#endif
+}
+
+int64_t SongTitleGetter::GetPositionMilliseconds() const
+{
+#if SUPPORT_SMTC
+    return timeline_clock.Position(std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now().time_since_epoch()).count());
+#else
+    return -1;
+#endif
+}
+
+int64_t SongTitleGetter::GetDurationMilliseconds() const
+{
+#if SUPPORT_SMTC
+    return timeline_clock.Duration();
+#else
+    return -1;
 #endif
 }

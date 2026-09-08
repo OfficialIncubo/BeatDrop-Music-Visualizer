@@ -1,0 +1,292 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=2
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.000
+fDecay=0.985
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.000
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.000
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=0.000
+fWarpScale=0.000
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=1.000
+wave_g=0.250
+wave_b=0.050
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=temp=0.72*temp+0.98*bass_att;
+per_frame_2=q1=temp;
+per_frame_3=q2=0.25+0.10*sin(time*0.11);
+per_frame_4=q3=0.25+0.02*sin(time*0.07);
+per_frame_5=q4=0.13;
+per_frame_6=q5=0.80;
+per_frame_7=q6=0.50;
+per_frame_8=q7=0.95;
+per_frame_9=q8=0.15;
+per_frame_10=wave_a=0;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    ret = tex2D(sampler_main,uv).xyz;
+warp_4=`    ret *= 0.985;
+warp_5=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float2 p = (uv - 0.5) * aspect.xy;
+comp_4=`    float r = length(p);
+comp_5=`    float2 safeP = p / max(r, 0.00001);
+comp_6=`
+comp_7=`    float pulse = q1 * 0.08;
+comp_8=`    float3 L = normalize(float3(0.0, -1.0, 1.5 - q7));
+comp_9=`    float3 bg = float3(0.015, 0.015, 0.015);
+comp_10=`    ret = bg;
+comp_11=`    float scale = 0.90 * (1.0 + q1 * 0.025);
+comp_12=`
+comp_13=`    // Outer Frame
+comp_14=`    float frameOuter = 1.0 - smoothstep(0.47 * scale, 0.48 * scale, r);
+comp_15=`    float frameInner = smoothstep(0.39 * scale, 0.40 * scale, r);
+comp_16=`    float frameMask = frameOuter * frameInner;
+comp_17=`    float3 frameN = normalize(float3(p, 0.20));
+comp_18=`    float frameShade = 0.5 + 0.5 * dot(frameN, L);
+comp_19=`    float frameY = saturate((p.y / (0.48 * scale)) * 0.5 + 0.5);
+comp_20=`    float3 frameGrad = lerp(float3(0.75, 0.75, 0.78), float3(0.25, 0.25, 0.27), frameY);
+comp_21=`    float3 frameCol = frameGrad + frameShade * 0.025;
+comp_22=`
+comp_23=`    // 8 Symmetrical Mounting Holes
+comp_24=`    float angle = atan2(p.y, p.x);
+comp_25=`    float sector = 6.28318530 / 8.0;
+comp_26=`    float holeIndex = floor((angle + sector * 0.5) / sector);
+comp_27=`    float holeAngle = holeIndex * sector;
+comp_28=`    float holeRadius = 0.435 * scale;
+comp_29=`    float2 holeCenter = float2(cos(holeAngle), sin(holeAngle)) * holeRadius;
+comp_30=`    float holeDist = length(p - holeCenter);
+comp_31=`    float holeSize = 0.012 * scale;
+comp_32=`    float holeBezel = 0.018 * scale;
+comp_33=`    float holeMask = 1.0 - smoothstep(holeSize - 0.002 * scale, holeSize, holeDist);
+comp_34=`    float bezelMask = (1.0 - smoothstep(holeBezel - 0.002 * scale, holeBezel, holeDist)) * (1.0 - holeMask);
+comp_35=`    float3 screwCircleCol = float3(0.45, 0.45, 0.48);
+comp_36=`    float screwY = saturate(((p.y - holeCenter.y) / max(holeSize, 0.00001)) * 0.5 + 0.5);
+comp_37=`    float3 screwInnerCol = lerp(float3(0.30, 0.30, 0.33), float3(0.85, 0.85, 0.88), screwY) + frameShade * 0.05;
+comp_38=`    frameCol = lerp(frameCol, screwCircleCol, bezelMask);
+comp_39=`    frameCol = lerp(frameCol, screwInnerCol, holeMask);
+comp_40=`    ret = lerp(ret, frameCol, frameMask);
+comp_41=`
+comp_42=`    // Diaphragm Cone (Radial Gradient: Grey -> Silver + Secondary Vertical Linear Gradient: Top: Transparent -> Bottom: Black)
+comp_43=`    float excursion = q1 * 0.06;
+comp_44=`    float r_cone = r * (1.0 - excursion);
+comp_45=`    float coneInner = (0.12 - pulse * 0.02) * scale;
+comp_46=`    float coneOuter = (0.32 + pulse * 0.03) * scale;
+comp_47=`    float coneMask = (1.0 - smoothstep(coneOuter - 0.005 * scale, coneOuter, r)) * smoothstep(coneInner, coneInner + 0.01 * scale, r);
+comp_48=`    float grooves = 0.5 + 0.5 * sin((r_cone * 400.0 / scale) - excursion * 15.0);
+comp_49=`    float grooveLight = pow(max(0.0, dot(safeP, L.xy)), 1.15) * grooves;
+comp_50=`    float coneDepth = saturate((r_cone - coneInner) / max(coneOuter - coneInner, 0.00001));
+comp_51=`    float3 cConeGrey   = float3(0.22, 0.22, 0.24);
+comp_52=`    float3 cConeSilver = float3(0.75, 0.75, 0.78);
+comp_53=`    float3 coneBase    = lerp(cConeGrey, cConeSilver, coneDepth);
+comp_54=`    float bVal = saturate(q1);
+comp_55=`    float hVal = time * 0.2 + r_cone * (12.0 + bVal * 10.0) + sin(r_cone * 30.0 - time * 6.0 + excursion * 12.0) * bVal * 4.0;
+comp_56=`    float wavePattern = pow(0.5 + 0.5 * sin(hVal), 1.0 + bVal * 3.0);
+comp_57=`    float3 cGreyWave  = float3(0.60, 0.60, 0.65) * wavePattern * (0.4 + bVal * 0.8) * 0.20;
+comp_58=`    coneBase += cGreyWave;
+comp_59=`    coneBase *= 0.35 + coneDepth * 0.65;
+comp_60=`    coneBase += grooveLight * 0.53 * 0.40;
+comp_61=`    coneBase *= 0.75 + 0.25 * max(0.0, dot(safeP, L.xy));
+comp_62=`    float coneY = saturate((p.y / coneOuter) * 0.5 + 0.5);
+comp_63=`    coneBase = lerp(coneBase, float3(0.0, 0.0, 0.0), coneY);
+comp_64=`    ret = lerp(ret, coneBase, coneMask);
+comp_65=`
+comp_66=`    // Seamless Flat Ring & Surround Area (Continuous from Cone to Gasket, Vertical Linear Gradient + Surround Highlights)
+comp_67=`    float ringInner = coneOuter;
+comp_68=`    float ringOuter = (0.375 + pulse * 0.03) * scale;
+comp_69=`    float ringMask = smoothstep(ringInner, ringInner + 0.004 * scale, r) * (1.0 - smoothstep(ringOuter - 0.004 * scale, ringOuter, r));
+comp_70=`    float ringY = saturate((p.y / (0.40 * scale)) * 0.5 + 0.5);
+comp_71=`    float3 ringBaseCol = lerp(float3(0.24, 0.24, 0.26), float3(0.02, 0.02, 0.02), ringY);
+comp_72=`    ret = lerp(ret, ringBaseCol, ringMask);
+comp_73=`
+comp_74=`    float surrCenter = (0.3475 + pulse * 0.03) * scale;
+comp_75=`    float surrWidth = 0.0150 * scale;
+comp_76=`    float surrDist = abs(r - surrCenter);
+comp_77=`    float surrMask = 1.0 - smoothstep(surrWidth - 0.004 * scale, surrWidth, surrDist);
+comp_78=`    float surrNX = (r - surrCenter) / max(surrWidth, 0.00001);
+comp_79=`    float surrNZ = sqrt(max(0.0, 1.0 - surrNX * surrNX));
+comp_80=`    float3 surrN = normalize(float3(safeP * surrNX, surrNZ));
+comp_81=`    float surrDiff = pow(max(0.0, dot(surrN, L)), 1.05);
+comp_82=`    float3 surrCol = ringBaseCol + surrDiff * 0.10 + pow(surrDiff, 7.0) * 0.53;
+comp_83=`    ret = lerp(ret, surrCol, surrMask);
+comp_84=`
+comp_85=`    // Outer Gasket Flat Ring
+comp_86=`    float gasketInner = ringOuter;
+comp_87=`    float gasketOuter = 0.39 * scale;
+comp_88=`    float gasketCenter = (gasketInner + gasketOuter) * 0.5;
+comp_89=`    float gasketThickness = gasketOuter - gasketInner;
+comp_90=`    float gasketDist = abs(r - gasketCenter);
+comp_91=`    float gasketMask = 1.0 - smoothstep(gasketThickness * 0.5 - 0.002 * scale, gasketThickness * 0.5, gasketDist);
+comp_92=`    float gasketGrad = saturate(gasketDist / (gasketThickness * 0.5));
+comp_93=`    float3 gasketCol = lerp(float3(0.25, 0.25, 0.27), float3(0.02, 0.02, 0.02), gasketGrad);
+comp_94=`    ret = lerp(ret, gasketCol, gasketMask);
+comp_95=`
+comp_96=`    // Radial-Gradient Shadow Beneath Dustcap (Extends to Center)
+comp_97=`    float capSizeVal = (0.13 + pulse * 0.02) * scale;
+comp_98=`    float capShadowT = saturate(r / max(capSizeVal, 0.00001));
+comp_99=`    float3 capShadowCol = lerp(float3(0.01, 0.01, 0.01), float3(0.12, 0.12, 0.14), capShadowT);
+comp_100=`   float capShadowMask = 1.0 - smoothstep(0.0, capSizeVal + 0.025 * scale, r);
+comp_101=`   ret = lerp(ret, capShadowCol, capShadowMask * 0.80);
+comp_102=`
+comp_103=`   // Dust Cap Nose Base (Radial-Gradient: Silver -> Black + Vertical Linear-Gradient: Transparent -> Black)
+comp_104=`   float capSize = capSizeVal;
+comp_105=`   float capMask = 1.0 - smoothstep(capSize - 0.005 * scale, capSize, r);
+comp_106=`   float2 capP = p / max(capSize, 0.00001);
+comp_107=`   float capZ = sqrt(max(0.0, 1.0 - dot(capP, capP)));
+comp_108=`   float3 capN = normalize(float3(capP, capZ));
+comp_109=`   float capDiff = pow(max(0.0, dot(capN, L)), 1.05);
+comp_110=`   float3 Rvec = reflect(-L, capN);
+comp_111=`   float capSpec = pow(max(0.0, dot(Rvec, float3(0.0, 0.0, 1.0))), 24.0);
+comp_112=`   float capRadialT = saturate(length(capP));
+comp_113=`   float3 capRadialGrad = lerp(float3(0.75, 0.75, 0.78), float3(0.02, 0.02, 0.02), capRadialT);
+comp_114=`   float capVerticalT = saturate(capP.y * 0.5 + 0.5);
+comp_115=`   float3 capGrad = lerp(capRadialGrad, float3(0.02, 0.02, 0.02), capVerticalT);
+comp_116=`   float3 capCol = capGrad + capDiff * 0.05 + capSpec * 0.53 * 0.40;
+comp_117=`
+comp_118=`   // Winamp Diamond Logo - two overlapping diamonds (drop-shadow style, like the real mark)
+comp_119=`   float2 wp_base = capP * 1.5;
+comp_120=`   float2 dP = float2(wp_base.x * 0.7071 - wp_base.y * 0.7071, wp_base.x * 0.7071 + wp_base.y * 0.7071);
+comp_121=`   float dMax = max(abs(dP.x), abs(dP.y));
+comp_122=`   float diamondA_fill = 1.0 - smoothstep(0.50, 0.53, dMax);
+comp_123=`   float diamondA_interior = 1.0 - smoothstep(0.42, 0.45, dMax);
+comp_124=`   float diamondA_border = diamondA_fill - diamondA_interior;
+comp_125=`
+comp_126=`   float2 wp_base2 = capP * 1.5;
+comp_127=`   float2 dP2 = float2(wp_base2.x * 0.7071 - wp_base2.y * 0.7071, wp_base2.x * 0.7071 + wp_base2.y * 0.7071);
+comp_128=`   float dMax2 = max(abs(dP2.x), abs(dP2.y));
+comp_129=`   float diamondB_fill = 1.0 - smoothstep(0.50, 0.53, dMax2);
+comp_130=`   float diamondB_interior = 1.0 - smoothstep(0.42, 0.45, dMax2);
+comp_131=`   float diamondB_border = diamondB_fill - diamondB_interior;
+comp_132=`   // Thinner Horizontally Flipped Vector Bolt SDF
+comp_133=`   float2 bp = capP * 1.25;
+comp_134=`   bp.x = -bp.x;
+comp_135=`   // Vertices pinched along X to make the lightning bolt slender
+comp_136=`   float2 v0 = float2( 0.42,  0.48);
+comp_137=`   float2 v1 = float2( 0.18,  0.16);
+comp_138=`   float2 v2 = float2( 0.28,  0.12);
+comp_139=`   float2 v3 = float2( 0.28, -0.06);
+comp_140=`   float2 v4 = float2(-0.42, -0.48);
+comp_141=`   float2 v5 = float2(-0.18, -0.16);
+comp_142=`   float2 v6 = float2(-0.28, -0.12);
+comp_143=`   float2 v7 = float2(-0.28,  0.06);
+comp_144=`   float hits = 0.0;
+comp_145=`   hits += ((v0.y > bp.y) != (v1.y > bp.y)) && (bp.x < (v1.x - v0.x) * (bp.y - v0.y) / (v1.y - v0.y + 0.00001) + v0.x) ? 1.0 : 0.0;
+comp_146=`   hits += ((v1.y > bp.y) != (v2.y > bp.y)) && (bp.x < (v2.x - v1.x) * (bp.y - v1.y) / (v2.y - v1.y + 0.00001) + v1.x) ? 1.0 : 0.0;
+comp_147=`   hits += ((v2.y > bp.y) != (v3.y > bp.y)) && (bp.x < (v3.x - v2.x) * (bp.y - v3.y) / (v2.y - v2.y + 0.00001) + v2.x) ? 1.0 : 0.0;
+comp_148=`   hits += ((v3.y > bp.y) != (v4.y > bp.y)) && (bp.x < (v4.x - v3.x) * (bp.y - v3.y) / (v4.y - v3.y + 0.00001) + v3.x) ? 1.0 : 0.0;
+comp_149=`   hits += ((v4.y > bp.y) != (v5.y > bp.y)) && (bp.x < (v5.x - v4.x) * (bp.y - v4.y) / (v5.y - v4.y + 0.00001) + v4.x) ? 1.0 : 0.0;
+comp_150=`   hits += ((v5.y > bp.y) != (v6.y > bp.y)) && (bp.x < (v6.x - v5.x) * (bp.y - v5.y) / (v6.y - v5.y + 0.00001) + v5.x) ? 1.0 : 0.0;
+comp_151=`   hits += ((v6.y > bp.y) != (v7.y > bp.y)) && (bp.x < (v7.x - v6.x) * (bp.y - v6.y) / (v6.y - v6.y + 0.00001) + v6.x) ? 1.0 : 0.0;
+comp_152=`   hits += ((v7.y > bp.y) != (v0.y > bp.y)) && (bp.x < (v0.x - v7.x) * (bp.y - v7.y) / (v0.y - v7.y + 0.00001) + v7.x) ? 1.0 : 0.0;
+comp_153=`   float inBolt = fmod(hits, 2.0);
+comp_154=`   // Edge Distance Field for Heavy Bolt Outline
+comp_155=`   float d0 = length(bp - (v0 + clamp(dot(bp - v0, v1 - v0) / dot(v1 - v0, v1 - v0), 0.0, 1.0) * (v1 - v0)));
+comp_156=`   float d1 = length(bp - (v1 + clamp(dot(bp - v1, v2 - v1) / dot(v2 - v1, v2 - v1), 0.0, 1.0) * (v2 - v1)));
+comp_157=`   float d2 = length(bp - (v2 + clamp(dot(bp - v2, v3 - v2) / dot(v3 - v2, v3 - v2), 0.0, 1.0) * (v3 - v2)));
+comp_158=`   float d3 = length(bp - (v3 + clamp(dot(bp - v3, v4 - v3) / dot(v4 - v3, v4 - v3), 0.0, 1.0) * (v4 - v3)));
+comp_159=`   float d4 = length(bp - (v4 + clamp(dot(bp - v4, v5 - v4) / dot(v5 - v4, v5 - v4), 0.0, 1.0) * (v5 - v4)));
+comp_160=`   float d5 = length(bp - (v5 + clamp(dot(bp - v5, v6 - v5) / dot(v6 - v5, v6 - v5), 0.0, 1.0) * (v6 - v5)));
+comp_161=`   float d6 = length(bp - (v6 + clamp(dot(bp - v6, v7 - v6) / dot(v7 - v6, v7 - v6), 0.0, 1.0) * (v7 - v6)));
+comp_162=`   float d7 = length(bp - (v7 + clamp(dot(bp - v7, v0 - v7) / dot(v0 - v7, v0 - v7), 0.0, 1.0) * (v0 - v7)));
+comp_163=`   float minEdgeDist = min(min(min(d0, d1), min(d2, d3)), min(min(d4, d5), min(d6, d7)));
+comp_164=`   float boltEdgeSmooth = smoothstep(0.0, 0.015, minEdgeDist);
+comp_165=`   float boltCore = lerp(1.0 - boltEdgeSmooth, boltEdgeSmooth, inBolt);
+comp_166=`   float boltOutline = smoothstep(0.065, 0.080, minEdgeDist);
+comp_167=`   float boltOutlineMask = inBolt > 0.5 ? 1.0 : (1.0 - boltOutline);
+comp_168=`   // Color Palette
+comp_169=`   float goldGradient = saturate((wp_base.y - wp_base.x * 0.4 + 0.4) * 0.8);
+comp_170=`   float3 goldLight = float3(1.00, 0.85, 0.25);
+comp_171=`   float3 goldDark  = float3(0.85, 0.48, 0.05);
+comp_172=`   float3 goldCol   = lerp(goldDark, goldLight, goldGradient);
+comp_173=`   float3 whiteCol  = float3(0.95, 0.95, 0.95);
+comp_174=`   float3 grayCol   = float3(0.80, 0.80, 0.80);
+comp_175=`   float3 blackOutlineCol = float3(0.02, 0.02, 0.02);
+comp_176=`
+comp_177=`   // Let the dust cap's own diffuse light & specular shine play across the logo plaque too
+comp_178=`   float logoShade = 0.65 + 0.55 * capDiff;
+comp_179=`   float logoGlint = capSpec * 0.85;
+comp_180=`   blackOutlineCol = saturate(blackOutlineCol * logoShade + logoGlint * 0.35);
+comp_181=`   whiteCol = saturate(whiteCol * logoShade + logoGlint);
+comp_182=`   grayCol = saturate(grayCol * logoShade + logoGlint * 0.80);
+comp_183=`   goldCol = saturate(goldCol * logoShade + logoGlint);
+comp_184=`
+comp_185=`   // Composition Layering - back (shadow) diamond first, then front diamond, then bolt on top
+comp_186=`   capCol = lerp(capCol, blackOutlineCol, diamondB_border * capMask);
+comp_187=`   capCol = lerp(capCol, grayCol, diamondB_interior * capMask);
+comp_188=`   capCol = lerp(capCol, blackOutlineCol, diamondA_border * capMask);
+comp_189=`   capCol = lerp(capCol, whiteCol, diamondA_interior * capMask);
+comp_190=`   capCol = lerp(capCol, blackOutlineCol, boltOutlineMask * capMask);
+comp_191=`   capCol = lerp(capCol, goldCol, boltCore * capMask);
+comp_192=`   ret = lerp(ret, capCol, capMask);
+comp_193=`   // Final Occlusion & Silhouette
+comp_194=`   float ao = (0.55 + 0.45 * smoothstep(0.0, 0.06 * scale, abs(r - coneOuter))) * (0.65 + 0.35 * smoothstep(0.0, 0.04 * scale, abs(r - capSize)));
+comp_195=`   ret *= max(ao, 0.10 + 0.50 * 0.15);
+comp_196=`   ret += 0.25 * 0.20;
+comp_197=`   float silhouette = 1.0 - smoothstep(0.475 * scale, 0.48 * scale, r);
+comp_198=`   ret = lerp(bg, ret, silhouette);
+comp_199=`   ret += q1 * 0.003 * silhouette;
+comp_200=`}
+

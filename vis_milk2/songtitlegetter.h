@@ -7,7 +7,10 @@
 
 #include <direct.h>
 #include <string>
+#include <chrono>
+#include <cstdint>
 #include <dbghelp.h>
+#include "songtimeline.h"
 
 #ifdef _WIN10_BUILD
 #define SUPPORT_SMTC 1
@@ -33,7 +36,8 @@ public:
 	std::wstring currentAlbum;
 
 	#if SUPPORT_SMTC
-	std::chrono::steady_clock::time_point start_time;
+	SongTimelineClock timeline_clock;
+	GlobalSystemMediaTransportControlsSession timeline_session{ nullptr };
 	#endif
 
 	bool updated = false;
@@ -46,4 +50,6 @@ public:
 	SongTitleGetter();
 	void Init();
 	void PollMediaInfo();
+	int64_t GetPositionMilliseconds() const;
+	int64_t GetDurationMilliseconds() const;
 };

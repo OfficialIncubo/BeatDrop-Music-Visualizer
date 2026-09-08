@@ -2768,11 +2768,13 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 	if (WM_TASKBARCREATED == 0)
 		WM_TASKBARCREATED = RegisterWindowMessageW(L"TaskbarCreated");
 
-	// F10 is handled by Windows as a system-menu accelerator when it reaches
-	// DefWindowProc. BeatDrop has no F10 popup menu, so consume it here to keep
-	// the renderer out of the system menu modal state.
+	// F10 is a system-menu accelerator if it reaches DefWindowProc. Consume it
+	// here and use it to cycle the SMTC track-time overlay instead.
 	if ((uMsg == WM_KEYDOWN || uMsg == WM_SYSKEYDOWN) && wParam == VK_F10)
+	{
+		g_plugin.CycleSongTimeDisplay();
 		return 0;
+	}
 
 	USHORT mask = 1 << (sizeof(SHORT)*8 - 1);
 	//bool bShiftHeldDown = (GetKeyState(VK_SHIFT) & mask) != 0;

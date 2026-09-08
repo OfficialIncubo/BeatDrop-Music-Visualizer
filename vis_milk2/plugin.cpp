@@ -612,6 +612,7 @@ SPOUT :
 */
 
 #include "plugin.h"
+#include <chrono>
 #include "pluginshell.h"
 #include "utility.h"
 #include "support.h"
@@ -1281,6 +1282,7 @@ void CPlugin::MyPreInitialize()
 	m_bShowSongTitle	= false;
 	m_bShowSongTime		= false;
 	m_bShowSongLen		= false;
+	m_nSongTimeDisplayMode = 0;
 	m_fShowRatingUntilThisTime = -1.0f;
 	ClearErrors();
 	m_szDebugMessage[0]	= 0;
@@ -5073,40 +5075,27 @@ void CPlugin::MyRenderUI(
         wchar_t buf2[512] = {0};
         wchar_t buf3[512+1] = {0}; // add two extra spaces to end, so italicized fonts don't get clipped
 
+        // Render time first so the title is stacked immediately above it.
+        #if SUPPORT_SMTC
+        if (m_nSongTimeDisplayMode != 0)
+        {
+            wchar_t songTime[128] = {0};
+            SelectFont(DECORATIVE_FONT);
+            if (GetSongTimeText(songTime, _countof(songTime)))
+                MyTextOut_Shadow(songTime, MTO_LOWER_LEFT);
+        }
+        #endif
+
         // render song title in lower-left corner:
         #if SUPPORT_SMTC
         if (m_bShowSongTitle)
         {
-			wchar_t buf4[512] = {0};
+            wchar_t buf4[512] = {0};
             SelectFont(DECORATIVE_FONT);
-            GetSongTitle(buf4, sizeof(buf4)); // defined in utility.h/cpp
+            GetSongTitle(buf4, sizeof(buf4));
             MyTextOut_Shadow(buf4, MTO_LOWER_LEFT);
         }
         #endif
-
-        // render song time & len above that:
-        if (m_bShowSongTime || m_bShowSongLen)
-        {
-            /*if (playbackService) {
-                FormatSongTime(playbackService->GetPosition(), buf); // defined in utility.h/cpp
-                FormatSongTime(playbackService->GetDuration(), buf2); // defined in utility.h/cpp
-                if (m_bShowSongTime && m_bShowSongLen)
-                {
-                    // only show playing position and track length if it is playing (buffer is valid)
-                    if (buf[0])
-                        swprintf(buf3, L"%s / %s ", buf, buf2);
-                    else
-                        lstrcpynW(buf3, buf2, 512);
-                }
-                else if (m_bShowSongTime)
-                    lstrcpynW(buf3, buf, 512);
-                else
-                    lstrcpynW(buf3, buf2, 512);
-
-                SelectFont(DECORATIVE_FONT);
-                MyTextOut_Shadow(buf3, MTO_LOWER_LEFT);
-            }*/
-        }
     }
 
     // 4. render text in upper-left corner
@@ -11948,19 +11937,22 @@ void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
     szSongTitle[0] = 0;
 
     #if SUPPORT_SMTC
-    if (m_bEnableSongTitlePoll || m_bEnableSongTitlePollExplicit)
+    if (m_bEnableSongTitlePoll || m_bEnableSongTitlePollExplicit || m_nSongTimeDisplayMode != 0)
     {
         // Static variables maintain state between calls
         static std::wstring cachedTitle;
-        static double lastPollTime = -1.0;
-        constexpr double POLL_INTERVAL = 0.5; // Poll twice per second
+        static std::chrono::steady_clock::time_point lastPollTime;
+        static bool hasLastPollTime = false;
+        constexpr auto POLL_INTERVAL = std::chrono::milliseconds(100);
 
-        // Initialize on first run or when time resets
-        double currentTime = GetTime();
-        if (currentTime <= 0.1 || lastPollTime < 0)
+        // Use monotonic wall time so media polling keeps a stable cadence even
+        // when the render animation clock is paused or the window loses focus.
+        const auto currentTime = std::chrono::steady_clock::now();
+        if (!hasLastPollTime)
         {
             songtitlegetter.Init();
-            lastPollTime = currentTime;
+            lastPollTime = currentTime - POLL_INTERVAL;
+            hasLastPollTime = true;
         }
 
         // Always ensure null-terminated output
@@ -12011,6 +12003,55 @@ void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
         }
     }
     #endif
+}
+
+void CPlugin::CycleSongTimeDisplay()
+{
+    m_nSongTimeDisplayMode = (m_nSongTimeDisplayMode + 1) % 3;
+}
+
+static void FormatSongClock(int64_t milliseconds, bool includeCentiseconds, wchar_t* output, int capacity)
+{
+    if (capacity <= 0) return;
+    if (milliseconds < 0) { output[0] = L'\0'; return; }
+
+    const int64_t totalSeconds = milliseconds / 1000;
+    const int seconds = static_cast<int>(totalSeconds % 60);
+    const int minutes = static_cast<int>((totalSeconds / 60) % 60);
+    const int hours = static_cast<int>(totalSeconds / 3600);
+    const int centiseconds = static_cast<int>((milliseconds % 1000) / 10);
+
+    if (hours > 0)
+        swprintf_s(output, capacity, includeCentiseconds ? L"%02d:%02d:%02d.%02d" : L"%02d:%02d:%02d", hours, minutes, seconds, centiseconds);
+    else
+        swprintf_s(output, capacity, includeCentiseconds ? L"%d:%02d.%02d" : L"%d:%02d", minutes, seconds, centiseconds);
+}
+
+bool CPlugin::GetSongTimeText(wchar_t *szSongTime, int nSize)
+{
+    if (!szSongTime || nSize <= 0) return false;
+    szSongTime[0] = L'\0';
+
+#if SUPPORT_SMTC
+    // Title and time share one throttled SMTC poll.
+    wchar_t ignoredTitle[2] = {0};
+    GetSongTitle(ignoredTitle, _countof(ignoredTitle));
+
+    const int64_t duration = songtitlegetter.GetDurationMilliseconds();
+    const int64_t position = songtitlegetter.GetPositionMilliseconds();
+    if (duration <= 0 || position < 0) return false;
+
+    const bool remainingMode = m_nSongTimeDisplayMode == 2;
+    const int64_t displayedTime = remainingMode ? duration - position : position;
+    wchar_t current[64] = {0};
+    wchar_t total[64] = {0};
+    FormatSongClock(displayedTime, true, current, _countof(current));
+    FormatSongClock(duration, false, total, _countof(total));
+    swprintf_s(szSongTime, nSize, remainingMode ? L"-%s / %s" : L"%s / %s", current, total);
+    return szSongTime[0] != L'\0';
+#else
+    return false;
+#endif
 }
 
 // =========================================================
