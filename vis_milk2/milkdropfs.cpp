@@ -1207,6 +1207,12 @@ void CPlugin::RenderFrame(int bRedraw)
             m_supertext.fStartTime = -1.0f;	// 'off' state
 	}
 
+    // Lyrics are rendered only after the preset composite and title animation.
+    // The dedicated renderer restores every D3D state it touches, so it cannot
+    // alter the shared title texture or regress a preset's next frame.
+    if (m_bEnableLyrics)
+        m_lyricsRenderer.Render(lpDevice, GetWidth(), GetHeight(), GetTime());
+
 	DrawUserSprites();
 
 	// flip buffers

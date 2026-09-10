@@ -42,6 +42,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "support.h"
 #include "texmgr.h"
 #include "state.h"
+#include "lyrics_editor.h"
+#include "lyrics_manager.h"
+#include "lyrics_renderer.h"
 #include <vector>
 #include <random>
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
@@ -566,6 +569,15 @@ public:
         bool		m_bShowSongTime;
         bool		m_bShowSongLen;
 		int			m_nSongTimeDisplayMode;
+        bool        m_bEnableLyrics;
+        wchar_t     m_szLyricsFontFace[128] = L"Times New Roman";
+        bool        m_bLyricsFontBold = false;
+        bool        m_bLyricsFontItalic = true;
+        int         m_nLyricsFontSize = 48;
+        bool        m_bLyricsFontAA = true;
+        int         m_nLyricsFontColorR = 180;
+        int         m_nLyricsFontColorG = 0;
+        int         m_nLyricsFontColorB = 255;
         float		m_fShowRatingUntilThisTime;
 
         #define ERR_ALL    0
@@ -587,12 +599,19 @@ public:
         void GetSongTitle(wchar_t *szSongTitle, int nSize);
 		void CycleSongTimeDisplay();
 		bool GetSongTimeText(wchar_t *szSongTime, int nSize);
+        void UpdateLyrics();
+        void ToggleLyrics(bool showNotification = true);
+        void OpenLyricsEditor(HWND owner);
 
         //musik::core::sdk::IPlaybackService* playbackService;
         std::string emulatedWinampSongTitle;
         char		m_szDebugMessage[512];
         wchar_t		m_szSongTitle    [512];
         wchar_t		m_szSongTitlePrev[512];
+        std::wstring m_lastLyricsLine;
+        BeatDropLyricsManager m_lyricsManager;
+        BeatDropLyricsEditor m_lyricsEditor;
+        BeatDropLyricsRenderer m_lyricsRenderer;
 
         // stuff for menu system:
         CMilkMenu	*m_pCurMenu;	// should always be valid!

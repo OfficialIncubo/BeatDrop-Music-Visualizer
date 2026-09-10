@@ -152,3 +152,58 @@ int64_t SongTitleGetter::GetDurationMilliseconds() const
     return -1;
 #endif
 }
+
+bool SongTitleGetter::SeekTo(double positionSeconds)
+{
+#if SUPPORT_SMTC
+    if (!SMTCSupported || !std::isfinite(positionSeconds) || positionSeconds < 0.0 ||
+        !EnsureMediaManager())
+        return false;
+
+    try {
+        auto session = smtc_manager.GetCurrentSession();
+        if (!session)
+            return false;
+
+        const auto timeline = session.GetTimelineProperties();
+        const int64_t start = timeline.StartTime().count() / 10000;
+        const int64_t end = timeline.EndTime().count() / 10000;
+        int64_t target = start + static_cast<int64_t>(positionSeconds * 1000.0 + 0.5);
+        if (end > start)
+            target = (std::min)(target, end);
+        target = (std::max)(target, start);
+
+        // SMTC expects a 100-nanosecond TimeSpan count, not a chrono duration.
+        if (!session.TryChangePlaybackPositionAsync(target * 10000).get())
+            return false;
+
+        // The next provider publication may lag the seek.  Anchor the shared
+        // clock immediately so the renderer and editor stay on the selected line.
+        const auto playback = session.GetPlaybackInfo();
+        const bool playing = playback.PlaybackStatus() ==
+            GlobalSystemMediaTransportControlsSessionPlaybackStatus::Playing;
+        const auto rate = playback.PlaybackRate();
+        const int64_t nowSteady = std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::steady_clock::now().time_since_epoch()).count();
+        const int64_t nowUtc = winrt::clock::now().time_since_epoch().count() / 10000;
+        timeline_clock.Update(target - start, end - start, nowUtc, nowUtc, nowSteady,
+            playing, rate ? rate.Value() : 1.0);
+        timeline_session = session;
+        return true;
+    }
+    catch (const winrt::hresult_error&) {
+        return false;
+    }
+#else
+    (void)positionSeconds;
+    return false;
+#endif
+}
+
+bool SongTitleGetter::SeekRelative(double deltaSeconds)
+{
+    const int64_t position = GetPositionMilliseconds();
+    if (position < 0 || !std::isfinite(deltaSeconds))
+        return false;
+    return SeekTo((std::max)(0.0, position / 1000.0 + deltaSeconds));
+}

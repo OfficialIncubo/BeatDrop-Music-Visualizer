@@ -57,5 +57,7 @@ public:
 	void PollMediaInfo();
 	int64_t GetPositionMilliseconds() const;
 	int64_t GetDurationMilliseconds() const;
+	bool SeekTo(double positionSeconds);
+	bool SeekRelative(double deltaSeconds);
 	bool EnsureMediaManager();
 };

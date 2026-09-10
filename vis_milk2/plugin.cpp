@@ -1164,6 +1164,7 @@ void CPlugin::MyPreInitialize()
 	m_bEnableRating			= true;
     //m_bInstaScan            = false;
 	m_bSongTitleAnims		= true;
+	m_bEnableLyrics         = true;
 	m_fSongTitleAnimDuration = 1.7f;
 	m_fTimeBetweenRandomSongTitles = -1.0f;
 	m_fTimeBetweenRandomCustomMsgs = -1.0f;
@@ -1283,11 +1284,13 @@ void CPlugin::MyPreInitialize()
 	m_bShowSongTime		= false;
 	m_bShowSongLen		= false;
 	m_nSongTimeDisplayMode = 0;
+	m_bEnableLyrics         = true;
 	m_fShowRatingUntilThisTime = -1.0f;
 	ClearErrors();
 	m_szDebugMessage[0]	= 0;
     m_szSongTitle[0]    = 0;
     m_szSongTitlePrev[0] = 0;
+    m_lastLyricsLine.clear();
 
 	m_lpVS[0]				= NULL;
 	m_lpVS[1]				= NULL;
@@ -1386,6 +1389,30 @@ void CPlugin::MyReadConfig()
     m_bEnableSongTitlePoll = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePoll", m_bEnableSongTitlePoll, pIni);
     m_bEnableSongTitlePollExplicit = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePollExplicit", m_bEnableSongTitlePollExplicit, pIni);
     #endif
+    m_bEnableLyrics = GetPrivateProfileBoolW(L"settings", L"bEnableLyrics", m_bEnableLyrics, pIni);
+    GetPrivateProfileStringW(L"settings", L"szFontFace6", m_szLyricsFontFace,
+        m_szLyricsFontFace, _countof(m_szLyricsFontFace), pIni);
+    m_bLyricsFontBold = GetPrivateProfileBoolW(L"settings", L"bFontBold6",
+        m_bLyricsFontBold, pIni);
+    m_bLyricsFontItalic = GetPrivateProfileBoolW(L"settings", L"bFontItalic6",
+        m_bLyricsFontItalic, pIni);
+    m_nLyricsFontSize = GetPrivateProfileIntW(L"settings", L"nFontSize6",
+        m_nLyricsFontSize, pIni);
+    m_bLyricsFontAA = GetPrivateProfileBoolW(L"settings", L"bFontAA6",
+        m_bLyricsFontAA, pIni);
+    m_nLyricsFontColorR = GetPrivateProfileIntW(L"settings", L"nFontColorR6",
+        m_nLyricsFontColorR, pIni);
+    m_nLyricsFontColorG = GetPrivateProfileIntW(L"settings", L"nFontColorG6",
+        m_nLyricsFontColorG, pIni);
+    m_nLyricsFontColorB = GetPrivateProfileIntW(L"settings", L"nFontColorB6",
+        m_nLyricsFontColorB, pIni);
+    m_nLyricsFontSize = (std::max)(12, (std::min)(128, m_nLyricsFontSize));
+    m_nLyricsFontColorR = (std::max)(0, (std::min)(255, m_nLyricsFontColorR));
+    m_nLyricsFontColorG = (std::max)(0, (std::min)(255, m_nLyricsFontColorG));
+    m_nLyricsFontColorB = (std::max)(0, (std::min)(255, m_nLyricsFontColorB));
+    m_lyricsRenderer.SetFont(m_szLyricsFontFace, m_bLyricsFontBold,
+        m_bLyricsFontItalic, m_nLyricsFontSize, m_bLyricsFontAA,
+        m_nLyricsFontColorR, m_nLyricsFontColorG, m_nLyricsFontColorB);
     m_bScreenDependentRenderMode = GetPrivateProfileBoolW(L"settings", L"bScreenDependentRenderMode", m_bScreenDependentRenderMode, pIni);
     m_bShaderCaching = GetPrivateProfileBoolW(L"settings", L"bShaderCaching", m_bShaderCaching, pIni);
     m_bShaderPrecachingAtStartup = GetPrivateProfileBoolW(L"settings", L"bShaderPrecachingAtStartup", m_bShaderPrecachingAtStartup, pIni);
@@ -1525,6 +1552,15 @@ void CPlugin::MyWriteConfig()
 	// ================================
 
 	WritePrivateProfileIntW(m_bSongTitleAnims,		L"bSongTitleAnims",		pIni, L"settings");
+	WritePrivateProfileIntW(m_bEnableLyrics,		L"bEnableLyrics",		pIni, L"settings");
+	WritePrivateProfileStringW(L"settings", L"szFontFace6", m_szLyricsFontFace, pIni);
+	WritePrivateProfileIntW(m_bLyricsFontBold, L"bFontBold6", pIni, L"settings");
+	WritePrivateProfileIntW(m_bLyricsFontItalic, L"bFontItalic6", pIni, L"settings");
+	WritePrivateProfileIntW(m_nLyricsFontSize, L"nFontSize6", pIni, L"settings");
+	WritePrivateProfileIntW(m_bLyricsFontAA, L"bFontAA6", pIni, L"settings");
+	WritePrivateProfileIntW(m_nLyricsFontColorR, L"nFontColorR6", pIni, L"settings");
+	WritePrivateProfileIntW(m_nLyricsFontColorG, L"nFontColorG6", pIni, L"settings");
+	WritePrivateProfileIntW(m_nLyricsFontColorB, L"nFontColorB6", pIni, L"settings");
 	WritePrivateProfileIntW(m_bHardCutsDisabled,	    L"bHardCutsDisabled",	pIni, L"settings");
 	WritePrivateProfileIntW(m_bEnableRating,		    L"bEnableRating",		pIni, L"settings");
 	//WritePrivateProfileIntW(m_bInstaScan,            "bInstaScan",		    pIni, "settings");
@@ -4391,6 +4427,7 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
     SafeRelease(m_lpVS[1]);
     SafeRelease(m_lpDDSTitle);
     SafeRelease(m_d3dx_title_font_doublesize);
+    m_lyricsRenderer.OnDeviceLost();
 
     // NOTE: THIS CODE IS IN THE RIGHT PLACE.
     if (m_gdi_title_font_doublesize)
@@ -4789,6 +4826,7 @@ void CPlugin::MyRenderFn(int redraw)
             if (m_bSongTitleAnims)
                 LaunchSongTitleAnim();
         }
+        UpdateLyrics();
     }
 
     // 2. Clear the background:
@@ -6525,6 +6563,17 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
         // For a complete list of virtual-key codes, look up the keyphrase
         //   "virtual-key codes [win32]" in the msdn help.
         nRepeat = LOWORD(lParam);
+
+        if (bCtrlHeldDown && (wParam == 'L' || wParam == 'l'))
+        {
+            ToggleLyrics();
+            return 0;
+        }
+        if (bCtrlHeldDown && bShiftHeldDown && (wParam == 'E' || wParam == 'e'))
+        {
+            OpenLyricsEditor(hWnd);
+            return 0;
+        }
 
 		// SPOUT DEBUG
 		// Special case for F1 help display in pluginshell
@@ -11937,7 +11986,8 @@ void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
     szSongTitle[0] = 0;
 
     #if SUPPORT_SMTC
-    if (m_bEnableSongTitlePoll || m_bEnableSongTitlePollExplicit || m_nSongTimeDisplayMode != 0)
+    if (m_bEnableSongTitlePoll || m_bEnableSongTitlePollExplicit ||
+        m_nSongTimeDisplayMode != 0 || m_bEnableLyrics)
     {
         // Static variables maintain state between calls
         static std::wstring cachedTitle;
@@ -11988,6 +12038,10 @@ void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
                 {
                     cachedTitle = artist + L" - " + title;
                 }
+
+                if (m_bEnableLyrics)
+                    m_lyricsManager.UpdateTrack(artist, title, songtitlegetter.currentAlbum,
+                        songtitlegetter.GetDurationMilliseconds() / 1000.0);
 
                 songtitlegetter.updated = false;
             }
@@ -12052,6 +12106,71 @@ bool CPlugin::GetSongTimeText(wchar_t *szSongTime, int nSize)
 #else
     return false;
 #endif
+}
+
+void CPlugin::UpdateLyrics()
+{
+    if (!m_bEnableLyrics)
+        return;
+
+#if SUPPORT_SMTC
+    const int64_t positionMilliseconds = songtitlegetter.GetPositionMilliseconds();
+    if (positionMilliseconds < 0)
+    {
+        if (!m_lastLyricsLine.empty())
+        {
+            m_lastLyricsLine.clear();
+            m_lyricsRenderer.Clear(GetTime());
+        }
+        return;
+    }
+    const std::wstring line = m_lyricsManager.CurrentLine(positionMilliseconds / 1000.0);
+    if (line != m_lastLyricsLine)
+    {
+        m_lastLyricsLine = line;
+        m_lyricsRenderer.SetLine(line, GetTime());
+    }
+#endif
+}
+
+void CPlugin::ToggleLyrics(bool showNotification)
+{
+    m_bEnableLyrics = !m_bEnableLyrics;
+    m_lastLyricsLine.clear();
+    if (m_bEnableLyrics)
+    {
+#if SUPPORT_SMTC
+        m_lyricsManager.UpdateTrack(songtitlegetter.currentArtist, songtitlegetter.currentTitle,
+            songtitlegetter.currentAlbum, songtitlegetter.GetDurationMilliseconds() / 1000.0);
+#endif
+        if (showNotification)
+            AddNotif(L"Lyrics enabled");
+    }
+    else
+    {
+        m_lyricsRenderer.Clear(GetTime());
+        if (showNotification)
+            AddNotif(L"Lyrics disabled");
+    }
+    WritePrivateProfileIntW(m_bEnableLyrics, L"bEnableLyrics", GetConfigIniFile(), L"settings");
+}
+
+void CPlugin::OpenLyricsEditor(HWND owner)
+{
+#if SUPPORT_SMTC
+    // Opening the editor is an explicit request to retrieve lyrics, even when
+    // on-screen lyrics are disabled.  This allows plain LRCLIB text to be
+    // timestamped and uploaded without enabling the renderer.
+    if (!songtitlegetter.currentTitle.empty())
+    {
+        m_lyricsManager.UpdateTrack(songtitlegetter.currentArtist,
+            songtitlegetter.currentTitle, songtitlegetter.currentAlbum,
+            songtitlegetter.GetDurationMilliseconds() / 1000.0);
+        m_lyricsManager.Refresh();
+    }
+#endif
+    m_lyricsEditor.Open(owner, &m_lyricsManager, songtitlegetter.currentArtist,
+        songtitlegetter.currentTitle);
 }
 
 // =========================================================

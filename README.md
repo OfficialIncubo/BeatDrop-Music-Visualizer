@@ -39,6 +39,7 @@ Highlights:
 - [Spout](https://spout.zeal.co) integration
 - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library integration
 - Toggleable Speaker and Microphone Audio Source Modes
+- Synchronized LRC lyrics with a built-in timestamp editor, local cache and smooth line transitions
 - Our modified [loopback-capture](https://matthewvaneerde.wordpress.com/2008/12/16/sample-wasapi-loopback-capture-record-what-you-hear/) code, called BeatDrop-loopback, with above 92kHz sample rate (Hi-Res) support, intelligent default audio change and anti-stutter
 - Interact presets with Mouse and Keyboard (CTRL + Arrow Keys)
 - GIF, Video and [Spout](https://spout.zeal.co) Input support for sprites and textures
@@ -179,6 +180,31 @@ Now it can get the song information from any media players using SMTC, sending i
 
 ![BeatDropRealTimeSongInfoDemo](https://github.com/user-attachments/assets/6cc5cb3d-f82e-4526-b686-94670e3483b8)
 
+## SYNCHRONIZED LYRICS
+
+### Overview
+
+Press `CTRL + L` to enable or disable lyrics. On the standard Windows 10+ build, BeatDrop uses the same SMTC playback position, seek state and duration shown by the song-time overlay to select the active `.lrc` line. Matching synchronized lyrics are fetched in the background from LRCLIB, then cached under `%LOCALAPPDATA%\BeatDrop\Lyrics` as `Artist - Title.lrc`. Cached files include BeatDrop's LRC metadata header and remain available locally.
+Press `CTRL + SHIFT + E` to open the timed lyrics editor. It supports importing an LRC, capturing the current playback timestamp (`Space`), seeking to a selected line, inserting silence, line reordering, and a 100-step undo/redo history.
+Hotkeys:
+- `Ctrl + Shift + E` — Open Lyrics Editor
+- `Space` — Capture the current playback timestamp for the selected lyric line, then move to the next line
+- `Delete` — Remove the timestamp from the selected parsed line
+- `Ctrl + Z` — Undo
+- `Ctrl + Y` — Redo
+
+### LRCLIB upload
+
+After synchronizing at least one lyric line, click `Upload to LRCLIB`. BeatDrop shows a confirmation dialog before publishing the current artist, title, album, duration, plain lyrics and timestamped LRC lyrics to LRCLIB.
+Uploads are public and may create a new revision for an existing track, so verify the metadata and timing first. BeatDrop obtains the required one-time proof-of-work publish token automatically; no LRCLIB account or API key is required.
+
+### Customization
+
+The lyric overlay is font-only: its default is `Times New Roman`, Italic in `RGB(180, 0, 255)`, independent from the song-title renderer. Customize it in `beatdrop.ini` with `szFontFace6`, `bFontBold6`, `bFontItalic6`, `nFontSize6`, `bFontAA6`, plus `nFontColorR6`, `nFontColorG6`, and `nFontColorB6` (each color channel is clamped to `0`–`255`).
+
+### Compatibility
+
+The `Release_OldOS` builds remain compatible with Windows Vista through Windows 11: the editor, local LRC cache, and independent Direct3D 9 renderer are retained without WinRT. Automatic system now-playing position/seek integration requires the Windows 10+ SMTC API.
 Note that the standard builds work on Windows 10 or Windows 11. For Windows Vista, 7, 8 and 8.1, use the matching `BeatDrop_OldOS_x86.exe` or `BeatDrop_OldOS_x64.exe` build, which omits this feature for better compatibility.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------

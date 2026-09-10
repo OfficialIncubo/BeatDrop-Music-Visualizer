@@ -229,6 +229,8 @@ static void EnsureTrayIconRegistered()
 enum TrayMenuCommand
 {
 	TRAY_MENU_SHOW_WINDOW = 2000,
+	TRAY_MENU_ENABLE_LYRICS,
+	TRAY_MENU_OPEN_LYRICS_EDITOR,
 	TRAY_MENU_SPOUT,
 	TRAY_MENU_LOCK_PRESET,
 	TRAY_MENU_ORDER,
@@ -318,6 +320,10 @@ static void ShowTrayContextMenu(HWND hwnd, bool visualWindowMenu)
 			TRAY_MENU_TRANSPARENCY, L"Transparency mode");
 	}
 	AppendMenuW(menu, MF_SEPARATOR, 0, NULL);
+	AppendMenuW(menu, MF_STRING | (g_plugin.m_bEnableLyrics ? MF_CHECKED : MF_UNCHECKED),
+		TRAY_MENU_ENABLE_LYRICS, L"Enable lyrics");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_OPEN_LYRICS_EDITOR,
+		L"Open lyrics editor");
 	AppendMenuW(menu, MF_STRING | (g_plugin.bSpoutOut ? MF_CHECKED : MF_UNCHECKED),
 		TRAY_MENU_SPOUT, L"Spout output");
 
@@ -488,6 +494,10 @@ static void ExecuteTrayMenuCommand(HWND hwnd, UINT command)
 			g_plugin.ToggleDesktopMode(rendererWindow);
 		}
 	}
+	else if (command == TRAY_MENU_ENABLE_LYRICS)
+		g_plugin.ToggleLyrics(false);
+	else if (command == TRAY_MENU_OPEN_LYRICS_EDITOR)
+		g_plugin.OpenLyricsEditor(rendererWindow);
 	else if (command == TRAY_MENU_SPOUT)
 		ToggleTraySpout();
 	else if (command >= TRAY_MENU_AUDIO_SENSITIVITY_BASE && command < TRAY_MENU_AUDIO_SENSITIVITY_BASE + 26)

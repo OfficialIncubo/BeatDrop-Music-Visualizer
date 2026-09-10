@@ -118,6 +118,15 @@
     <ClCompile Include="Milkdrop2PcmVisualizer.cpp">
       <Filter>library\sources</Filter>
     </ClCompile>
+    <ClCompile Include="lyrics_editor.cpp">
+      <Filter>library\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="lyrics_manager.cpp">
+      <Filter>library\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="lyrics_renderer.cpp">
+      <Filter>library\sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="plugin_icon.ico">
@@ -141,6 +150,18 @@
       <Filter>library\headers</Filter>
     </ClInclude>
     <ClInclude Include="fft.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="lyrics_editor.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="lyrics_lrc.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="lyrics_manager.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="lyrics_renderer.h">
       <Filter>library\headers</Filter>
     </ClInclude>
     <ClInclude Include="dxcontext.h">
