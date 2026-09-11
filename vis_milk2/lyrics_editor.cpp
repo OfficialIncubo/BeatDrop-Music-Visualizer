@@ -50,6 +50,7 @@ namespace
     constexpr int ID_PLUS30 = 1023;
     constexpr int ID_UPLOAD = 1024;
     constexpr int ID_AUTO_APPLY = 1025;
+    constexpr int ID_CLEAR_CACHE = 1026;
     constexpr UINT_PTR STATUS_TIMER = 1;
     constexpr UINT UPLOAD_FINISHED = WM_APP + 42;
     const wchar_t* kClassName = L"BeatDropLyricsEditorWindow";
@@ -799,6 +800,7 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
         button(L"Redo", ID_REDO);
         button(L"Seek to line", ID_SEEK);
         button(L"Upload to LRCLIB", ID_UPLOAD);
+        button(L"Clear lyrics cache", ID_CLEAR_CACHE);
         button(L"Capture timestamp", ID_CAPTURE);
         button(L"-30s", ID_MINUS30);
         button(L"-10s", ID_MINUS10);
@@ -1006,6 +1008,7 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
         case ID_SEEK: SeekToLine(); break;
         case ID_RESET: Reset(); break;
         case ID_UPLOAD: Upload(); break;
+        case ID_CLEAR_CACHE: ClearCache(); break;
         case ID_CAPTURE: CaptureTimestamp(); break;
         case ID_MINUS30: songtitlegetter.SeekRelative(-30.0); break;
         case ID_MINUS10: songtitlegetter.SeekRelative(-10.0); break;
@@ -1105,6 +1108,7 @@ void BeatDropLyricsEditor::ResizeControls()
     bottomButton(ID_PLUS5, 48);
     bottomButton(ID_PLUS10, 52);
     bottomButton(ID_PLUS30, 52);
+    bottomButton(ID_CLEAR_CACHE, 140);
     const int closeWidth = 84;
     const int saveWidth = 130;
     const int closeX = width - 8 - closeWidth;
@@ -1221,6 +1225,29 @@ void BeatDropLyricsEditor::Save()
         SetStatus(L"Saved, but no valid timestamps were found.");
     else
         SetStatus(L"Saved local LRC: " + path);
+}
+
+void BeatDropLyricsEditor::ClearCache()
+{
+    if (!m_manager)
+        return;
+
+    const int confirmation = MessageBoxW(m_hwnd,
+        L"Delete every local .lrc file in BeatDrop's lyrics cache?\n\n"
+        L"This cannot be undone. The lyrics currently loaded in memory will remain available until the track changes.",
+        L"Clear lyrics cache", MB_YESNO | MB_ICONWARNING | MB_DEFBUTTON2);
+    if (confirmation != IDYES)
+    {
+        SetStatus(L"Keeping the local lyrics cache.");
+        return;
+    }
+
+    const int deleted = m_manager->ClearLocalCache();
+    if (deleted == 0)
+        SetStatus(L"No local LRC files were found in the lyrics cache.");
+    else
+        SetStatus(L"Cleared " + std::to_wstring(deleted) +
+            (deleted == 1 ? L" local LRC file." : L" local LRC files."));
 }
 
 void BeatDropLyricsEditor::Upload()

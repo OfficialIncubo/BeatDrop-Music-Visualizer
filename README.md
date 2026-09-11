@@ -182,10 +182,15 @@ Now it can get the song information from any media players using SMTC, sending i
 
 ## SYNCHRONIZED LYRICS
 
+![BeatDropLyricsDemo](https://github.com/user-attachments/assets/f8f39993-b5b8-42ad-a507-db3db84efc85)
+
 ### Overview
 
 Press `CTRL + L` to enable or disable lyrics. On the standard Windows 10+ build, BeatDrop uses the same SMTC playback position, seek state and duration shown by the song-time overlay to select the active `.lrc` line. Matching synchronized lyrics are fetched in the background from LRCLIB, then cached under `%LOCALAPPDATA%\BeatDrop\Lyrics` as `Artist - Title.lrc`. Cached files include BeatDrop's LRC metadata header and remain available locally.
-Press `CTRL + SHIFT + E` to open the timed lyrics editor. It supports importing an LRC, capturing the current playback timestamp (`Space`), seeking to a selected line, inserting silence, line reordering, and a 100-step undo/redo history.
+Press `CTRL + SHIFT + E` to open the timed lyrics editor. It supports importing an LRC, capturing the current playback timestamp (`Space`), seeking to a selected line, inserting silence, line reordering, and a 100-step undo/redo history. It also features lyrics cache clear if you want to free some memory. Local cached lyrics are stored offline. Doing this cannot be undone.
+
+![BeatDropLyricsEditorScreenshot](https://github.com/user-attachments/assets/e43aa496-b74a-457c-b684-1728d30ee36b)
+
 Hotkeys:
 - `Ctrl + Shift + E` — Open Lyrics Editor
 - `Space` — Capture the current playback timestamp for the selected lyric line, then move to the next line

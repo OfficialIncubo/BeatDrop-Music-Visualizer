@@ -24,6 +24,7 @@ private:
     void ResizeControls();
     void ParseText();
     void Save();
+    void ClearCache();
     void Upload();
     void Import();
     void CaptureTimestamp();

@@ -33,6 +33,9 @@ public:
     // When the editor supplies an existing metadata block, preserve it exactly
     // instead of regenerating BeatDrop's default header.
     std::wstring SaveCurrentLrc(const std::wstring& text, bool preserveHeader = false);
+    // Deletes only cached .lrc files from BeatDrop's dedicated local cache.
+    // The active in-memory lyric remains available until the track changes.
+    int ClearLocalCache();
     void Refresh();
 
     static std::vector<BeatDropLyricLine> ParseLrc(const std::wstring& text)

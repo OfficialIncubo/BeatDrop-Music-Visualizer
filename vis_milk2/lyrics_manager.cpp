@@ -315,6 +315,38 @@ std::wstring BeatDropLyricsManager::SaveCurrentLrc(const std::wstring& text,
     return path;
 }
 
+int BeatDropLyricsManager::ClearLocalCache()
+{
+    wchar_t localAppData[MAX_PATH] = {};
+    const DWORD length = GetEnvironmentVariableW(L"LOCALAPPDATA", localAppData,
+        static_cast<DWORD>(_countof(localAppData)));
+    std::wstring directory = length && length < _countof(localAppData) ?
+        std::wstring(localAppData, length) : L".\\BeatDrop\\Lyrics";
+    if (directory != L".\\BeatDrop\\Lyrics")
+        directory += L"\\BeatDrop\\Lyrics";
+
+    const std::wstring pattern = directory + L"\\*.lrc";
+    WIN32_FIND_DATAW entry = {};
+    HANDLE search = FindFirstFileW(pattern.c_str(), &entry);
+    if (search == INVALID_HANDLE_VALUE)
+        return 0;
+
+    int deleted = 0;
+    do
+    {
+        // No recursion and no directory removal: only regular .lrc entries in
+        // BeatDrop's own cache directory are eligible for this operation.
+        if ((entry.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
+        {
+            const std::wstring path = directory + L"\\" + entry.cFileName;
+            if (DeleteFileW(path.c_str()))
+                ++deleted;
+        }
+    } while (FindNextFileW(search, &entry));
+    FindClose(search);
+    return deleted;
+}
+
 void BeatDropLyricsManager::Refresh()
 {
     std::lock_guard<std::mutex> lock(m_mutex);
