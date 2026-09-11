@@ -1198,6 +1198,11 @@ void CPlugin::RenderFrame(int bRedraw)
         }
     }
 
+	// User sprites belong to the preset scene.  Draw them before the final
+	// title and lyrics overlays so both remain readable above preset artwork,
+	// messages and invoked sprites.
+	DrawUserSprites();
+
 	// finally, render song title animation to back buffer
 	if (m_supertext.fStartTime >= 0 &&
 		!m_supertext.bRedrawSuperText)
@@ -1207,13 +1212,12 @@ void CPlugin::RenderFrame(int bRedraw)
             m_supertext.fStartTime = -1.0f;	// 'off' state
 	}
 
-    // Lyrics are rendered only after the preset composite and title animation.
+	// Lyrics are the final subtitle overlay, after the preset composite,
+	// user sprites and title animation.
     // The dedicated renderer restores every D3D state it touches, so it cannot
     // alter the shared title texture or regress a preset's next frame.
     if (m_bEnableLyrics)
         m_lyricsRenderer.Render(lpDevice, GetWidth(), GetHeight(), GetTime());
-
-	DrawUserSprites();
 
 	// flip buffers
 	IDirect3DTexture9* pTemp = m_lpVS[0];

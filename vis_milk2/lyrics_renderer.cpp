@@ -302,7 +302,10 @@ void BeatDropLyricsRenderer::DrawTexture(LPDIRECT3DDEVICE9 device,
     const float baseHeight = baseWidth * m_textureHeight /
         static_cast<float>(m_textureWidth);
     const float centreX = width * 0.5f;
-    const float centreY = height * 0.72f;
+    // Keep subtitles centred horizontally but anchored in the lower safe area.
+    // The texture is still scaled about this point, so fade/zoom transitions
+    // stay visually centred instead of drifting upward.
+    const float centreY = height * 0.82f;
     const float halfWidth = baseWidth * scale * 0.5f;
     const float halfHeight = baseHeight * scale * 0.5f;
     const DWORD color = D3DCOLOR_ARGB(static_cast<int>(255.0f * Clamp01(alpha)),
