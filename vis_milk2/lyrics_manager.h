@@ -24,6 +24,9 @@ public:
     std::wstring CurrentLine(double positionSeconds) const;
     std::wstring CurrentLrc() const;
     std::wstring Status() const;
+    // Applies editor-imported lyrics immediately without writing a cache file.
+    // This makes imported timestamps available to the live renderer at once.
+    void SetCurrentLrc(const std::wstring& text);
     // Returns the UTF-8 LRC path when the current track has cache metadata.
     // Keeping this visible lets the editor tell the user exactly where a local
     // save landed without duplicating the cache naming rules.

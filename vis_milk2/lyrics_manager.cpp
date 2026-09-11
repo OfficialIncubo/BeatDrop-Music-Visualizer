@@ -273,6 +273,19 @@ std::wstring BeatDropLyricsManager::Status() const
     return m_status;
 }
 
+void BeatDropLyricsManager::SetCurrentLrc(const std::wstring& text)
+{
+    std::lock_guard<std::mutex> lock(m_mutex);
+    // Invalidate a lookup that may be in flight for this track.  Its result
+    // must not replace the LRC the user just imported into the editor.
+    ++m_generation;
+    m_requestPending = false;
+    m_rawLrc = text;
+    m_lines = ParseLrc(text);
+    m_status = m_lines.empty() ? L"Imported LRC has no timed lines" :
+        L"Imported synchronized lyrics ready";
+}
+
 std::wstring BeatDropLyricsManager::SaveCurrentLrc(const std::wstring& text,
     bool preserveHeader)
 {

@@ -45,6 +45,8 @@ private:
     std::wstring Read(HWND control) const;
     void Write(HWND control, const std::wstring& text);
     void SetStatus(const std::wstring& text);
+    bool AutoApplyEnabled() const;
+    void ApplyParsedToRenderer(bool force = false);
 
     HWND m_hwnd = nullptr;
     HWND m_input = nullptr;
@@ -56,6 +58,7 @@ private:
     std::wstring m_artist;
     std::wstring m_title;
     std::wstring m_lastLoadedLrc;
+    std::wstring m_lastAppliedParsed;
     struct HistoryState
     {
         std::wstring input;
@@ -65,4 +68,5 @@ private:
     std::vector<HistoryState> m_redo;
     int m_selectedLine = 0;
     bool m_applyingHistory = false;
+    bool m_writingText = false;
 };

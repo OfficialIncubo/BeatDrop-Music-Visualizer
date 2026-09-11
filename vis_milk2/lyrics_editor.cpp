@@ -49,6 +49,7 @@ namespace
     constexpr int ID_PLUS10 = 1022;
     constexpr int ID_PLUS30 = 1023;
     constexpr int ID_UPLOAD = 1024;
+    constexpr int ID_AUTO_APPLY = 1025;
     constexpr UINT_PTR STATUS_TIMER = 1;
     constexpr UINT UPLOAD_FINISHED = WM_APP + 42;
     const wchar_t* kClassName = L"BeatDropLyricsEditorWindow";
@@ -84,7 +85,7 @@ namespace
     void MakePill(HWND button, int width)
     {
         if (button)
-            SetWindowRgn(button, CreateRoundRectRgn(0, 0, width + 1, 32, 14, 14), TRUE);
+            SetWindowRgn(button, CreateRoundRectRgn(0, 0, width, 32, 14, 14), TRUE);
     }
 
     void DrawHistoryIcon(HDC dc, const RECT& bounds, bool redo, bool enabled)
@@ -544,18 +545,34 @@ namespace
 
     std::wstring BuildParsedText(const std::wstring& normalizedInput)
     {
-        const std::vector<BeatDropLyricLine> lines = BeatDropLrc::Parse(normalizedInput);
-        if (lines.empty())
-            return normalizedInput;
-
+        // Keep every lyric row.  A partially synchronized LRC is a normal
+        // editing state: parsed timestamps stay in place while plain rows are
+        // retained for Capture timestamp instead of being dropped or sorted.
+        std::wistringstream input(normalizedInput);
         std::wostringstream output;
-        for (size_t index = 0; index < lines.size(); ++index)
+        std::wstring row;
+        bool inHeader = true;
+        bool wroteLyric = false;
+        while (std::getline(input, row))
         {
-            if (index)
+            if (!row.empty() && row.back() == L'\r')
+                row.pop_back();
+
+            const size_t close = row.find(L']');
+            double seconds = 0.0;
+            const bool timed = !row.empty() && row.front() == L'[' &&
+                close != std::wstring::npos &&
+                BeatDropLrc::ParseTimestamp(row.substr(1, close - 1), seconds);
+            const bool metadata = !row.empty() && row.front() == L'[' &&
+                close != std::wstring::npos && !timed;
+            if (inHeader && (metadata || row.empty()))
+                continue;
+            inHeader = false;
+
+            if (wroteLyric)
                 output << L"\r\n";
-            output << FormatTimestamp(lines[index].startSeconds);
-            if (!lines[index].text.empty())
-                output << L" " << lines[index].text;
+            output << row;
+            wroteLyric = true;
         }
         return output.str();
     }
@@ -639,6 +656,7 @@ void BeatDropLyricsEditor::Open(HWND owner, BeatDropLyricsManager* manager,
     m_lastLoadedLrc = source;
     Write(m_input, source);
     Write(m_parsed, BuildParsedText(source));
+    m_lastAppliedParsed = Read(m_parsed);
     m_undo.clear();
     m_redo.clear();
     FormatParsedText();
@@ -678,6 +696,11 @@ LRESULT CALLBACK BeatDropLyricsEditor::ParsedEditProc(HWND hwnd, UINT message,
     const bool control = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
     const bool alt = (GetKeyState(VK_MENU) & 0x8000) != 0;
     const bool parsedPane = hwnd == self->m_parsed;
+    // WM_KEYDOWN starts timestamp capture, but Windows then emits WM_CHAR for
+    // that same physical Space key.  Do not let it overwrite the next line
+    // that capture just selected.
+    if (parsedPane && message == WM_CHAR && wParam == L' ' && !control && !alt)
+        return 0;
     if (message == WM_KEYDOWN)
     {
         if (control && (wParam == 'Z' || wParam == 'z'))
@@ -709,6 +732,12 @@ LRESULT CALLBACK BeatDropLyricsEditor::ParsedEditProc(HWND hwnd, UINT message,
 
     const LRESULT result = CallWindowProcW(oldProc, hwnd,
         message, wParam, lParam);
+    // Rich Edit does not reliably bubble EN_CHANGE on all supported Windows
+    // versions.  Apply after the control accepts a user content edit instead.
+    if (parsedPane && !self->m_writingText &&
+        (message == WM_CHAR || message == WM_PASTE || message == WM_CUT ||
+            message == WM_CLEAR || message == WM_UNDO))
+        self->ApplyParsedToRenderer();
     if (message == WM_LBUTTONUP || message == WM_KEYUP)
         self->HandleEditorSelection();
     return result;
@@ -769,11 +798,16 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
             m_hwnd, menuId(ID_INPUT_LABEL), nullptr, nullptr);
         CreateWindowW(L"STATIC", L"Parsed Text",
             WS_CHILD | WS_VISIBLE, 0, 0, 1, 1, m_hwnd, menuId(ID_PARSED_LABEL), nullptr, nullptr);
-        m_status = CreateWindowW(L"STATIC", L"Lyrics ready", WS_CHILD | WS_VISIBLE,
+        HWND autoApply = CreateWindowW(L"BUTTON", L"Auto-apply to renderer",
+            WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX, 0, 0, 1, 1,
+            m_hwnd, menuId(ID_AUTO_APPLY), nullptr, nullptr);
+        SendMessageW(autoApply, BM_SETCHECK, BST_CHECKED, 0);
+        m_status = CreateWindowW(L"STATIC", L"Lyrics ready",
+            WS_CHILD | WS_VISIBLE | SS_CENTER | SS_ENDELLIPSIS,
             0, 0, 1, 1, m_hwnd, menuId(ID_STATUS), nullptr, nullptr);
 
         for (HWND control : {m_input, m_parsed, GetDlgItem(m_hwnd, ID_INPUT_LABEL),
-            GetDlgItem(m_hwnd, ID_PARSED_LABEL), m_status})
+            GetDlgItem(m_hwnd, ID_PARSED_LABEL), autoApply, m_status})
             SendMessageW(control, WM_SETFONT, reinterpret_cast<WPARAM>(EditorFont()), TRUE);
         SendMessageW(m_parsed, EM_SETBKGNDCOLOR, 0, RGB(43, 43, 49));
         const std::wstring source = NormalizeInputText(
@@ -781,6 +815,7 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
         m_lastLoadedLrc = source;
         Write(m_input, source);
         Write(m_parsed, BuildParsedText(source));
+        m_lastAppliedParsed = Read(m_parsed);
         FormatParsedText();
         UpdateHistoryButtons();
         SetWindowTextW(m_hwnd, (L"BeatDrop Lyrics Editor - " + m_artist + L" - " + m_title).c_str());
@@ -813,6 +848,7 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
                 m_lastLoadedLrc.clear();
                 Write(m_input, std::wstring());
                 Write(m_parsed, std::wstring());
+                m_lastAppliedParsed.clear();
                 m_undo.clear();
                 m_redo.clear();
                 FormatParsedText();
@@ -844,11 +880,21 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
                 m_lastLoadedLrc = fetched;
                 Write(m_input, fetched);
                 Write(m_parsed, BuildParsedText(fetched));
+                m_lastAppliedParsed = Read(m_parsed);
                 FormatParsedText();
                 SetStatus(BeatDropLrc::Parse(fetched).empty() ?
                     L"Loaded unsynchronized lyrics; capture timestamps to synchronize them." :
                     L"Loaded synchronized lyrics for the current track.");
             }
+            else if (fetched.empty() && m_manager->Status() == L"No lyrics found")
+            {
+                SetStatus(L"No lyrics found for this track. Import or paste lyrics to synchronize them.");
+            }
+
+            // Covers IME/input-method edits and Rich Edit notification gaps
+            // that exist on older Windows controls.
+            if (AutoApplyEnabled() && Read(m_parsed) != m_lastAppliedParsed)
+                ApplyParsedToRenderer();
         }
         return 0;
     case WM_ERASEBKGND:
@@ -859,6 +905,7 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
         return 1;
     }
     case WM_CTLCOLORSTATIC:
+    case WM_CTLCOLORBTN:
     {
         HDC dc = reinterpret_cast<HDC>(wParam);
         SetTextColor(dc, RGB(232, 232, 238));
@@ -915,6 +962,23 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
         return 1;
     }
     case WM_COMMAND:
+        if (LOWORD(wParam) == ID_PARSED && HIWORD(wParam) == EN_CHANGE &&
+            !m_writingText && GetFocus() == m_parsed)
+        {
+            ApplyParsedToRenderer();
+            return 0;
+        }
+        if (LOWORD(wParam) == ID_AUTO_APPLY && HIWORD(wParam) == BN_CLICKED)
+        {
+            if (AutoApplyEnabled())
+            {
+                ApplyParsedToRenderer(true);
+                SetStatus(L"Auto-apply to renderer is enabled.");
+            }
+            else
+                SetStatus(L"Auto-apply to renderer is disabled.");
+            return 0;
+        }
         switch (LOWORD(wParam))
         {
         case ID_PARSE: ParseText(); break;
@@ -979,10 +1043,16 @@ void BeatDropLyricsEditor::ResizeControls()
     const int paneY = 74;
     const int bottomY = (std::max)(paneY + 110, height - 44);
     const int half = (std::max)(260, (width - 24) / 2);
+    const int parsedX = 16 + half;
+    const int parsedWidth = (std::max)(0, width - half - 52);
+    const int autoApplyWidth = 190;
+    const int parsedLabelWidth = (std::max)(80, parsedWidth - autoApplyWidth);
     MoveWindow(GetDlgItem(m_hwnd, ID_INPUT_LABEL), 8, 52, half - 8, 18, TRUE);
-    MoveWindow(GetDlgItem(m_hwnd, ID_PARSED_LABEL), 16 + half, 52, half - 44, 18, TRUE);
+    MoveWindow(GetDlgItem(m_hwnd, ID_PARSED_LABEL), parsedX, 52, parsedLabelWidth, 18, TRUE);
+    MoveWindow(GetDlgItem(m_hwnd, ID_AUTO_APPLY), parsedX + parsedLabelWidth, 49,
+        autoApplyWidth, 22, TRUE);
     MoveWindow(m_input, 8, paneY, half - 4, bottomY - paneY - 4, TRUE);
-    MoveWindow(m_parsed, 16 + half, paneY, width - half - 52, bottomY - paneY - 4, TRUE);
+    MoveWindow(m_parsed, parsedX, paneY, parsedWidth, bottomY - paneY - 4, TRUE);
 
     const int arrowX = width - 36;
     MoveWindow(GetDlgItem(m_hwnd, ID_UP), arrowX, paneY + 8, 28, 32, TRUE);
@@ -1019,13 +1089,21 @@ void BeatDropLyricsEditor::ResizeControls()
     bottomButton(ID_PLUS5, 48);
     bottomButton(ID_PLUS10, 52);
     bottomButton(ID_PLUS30, 52);
-    const int saveX = width - 230;
-    MoveWindow(m_status, x + 140, bottomY + 8,
-        (std::max)(100, saveX - x - 150), 24, TRUE);
+    const int closeWidth = 84;
+    const int saveWidth = 130;
+    const int closeX = width - 8 - closeWidth;
+    const int saveX = closeX - 8 - saveWidth;
+    const int statusX = x + 8;
+    const int statusWidth = (std::max)(0, saveX - statusX - 8);
+    MoveWindow(m_status, statusX, bottomY + 8, statusWidth, 24, TRUE);
     MoveWindow(GetDlgItem(m_hwnd, ID_SAVE), saveX, bottomY + 4, 130, 32, TRUE);
-    MakePill(GetDlgItem(m_hwnd, ID_SAVE), 132);
-    MoveWindow(GetDlgItem(m_hwnd, ID_CLOSE), width - 92, bottomY + 4, 84, 32, TRUE);
-    MakePill(GetDlgItem(m_hwnd, ID_CLOSE), 86);
+    MakePill(GetDlgItem(m_hwnd, ID_SAVE), saveWidth);
+    MoveWindow(GetDlgItem(m_hwnd, ID_CLOSE), closeX, bottomY + 4, closeWidth, 32, TRUE);
+    MakePill(GetDlgItem(m_hwnd, ID_CLOSE), closeWidth);
+    // Owner-drawn controls move while retaining a rounded window region.
+    // Redrawing their old and new bounds prevents stale rounded fragments
+    // from remaining after a live resize.
+    RedrawWindow(m_hwnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN);
 }
 
 std::wstring BeatDropLyricsEditor::Read(HWND control) const
@@ -1042,13 +1120,35 @@ std::wstring BeatDropLyricsEditor::Read(HWND control) const
 void BeatDropLyricsEditor::Write(HWND control, const std::wstring& text)
 {
     if (control)
+    {
+        const bool wasWritingText = m_writingText;
+        m_writingText = true;
         SetWindowTextW(control, text.c_str());
+        m_writingText = wasWritingText;
+    }
 }
 
 void BeatDropLyricsEditor::SetStatus(const std::wstring& text)
 {
     if (m_status)
         SetWindowTextW(m_status, text.c_str());
+}
+
+bool BeatDropLyricsEditor::AutoApplyEnabled() const
+{
+    return m_hwnd && IsDlgButtonChecked(m_hwnd, ID_AUTO_APPLY) == BST_CHECKED;
+}
+
+void BeatDropLyricsEditor::ApplyParsedToRenderer(bool force)
+{
+    if (!m_manager || !m_parsed || !AutoApplyEnabled())
+        return;
+    const std::wstring text = Read(m_parsed);
+    if (force || text != m_lastAppliedParsed)
+    {
+        m_manager->SetCurrentLrc(text);
+        m_lastAppliedParsed = text;
+    }
 }
 
 void BeatDropLyricsEditor::PushUndo()
@@ -1083,6 +1183,7 @@ void BeatDropLyricsEditor::ParseText()
     Write(m_input, source);
     Write(m_parsed, BuildParsedText(source));
     FormatParsedText();
+    ApplyParsedToRenderer();
     SetStatus(BeatDropLrc::Parse(source).empty() ?
         L"Plain lyric lines are ready; select each line and capture a timestamp." :
         L"Timed lyrics parsed into the editable pane.");
@@ -1097,6 +1198,7 @@ void BeatDropLyricsEditor::Save()
     const std::wstring document = DocumentForSave(Read(m_input), lrc, hasEditableHeader);
     const std::wstring path = m_manager->SaveCurrentLrc(document, hasEditableHeader);
     m_lastLoadedLrc = document;
+    m_lastAppliedParsed = lrc;
     if (path.empty())
         SetStatus(L"Saved in memory; start a track before saving a local LRC file.");
     else if (BeatDropLrc::Parse(lrc).empty())
@@ -1209,8 +1311,14 @@ void BeatDropLyricsEditor::Import()
     PushUndo();
     Write(m_input, text);
     Write(m_parsed, BuildParsedText(text));
+    if (m_manager)
+        m_manager->SetCurrentLrc(text);
+    m_lastLoadedLrc = text;
+    m_lastAppliedParsed = Read(m_parsed);
     FormatParsedText();
-    SetStatus(L"Imported LRC into both editor panes.");
+    SetStatus(BeatDropLrc::Parse(text).empty() ?
+        L"Imported lyrics into the editor; add timestamps to render them." :
+        L"Imported synchronized lyrics are now active in the renderer.");
 }
 
 int BeatDropLyricsEditor::SelectedLine() const
@@ -1258,17 +1366,15 @@ void BeatDropLyricsEditor::CaptureTimestamp()
     document.replace(start, end - start, row);
     Write(m_parsed, document);
     FormatParsedText();
-    SelectLine(line);
+    ApplyParsedToRenderer();
+    SelectLine(line + 1);
     SetFocus(m_parsed);
-    SetStatus(L"Captured the current playback timestamp.");
+    SetStatus(L"Captured the current playback timestamp and selected the next line.");
 }
 
 void BeatDropLyricsEditor::CaptureAndAdvance()
 {
-    const int line = SelectedLine();
     CaptureTimestamp();
-    SelectLine(line + 1);
-    SetFocus(m_parsed);
 }
 
 void BeatDropLyricsEditor::ResetSelectedTimestamp()
@@ -1296,6 +1402,7 @@ void BeatDropLyricsEditor::ResetSelectedTimestamp()
     document.replace(start, end - start, row);
     Write(m_parsed, document);
     FormatParsedText();
+    ApplyParsedToRenderer();
     SelectLine(line);
     SetStatus(L"Removed the selected timestamp.");
 }
@@ -1314,6 +1421,7 @@ void BeatDropLyricsEditor::DeleteSelectedLine()
     document.erase(start, end - start);
     Write(m_parsed, document);
     FormatParsedText();
+    ApplyParsedToRenderer();
     SelectLine(line);
     SetStatus(L"Deleted the selected lyric line.");
 }
@@ -1339,6 +1447,7 @@ void BeatDropLyricsEditor::InsertSilence()
     document.insert(end, L"\r\n" + FormatTimestamp(seconds + 5.0));
     Write(m_parsed, document);
     FormatParsedText();
+    ApplyParsedToRenderer();
     SelectLine(line + 1);
     SetStatus(L"Inserted a five-second silence marker.");
 }
@@ -1371,6 +1480,7 @@ void BeatDropLyricsEditor::MoveSelectedLine(int direction)
     }
     Write(m_parsed, result.str());
     FormatParsedText();
+    ApplyParsedToRenderer();
     SelectLine(target);
 }
 
@@ -1407,6 +1517,7 @@ void BeatDropLyricsEditor::Undo()
     m_undo.pop_back();
     m_applyingHistory = false;
     FormatParsedText();
+    ApplyParsedToRenderer();
     UpdateHistoryButtons();
     SetFocus(focus == m_input ? m_input : m_parsed);
 }
@@ -1423,6 +1534,7 @@ void BeatDropLyricsEditor::Redo()
     m_redo.pop_back();
     m_applyingHistory = false;
     FormatParsedText();
+    ApplyParsedToRenderer();
     UpdateHistoryButtons();
     SetFocus(focus == m_input ? m_input : m_parsed);
 }
@@ -1434,6 +1546,7 @@ void BeatDropLyricsEditor::Reset()
     Write(m_input, source);
     Write(m_parsed, BuildParsedText(source));
     m_lastLoadedLrc = source;
+    m_lastAppliedParsed = Read(m_parsed);
     m_undo.clear();
     m_redo.clear();
     FormatParsedText();
