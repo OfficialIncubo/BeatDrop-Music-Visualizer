@@ -1,0 +1,137 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.000
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=//Starting position
+per_frame_init_2=vx = rand(1);
+per_frame_init_3=vy = rand(1);
+per_frame_init_4=
+per_frame_init_5=//Directions: -1 - inverse, 0 - forward
+per_frame_init_6=dirx = -1+int(rand(2));
+per_frame_init_7=diry = -1+int(rand(2));
+per_frame_init_8=
+per_frame_init_9=speedoffset1 = .25 + rand(1)*.75;
+per_frame_init_10=speedoffset2 = .25 + rand(1)*.75;
+per_frame_init_11=
+per_frame_init_12=dvd_r = .25+rand(1)*.75; dvd_g = .25+rand(1)*.75; dvd_b = .25+rand(1)*.75;
+per_frame_1=speed = (1/fps)*0.35;
+per_frame_2=
+per_frame_3=//Check edge collisions, directions: -1 - inverse, 0 - forward
+per_frame_4=// --- RIGHT, TOP ---
+per_frame_5=dirx = if (vx >= 1, 0, dirx);
+per_frame_6=diry = if (vy >= 1, 0, diry);
+per_frame_7=
+per_frame_8=// --- LEFT, BOTTOM ---
+per_frame_9=dirx = if (vx <= 0, -1, dirx);
+per_frame_10=diry = if (vy <= 0, -1, diry);
+per_frame_11=
+per_frame_12=// Move it overtime
+per_frame_13=if (dirx, vx += speed*speedoffset1, vx -= speed*speedoffset1);
+per_frame_14=if (diry, vy += speed*speedoffset2, vy -= speed*speedoffset2);
+per_frame_15=
+per_frame_16=q1 = vx;
+per_frame_17=q2 = vy;
+per_frame_18=
+per_frame_19=
+per_frame_20=//DVD Logo changes the color every edge bouncing
+per_frame_21=if (vx >= 1 || vy >=  1 || vx <= 0 || vy <= 0, dvd_r = .25+rand(1)*.75; dvd_g = .25+rand(1)*.75; dvd_b = .25+rand(1)*.75, 0);
+per_frame_22=q3 = dvd_r; q4 = dvd_g; q5 = dvd_b;
+warp_1=`sampler sampler_fc_DVD_Logo;
+warp_2=`
+warp_3=`shader_body
+warp_4=`{
+warp_5=`   float2 aspect_t = float2(1, texsize.y/texsize.x);
+warp_6=`   //uv = (uv-.5)*aspect_t+.5;
+warp_7=`
+warp_8=`   float logo_scale = 8;
+warp_9=`   float logo_asp = texsize.x/texsize.y;
+warp_10=`   float logo_h = .2;
+warp_11=`   float logo_w = logo_h * logo_asp;
+warp_12=`   float2 logo_size = float2(logo_w, logo_h);
+warp_13=`
+warp_14=`   float2 uv2 = uv*logo_scale - float2(q1,1-q2) * (logo_scale-1);
+warp_15=`
+warp_16=`   //Copilot + Se7enSlasher - Completely hide stretched lines
+warp_17=`   float edge = 0;
+warp_18=`   float2 fade = smoothstep(edge, .00001, uv2) *
+warp_19=`                 smoothstep(edge, .00001, 1-uv2);
+warp_20=`   float mask = fade.x * fade.y;
+warp_21=`
+warp_22=`   ret = tex2D(sampler_fc_DVD_Logo, uv2).xyz;
+warp_23=`   ret -= float3(q3, q4, q5);
+warp_24=`   ret *= mask;
+warp_25=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    ret = GetPixel(uv);
+comp_4=`}

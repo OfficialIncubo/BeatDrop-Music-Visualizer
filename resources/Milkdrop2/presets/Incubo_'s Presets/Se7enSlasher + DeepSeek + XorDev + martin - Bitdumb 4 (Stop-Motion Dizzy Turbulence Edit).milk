@@ -136,20 +136,21 @@ warp_13=`
 warp_14=`    for (float i = 0; i < 6; i++)
 warp_15=`    {   
 warp_16=`        float2 abs_val = .1 / abs(frac(p) - .5);
-warp_17=`        
-warp_18=`        float4 color_add = frac(length(round(p)) / exp2(i / 4.0) - time*.5 + q5) * float4(abs_val.y, abs_val.x, abs_val.x, 1.0) / i;
-warp_19=`        color_add *= (1.0 - o.a);
-warp_20=`        o += color_add;
-warp_21=`           
-warp_22=`        // Matrix multiplication: p *= mat2(2, 2, -2, 2), transposed because in MilkDrop it's using HLSL.
-warp_23=`        float2x2 rot_mat = float2x2(2.0, 2.0, -2.0, 2.0);
-warp_24=`        p = mul(rot_mat, p);
-warp_25=`    }
-warp_26=`    
-warp_27=`    //XorDev - told me to replace tanh(x) with 1-exp(-x), which it works.
-warp_28=`    float4 result = o * o + dot(o, o) / 1e2; //Make this as a separate result.
-warp_29=`    ret = 1-exp(-result); //Then output tonemapping without thresholding.
-warp_30=`}
+warp_17=`        float denom = (i == 0) ? 1 : i;
+warp_18=`        
+warp_19=`        float4 color_add = frac(length(round(p)) / exp2(i / 4.0) - time*.5 + q5) * float4(abs_val.y, abs_val.x, abs_val.x, 1.0) / denom;
+warp_20=`        color_add *= (1.0 - o.a);
+warp_21=`        o += color_add;
+warp_22=`           
+warp_23=`        // Matrix multiplication: p *= mat2(2, 2, -2, 2), transposed because in MilkDrop it's using HLSL.
+warp_24=`        float2x2 rot_mat = float2x2(2.0, 2.0, -2.0, 2.0);
+warp_25=`        p = mul(rot_mat, p);
+warp_26=`    }
+warp_27=`    
+warp_28=`    //XorDev - told me to replace tanh(x) with 1-exp(-x), which it works.
+warp_29=`    float4 result = o * o + dot(o, o) / 1e2; //Make this as a separate result.
+warp_30=`    ret = 1-exp(-result); //Then output tonemapping without thresholding.
+warp_31=`}
 comp_1=`shader_body
 comp_2=`{
 comp_3=`   ret = GetPixel(uv);

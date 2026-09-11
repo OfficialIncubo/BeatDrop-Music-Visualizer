@@ -307,12 +307,13 @@ comp_9=`
 comp_10=`    float4 o = 0;
 comp_11=`    for(float i = 0; i < 9; i++) {
 comp_12=`        o += sin(float4(v.x, v.y, v.y, v.x)) + 1.0;
-comp_13=`        v += 0.9 * sin(float2(v.y, v.x) * i + time) / i + 0.5;
-comp_14=`    }
-comp_15=`
-comp_16=`    ret = 1.0 - exp(-exp(c.x * float4(.3, -1.1, -1, 0)) 
-comp_17=`    / o / (0.1 + 0.1 * pow(length(sin(v / 0.3) * 0.2 + c * float2(1, 2)) - 1.0, 1.0)) 
-comp_18=`    / (1.0 + 7.0 * exp(0.3 * c.y - dot(c, c))) / (0.03 + abs(length(p) - 0.7)) * 0.2);
-comp_19=`//MilkDrop3 Color Mode:
-comp_20=`//ret /= float3(-2.9,-2.6,0.8);
-comp_21=`}
+comp_13=`        float denom = (i == 0) ? 1 : i;
+comp_14=`        v += max(0, 0.9 * sin(float2(v.y, v.x) * i + time) / denom + 0.5); //Use max(0, X) to prevent NaN/Inf caused by division by zero errors
+comp_15=`    }
+comp_16=`
+comp_17=`    ret = 1.0 - exp(-exp(c.x * float4(.3, -1.1, -1, 0)) 
+comp_18=`    / o / (0.1 + 0.1 * pow(length(sin(v / 0.3) * 0.2 + c * float2(1, 2)) - 1.0, 1.0)) 
+comp_19=`    / (1.0 + 7.0 * exp(0.3 * c.y - dot(c, c))) / (0.03 + abs(length(p) - 0.7)) * 0.2);
+comp_20=`//MilkDrop3 Color Mode:
+comp_21=`//ret /= float3(-2.9,-2.6,0.8);
+comp_22=`}

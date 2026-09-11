@@ -100,10 +100,11 @@ comp_17=`
 comp_18=`    float4 o = 0;
 comp_19=`    for(float i = 0; i < 9; i++) {
 comp_20=`        o += sin(float4(v.x, v.y, v.y, v.x)) + 1.0;
-comp_21=`        v += 0.9 * sin(float2(v.y, v.x) * i + time) / i + 0.5;
-comp_22=`    }
-comp_23=`
-comp_24=`    ret = 1.0 - exp(-exp(c.x * float4(0.6, -0.4+bass_att,1.4, 0)) 
-comp_25=`    / o / (0.1 + 0.1 * pow(length(sin(v / 0.3) * 0.2 + c * float2(1, 2)) - 1.0, 2.0)) 
-comp_26=`    / (1.0 + bass_att*5.0 * exp(0.3 * c.y - dot(c, c))) / (0.03 + abs(length(p) - 0.7)) * 0.2);
-comp_27=`}
+comp_21=`        float denom = (i == 0) ? 1 : i;
+comp_22=`        v += 0.9 * sin(float2(v.y, v.x) * i + time) / denom + 0.5;
+comp_23=`    }
+comp_24=`
+comp_25=`    ret = 1.0 - exp(-exp(c.x * float4(0.6, -0.4+bass_att,1.4, 0)) 
+comp_26=`    / o / (0.1 + 0.1 * pow(length(sin(v / 0.3) * 0.2 + c * float2(1, 2)) - 1.0, 2.0)) 
+comp_27=`    / (1.0 + bass_att*5.0 * exp(0.3 * c.y - dot(c, c))) / (0.03 + abs(length(p) - 0.7)) * 0.2);
+comp_28=`}
