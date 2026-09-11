@@ -814,7 +814,7 @@ warp_20=`
 warp_21=`shader_body {
 warp_22=`ret = GetPixel(uv_orig);
 warp_23=`mask = 1;
-warp_24=`uv1 = (uv_orig-float2(.5, .5)) * aspect.xy; 
+warp_24=`uv1 = (uv_orig-float2(.5, .5)); 
 warp_25=`
 warp_26=`uvg.z = SysZ;
 warp_27=`uvg.x = uv1.x * uvg.z/fov; 

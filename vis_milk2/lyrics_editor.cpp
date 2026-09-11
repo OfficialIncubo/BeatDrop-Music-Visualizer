@@ -54,6 +54,25 @@ namespace
     constexpr UINT UPLOAD_FINISHED = WM_APP + 42;
     const wchar_t* kClassName = L"BeatDropLyricsEditorWindow";
 
+    const wchar_t* RichEditClass()
+    {
+        // Rich Edit registers window procedures backed by this DLL.  Keep one
+        // module reference for the application's lifetime rather than loading
+        // once per editor window or unloading during Rich Edit's teardown.
+        static HMODULE module = nullptr;
+        static bool initialized = false;
+        static bool usesMsftEdit = false;
+        if (!initialized)
+        {
+            initialized = true;
+            module = LoadLibraryW(L"Msftedit.dll");
+            usesMsftEdit = module != nullptr;
+            if (!module)
+                module = LoadLibraryW(L"Riched20.dll");
+        }
+        return usesMsftEdit ? MSFTEDIT_CLASS : L"RichEdit20W";
+    }
+
     HBRUSH WindowBrush()
     {
         static HBRUSH brush = CreateSolidBrush(RGB(30, 30, 34));
@@ -749,10 +768,7 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
     {
     case WM_CREATE:
     {
-        const bool hasMsftEdit = LoadLibraryW(L"Msftedit.dll") != nullptr;
-        const wchar_t* richEditClass = hasMsftEdit ? MSFTEDIT_CLASS : L"RichEdit20W";
-        if (!hasMsftEdit)
-            LoadLibraryW(L"Riched20.dll");
+        const wchar_t* richEditClass = RichEditClass();
         const auto menuId = [](int id) {
             return reinterpret_cast<HMENU>(static_cast<INT_PTR>(id));
         };
