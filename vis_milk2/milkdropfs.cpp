@@ -35,6 +35,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "plugin.h"
+#include "unicode_text.h"
 #include "MediaTexture.h"
 #include "resource.h"
 #include "support.h"
@@ -374,7 +375,7 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
 
                     // compute size of text if drawn w/font of THIS size:
 		            temp = rect;
-		            int h = d3dx_font->DrawTextW(NULL, szTextToDraw, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX*/, 0xFFFFFFFF);
+		            int h = BeatDropText::Draw(d3dx_font, szTextToDraw, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX*/, 0xFFFFFFFF);
 
                     // adjust & prepare to reiterate:
 		            if (temp.right >= rect.right || h > rect.bottom-rect.top)
@@ -392,12 +393,12 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
         if (gdi_font && d3dx_font)
         {
 	        // do actual drawing + set m_supertext.nFontSizeUsed; use 'lo' size
-            int h = d3dx_font->DrawTextW(NULL, szTextToDraw, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX*/ | DT_CENTER, 0xFFFFFFFF);
+            int h = BeatDropText::Draw(d3dx_font, szTextToDraw, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX*/ | DT_CENTER, 0xFFFFFFFF);
 	        temp.left   = 0;
 	        temp.right  = m_nTitleTexSizeX;  // now allow text to go all the way over, since we're actually drawing!
             temp.top    = m_nTitleTexSizeY/2 - h/2;
             temp.bottom = m_nTitleTexSizeY/2 + h/2;
-	        m_supertext.nFontSizeUsed = d3dx_font->DrawTextW(NULL, szTextToDraw, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX*/ | DT_CENTER, 0xFFFFFFFF);
+	        m_supertext.nFontSizeUsed = BeatDropText::Draw(d3dx_font, szTextToDraw, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX*/ | DT_CENTER, 0xFFFFFFFF);
 
             ret = true;
         }
@@ -416,7 +417,7 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
 
         // clip the text manually...
         // NOTE: DT_END_ELLIPSIS CAUSES NOTHING TO DRAW, IF YOU USE W/D3DX9!
-        int h;
+        int h = 0;
         int max_its = 6;
         int it = 0;
         while (it < max_its)
@@ -427,7 +428,7 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
                 break;
 
             RECT temp = rect;
-            h = m_d3dx_title_font_doublesize->DrawTextW(NULL, str, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX | DT_END_ELLIPSIS*/, 0xFFFFFFFF);
+            h = BeatDropText::Draw(m_d3dx_title_font_doublesize, str, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX | DT_END_ELLIPSIS*/, 0xFFFFFFFF);
             if (temp.right-temp.left <= m_nTitleTexSizeX)
                 break;
 
@@ -446,7 +447,14 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
             int len = wcslen(str);
             float fPercentToKeep = 0.91f * m_nTitleTexSizeX / (float)(temp.right-temp.left);
             if (len > 8)
-                lstrcpyW( &str[ (int)(len*fPercentToKeep) ], L"...");
+            {
+                int keep = (std::max)(0, (std::min)(len - 3, (int)(len*fPercentToKeep)));
+                // Do not leave half of a UTF-16 surrogate pair before the ellipsis.
+                if (keep > 0 && str[keep] >= 0xDC00 && str[keep] <= 0xDFFF &&
+                    str[keep - 1] >= 0xD800 && str[keep - 1] <= 0xDBFF)
+                    --keep;
+                lstrcpyW(&str[keep], L"...");
+            }
             break;
         }
 
@@ -458,7 +466,7 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
         temp.bottom = m_nTitleTexSizeY/2 + h/2;
 
         // NOTE: DT_END_ELLIPSIS CAUSES NOTHING TO DRAW, IF YOU USE W/D3DX9!
-	    m_supertext.nFontSizeUsed = m_d3dx_title_font_doublesize->DrawTextW(NULL, str, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX | DT_END_ELLIPSIS*/ | DT_CENTER , 0xFFFFFFFF);
+	    m_supertext.nFontSizeUsed = BeatDropText::Draw(m_d3dx_title_font_doublesize, str, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX | DT_END_ELLIPSIS*/ | DT_CENTER , 0xFFFFFFFF);
     }
 
     // Change the rendertarget back to the original setup

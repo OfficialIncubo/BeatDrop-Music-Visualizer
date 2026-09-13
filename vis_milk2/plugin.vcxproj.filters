@@ -164,6 +164,9 @@
     <ClInclude Include="lyrics_renderer.h">
       <Filter>library\headers</Filter>
     </ClInclude>
+    <ClInclude Include="unicode_text.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
     <ClInclude Include="dxcontext.h">
       <Filter>library\headers</Filter>
     </ClInclude>

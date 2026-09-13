@@ -410,6 +410,7 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClInclude Include="lyrics_manager.h" />
     <ClInclude Include="lyrics_editor.h" />
     <ClInclude Include="lyrics_renderer.h" />
+    <ClInclude Include="unicode_text.h" />
     <ClInclude Include="state.h" />
     <ClInclude Include="support.h" />
     <ClInclude Include="texmgr.h" />

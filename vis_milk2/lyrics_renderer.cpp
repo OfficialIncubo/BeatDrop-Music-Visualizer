@@ -1,4 +1,5 @@
 #include "lyrics_renderer.h"
+#include "unicode_text.h"
 
 #include <algorithm>
 
@@ -91,12 +92,15 @@ void BeatDropLyricsRenderer::Render(LPDIRECT3DDEVICE9 device, int width,
     if (!EnsureResources(device))
         return;
 
-    // Capture before rendering glyphs too: ID3DXFont changes a number of
-    // fixed-function states while drawing to our private texture.
+    // Isolate the overlay from preset shaders, clipping and blend state.
     IDirect3DStateBlock9* state = nullptr;
     if (FAILED(device->CreateStateBlock(D3DSBT_ALL, &state)) || !state)
         return;
-    state->Capture();
+    if (FAILED(state->Capture()))
+    {
+        state->Release();
+        return;
+    }
 
     if (m_outgoingDirty)
     {
@@ -181,18 +185,8 @@ bool BeatDropLyricsRenderer::EnsureResources(LPDIRECT3DDEVICE9 device)
         return true;
 
     OnDeviceLost();
-    IDirect3DSurface9* target = nullptr;
-    D3DSURFACE_DESC targetDesc = {};
-    const bool haveTargetFormat = SUCCEEDED(device->GetRenderTarget(0, &target)) && target &&
-        SUCCEEDED(target->GetDesc(&targetDesc));
-    if (target)
-        target->Release();
-    (void)haveTargetFormat;
-    (void)targetDesc;
-    // Do not use the compositor's format here: many D3D9 back buffers are
-    // X8R8G8B8 and therefore force every texel alpha to one.  That was the
-    // source of the black rectangle behind the lyrics.  A private ARGB target
-    // preserves the font's alpha and is required for a font-only overlay.
+    // Upload straight-alpha glyph pixels directly. No font render target or
+    // dependency on D3DX's glyph-atlas alpha/shaping behavior is involved.
     const D3DFORMAT format = D3DFMT_A8R8G8B8;
 
     int textureWidth = kPreferredTextureWidth;
@@ -201,11 +195,11 @@ bool BeatDropLyricsRenderer::EnsureResources(LPDIRECT3DDEVICE9 device)
     while (textureWidth >= 256 && textureHeight >= 48)
     {
         result = D3DXCreateTexture(device, textureWidth, textureHeight, 1,
-            D3DUSAGE_RENDERTARGET, format, D3DPOOL_DEFAULT, &m_currentTexture);
+            0, format, D3DPOOL_DEFAULT, &m_currentTexture);
         if (SUCCEEDED(result))
         {
             result = D3DXCreateTexture(device, textureWidth, textureHeight, 1,
-                D3DUSAGE_RENDERTARGET, format, D3DPOOL_DEFAULT, &m_outgoingTexture);
+                0, format, D3DPOOL_DEFAULT, &m_outgoingTexture);
         }
         if (SUCCEEDED(result))
             break;
@@ -218,6 +212,15 @@ bool BeatDropLyricsRenderer::EnsureResources(LPDIRECT3DDEVICE9 device)
         OnDeviceLost();
         return false;
     }
+
+    D3DSURFACE_DESC actual = {};
+    if (FAILED(m_currentTexture->GetLevelDesc(0, &actual)))
+    {
+        OnDeviceLost();
+        return false;
+    }
+    textureWidth = actual.Width;
+    textureHeight = actual.Height;
 
     // Separate from the title renderer; the default is Times New Roman Italic
     // and the values can be changed through the sixth-font INI settings.
@@ -245,51 +248,16 @@ bool BeatDropLyricsRenderer::RenderTextToTexture(LPDIRECT3DDEVICE9 device,
     if (!device || !texture || !m_font || text.empty())
         return false;
 
-    IDirect3DSurface9* oldTarget = nullptr;
-    IDirect3DSurface9* oldDepth = nullptr;
-    IDirect3DSurface9* newTarget = nullptr;
-    const HRESULT targetResult = device->GetRenderTarget(0, &oldTarget);
-    const HRESULT depthResult = device->GetDepthStencilSurface(&oldDepth);
-    if (FAILED(targetResult) || FAILED(texture->GetSurfaceLevel(0, &newTarget)))
-    {
-        if (oldTarget) oldTarget->Release();
-        if (oldDepth) oldDepth->Release();
-        if (newTarget) newTarget->Release();
-        return false;
-    }
-
-    const HRESULT changedTarget = device->SetRenderTarget(0, newTarget);
-    newTarget->Release();
-    if (FAILED(changedTarget))
-    {
-        if (oldDepth) oldDepth->Release();
-        oldTarget->Release();
-        return false;
-    }
-
-    if (SUCCEEDED(depthResult))
-        device->SetDepthStencilSurface(nullptr);
-    device->Clear(0, nullptr, D3DCLEAR_TARGET, 0x00000000, 1.0f, 0);
-
     RECT bounds = {32, 0, m_textureWidth - 32, m_textureHeight};
     RECT measured = bounds;
-    m_font->DrawTextW(nullptr, text.c_str(), -1, &measured,
-        DT_CENTER | DT_WORDBREAK | DT_CALCRECT, 0xffffffff);
+    if (!BeatDropText::Measure(m_font, text.c_str(), -1, &measured, DT_CENTER | DT_WORDBREAK))
+        return false;
     const int textHeight = (std::max)(1L, measured.bottom - measured.top);
-    const int top = (std::max)(4, (m_textureHeight - textHeight) / 2);
-    bounds.top = top;
+    bounds.top = (std::max)(4, (m_textureHeight - textHeight) / 2);
     bounds.bottom = m_textureHeight - 4;
-    // Draw glyphs only.  No fill, quad colour, or shadow is painted behind the
-    // lyrics, leaving the MilkDrop frame completely visible through the texture.
-    m_font->DrawTextW(nullptr, text.c_str(), -1, &bounds,
-        DT_CENTER | DT_WORDBREAK, D3DCOLOR_ARGB(255, m_fontColorR,
-            m_fontColorG, m_fontColorB));
-
-    device->SetRenderTarget(0, oldTarget);
-    device->SetDepthStencilSurface(SUCCEEDED(depthResult) ? oldDepth : nullptr);
-    if (oldDepth) oldDepth->Release();
-    oldTarget->Release();
-    return true;
+    return BeatDropText::Upload(device, texture, m_font, text.c_str(), -1,
+        bounds, DT_CENTER | DT_WORDBREAK,
+        D3DCOLOR_ARGB(255, m_fontColorR, m_fontColorG, m_fontColorB)) != 0;
 }
 
 void BeatDropLyricsRenderer::DrawTexture(LPDIRECT3DDEVICE9 device,
@@ -318,8 +286,7 @@ void BeatDropLyricsRenderer::DrawTexture(LPDIRECT3DDEVICE9 device,
         {centreX + halfWidth - 0.5f, centreY + halfHeight - 0.5f, 0.0f, 1.0f, color, 1.0f, 1.0f}
     };
 
-    device->SetVertexShader(nullptr);
-    device->SetPixelShader(nullptr);
+    BeatDropText::SetOverlayState(device);
     device->SetFVF(kLyricsVertexFormat);
     device->SetTexture(0, texture);
     device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);

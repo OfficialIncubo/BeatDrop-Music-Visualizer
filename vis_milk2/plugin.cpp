@@ -5034,20 +5034,19 @@ void CPlugin::MyRenderUI(
             SelectFont(DECORATIVE_FONT);
             swprintf(
                 buf,
-                L"%s Current preset: %s ",
+                L"%s Current preset: %s",
                 (m_bPresetLockedByUser || m_bPresetLockedByCode) ? L"\xD83D\xDD12" : L"",
                 (m_nLoadingPreset != 0) ? m_pNewState->m_szDesc : m_pState->m_szDesc);
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
             SelectFont(SIMPLE_FONT);
             swprintf(
                 buf,
-                L"%s Preset used: %s ",
-                (m_bPresetLockedByUser || m_bPresetLockedByCode) ? L"" : L"",
+                L"Preset used: %s",
                 (m_nLoadingPreset != 0) ? m_pState->m_szDesc : m_pOldState->m_szDesc);
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-            swprintf(buf, L" %s: %d / %d", L"Current preset position", (int)(m_nCurrentPreset - (m_nDirs - 1)), (int)(m_nPresets - m_nDirs));
+            swprintf(buf, L"%s: %d / %d", L"Current preset position", (int)(m_nCurrentPreset - (m_nDirs - 1)), (int)(m_nPresets - m_nDirs));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-            swprintf(buf, L" %s: %d ", L"Total presets loaded", (int)(NumTotalPresetsLoaded));
+            swprintf(buf, L"%s: %d", L"Total presets loaded", (int)(NumTotalPresetsLoaded));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
 		}
 
@@ -5065,7 +5064,7 @@ void CPlugin::MyRenderUI(
         if (m_bShowFPS)
         {
             SelectFont(DECORATIVE_FONT);
-            swprintf(buf, L"%s: %4.2f ", wasabiApiLangString(IDS_FPS), GetFps()); // leave extra space @ end, so italicized fonts don't get clipped
+            swprintf(buf, L"%s: %4.2f", wasabiApiLangString(IDS_FPS), GetFps()); // leave extra space @ end, so italicized fonts don't get clipped
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
         }
 
@@ -5073,13 +5072,13 @@ void CPlugin::MyRenderUI(
         if (m_bShowDebugInfo == 1) // Page 1
         {
             SelectFont(SIMPLE_FONT);
-            swprintf(buf, L" %s: %6.4f ", wasabiApiLangString(IDS_PF_MONITOR), (float)(*m_pState->var_pf_monitor));
+            swprintf(buf, L" %s: %6.4f", wasabiApiLangString(IDS_PF_MONITOR), (float)(*m_pState->var_pf_monitor));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-            swprintf(buf, L"%s %s %6.4f ", ((double)mysound.imm_rel[0] >= 1.3) ? L"+" : L" ", L"bass:", (float)(*m_pState->var_pf_bass));
+            swprintf(buf, L"%s %s %6.4f", ((double)mysound.imm_rel[0] >= 1.3) ? L"+" : L" ", L"bass:", (float)(*m_pState->var_pf_bass));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-            swprintf(buf, L"%s %s %6.4f ", ((double)mysound.imm_rel[1] >= 1.3) ? L"+" : L" ", L"mid:", (float)(*m_pState->var_pf_mid));
+            swprintf(buf, L"%s %s %6.4f", ((double)mysound.imm_rel[1] >= 1.3) ? L"+" : L" ", L"mid:", (float)(*m_pState->var_pf_mid));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-            swprintf(buf, L"%s %s %6.4f ", ((double)mysound.imm_rel[2] >= 1.3) ? L"+" : L" ", L"treb:", (float)(*m_pState->var_pf_treb));
+            swprintf(buf, L"%s %s %6.4f", ((double)mysound.imm_rel[2] >= 1.3) ? L"+" : L" ", L"treb:", (float)(*m_pState->var_pf_treb));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
         }
         if (m_bShowDebugInfo == 2) // Page 2
@@ -5087,13 +5086,13 @@ void CPlugin::MyRenderUI(
             for (int i = 0; i < NUM_Q_VAR; i++)
             {
                 SelectFont(SIMPLE_FONT);
-                swprintf(buf, L"q%d: %6.4f ", i + 1, (float)(*m_pState->var_pf_q[i]));
+                swprintf(buf, L"q%d: %6.4f", i + 1, (float)(*m_pState->var_pf_q[i]));
                 MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
             }
         }
         if (m_bShowDebugInfo) //If show debug info is enabled, it entirely shows it, else it's hidden.
         {
-            swprintf(buf, L"%s %d ", L"Time (s):", (int)(GetTime()));
+            swprintf(buf, L"%s %d", L"Time (s):", (int)(GetTime()));
             MyTextOut_Shadow(buf, MTO_LOWER_RIGHT);
         }
         // NOTE: custom timed msg comes at the end!!

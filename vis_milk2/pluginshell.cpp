@@ -134,6 +134,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             -http://www.experts-exchange.com/Programming/Programming_Platforms/Win_Prog/Q_20096218.html
 */
 #include "pluginshell.h"
+#include "unicode_text.h"
 #include "utility.h"
 #include "defines.h"
 #include "shell_defines.h"
@@ -2556,7 +2557,7 @@ void CPluginShell::RenderBuiltInTextMsgs()
 			if (!g_szHelp_W)
 				m_d3dx_font[HELPSCREEN_FONT]->DrawTextA(NULL, (char*)g_szHelp, -1, &r, DT_CALCRECT, 0xFFFFFFFF);
 			else
-				m_d3dx_font[HELPSCREEN_FONT]->DrawTextW(NULL, g_szHelp, -1, &r, DT_CALCRECT, 0xFFFFFFFF);
+				BeatDropText::Draw(m_d3dx_font[HELPSCREEN_FONT], g_szHelp, -1, &r, DT_CALCRECT, 0xFFFFFFFF);
 
 			r.top += m_upper_left_corner_y;
 			r.left += m_left_edge;
@@ -2571,7 +2572,7 @@ void CPluginShell::RenderBuiltInTextMsgs()
 			if (!g_szHelp_W)
 				m_d3dx_font[HELPSCREEN_FONT]->DrawTextA(NULL, (char*)g_szHelp, -1, &r, 0, 0xFFFFFFFF);
 			else
-				m_d3dx_font[HELPSCREEN_FONT]->DrawTextW(NULL, g_szHelp, -1, &r, 0, 0xFFFFFFFF);
+				BeatDropText::Draw(m_d3dx_font[HELPSCREEN_FONT], g_szHelp, -1, &r, 0, 0xFFFFFFFF);
 
 			m_upper_left_corner_y += r.bottom - r.top + PLAYLIST_INNER_MARGIN * 3;
 		}
@@ -2597,7 +2598,7 @@ void CPluginShell::RenderBuiltInTextMsgs()
 			}
 
 			SetRect(&r, m_left_edge, m_lower_right_corner_y - GetFontHeight(DECORATIVE_FONT), m_right_edge + dx, m_lower_right_corner_y);
-			m_lower_right_corner_y -= m_d3dx_font[DECORATIVE_FONT]->DrawTextW(NULL, wasabiApiLangString(IDS_PRESS_F1_MSG), -1, &r, DT_RIGHT, 0xFFFFFFFF);
+			m_lower_right_corner_y -= BeatDropText::Draw(m_d3dx_font[DECORATIVE_FONT], wasabiApiLangString(IDS_PRESS_F1_MSG), -1, &r, DT_RIGHT, 0xFFFFFFFF);
 		}
 	}
 }
@@ -2681,7 +2682,7 @@ void CPluginShell::RenderPlaylist()
 						//sprintf(m_playlist[i], "%d. %s ", j+1, buf);  // leave an extra space @ end, so italicized fonts don't get clipped
 
 						SetRect(&r, 0, 0, max_w, 1024);
-						m_d3dx_font[PLAYLIST_FONT]->DrawTextW(NULL, m_playlist[i], -1, &r, dwFlags | DT_CALCRECT, 0xFFFFFFFF);
+						BeatDropText::Draw(m_d3dx_font[PLAYLIST_FONT], m_playlist[i], -1, &r, dwFlags | DT_CALCRECT, 0xFFFFFFFF);
 						int w = r.right-r.left;
 						if (w>0)
 							m_playlist_width_pixels = max(m_playlist_width_pixels, w);
@@ -2726,7 +2727,7 @@ void CPluginShell::RenderPlaylist()
 					        (i==now_playing ? PLAYLIST_COLOR_BOTH : PLAYLIST_COLOR_HILITE_TRACK) :
 							        (i==now_playing ? PLAYLIST_COLOR_PLAYING_TRACK : PLAYLIST_COLOR_NORMAL);
 
-				y += m_d3dx_font[PLAYLIST_FONT]->DrawTextW(NULL, m_playlist[i-start], -1, &r, dwFlags, color);
+				y += BeatDropText::Draw(m_d3dx_font[PLAYLIST_FONT], m_playlist[i-start], -1, &r, dwFlags, color);
 			}
 
 			//m_d3dx_font[PLAYLIST_FONT]->End();

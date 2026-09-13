@@ -860,7 +860,7 @@ BEGIN
     IDS_CONFIG_PANEL_BUTTON_8 " "
     IDS_EXTRA_FONT_1_NAME   "Tooltips"
     IDS_EXTRA_FONT_2_NAME   "Animated Songtitles"
-	IDS_PRESS_F1_MSG        "Press F1 for Help "
+	IDS_PRESS_F1_MSG        "Press F1 for Help"
     IDS_GRAPHICS_SUBSYSTEM_IS_TEMPORARILY_UNSTABLE 
                             "One or more fullscreen display adapters are behaving strangely and will not\nreport a list of display modes.  It's quite possible that your graphics subsystem\nis temporarily unstable.\n\nSUGGESTED ACTION: If you have modified your multimon setup or Windows,\ndisplay settings, or have updated any display drivers or installed\nany new programs, you should probably REBOOT YOUR COMPUTER before\ntrying to configure (or run) the plug-in again."
 END

@@ -28,6 +28,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "textmgr.h"
+#include "unicode_text.h"
 #include "support.h"
 #include "utility.h"
 
@@ -118,6 +119,13 @@ void CTextManager::DrawBox(LPRECT pRect, DWORD boxColor)
 
 int CTextManager::DrawText(LPD3DXFONT pFont, char* szText, RECT* pRect, DWORD flags, DWORD color, bool bBox, DWORD boxColor)
 {
+    // Localized ANSI callers need the same Unicode layout for measurement
+    // and queued drawing. Keep the legacy ASCII path unchanged.
+    if (szText)
+        for (const unsigned char* p = reinterpret_cast<const unsigned char*>(szText); *p; ++p)
+            if (*p > 127)
+                return DrawTextW(pFont, AutoWide(szText), pRect, flags, color, bBox, boxColor);
+
     // these aren't supported by D3DX9:
     flags &= ~(DT_WORD_ELLIPSIS | DT_END_ELLIPSIS | DT_NOPREFIX);
 
@@ -177,7 +185,7 @@ int CTextManager::DrawTextW(LPD3DXFONT pFont, wchar_t* szText, RECT* pRect, DWOR
         return 0;
         
     if (flags & DT_CALCRECT)
-        return pFont->DrawTextW(NULL, szText, -1, pRect, flags, color);
+        return BeatDropText::Draw(pFont, szText, -1, pRect, flags, color);
 
     if (!m_lpDevice /*|| !m_lpTextSurface*/) 
         return 0;
@@ -197,7 +205,7 @@ int CTextManager::DrawTextW(LPD3DXFONT pFont, wchar_t* szText, RECT* pRect, DWOR
         m_msg[m_b][m_nMsg[m_b]].bgColor = boxColor;
 
         // shrink rects on new frame's text strings; important for deletions
-        int h = pFont->DrawTextW(NULL, szText, len, &m_msg[m_b][m_nMsg[m_b]].rect, flags | DT_CALCRECT, color);
+        int h = BeatDropText::Draw(pFont, szText, len, &m_msg[m_b][m_nMsg[m_b]].rect, flags | DT_CALCRECT, color);
 
         m_nMsg[m_b]++;
         m_next_msg_start_ptr += len + 1;
@@ -216,7 +224,7 @@ int CTextManager::DrawTextW(LPD3DXFONT pFont, wchar_t* szText, RECT* pRect, DWOR
 
     // no room for more text? ok, but still return accurate info:
     RECT r2 = *pRect;
-    int h = pFont->DrawTextW(NULL, szText, len, &r2, flags | DT_CALCRECT, color);
+    int h = BeatDropText::Draw(pFont, szText, len, &r2, flags | DT_CALCRECT, color);
     return h;
 }
 
@@ -602,7 +610,7 @@ void CTextManager::DrawNow()
                 if (bRedrawText==2 || m_msg[m_b][i].added==1)
                     if (m_msg[m_b][i].pfont) // dark boxes have pfont==NULL
                         // warning: in DX9, the DT_WORD_ELLIPSIS and DT_NOPREFIX flags cause no text to render!!
-                        m_msg[m_b][i].pfont->DrawTextW(NULL, m_msg[m_b][i].msg, -1, &m_msg[m_b][i].rect, m_msg[m_b][i].flags, m_msg[m_b][i].color);
+                        BeatDropText::Draw(m_msg[m_b][i].pfont, m_msg[m_b][i].msg, -1, &m_msg[m_b][i].rect, m_msg[m_b][i].flags, m_msg[m_b][i].color);
                     else if (m_msg[m_b][i].added || bRedrawText==2 || !bRTT)
                     {
 	                    WFVERTEX v3[4];
