@@ -240,7 +240,7 @@ BEGIN
     IDS_ERROR_CREATING_DOUBLE_SIZED_D3DX_TITLE_FONT 
                             "Error creating double-sized d3dx title font"
     IDS_RATING              "Rating"
-    IDS_DISABLED            "[disabled] "
+    IDS_DISABLED            "[disabled]"
     IDS_ARE_YOU_SURE_YOU_WANT_TO_DELETE_PRESET 
                             "Are you SURE you want to delete this preset? [y/N]"
     IDS_PRESET_TO_DELETE    "(preset to delete: %s)"
