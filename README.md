@@ -82,13 +82,13 @@ List of available apps here: https://spout.zeal.co
 
 The sprite handler is now smart and can hybridly invoke GIF, Video and Image sprites. Simply open the image ini file (beatdrop_img.ini), find an empty digit slot or modify the existing one, easily pass an image, video or GIF path and write some code! Then in a visualizer, press K to change to sprite mode, type 2 digits corresponding to your image ini file you have provided, then you'll see some magic.
 
-<video autoplay loop muted playsinline src="https://github.com/user-attachments/assets/eea26915-fc52-48c7-af66-77ed30825f7b" alt="BeatDrop GIF and Video Sprite Support Demo" width="100%" height="auto"></video>
+<video controls autoplay loop muted playsinline src="https://github.com/user-attachments/assets/eea26915-fc52-48c7-af66-77ed30825f7b" alt="BeatDrop GIF and Video Sprite Support Demo" width="100%" height="auto"></video>
 
 ### GIF and Video textures
 
 Presets can now load GIF, video and image textures in a simple way. It detects a file name from sampler and then hybridly shows static or animated textures.
 
-<video autoplay loop muted playsinline src="https://github.com/user-attachments/assets/6dd2d72a-008f-4fa1-91d9-c3ce35107b57" alt="BeatDrop GIF and Video Sprite Support Demo" width="100%" height="auto"></video>
+<video controls autoplay loop muted playsinline src="https://github.com/user-attachments/assets/6dd2d72a-008f-4fa1-91d9-c3ce35107b57" alt="BeatDrop GIF and Video Sprite Support Demo" width="100%" height="auto"></video>
 
 Supported animated/static media formats: gif, webp, webm, mkv, flv, vob, ogv, mng, avi, mts, m2ts, ts, mov, qt, wmv, yuv, rm, rmvb, viv, asf, amv, mp4, m4p, mp2, mpe, mpv, mpg, mpeg, m2v, m4v, svi, 3gp, 3g2, mxf, roq, nsv, f4v, f4p, f4a, f4b
 
@@ -98,11 +98,11 @@ You can also invoke sprites using [Spout](https://spout.zeal.co)! It's the same 
 
 An example of how it invoked: OBS's Browser Source with [Spout Plug-in as sender filter](https://github.com/Off-World-Live/obs-spout2-plugin) and invoked a Spout sprite with `Spout/SpoutSB` with digit noº 18.
 
-<video autoplay loop muted playsinline src="https://github.com/user-attachments/assets/ff60f37a-9fda-47a5-a03b-e621799b562c" alt="BeatDrop Spout Input Sprite Demo" width="100%" height="auto"></video>
+<video controls autoplay loop muted playsinline src="https://github.com/user-attachments/assets/ff60f37a-9fda-47a5-a03b-e621799b562c" alt="BeatDrop Spout Input Sprite Demo" width="100%" height="auto"></video>
 
 You can also do some epic/crazy feedback by self-invoking the visual renderer using a Spout Input sprite. Pass `Spout/BeatDrop`, write some sprite code and enjoy beautiful feedback effects!
 
-<video autoplay loop muted playsinline src="https://github.com/user-attachments/assets/8f1abd9c-4bfc-49a8-bf90-541b882e56a6" alt="BeatDrop Spout Input Feedback Tricks Demo" width="100%" height="auto"></video>
+<video controls autoplay loop muted playsinline src="https://github.com/user-attachments/assets/8f1abd9c-4bfc-49a8-bf90-541b882e56a6" alt="BeatDrop Spout Input Feedback Tricks Demo" width="100%" height="auto"></video>
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## SCREEN-DEPENDENT RENDER MODE & PRESET PATCH FIXES
@@ -182,13 +182,13 @@ Now it can get the song information from any media players using SMTC, sending i
 
 ## SYNCHRONIZED LYRICS
 
-![BeatDropLyricsDemo](https://github.com/user-attachments/assets/f8f39993-b5b8-42ad-a507-db3db84efc85)
+![BeatDropLyricsDemo](https://github.com/user-attachments/assets/15221da4-d6ca-4c6f-8a3c-b96cbc577259)
 
 ### Overview
 
 Press `CTRL + L` to enable or disable lyrics. On the standard Windows 10+ build, BeatDrop uses the same SMTC playback position, seek state and duration shown by the song-time overlay to select the active `.lrc` line. Matching synchronized lyrics are fetched in the background from LRCLIB, then cached under `%LOCALAPPDATA%\BeatDrop\Lyrics` as `Artist - Title.lrc`. Cached files include BeatDrop's LRC metadata header and remain available locally.
 
-![BeatDropLyricsEditorScreenshot](https://github.com/user-attachments/assets/e43aa496-b74a-457c-b684-1728d30ee36b)
+![BeatDropLyricsEditorScreenshot](https://github.com/user-attachments/assets/17ed5ef7-16b8-4fab-9fae-7144f6975654)
 
 Press `CTRL + SHIFT + E` to open the timed lyrics editor. It supports importing an LRC, capturing the current playback timestamp (`Space`), seeking to a selected line, inserting silence, line reordering, and a 100-step undo/redo history. It also features lyrics cache clear if you want to free some memory. Local cached lyrics are stored offline. Doing this cannot be undone.
 
