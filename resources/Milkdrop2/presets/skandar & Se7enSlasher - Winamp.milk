@@ -156,7 +156,7 @@ comp_58=`    float coneMask = (1.0 - smoothstep(coneOuter - 0.005 * scale, coneO
 comp_59=`    float grooves = 0.5 + 0.5 * sin((r_cone * 400.0 / scale) - excursion * 15.0);
 comp_60=`    float grooveLight = pow(max(0.0, dot(safeP, L.xy)), 1.15) * grooves;
 comp_61=`    float coneDepth = saturate((r_cone - coneInner) / max(coneOuter - coneInner, 0.00001));
-comp_62=`    float yPos = saturate((p.y - (-coneOuter)) / max(2.0 * coneOuter, 0.00001));
+comp_62=`    float yPos = saturate((coneOuter - p.y) / max(2.0 * coneOuter, 0.00001));
 comp_63=`    float3 cConeBlack = float3(0.035, 0.035, 0.04);
 comp_64=`    float3 cConeAmber = float3(0.95, 0.45, 0.05);
 comp_65=`    float3 coneBase = lerp(cConeBlack, cConeAmber, yPos);

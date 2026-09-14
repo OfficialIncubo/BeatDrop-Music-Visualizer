@@ -1,0 +1,363 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=0
+PSVERSION_COMP=4
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=1.000
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=0
+nWaveMode=6
+bAdditiveWaves=1
+bWaveDots=1
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=100.000
+fWaveScale=92.684
+fWaveSmoothing=0.000
+fWaveParam=0.000
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99990
+rot=-0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=0.99990
+sy=1.00000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=1.000
+wave_y=0.500
+ob_size=0.005
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=1.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=0
+wavecode_0_samples=120
+wavecode_0_sep=38
+wavecode_0_bSpectrum=1
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=2.15542
+wavecode_0_smoothing=0.10000
+wavecode_0_r=1.000
+wavecode_0_g=0.000
+wavecode_0_b=0.000
+wavecode_0_a=0.500
+wavecode_1_enabled=0
+wavecode_1_samples=120
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=0
+wavecode_1_scaling=0.89152
+wavecode_1_smoothing=0.82000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=0.000
+wavecode_1_a=0.500
+wavecode_2_enabled=0
+wavecode_2_samples=120
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=5.34537
+wavecode_2_smoothing=0.82000
+wavecode_2_r=0.000
+wavecode_2_g=0.600
+wavecode_2_b=1.000
+wavecode_2_a=0.500
+wavecode_3_enabled=0
+wavecode_3_samples=40
+wavecode_3_sep=0
+wavecode_3_bSpectrum=1
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=1
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=0.600
+shapecode_0_enabled=0
+shapecode_0_sides=4
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.09820
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=1.00531
+shapecode_0_tex_zoom=1.53110
+shapecode_0_r=0.000
+shapecode_0_g=0.000
+shapecode_0_b=0.000
+shapecode_0_a=0.500
+shapecode_0_r2=0.300
+shapecode_0_g2=0.300
+shapecode_0_b2=0.300
+shapecode_0_a2=0.000
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=1.000
+shapecode_1_enabled=1
+shapecode_1_sides=50
+shapecode_1_additive=0
+shapecode_1_thickOutline=1
+shapecode_1_textured=0
+shapecode_1_num_inst=1
+shapecode_1_x=0.800
+shapecode_1_y=0.800
+shapecode_1_rad=0.19201
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=0.93550
+shapecode_1_r=0.000
+shapecode_1_g=0.700
+shapecode_1_b=1.000
+shapecode_1_a=1.000
+shapecode_1_r2=0.000
+shapecode_1_g2=0.000
+shapecode_1_b2=0.000
+shapecode_1_a2=0.000
+shapecode_1_border_r=0.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=0.000
+shapecode_1_border_a=0.000
+shape_1_per_frame1=x = 0.02 + rand(950)/1000;
+shape_1_per_frame2=y = 0.05 + rand(100)/1000;
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=1
+shapecode_2_thickOutline=1
+shapecode_2_textured=0
+shapecode_2_num_inst=21
+shapecode_2_x=0.950
+shapecode_2_y=0.900
+shapecode_2_rad=0.06386
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=0.73678
+shapecode_2_r=1.000
+shapecode_2_g=0.600
+shapecode_2_b=1.000
+shapecode_2_a=1.000
+shapecode_2_r2=0.000
+shapecode_2_g2=0.700
+shapecode_2_b2=1.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=0.000
+shapecode_2_border_a=0.000
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=1
+shapecode_3_textured=0
+shapecode_3_num_inst=2
+shapecode_3_x=0.600
+shapecode_3_y=0.650
+shapecode_3_rad=0.04914
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=0.34933
+shapecode_3_r=1.000
+shapecode_3_g=1.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=0.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=0.200
+shapecode_3_border_g=0.700
+shapecode_3_border_b=0.500
+shapecode_3_border_a=0.000
+per_frame_1=// Gerakan dasar
+per_frame_2=sx = 1.005;
+per_frame_3=dy = -1.002;
+per_frame_4=
+per_frame_5=// ====================
+per_frame_6=q1 = 0.9 + 2.5*bass_att;            // kecepatan lantai mendekat
+per_frame_7=q2 = 0.30 + 1.20*bass;              // terang garis grid
+per_frame_8=q3 = 0.20 + 1.00*bass_att;          // terang "bar" spectrum
+per_frame_9=q5 = 0.42 + 0.02*sin(time*0.25);    // horizon naik-turun halus
+per_frame_10=q7 = 0.955;                          // decay feedback (0..1)
+per_frame_11=
+per_frame_12=// sedikit putaran warna
+per_frame_13=q4 = 0.5 + 0.5*sin(time*0.05);
+comp_1=`#define CAMH     1.00     // tinggi kamera di atas lantai
+comp_2=`#define HORIZON  0.42     // posisi horizon (0 = bawah layar, 1 = atas layar)
+comp_3=`#define FOV      1.80     // sudut pandang / lebar lantai
+comp_4=`#define BOXMAX   0.90     // tinggi maksimum kotak
+comp_5=`#define STEPS    14       // jumlah langkah raymarch (10-16)
+comp_6=`#define GROWTH   1.40     // faktor pembesaran langkah raymarch
+comp_7=`
+comp_8=`//---------------------------------------------------------- hash 2D
+comp_9=`float hash21(float2 p)
+comp_10=`{
+comp_11=`    p  = frac(p * float2(0.1031, 0.1030));
+comp_12=`    p += dot(p, p.yx + 33.33);
+comp_13=`    return frac((p.x + p.y) * p.x);
+comp_14=`}
+comp_15=`
+comp_16=`//---------------------------------------------------------- palette disco
+comp_17=`float3 discoColor(float h)
+comp_18=`{
+comp_19=`    return 0.5 + 0.5 * cos(6.28318 * (h + float3(0.0, 0.33, 0.67)));
+comp_20=`}
+comp_21=`
+comp_22=`//---------------------------------------------------------- tinggi kotak
+comp_23=`float boxHeight(float2 cell)
+comp_24=`{
+comp_25=`    float id   = hash21(cell);
+comp_26=`    float d    = length(cell * float2(1.0, 0.55));       // jarak dari panggung
+comp_27=`    float fall = saturate(1.35 - d * 0.13);              // makin jauh makin pendek
+comp_28=`    float amp  = saturate(0.15 + bass_att * 0.9);       // reaksi ke musik
+comp_29=`
+comp_30=`    float h = BOXMAX * fall * (0.10 + 0.90 * id) * amp;
+comp_31=`
+comp_32=`    // tiap kotak "menari" dengan fasenya sendiri (triangle wave, murah)
+comp_33=`    float ph = frac(id * 7.31 + time * 0.35);
+comp_34=`    h *= 0.55 + 0.75 * (1.0 - abs(ph * 2.0 - 1.0));
+comp_35=`
+comp_36=`    return max(h, 0.0);
+comp_37=`}
+comp_38=`
+comp_39=`//=====================================================================
+comp_40=`shader_body
+comp_41=`{
+comp_42=`    //------------------------------------------------------ koordinat
+comp_43=`    float  sy  = 0.7 - uv.y;                    // 0 = bawah layar, 1 = atas layar
+comp_44=`    float  asp = texsize.x / texsize.y;         // lebar / tinggi layar
+comp_45=`
+comp_46=`    float2 sc  = float2( (uv.x - 0.5) * asp, (0.3 - sy) );
+comp_47=`    float2 rel = float2( sc.x, sc.y - (0.5 - HORIZON) );
+comp_48=`
+comp_49=`    //------------------------------------------------------ sinar kamera
+comp_50=`    float3 ro = float3(0.0, CAMH, 0.0);
+comp_51=`    float3 rd = normalize( float3(rel.x * FOV, -rel.y * FOV, 1.0) );
+comp_52=`
+comp_53=`    //------------------------------------------------------ latar / langit
+comp_54=`    float3 base = tex2D(sampler_main, uv).xyz;              // umpan-balik sebagai latar
+comp_55=`    float3 col  = base * 0.70 + float3(0.015, 0.008, 0.035);
+comp_56=`
+comp_57=`    // glow ungu di sekitar garis horizon
+comp_58=`    col += float3(0.35, 0.08, 0.55) * saturate(1.0 - abs(rel.y) * 5.0) * 0.30;
+comp_59=`
+comp_60=`    //------------------------------------------------------ raymarch height-field
+comp_61=`    float tFar = min( CAMH / max(-rd.y, 0.0015), 28.0 );
+comp_62=`    float tt   = 0.12;
+comp_63=`    float hitT = -1.0;
+comp_64=`
+comp_65=`    for (int i = 0; i < STEPS; i++)
+comp_66=`    {
+comp_67=`        float3 pp = ro + rd * tt;
+comp_68=`        float  hh = boxHeight( floor(pp.xz) );
+comp_69=`        if (pp.y < hh && hitT < 0.0) hitT = tt;
+comp_70=`        tt *= GROWTH;
+comp_71=`    }
+comp_72=`
+comp_73=`    float  isBox = (hitT > 0.0) ? 1.0 : 0.0;
+comp_74=`    float3 p     = ro + rd * ((hitT > 0.0) ? hitT : tFar);
+comp_75=`
+comp_76=`    //------------------------------------------------------ shading
+comp_77=`    float2 cell = floor(p.xz);
+comp_78=`    float2 f    = frac(p.xz);
+comp_79=`    float2 ef   = min(f, 1.0 - f);
+comp_80=`    float  edge = min(ef.x, ef.y);
+comp_81=`
+comp_82=`    float  hgt = boxHeight(cell);
+comp_83=`    float  hn  = saturate(hgt / BOXMAX);
+comp_84=`
+comp_85=`    float  dist = length(p - ro);
+comp_86=`    float  fade = saturate(1.0 - dist / 18.0);
+comp_87=`
+comp_88=`    float  grid   = (1.0 - smoothstep(0.0, 0.055, edge)) * fade;  // garis ubin lantai
+comp_89=`    float  isSide = 1.0 - smoothstep(0.0, 0.14, edge);            // sisi kotak
+comp_90=`
+comp_91=`    // warna disco bergeser per sel + waktu
+comp_92=`    float  hue  = frac(cell.x * 0.045 + cell.y * 0.025 + time * 0.05 + hn * 0.35);
+comp_93=`    float3 tint = discoColor(hue);
+comp_94=`
+comp_95=`    // --- ubin lantai
+comp_96=`    float3 floorC = float3(0.012, 0.012, 0.028) + tint * (0.06 + grid * 0.80);
+comp_97=`
+comp_98=`    // --- kotak
+comp_99=`    float3 topC  = tint * (0.15 + 1.45 * hn);
+comp_100=`    float3 sideC = tint * (0.04 + 0.35 * hn);
+comp_101=`    float3 boxC  = lerp(topC, sideC, isSide);
+comp_102=`    boxC += float3(1.0, 1.0, 1.0) * (1.0 - smoothstep(0.0, 0.03, edge)) * 0.9; // neon tepi
+comp_103=`
+comp_104=`    float3 surf = lerp(floorC, boxC, isBox);
+comp_105=`
+comp_106=`    //------------------------------------------------------ fog + blending
+comp_107=`    float fog = saturate(1.0 - dist / 24.0);
+comp_108=`    fog *= fog;
+comp_109=`
+comp_110=`    float lookDown = smoothstep(0.0, 0.02, -rd.y);
+comp_111=`    col = lerp(col, surf, fog * lookDown);
+comp_112=`
+comp_113=`    //------------------------------------------------------ efek tambahan
+comp_114=`    // kilatan bass
+comp_115=`    col += float3(0.50, 0.15, 0.85) * saturate(bass_att - 1.0) * 1.35;
+comp_116=`
+comp_117=`    // kilau lampu disko di langit
+comp_118=`    float2 sv = floor( uv * float2(000.0, 140.0) * asp );
+comp_119=`    col += float3(0.85, 0.90, 1.00) * step(0.9975, hash21(sv)) * (1.0 - lookDown) * 1.4;
+comp_120=`
+comp_121=`    // vignette
+comp_122=`    float2 vg = float2(rel.x, rel.y + 0.15);
+comp_123=`    col *= saturate(1.0 - dot(vg, vg) * 0.35);
+comp_124=`
+comp_125=`    ret = col;
+comp_126=`}
