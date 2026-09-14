@@ -599,6 +599,10 @@ void CTextManager::DrawNow()
         // 3. render text to TEXT surface
         if (bRedrawText)
         {
+			// The q-variable/debug display can update many ASCII rows each frame.
+			// Keep the clean GDI renderer for normal and Unicode text, but avoid a
+			// separate GDI raster/upload per diagnostic row in this special case.
+			const bool fastAscii = m_nMsg[m_b] >= 16;
 	        m_lpDevice->SetTexture(0, NULL);
 	        m_lpDevice->SetTexture(1, NULL);
             m_lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
@@ -610,7 +614,7 @@ void CTextManager::DrawNow()
                 if (bRedrawText==2 || m_msg[m_b][i].added==1)
                     if (m_msg[m_b][i].pfont) // dark boxes have pfont==NULL
                         // warning: in DX9, the DT_WORD_ELLIPSIS and DT_NOPREFIX flags cause no text to render!!
-                        BeatDropText::Draw(m_msg[m_b][i].pfont, m_msg[m_b][i].msg, -1, &m_msg[m_b][i].rect, m_msg[m_b][i].flags, m_msg[m_b][i].color);
+                        BeatDropText::Draw(m_msg[m_b][i].pfont, m_msg[m_b][i].msg, -1, &m_msg[m_b][i].rect, m_msg[m_b][i].flags, m_msg[m_b][i].color, fastAscii);
                     else if (m_msg[m_b][i].added || bRedrawText==2 || !bRTT)
                     {
 	                    WFVERTEX v3[4];

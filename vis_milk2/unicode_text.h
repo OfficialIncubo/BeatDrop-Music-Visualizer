@@ -161,9 +161,9 @@ namespace BeatDropText
     }
 
     // Matches the null-sprite D3DX DrawText calls used by song information,
-    // title animations, messages and playlists. ASCII retains its old path.
+    // title animations, messages and playlists.
     inline int Draw(ID3DXFont* font, const wchar_t* text, int count, RECT* rect,
-        DWORD flags, DWORD color)
+        DWORD flags, DWORD color, bool fastAscii = false)
     {
         if (!font || !text || !rect || count == 0) return 0;
         if (count < 0)
@@ -172,11 +172,16 @@ namespace BeatDropText
             if (length > INT_MAX) return 0;
             count = static_cast<int>(length);
         }
-        /*
-        bool unicode = false;
-        for (int i = 0; i < count; ++i) unicode |= text[i] > 127;
-        if (!unicode) return font->DrawTextW(nullptr, text, count, rect, flags, color);
-        */
+        if (fastAscii)
+        {
+            bool asciiOnly = true;
+            for (int i = 0; i < count; ++i)
+                asciiOnly = asciiOnly && text[i] <= 127;
+            // The legacy atlas is safe for ASCII and avoids per-line GDI
+            // uploads in a high-volume, constantly-changing diagnostics view.
+            if (asciiOnly)
+                return font->DrawTextW(nullptr, text, count, rect, flags, color);
+        }
         // Use one Windows GDI shaping/rasterization path for every string.
         // D3DX9's separate ASCII glyph atlas has visibly clipped/haloed edges
         // on some drivers, whereas the GDI path preserves the same clean
