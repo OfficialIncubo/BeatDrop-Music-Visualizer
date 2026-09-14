@@ -418,6 +418,40 @@ namespace
         return start <= document.size();
     }
 
+    // Rich Edit stores a paragraph break as one character, whereas
+    // GetWindowTextW exposes it as CRLF.  Keep conversions at the editor
+    // boundary so document operations can consistently use CRLF text.
+    LONG DocumentIndexToRichEditPosition(const std::wstring& document, size_t index)
+    {
+        index = min(index, document.size());
+        LONG position = 0;
+        for (size_t cursor = 0; cursor < index; ++cursor)
+            if (document[cursor] != L'\r')
+                ++position;
+        return position;
+    }
+
+    size_t RichEditPositionToDocumentIndex(const std::wstring& document, LONG position)
+    {
+        if (position <= 0)
+            return 0;
+        LONG richEditPosition = 0;
+        size_t cursor = 0;
+        while (cursor < document.size())
+        {
+            if (document[cursor] == L'\r')
+            {
+                ++cursor;
+                continue;
+            }
+            if (richEditPosition >= position)
+                break;
+            ++richEditPosition;
+            ++cursor;
+        }
+        return cursor;
+    }
+
     bool FirstTimestamp(const std::wstring& line, size_t& start, size_t& end, double& seconds)
     {
         start = line.find(L'[');
@@ -1370,20 +1404,32 @@ int BeatDropLyricsEditor::SelectedLine() const
         return -1;
     CHARRANGE selection = {};
     SendMessageW(m_parsed, EM_EXGETSEL, 0, reinterpret_cast<LPARAM>(&selection));
-    const LRESULT line = SendMessageW(m_parsed, EM_LINEFROMCHAR, selection.cpMin, 0);
-    return line >= 0 ? static_cast<int>(line) : -1;
+
+    // EM_LINEFROMCHAR counts wrapped display rows in a Rich Edit control.
+    // Lyrics are one logical row per newline, so derive that row from the
+    // document itself; otherwise Space can capture/select the wrong lyric.
+    const std::wstring document = Read(m_parsed);
+    const size_t position = RichEditPositionToDocumentIndex(document, selection.cpMin);
+    int line = 0;
+    for (size_t index = 0; index < position; ++index)
+        if (document[index] == L'\n')
+            ++line;
+    return line;
 }
 
 void BeatDropLyricsEditor::SelectLine(int line)
 {
     if (!m_parsed || line < 0)
         return;
-    const LRESULT start = SendMessageW(m_parsed, EM_LINEINDEX, line, 0);
-    if (start < 0)
+    const std::wstring document = Read(m_parsed);
+    size_t start = 0;
+    size_t end = 0;
+    if (!LineRange(document, line, start, end))
         return;
-    const LRESULT length = SendMessageW(m_parsed, EM_LINELENGTH, start, 0);
-    const LONG safeLength = length > 0 ? static_cast<LONG>(length) : 0;
-    CHARRANGE selection = {static_cast<LONG>(start), static_cast<LONG>(start) + safeLength};
+    CHARRANGE selection = {
+        DocumentIndexToRichEditPosition(document, start),
+        DocumentIndexToRichEditPosition(document, end)
+    };
     SendMessageW(m_parsed, EM_EXSETSEL, 0, reinterpret_cast<LPARAM>(&selection));
     m_selectedLine = line;
 }
