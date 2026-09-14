@@ -321,7 +321,7 @@ public:
 	HDC g_hdc;
     bool m_bDesktopMode = false;
     bool TranspaMode = false;
-    int OpacityControl = 10;                 // Default is 100% window opacity.
+    int OpacityControl = 100;                // Current window opacity in percent.
     RECT m_desktop_lastRect = { 0 };
     LONG_PTR m_desktop_lastStyle = 0;
     LONG_PTR m_desktop_lastStyleEx = 0;

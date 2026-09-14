@@ -6000,7 +6000,7 @@ void CPlugin::MyRenderUI(
             {
                 if (t >= m_errors[i].birthTime && t < m_errors[i].expireTime)
                 {
-			        swprintf(buf, L"%s ", m_errors[i].msg.c_str());
+			        lstrcpynW(buf, m_errors[i].msg.c_str(), _countof(buf));
                     float age_rel = (t - m_errors[i].birthTime) / (m_errors[i].expireTime - m_errors[i].birthTime);
                     DWORD cr = (DWORD)(200 - 199*powf(age_rel,4));
                     DWORD cg = 0;//(DWORD)(136 - 135*powf(age_rel,1));
@@ -6057,7 +6057,7 @@ void ToggleTransparency(HWND hwnd)
         exStyle |= WS_EX_LAYERED;
         SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, LWA_COLORKEY);
-        g_plugin.OpacityControl = 10; //Reverts the window opacity back to 100%
+        g_plugin.OpacityControl = 100; //Transparency starts from a fully opaque alpha state.
         DragAcceptFiles(hwnd, TRUE);
     }
     else
@@ -6073,78 +6073,28 @@ void ToggleTransparency(HWND hwnd)
 
 void ToggleWindowOpacity(HWND hwnd)
 {
-    RECT rect;
-    GetWindowRect(hwnd, &rect);
-    int x = rect.left;
-    int y = rect.top;
-    int width = rect.right - rect.left;
-    int height = rect.bottom - rect.top;
+    if (!hwnd || !IsWindow(hwnd))
+        return;
+    if (g_plugin.OpacityControl < 5)
+        g_plugin.OpacityControl = 5;
+    else if (g_plugin.OpacityControl > 100)
+        g_plugin.OpacityControl = 100;
 
-    if (g_plugin.OpacityControl >= 11)
-        g_plugin.OpacityControl = 10;
-    else if (g_plugin.OpacityControl == 10)
+    if (g_plugin.TranspaMode)
     {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
+        // Leave color-key transparency cleanly before switching to alpha.
+        g_plugin.TranspaMode = false;
+        ToggleTransparency(hwnd);
     }
-    else if (g_plugin.OpacityControl == 9)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 230, LWA_ALPHA);
-        g_plugin.TranspaMode = false; //Automatically turns off the transparency mode when you are toggling the window opacity!
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (g_plugin.OpacityControl == 8)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 205, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (g_plugin.OpacityControl == 7)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 179, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (g_plugin.OpacityControl == 6)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 154, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (g_plugin.OpacityControl == 5)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 128, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (g_plugin.OpacityControl == 4)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 102, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (g_plugin.OpacityControl == 3)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 77, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (g_plugin.OpacityControl == 2)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 51, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (g_plugin.OpacityControl == 1)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 26, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (g_plugin.OpacityControl <= 0)
-        g_plugin.OpacityControl = 1;
+    g_plugin.TranspaMode = false;
+    LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+    SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED);
+    SetWindowPos(hwnd, NULL, 0, 0, 0, 0,
+        SWP_DRAWFRAME | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    const BYTE alpha = static_cast<BYTE>((g_plugin.OpacityControl * 255 + 50) / 100);
+    SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), alpha, LWA_ALPHA);
+    DragAcceptFiles(hwnd, TRUE);
+    return;
 }
 
 void LoadPresetFilesViaDragAndDrop(WPARAM wParam)
@@ -7356,7 +7306,9 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 			}
             else if (bShiftHeldDown)
             {
-                g_plugin.OpacityControl++;
+                if (g_plugin.OpacityControl < 100)
+                    ++g_plugin.OpacityControl;
+#if 0
                 if (g_plugin.OpacityControl == 10)
                 {
                     wchar_t buf[1024], tmp[64];
@@ -7417,7 +7369,11 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                     swprintf(buf, L"Window Opacity: 10%%", tmp, 64);
                     AddNotif(buf);
                 }
+#endif
                 ToggleWindowOpacity(hWnd);
+                wchar_t opacityMessage[64];
+                swprintf_s(opacityMessage, L"Window Opacity: %d%%", g_plugin.OpacityControl);
+                AddNotif(opacityMessage);
             }
             else if (bCtrlHeldDown)
             {
@@ -7458,7 +7414,9 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 			}
             else if (bShiftHeldDown)
             {
-                g_plugin.OpacityControl--;
+                if (g_plugin.OpacityControl > 5)
+                    --g_plugin.OpacityControl;
+#if 0
                 if (g_plugin.OpacityControl == 10)
                 {
                     wchar_t buf[1024], tmp[64];
@@ -7519,7 +7477,11 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                     swprintf(buf, L"Window Opacity: 10%%", tmp, 64);
                     AddNotif(buf);
                 }
+#endif
                 ToggleWindowOpacity(hWnd);
+                wchar_t opacityMessage[64];
+                swprintf_s(opacityMessage, L"Window Opacity: %d%%", g_plugin.OpacityControl);
+                AddNotif(opacityMessage);
             }
             else if (bCtrlHeldDown)
             {

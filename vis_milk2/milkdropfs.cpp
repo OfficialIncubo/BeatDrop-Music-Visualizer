@@ -255,7 +255,7 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
         return false;
 
 	wchar_t szTextToDraw[512];
-	swprintf(szTextToDraw, L" %s ", m_supertext.szTextW);  //add a space @ end for italicized fonts; and at start, too, because it's centered!
+	lstrcpynW(szTextToDraw, m_supertext.szTextW, _countof(szTextToDraw));
 
     // Remember the original backbuffer and zbuffer
     LPDIRECT3DSURFACE9 pBackBuffer=NULL;//, pZBuffer=NULL;
