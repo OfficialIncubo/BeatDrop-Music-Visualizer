@@ -44,4 +44,3 @@ per_frame_2=wave_r = wave_r + bass;
 per_frame_3=wave_g = wave_g + trebble;
 per_frame_4=wave_b = wave_b + mid;
 per_pixel_1=warp=2+sin(5-bass_att*3+trebble+midd)*3;
-fRating=4.000000

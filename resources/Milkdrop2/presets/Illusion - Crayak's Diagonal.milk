@@ -56,4 +56,3 @@ per_pixel_4=dy=-dx;
 per_pixel_5=rot= dx/50;
 per_pixel_6=warp= abs(1*dy*warp);
 
-fRating=2.000000

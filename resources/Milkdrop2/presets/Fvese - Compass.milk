@@ -88,8 +88,6 @@ per_frame_27=wave_g = wave_g + 0.350*( 0.60*sin(0.844*time) + 0.40*sin(0.941*tim
 per_frame_28=wave_b = wave_b + 0.350*( 0.60*sin(0.851*time) + 0.40*sin(1.055*time) );
 per_frame_29=cx = cx + 0.225*( 0.60*sin(0.350*time) + 0.40*sin(0.350*time) );
 per_frame_30=cy = cy + 0.225*( 0.60*sin(0.350*time) + 0.40*sin(0.350*time) );
-per_frame_31=dx = -0.00005;
-per_frame_32=dy = -0.00005;
-per_frame_33=decay = decay - 0.01*equal(frame%16,0);
-per_frame_34=rot = 1-beatrate;
-per_frame_35=zoom =beat-1;
+per_frame_31=decay = decay - 0.01*equal(frame%16,0);
+per_frame_32=rot = 1-beatrate;
+per_frame_33=zoom =beat-1;

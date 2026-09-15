@@ -49,5 +49,3 @@ per_frame_3=wave_b = wave_b + 0.100*( 0.60*sin(0.910*time) + 0.40*sin(0.920*time
 per_frame_4=zoom = zoom + 0.013*( 0.60*sin(0.339*time) + 0.40*sin(0.276*time) ); 
 per_frame_5=rot = rot + 0.040*( 0.60*sin(0.381*time) + 0.40*sin(0.579*time) ); 
 per_pixel_1=rot=rot+0.05+0.04*sin(ang*3+time*1.6); 
-
-

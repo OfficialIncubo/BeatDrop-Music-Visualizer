@@ -2,9 +2,9 @@
 fRating=2.000000
 fGammaAdj=1.000000
 fDecay=0.980000
-fVideoEchoZoom=2.006760
-fVideoEchoAlpha=0.500000
-nVideoEchoOrientation=3
+fVideoEchoZoom=1.000000
+fVideoEchoAlpha=1.000000
+nVideoEchoOrientation=1
 nWaveMode=2
 bAdditiveWaves=1
 bWaveDots=0

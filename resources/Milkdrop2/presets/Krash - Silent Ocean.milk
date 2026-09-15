@@ -55,9 +55,7 @@ ib_g=0.000000
 ib_b=0.000000 
 ib_a=0.000000 
 per_frame_1=warp = 0; 
-per_frame_2=//dx = dx - .0005; 
-per_frame_3=//dy = dy - .0005; 
-per_frame_4=wave_r = abs(wave_r + 0.1*(sin(time*0.346) + sin(time*1.334))); 
-per_frame_5=wave_g = wave_g + 0.1*(sin(time*0.763) + sin(time*1.231)); 
-per_frame_6=wave_b = wave_b + 0.2*(sin(time*0.695) + sin(time*0.367)); 
+per_frame_2=wave_r = abs(wave_r + 0.1*(sin(time*0.346) + sin(time*1.334))); 
+per_frame_3=wave_g = wave_g + 0.1*(sin(time*0.763) + sin(time*1.231)); 
+per_frame_4=wave_b = wave_b + 0.2*(sin(time*0.695) + sin(time*0.367)); 
 per_pixel_1=dy = 0.001-if(below(y, 0.65), if(above(y, 0.35), (y-0.5) + bass_att*0.01*sin(-x*30+time*4), 0), 0);

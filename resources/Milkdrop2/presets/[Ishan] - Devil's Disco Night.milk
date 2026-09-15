@@ -216,4 +216,3 @@ per_pixel_1=zoom=zoom+.1;
 per_pixel_2=rot=(rot+sin(zoom-bass_att)*2)*.1;
 per_pixel_3=rot=rot+sin(rot-ang*5+rad*5)*.3;
 per_pixel_4=rot=sqr(rot);
-per_pixel_14=

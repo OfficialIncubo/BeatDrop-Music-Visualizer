@@ -61,7 +61,7 @@ mv_r=1.000000
 mv_g=1.000000
 mv_b=1.000000
 mv_a=0.000000
-per_frame_1=wave_mystery = wave_mystery + 9*(0.5*time+bass__att/2);
+per_frame_1=wave_mystery = wave_mystery + 9*(0.5*time+bass_att/2);
 per_frame_2=ob_size = ob_size + 0.8 + 0.2*cos(time);
 per_frame_3=ib_size = ib_size + 0.8 + 0.2*cos(time);
 per_frame_4=wave_r = wave_r + 0.5*sin(5*bass)*2*time;

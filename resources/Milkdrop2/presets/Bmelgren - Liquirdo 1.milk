@@ -50,5 +50,4 @@ per_frame_4=zoom = zoom + 0.1*( 0.60*cos(0.339*time) + 0.40*sin(0.276*time) );
 per_frame_5=rot = rot + 0.030*( 0.60*sin(0.381*time) + 0.40*sin(0.579*time) ); 
 per_frame_6=cx = cx + 0.070*( 0.60*sin(0.374*time) + 0.40*sin(0.294*time) ); 
 per_frame_7=cy = cy + 0.070*( 0.60*sin(0.393*time) + 0.40*sin(0.223*time) ); 
-per_pixel_1=zoom=zoom-max(0,(mid_att-1.2))*cos(time*1.4+rad*9);
-fRating=4.000000
+per_pixel_1=zoom=zoom-max(0,(mid_att-1.2))*cos(time*1.4+rad*9); 

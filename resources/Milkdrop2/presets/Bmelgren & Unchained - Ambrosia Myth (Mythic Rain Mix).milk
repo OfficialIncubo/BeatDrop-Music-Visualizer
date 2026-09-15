@@ -50,4 +50,3 @@ per_frame_4=wave_b = wave_g + .33*sin(time*.999);
 per_frame_5=wave_mystery=wave_mystery+.3*sin(time*.888);
 per_pixel_1=fleem=if(above(bass_att,1),-5,10)+if(above(treb_att,1),10,-5);
 per_pixel_2=zoom = zoom + (.05*bass)*tan(ang*fleem+pow(abs(rad-2),4)+time/4-rad);
-fRating=4.000000

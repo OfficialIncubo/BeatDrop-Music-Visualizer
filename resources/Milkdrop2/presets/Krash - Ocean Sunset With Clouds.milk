@@ -48,5 +48,4 @@ per_frame_2=wave_g = wave_g + 0.30*( 0.60*sin(0.900*time) + 0.40*sin(1.023*time)
 per_pixel_1=zoom = zoom + if(below(rad,0.265), -0.03, if(above(y,0.6), (abs(0.001*sin((ang+1.57)*0.674*time)) + 0.001*sin(0.456*time)), if(below(rad,0.4), -0.03, if(below(y,0.5), 0.01*sin(0.671*rad*ang*time), -0.2)))); 
 per_pixel_2=rot = rot + if(below(y,0.2), 0, if(above(y,0.5), if(below(ang,-0.65), if(above(ang,-2.45), if(above(y,0.6), 0.2*sin(abs(rad-1)*ang*10*time), 0), 0.1), -0.1), if(above(rad,0.4), if(below(ang,1.57), 0.1, -0.1), 0))); 
 per_pixel_3=sx = sx + if(below(y,0.2), if(above(rad,0.4), 0.1*sin(rad*ang*2.45*time)+0.1, 0), 0); 
-per_pixel_4=sy = sy + if(below(y,0.2), if(above(rad,0.4), 0.02*sin(rad*ang*3.52*time) +0.02, 0), 0);
-fRating=1.000000
+per_pixel_4=sy = sy + if(below(y,0.2), if(above(rad,0.4), 0.02*sin(rad*ang*3.52*time) +0.02, 0), 0); 
