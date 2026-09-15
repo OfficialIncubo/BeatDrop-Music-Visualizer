@@ -24,7 +24,7 @@ BeatDrop Music Visualizer is a continued development of the [original inactive r
 
 Highlights:
 - Based of the [Original MilkDrop2 Plug-in](https://www.geisswerks.com/milkdrop/), compatible with all the MilkDrop presets (.milk).
-- 7k+ bundled presets - nostalgic and modern!
+- 10k+ bundled presets - nostalgic and modern!
 - Perfectly adjusted beat detection for better audio reaction (also configurable)
 - New waveforms and transitions
 - 16 custom shapes and waves limit
