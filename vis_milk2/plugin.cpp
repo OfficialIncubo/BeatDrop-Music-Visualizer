@@ -655,6 +655,7 @@ float timetick = 0;
 float timetick2 = 0;
 float TimeToAutoLockPreset = 0;
 int beatcount;
+bool AutoLockedPreset = false;
 
 void CPlugin::SetHardcutMode(int mode)
 {
@@ -667,8 +668,29 @@ void CPlugin::SetHardcutMode(int mode)
         beatcount = -1;
 }
 int NumTotalPresetsLoaded = 0;
-bool AutoLockedPreset = false;
 //bool ShowPresetOnTitle = 0;
+
+void CPlugin::ToggleAutoLockPresetWhenNoMusic(bool showNotification)
+{
+    m_bAutoLockPresetWhenNoMusic = !m_bAutoLockPresetWhenNoMusic;
+
+    // If disabled while silence has already auto-locked the preset, release
+    // that automatic lock immediately.
+    if (!m_bAutoLockPresetWhenNoMusic)
+    {
+        if (AutoLockedPreset)
+            m_bPresetLockedByUser = false;
+        AutoLockedPreset = false;
+        TimeToAutoLockPreset = 0;
+    }
+
+    if (showNotification)
+    {
+        AddNotif(m_bAutoLockPresetWhenNoMusic
+            ? L"Preset auto-lock when silence enabled."
+            : L"Preset auto-lock when silence disabled.");
+    }
+}
 
 //For Sample Rate auto-detection
 #include <windows.h>
@@ -8019,10 +8041,10 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
 	case 'T':
 		LaunchSongTitleAnim();
 		return 0; // we processed (or absorbed) the key
-	case 'o':	//m_pState->m_fWarpAmount /= 1.1f;	
-        return 0; // we processed (or absorbed) the key
-	case 'O':	//m_pState->m_fWarpAmount *= 1.1f;	
-        return 0; // we processed (or absorbed) the key
+	case 'o':
+	case 'O':
+		ToggleAutoLockPresetWhenNoMusic();
+		return 0; // we processed (or absorbed) the key
 
     case '!':
         // randomize warp shader

@@ -23,6 +23,7 @@
    SPACE / H            soft / hard cut to next preset
    BACKSPACE            go back to previous preset
    ` / ~                [un]lock current preset
+   O                    toggle auto-lock preset when silence
    R                    toggle random/sequential preset order 
    L                    load specific preset
    M                    show/hide preset-editing menu

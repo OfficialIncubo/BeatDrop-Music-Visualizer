@@ -234,6 +234,7 @@ enum TrayMenuCommand
 	TRAY_MENU_OPEN_LYRICS_EDITOR,
 	TRAY_MENU_SPOUT,
 	TRAY_MENU_LOCK_PRESET,
+	TRAY_MENU_AUTO_LOCK_SILENCE,
 	TRAY_MENU_ORDER,
 	TRAY_MENU_NEXT_PRESET,
 	TRAY_MENU_NEXT_PRESET_SOFTCUT,
@@ -380,6 +381,8 @@ static void ShowTrayContextMenu(HWND hwnd, bool visualWindowMenu)
 
 	AppendMenuW(menu, MF_STRING | (g_plugin.m_bPresetLockedByUser ? MF_CHECKED : MF_UNCHECKED),
 		TRAY_MENU_LOCK_PRESET, L"Lock current preset");
+	AppendMenuW(menu, MF_STRING | (g_plugin.m_bAutoLockPresetWhenNoMusic ? MF_CHECKED : MF_UNCHECKED),
+		TRAY_MENU_AUTO_LOCK_SILENCE, L"Auto lock preset when no music/silence");
 	AppendMenuW(menu, MF_STRING | (!g_plugin.m_bSequentialPresetOrder ? MF_CHECKED : MF_UNCHECKED),
 		TRAY_MENU_ORDER, L"Random preset order");
 	AppendMenuW(menu, MF_STRING, TRAY_MENU_NEXT_PRESET, L"Next preset");
@@ -513,7 +516,12 @@ static void ExecuteTrayMenuCommand(HWND hwnd, UINT command)
 	else if (command >= TRAY_MENU_HARDCUT_BASE && command <= TRAY_MENU_HARDCUT_BASE + 12)
 		g_plugin.SetHardcutMode(static_cast<int>(command - TRAY_MENU_HARDCUT_BASE));
 	else if (command == TRAY_MENU_LOCK_PRESET)
+	{
 		g_plugin.m_bPresetLockedByUser = !g_plugin.m_bPresetLockedByUser;
+		g_plugin.AddNotif(g_plugin.m_bPresetLockedByUser ? L"Preset locked." : L"Preset unlocked.");
+	}
+	else if (command == TRAY_MENU_AUTO_LOCK_SILENCE)
+		g_plugin.ToggleAutoLockPresetWhenNoMusic(false);
 	else if (command == TRAY_MENU_ORDER)
 	{
 		g_plugin.m_bSequentialPresetOrder = !g_plugin.m_bSequentialPresetOrder;

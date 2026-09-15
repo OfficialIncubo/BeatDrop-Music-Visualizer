@@ -429,7 +429,8 @@ public:
 
     	// Applies a hardcut mode selected outside the keyboard handler (for example,
     	// from the notification-area menu) while keeping its dependent state in sync.
-    	void SetHardcutMode(int mode);
+     	void SetHardcutMode(int mode);
+        void ToggleAutoLockPresetWhenNoMusic(bool showNotification = true);
 
         //bool		m_bAlways3D;
         //float       m_fStereoSep;
