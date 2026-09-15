@@ -287,7 +287,7 @@ comp_13=`
 comp_14=`    float2 uv2;  
 comp_15=`    uv2.x = uv.x*cos(q1) - uv.y*sin(q1);
 comp_16=`    uv2.y = uv.x*sin(q1) + uv.y*cos(q1);
-comp_17=`    uv2 *= aspect.zw;
+comp_17=`    uv2 *= aspect_sd.zw;
 comp_18=`    uv2 += 0.5;
 comp_19=`
 comp_20=`    ret = abs( tex2D(sampler_main, uv2).xyz*2.65
