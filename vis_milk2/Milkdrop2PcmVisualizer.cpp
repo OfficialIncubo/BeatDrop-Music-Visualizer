@@ -563,6 +563,12 @@ void ToggleFullScreen(HWND hwnd) {
 
 void ToggleBorderlessWindow(HWND hwnd)
 {
+    // Desktop Mode reparents the renderer into Explorer's WorkerW and owns
+    // its child-window style.  Do not let borderless toggles overwrite that
+    // state while the renderer is attached to the desktop.
+    if (!hwnd || g_plugin.m_bDesktopMode)
+        return;
+
     if (!borderless)
     {
         RECT rect;

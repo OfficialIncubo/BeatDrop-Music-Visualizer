@@ -309,7 +309,7 @@ static void ShowTrayContextMenu(HWND hwnd, bool visualWindowMenu)
 		AppendMenuW(menu, MF_STRING | (stretch ? MF_CHECKED : MF_UNCHECKED),
 			TRAY_MENU_MONITOR_STRETCH, L"Monitor stretch mode");
 		UINT borderlessFlags = MF_STRING | (borderless ? MF_CHECKED : MF_UNCHECKED);
-		if (fullscreen || stretch)
+		if (fullscreen || stretch || desktopMode)
 			borderlessFlags |= MF_GRAYED;
 		AppendMenuW(menu, borderlessFlags, TRAY_MENU_BORDERLESS, L"Borderless mode");
 		AppendMenuW(menu, MF_STRING, TRAY_MENU_HIDE_WINDOW, L"Hide visual window");
