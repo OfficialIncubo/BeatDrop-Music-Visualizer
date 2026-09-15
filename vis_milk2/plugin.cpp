@@ -692,15 +692,6 @@ void CPlugin::ToggleAutoLockPresetWhenNoMusic(bool showNotification)
     }
 }
 
-//For Sample Rate auto-detection
-#include <windows.h>
-#include <mmdeviceapi.h>
-#include <propsys.h>
-#include <functiondiscoverykeys_devpkey.h>
-#pragma comment(lib, "ole32.lib")
-#pragma comment(lib, "propsys.lib")
-//
-
 void NSEEL_HOSTSTUB_EnterMutex() {}
 void NSEEL_HOSTSTUB_LeaveMutex() {}
 
@@ -11536,67 +11527,6 @@ void CPlugin::KillSprite(int iSlot)
     m_texmgr.KillTex(iSlot);
 }
 
-int SAMPLE_RATE = 44100; //Initialize sample rate globally, 44100hz is the default sample rate for MilkDrop
-
-HRESULT DetectSampleRate()
-{
-    HRESULT hr = S_OK;
-    IMMDeviceEnumerator* pEnumerator = NULL;
-    IMMDevice* pDevice = NULL;
-    IPropertyStore* pProps = NULL;
-    PROPVARIANT var;
-    PropVariantInit(&var);
-
-    // Initialize COM
-    // Use existing COM instance if already initialized
-    bool coInitialized = false;
-    hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
-    if (SUCCEEDED(hr)) {
-        coInitialized = true;
-    }
-    else if (hr == RPC_E_CHANGED_MODE) {
-        // COM already initialized with different mode, continue anyway
-        hr = S_OK;
-    }
-
-    // Create device enumerator
-    hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL,
-        CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
-        (void**)&pEnumerator);
-    if (FAILED(hr)) goto Cleanup;
-
-    // Get default audio endpoint
-    hr = pEnumerator->GetDefaultAudioEndpoint(GetCaptureMicFlag() ? eCapture : eRender, eConsole, &pDevice);
-    if (FAILED(hr)) goto Cleanup;
-
-    // Open property store
-    hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
-    if (FAILED(hr)) goto Cleanup;
-
-    // Get the format property
-    hr = pProps->GetValue(PKEY_AudioEngine_DeviceFormat, &var);
-    if (SUCCEEDED(hr) && var.vt == VT_BLOB && var.blob.pBlobData)
-    {
-        WAVEFORMATEX* pwfx = (WAVEFORMATEX*)var.blob.pBlobData;
-        if (pwfx != NULL)
-        {
-            SAMPLE_RATE = pwfx->nSamplesPerSec;
-        }
-    }
-
-Cleanup:
-    // Clean up
-    PropVariantClear(&var);
-    if (pProps) pProps->Release();
-    if (pDevice) pDevice->Release();
-    if (pEnumerator) pEnumerator->Release();
-    if (coInitialized) {
-        CoUninitialize();
-    }
-
-    return hr;
-}
-
 void CPlugin::DoCustomSoundAnalysis()
 {
 	//Now uses configurations via beatdrop.ini, don't modify here.
@@ -12414,6 +12344,8 @@ void CPlugin::ShowMissingDirectXMessage()
     }
 }
 
+// Audio capture remains owned by the plugin settings; the audio module calls
+// this lightweight accessor when choosing the default render/capture device.
 bool GetCaptureMicFlag()
 {
     return g_plugin.m_bCaptureMic;

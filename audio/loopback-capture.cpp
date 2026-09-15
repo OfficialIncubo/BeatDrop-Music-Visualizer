@@ -3,8 +3,61 @@
 #include "common.h"
 #include "audiodevicehandler.h"
 #include <vector>
+#include <propsys.h>
+
+#pragma comment(lib, "ole32.lib")
+#pragma comment(lib, "propsys.lib")
 
 extern bool GetCaptureMicFlag();
+
+int SAMPLE_RATE = 44100; // Default sample rate used by the visualizer FFT.
+
+HRESULT DetectSampleRate()
+{
+    HRESULT hr = S_OK;
+    IMMDeviceEnumerator* pEnumerator = NULL;
+    IMMDevice* pDevice = NULL;
+    IPropertyStore* pProps = NULL;
+    PROPVARIANT var;
+    PropVariantInit(&var);
+
+    // Initialize COM, but tolerate a thread that already selected another
+    // apartment model (the audio device APIs remain usable in that case).
+    bool coInitialized = false;
+    hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+    if (SUCCEEDED(hr))
+        coInitialized = true;
+    else if (hr == RPC_E_CHANGED_MODE)
+        hr = S_OK;
+
+    hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL,
+        CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
+        (void**)&pEnumerator);
+    if (FAILED(hr)) goto Cleanup;
+
+    hr = pEnumerator->GetDefaultAudioEndpoint(
+        GetCaptureMicFlag() ? eCapture : eRender, eConsole, &pDevice);
+    if (FAILED(hr)) goto Cleanup;
+
+    hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
+    if (FAILED(hr)) goto Cleanup;
+
+    hr = pProps->GetValue(PKEY_AudioEngine_DeviceFormat, &var);
+    if (SUCCEEDED(hr) && var.vt == VT_BLOB && var.blob.pBlobData)
+    {
+        const WAVEFORMATEX* pwfx = reinterpret_cast<const WAVEFORMATEX*>(var.blob.pBlobData);
+        if (pwfx)
+            SAMPLE_RATE = static_cast<int>(pwfx->nSamplesPerSec);
+    }
+
+Cleanup:
+    PropVariantClear(&var);
+    if (pProps) pProps->Release();
+    if (pDevice) pDevice->Release();
+    if (pEnumerator) pEnumerator->Release();
+    if (coInitialized) CoUninitialize();
+    return hr;
+}
 
 static AudioDeviceHandler* g_pAudioDeviceHandler = NULL;
 

@@ -70,6 +70,7 @@ class MediaTexture;
 #define MY_FFT_SHADER_WINDOW MY_FFT_SHADER_SAMPLES*2
 
 HRESULT DetectSampleRate();
+extern int SAMPLE_RATE;
 bool GetCaptureMicFlag();
 
 typedef struct
