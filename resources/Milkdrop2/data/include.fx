@@ -100,7 +100,8 @@ float4x3 rot_rand4;
 #define q31 _qh.z
 #define q32 _qh.w
 
-#define aspect   _c0
+#define aspect   _c0 // normal aspect
+#define aspect_sd _c1 // screen-dependent aspect
 #define texsize  _c7 // .xy = (w,h); .zw = (1/(float)w, 1/(float)h)
 #define roam_cos _c8
 #define roam_sin _c9

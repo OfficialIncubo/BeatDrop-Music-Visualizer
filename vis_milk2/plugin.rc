@@ -1072,14 +1072,14 @@ STRINGTABLE
 BEGIN
     IDS_STRING624           "           float  rad;       //radius [0..1]"
     IDS_STRING625           "           float  ang;       //angle [0..PI*2]"
-    IDS_STRING626           "           // + texsize, aspect, time, fps, rand_frame, rand_preset,"
+    IDS_STRING626           "           // + texsize, aspect, aspect_sd, time, fps, rand_frame, rand_preset,"
     IDS_STRING627           "           //   q1-q32/_qa-_qh, bass, treb_att, vol... - see docs"
     IDS_STRING628           " output:   float3 ret;       //the new pixel color (r,g,b)"
     IDS_STRING629           " inputs:   float2 uv;          //UV coordinates [0..1]"
     IDS_STRING630           "           float  rad;         //radius [0..1]"
     IDS_STRING631           "           float  ang;         //angle [0..PI*2]"
     IDS_STRING632           "           float3 hue_shader   //for MilkDrop 1 compatibility"
-    IDS_STRING633           "           // + texsize, aspect, time, fps, rand_frame, rand_preset,"
+    IDS_STRING633           "           // + texsize, aspect, aspect_sd, time, fps, rand_frame, rand_preset,"
     IDS_STRING634           "           //   q1-q32/_qa-_qh, bass, treb_att, vol... - see docs"
     IDS_STRING635           " output:   float3 ret;         //display pixel color (r,g,b)"
     IDS_UPGRADE_SHADERS_TO_USE_PS2X 

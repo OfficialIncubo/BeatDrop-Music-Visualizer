@@ -1,5 +1,7 @@
 Added init/per-frame/per-vertex variables: mousex, mousey, mousedown, mouseclick, ctrllt, ctrlrt, ctrlup, ctrldn, year, month, day, weekday, hour, minute, second, milliseconds, totalseconds
 
+aspect_sd - Screen-Dependent Aspect Ratio: When it mode is on, it retains as 1, else it goes back to normal aspect. If you want to always be 1:1, just use aspect.
+
 Mouse controls:
 mouse_x - retrieves the X position of mouse
 mouse_y - retrieves the Y position of mouse
