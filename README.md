@@ -40,7 +40,7 @@ Highlights:
 - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library integration
 - Toggleable Speaker and Microphone Audio Source Modes
 - Synchronized LRC lyrics with a built-in timestamp editor, local cache and smooth line transitions
-- Our modified [loopback-capture](https://matthewvaneerde.wordpress.com/2008/12/16/sample-wasapi-loopback-capture-record-what-you-hear/) code, called BeatDrop-loopback, with above 92kHz sample rate (Hi-Res) support, intelligent default audio change and anti-stutter
+- [BeatDrop-loopback](https://matthewvaneerde.wordpress.com/2008/12/16/sample-wasapi-loopback-capture-record-what-you-hear/), our enhanced loopback-capture implementation, supports Hi-Res sample rates above 92 kHz, intelligently follows default audio-device changes, recovers safely from endpoint or format changes (including DAWs), and prevents stale or stuttering audio reactions.
 - Interact presets with Mouse and Keyboard (CTRL + Arrow Keys)
 - GIF, Video and [Spout](https://spout.zeal.co) Input support for sprites and textures
 - Extended preset, texture, transition and noise generation randomization limit using [Mersenne Twister Pseudo-Random Number Generator](https://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/emt.html)

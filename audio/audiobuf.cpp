@@ -11,9 +11,30 @@ unsigned char pcmLeftLpb[SAMPLE_SIZE_LPB]; // Circular buffer (left channel)
 unsigned char pcmRightLpb[SAMPLE_SIZE_LPB]; // Circular buffer (right channel)
 float pcmLeftFloatLpb[SAMPLE_SIZE_LPB];
 float pcmRightFloatLpb[SAMPLE_SIZE_LPB];
-bool pcmBufDrained = false; // Buffer drained by visualization thread and holds no new samples
 signed int pcmLen = 0; // Actual number of samples the buffer holds. Can be less than SAMPLE_SIZE_LPB
-signed int pcmPos = 0; // Position to write new data
+signed int pcmPos = 0; // Next position written by the circular buffer.
+ULONGLONG pcmLastPacketTick = 0;
+ULONGLONG pcmPacketIntervalMs = 0;
+UINT32 pcmSampleRate = 0;
+
+// This is called while pcmLpbMutex is held.  The expiry interval comes from
+// the captured packet and the amount of audio retained in the ring, so it
+// does not assume a device latency or a render-frame rate.
+void DrainAudioBufIfExpired() {
+    if (pcmLen == 0 || pcmLastPacketTick == 0 || pcmPacketIntervalMs == 0 ||
+        pcmSampleRate == 0)
+        return;
+
+    // Let the already-captured audio play out before declaring the source
+    // stale.  This absorbs normal packet-delivery jitter without retaining a
+    // frozen waveform indefinitely after capture stops.
+    const ULONGLONG retainedAudioMs =
+        (static_cast<ULONGLONG>(pcmLen) * 1000ULL) / pcmSampleRate;
+    const ULONGLONG elapsedMs = GetTickCount64() - pcmLastPacketTick;
+    if (elapsedMs > pcmPacketIntervalMs + retainedAudioMs) {
+        pcmLen = 0;
+    }
+}
 
 void ResetAudioBuf() {
     std::unique_lock<std::mutex> lock(pcmLpbMutex);
@@ -21,60 +42,40 @@ void ResetAudioBuf() {
     memset(pcmRightLpb, 0, SAMPLE_SIZE_LPB);
     memset(pcmLeftFloatLpb, 0, sizeof(pcmLeftFloatLpb));
     memset(pcmRightFloatLpb, 0, sizeof(pcmRightFloatLpb));
-    pcmBufDrained = false;
     pcmLen = 0;
+    pcmPos = 0;
+    pcmLastPacketTick = 0;
+    pcmPacketIntervalMs = 0;
+    pcmSampleRate = 0;
 }
 
 void GetAudioBuf(unsigned char *pWaveL, unsigned char *pWaveR, int SamplesCount) {
     std::unique_lock<std::mutex> lock(pcmLpbMutex);
+    DrainAudioBufIfExpired();
 
-    static int consecutiveReads = 0;
-    static int lastPcmPos = pcmPos;
-
-    if (pcmPos == lastPcmPos) {
-        consecutiveReads++;
-    }
-    else {
-        consecutiveReads = 0;
-        lastPcmPos = pcmPos;
-    }
-
-    if ((pcmLen < SamplesCount) || (consecutiveReads > 3)) {
+    if (pcmLen < SamplesCount) {
         // Buffer underrun. Insufficient new samples in circular buffer (pcmLeftLpb, pcmRightLpb)
         memset(pWaveL, 0, SamplesCount);
         memset(pWaveR, 0, SamplesCount);
-        if (consecutiveReads > 3)
-       	    pcmBufDrained = true; // Drain buffer to force underrun next time
     }
     else {
-        // Circular buffer (pcmLeftLpb, pcmRightLpb) hold enough samples in it
+        // Read the latest complete block, independent of packet size or the
+        // interval between packet deliveries.
+        const int first = (pcmPos - SamplesCount + SAMPLE_SIZE_LPB) % SAMPLE_SIZE_LPB;
         for (int i = 0; i < SamplesCount; i++) {
             // int8_t [-128 .. +127] stored into uint8_t [0..255]
-            pWaveL[i % SamplesCount] = pcmLeftLpb[(pcmPos + i) % SAMPLE_SIZE_LPB];
-            pWaveR[i % SamplesCount] = pcmRightLpb[(pcmPos + i) % SAMPLE_SIZE_LPB];
+            pWaveL[i] = pcmLeftLpb[(first + i) % SAMPLE_SIZE_LPB];
+            pWaveR[i] = pcmRightLpb[(first + i) % SAMPLE_SIZE_LPB];
         }
-        //pcmBufDrained = true;
     }
 }
 
 void GetAudioBufFloat(float* pWaveL, float* pWaveR, int SamplesCount) {
     std::unique_lock<std::mutex> lock(pcmLpbMutex);
-    static int consecutiveReads = 0;
-    static int lastPcmPos = pcmPos;
-
-    if (pcmPos == lastPcmPos) {
-        consecutiveReads++;
-    }
-    else {
-        consecutiveReads = 0;
-        lastPcmPos = pcmPos;
-    }
-
-    if ((pcmLen == 0) || (consecutiveReads > 3)) {
+    DrainAudioBufIfExpired();
+    if (pcmLen == 0) {
         memset(pWaveL, 0, SamplesCount * sizeof(float));
         memset(pWaveR, 0, SamplesCount * sizeof(float));
-        if (consecutiveReads > 3)
-            pcmBufDrained = true;
     }
     else {
         // Zero-fill beginning if buffer not yet full; valid audio at end.
@@ -86,11 +87,12 @@ void GetAudioBufFloat(float* pWaveL, float* pWaveR, int SamplesCount) {
             memset(pWaveL, 0, zeroPrefix * sizeof(float));
             memset(pWaveR, 0, zeroPrefix * sizeof(float));
         }
+        const int first = (pcmPos - available + SAMPLE_SIZE_LPB) % SAMPLE_SIZE_LPB;
         for (int i = 0; i < available; i++) {
             // Match the legacy waveform amplitude domain used by the FFT path:
             // old m_sound.fWaveform samples were roughly in [-128..127].
-            pWaveL[zeroPrefix + i] = pcmLeftFloatLpb[(pcmPos + i) % SAMPLE_SIZE_LPB] * 128.0f;
-            pWaveR[zeroPrefix + i] = pcmRightFloatLpb[(pcmPos + i) % SAMPLE_SIZE_LPB] * 128.0f;
+            pWaveL[zeroPrefix + i] = pcmLeftFloatLpb[(first + i) % SAMPLE_SIZE_LPB] * 128.0f;
+            pWaveR[zeroPrefix + i] = pcmRightFloatLpb[(first + i) % SAMPLE_SIZE_LPB] * 128.0f;
         }
     }
 }
@@ -174,32 +176,21 @@ void SetAudioBuf(const BYTE *pData, const UINT32 nNumFramesToRead, const WAVEFOR
         downsampleRatio = pwfx->nSamplesPerSec / TARGET_SAMPLE_RATE;
     }
 
-    // Calculate output samples after downsampling
-    int outputSamples = nNumFramesToRead / downsampleRatio;
+    // Retain exactly the newest buffer-sized suffix of the packet. This is
+    // naturally independent of the host's latency and packet size.
+    const UINT32 bufferCapacity = static_cast<UINT32>(SAMPLE_SIZE_LPB);
+    const UINT32 outputSamples = nNumFramesToRead / downsampleRatio;
+    const UINT32 firstOutputSample = outputSamples > bufferCapacity
+        ? outputSamples - bufferCapacity
+        : 0;
 
-    // Adjust buffer writing parameters for downsampled data
-    int n = 0;
-    int start = 0;
-    int len = outputSamples;
-    if (outputSamples >= SAMPLE_SIZE_LPB) {
-        n = 0;
-        start = outputSamples - SAMPLE_SIZE_LPB;
-        len = SAMPLE_SIZE_LPB;
-    }
-    else {
-        n = SAMPLE_SIZE_LPB - outputSamples;
-        start = 0;
-        len = outputSamples;
-    }
-
-    for (int i = start; i < len; i++, n++) {
+    for (UINT32 i = firstOutputSample; i < outputSamples; ++i) {
         float sumLeft = 0.0f;
         float sumRight = 0.0f;
 
         // Average samples for downsampling
         for (int j = 0; j < downsampleRatio; j++) {
             int inputIndex = i * downsampleRatio + j;
-            if (inputIndex >= nNumFramesToRead) break;
 
             int blockOffset = inputIndex * pwfx->nBlockAlign;
 
@@ -234,14 +225,36 @@ void SetAudioBuf(const BYTE *pData, const UINT32 nNumFramesToRead, const WAVEFOR
         float finalRight = (sumRight / downsampleRatio) * g_fAudioSensitivity;
 
         // Store averaged/downsampled values
-        pcmLeftFloatLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = finalLeft;
-        pcmRightFloatLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = finalRight;
-        pcmLeftLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = (uint8_t)FltToInt(finalLeft);
-        pcmRightLpb[(pcmPos + n) % SAMPLE_SIZE_LPB] = (uint8_t)FltToInt(finalRight);
+        pcmLeftFloatLpb[pcmPos] = finalLeft;
+        pcmRightFloatLpb[pcmPos] = finalRight;
+        pcmLeftLpb[pcmPos] = (uint8_t)FltToInt(finalLeft);
+        pcmRightLpb[pcmPos] = (uint8_t)FltToInt(finalRight);
+
+        pcmPos = (pcmPos + 1) % SAMPLE_SIZE_LPB;
+        if (pcmLen < SAMPLE_SIZE_LPB)
+            ++pcmLen;
     }
 
-    pcmBufDrained = false;
-    pcmLen = (pcmLen + len <= SAMPLE_SIZE_LPB) ? (pcmLen + len) : (SAMPLE_SIZE_LPB);
-    pcmPos = (pcmPos + len) % SAMPLE_SIZE_LPB;
+    if (outputSamples != 0 && pwfx->nSamplesPerSec != 0) {
+        const ULONGLONG now = GetTickCount64();
+        // Convert the actual capture-frame duration to milliseconds.  This is
+        // a unit conversion, not a fixed timeout.
+        ULONGLONG intervalMs =
+            (static_cast<ULONGLONG>(nNumFramesToRead) * 1000ULL) /
+            pwfx->nSamplesPerSec;
+
+        // On hosts that deliver packets less frequently than their nominal
+        // duration, retain samples until the observed delivery interval.
+        // This keeps high-latency devices from incorrectly going flatline.
+        if (pcmLastPacketTick != 0) {
+            const ULONGLONG observedIntervalMs = now - pcmLastPacketTick;
+            if (observedIntervalMs > intervalMs)
+                intervalMs = observedIntervalMs;
+        }
+
+        pcmLastPacketTick = now;
+        pcmPacketIntervalMs = intervalMs;
+        pcmSampleRate = pwfx->nSamplesPerSec / downsampleRatio;
+    }
 
 }

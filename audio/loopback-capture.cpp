@@ -67,11 +67,19 @@ HRESULT LoopbackCapture(
     bool bInt16,
     HANDLE hStartedEvent,
     HANDLE hStopEvent,
-    PUINT32 pnFrames
+    PUINT32 pnFrames,
+    PDWORD pRetryDelayMs
 );
 
 HRESULT WriteWaveHeader(HMMIO hFile, LPCWAVEFORMATEX pwfx, MMCKINFO *pckRIFF, MMCKINFO *pckData);
 HRESULT FinishWaveFile(HMMIO hFile, MMCKINFO *pckRIFF, MMCKINFO *pckData);
+
+bool IsRecoverableAudioClientError(HRESULT hr) {
+    return hr == AUDCLNT_E_DEVICE_INVALIDATED ||
+        hr == AUDCLNT_E_RESOURCES_INVALIDATED ||
+        hr == AUDCLNT_E_SERVICE_NOT_RUNNING ||
+        hr == AUDCLNT_E_DEVICE_IN_USE;
+}
 
 DWORD WINAPI LoopbackCaptureThreadFunction(LPVOID pContext) {
     LoopbackCaptureThreadFunctionArguments *pArgs =
@@ -80,58 +88,73 @@ DWORD WINAPI LoopbackCaptureThreadFunction(LPVOID pContext) {
     pArgs->hr = CoInitialize(NULL);
     if (FAILED(pArgs->hr)) {
         ERR(L"CoInitialize failed: hr = 0x%08x", pArgs->hr);
+        if (pArgs->pMMDevice) {
+            pArgs->pMMDevice->Release();
+            pArgs->pMMDevice = NULL;
+        }
         return 0;
     }
     CoUninitializeOnExit cuoe;
 
+    DWORD retryDelayMs = 0;
+    bool reacquireDevice = false;
     while (true) {
+        if (reacquireDevice) {
+            // A device period is the only pacing value needed here.  It comes
+            // from the last working audio client, rather than a guessed retry
+            // delay, and lets a DAW finish reconfiguring the endpoint.
+            if (WaitForSingleObject(pArgs->hStopEvent, retryDelayMs) == WAIT_OBJECT_0) {
+                pArgs->hr = S_OK;
+                break;
+            }
+
+            // The thread owns this reference independently from CPrefs.  Drop
+            // it once before receiving the replacement endpoint.
+            if (pArgs->pMMDevice) {
+                pArgs->pMMDevice->Release();
+                pArgs->pMMDevice = NULL;
+            }
+
+            const HRESULT recoveryHr = g_pAudioDeviceHandler
+                ? g_pAudioDeviceHandler->ResetToDefaultDevice(&pArgs->pMMDevice)
+                : E_UNEXPECTED;
+            if (FAILED(recoveryHr)) {
+                pArgs->hr = recoveryHr;
+                continue;
+            }
+
+            ResetAudioBuf();
+            LOG(L"Audio device recovery succeeded; restarting capture");
+            reacquireDevice = false;
+        }
+
         pArgs->hr = LoopbackCapture(
             pArgs->pMMDevice,
             pArgs->hFile,
             pArgs->bInt16,
             pArgs->hStartedEvent,
             pArgs->hStopEvent,
-            &pArgs->nFrames
+            &pArgs->nFrames,
+            &retryDelayMs
         );
 
-        // Only retry if device was invalidated
-        if (pArgs->hr != AUDCLNT_E_DEVICE_INVALIDATED) {
+        if (!IsRecoverableAudioClientError(pArgs->hr)) {
             break; // Exit loop for any other error or normal completion
         }
 
-        // Device was invalidated - try to recover
-        if (g_pAudioDeviceHandler) {
-            g_pAudioDeviceHandler->ResetToDefaultDevice();
-
-            // Update the device in arguments for next retry
-            if (pArgs->pMMDevice) {
-                pArgs->pMMDevice->Release();
-            }
-            HRESULT hr;
-            // Use microphone if enabled, otherwise use speaker loopback
-            if (GetCaptureMicFlag()) {
-                // Get default input device (microphone)
-                hr = pArgs->pMMDevice->Release();
-                hr = g_pAudioDeviceHandler->m_pEnumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &pArgs->pMMDevice);
-            }
-            else {
-                // Get default output device (speaker)
-                hr = g_pAudioDeviceHandler->CheckForDeviceChanges(&pArgs->pMMDevice);
-            }
-            if (FAILED(hr)) {
-                ERR(L"Failed to get new audio device after invalidation: hr = 0x%08x", hr);
-                break; // Can't recover if we can't get a new device
-            }
-
-            LOG(L"Audio device invalidated - retrying with new default device");
-            continue; // Retry with the new device
-        }
-        else {
-            ERR(L"Audio device invalidated but no device handler available");
+        if (!g_pAudioDeviceHandler) {
+            ERR(L"Recoverable audio-client error but no device handler is available: hr = 0x%08x", pArgs->hr);
             break; // Can't recover without device handler
         }
+
+        LOG(L"Audio client needs recovery: hr = 0x%08x", pArgs->hr);
+        reacquireDevice = true;
     }
 
+    if (pArgs->pMMDevice) {
+        pArgs->pMMDevice->Release();
+        pArgs->pMMDevice = NULL;
+    }
     return 0;
 }
 
@@ -141,9 +164,13 @@ HRESULT LoopbackCapture(
     bool bInt16,
     HANDLE hStartedEvent,
     HANDLE hStopEvent,
-    PUINT32 pnFrames
+    PUINT32 pnFrames,
+    PDWORD pRetryDelayMs
 ) {
     HRESULT hr;
+    if (pRetryDelayMs) {
+        *pRetryDelayMs = 0;
+    }
 
     // Initialize device handler if not already done
     if (!g_pAudioDeviceHandler) {
@@ -174,6 +201,10 @@ HRESULT LoopbackCapture(
     if (FAILED(hr)) {
         ERR(L"IAudioClient::GetDevicePeriod failed: hr = 0x%08x", hr);
         return hr;
+    }
+    if (pRetryDelayMs) {
+        // REFERENCE_TIME is expressed in 100-nanosecond units.
+        *pRetryDelayMs = static_cast<DWORD>(hnsDefaultDevicePeriod / 10000);
     }
 
     // get the default device format

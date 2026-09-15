@@ -128,19 +128,34 @@ HRESULT AudioDeviceHandler::CheckForDeviceChanges(IMMDevice** ppNewDevice) {
     return S_OK;
 }
 
-void AudioDeviceHandler::ResetToDefaultDevice() {
-    if (m_pEnumerator) {
-        IMMDevice* pNewDevice = NULL;
-        HRESULT hr = m_pEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &pNewDevice);
-        if (SUCCEEDED(hr)) {
-            if (m_pCurrentDevice) {
-                m_pCurrentDevice->Release();
-            }
-            m_pCurrentDevice = pNewDevice;
-            GetDeviceFormat(m_pCurrentDevice, &m_dwCurrentFormatTag, &m_dwCurrentSampleRate);
-            LOG(L"Reset to default audio device");
-        }
+HRESULT AudioDeviceHandler::ResetToDefaultDevice(IMMDevice** ppNewDevice) {
+    if (!m_pEnumerator || !ppNewDevice) {
+        return E_INVALIDARG;
     }
+
+    *ppNewDevice = NULL;
+    IMMDevice* pNewDevice = NULL;
+    const EDataFlow flow = GetCaptureMicFlag() ? eCapture : eRender;
+    HRESULT hr = m_pEnumerator->GetDefaultAudioEndpoint(flow, eConsole, &pNewDevice);
+    if (FAILED(hr)) {
+        ERR(L"Failed to get replacement default audio endpoint: hr = 0x%08x", hr);
+        return hr;
+    }
+
+    if (m_pCurrentDevice) {
+        m_pCurrentDevice->Release();
+    }
+    m_pCurrentDevice = pNewDevice; // Keep the reference returned by the enumerator.
+
+    hr = GetDeviceFormat(m_pCurrentDevice, &m_dwCurrentFormatTag, &m_dwCurrentSampleRate);
+    if (FAILED(hr)) {
+        ERR(L"Failed to read replacement audio format: hr = 0x%08x", hr);
+    }
+
+    m_pCurrentDevice->AddRef(); // Transfer one independent reference to the caller.
+    *ppNewDevice = m_pCurrentDevice;
+    LOG(L"Reset to default %ls audio device", flow == eCapture ? L"capture" : L"render");
+    return S_OK;
 }
 
 HRESULT AudioDeviceHandler::GetDeviceFormat(IMMDevice* pDevice, DWORD* pdwFormatTag, DWORD* pdwSampleRate) {
