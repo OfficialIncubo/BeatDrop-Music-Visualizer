@@ -896,7 +896,7 @@ comp_31=`  n2 = lum(tex2D(sampler_noise_hq, (uvi*2+zv)));
 comp_32=`  return n1 + n2/2 ;}
 comp_33=`
 comp_34=`shader_body {
-comp_35=`uv1 = (uv-.5)*aspect.xy+.5;
+comp_35=`uv1 = (uv-.5)*aspect_sd.xy+.5;
 comp_36=`screen = float3 ((uv-float2(.5,.5+.0*pow((uv.x-.5),2)))*aspect.xy,.6);
 comp_37=`
 comp_38=`//CLOUDS

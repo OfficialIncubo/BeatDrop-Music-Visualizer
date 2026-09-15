@@ -1343,8 +1343,8 @@ comp_30=`  n2 = lum(tex2D(sampler_rand00, (uvi*2+zv)));
 comp_31=`  return n1 + n2/2 ;}
 comp_32=`
 comp_33=`shader_body {
-comp_34=`uv1 = (uv-.5)*aspect.xy+.5;
-comp_35=`screen = float3 ((uv-float2(.5,.5+.0*pow((uv.x-.5),2)))*aspect.xy,.6);
+comp_34=`uv1 = (uv-.5)*aspect_sd.xy+.5;
+comp_35=`screen = float3 ((uv-float2(.5,.5+.0*pow((uv.x-.5),2)))*aspect_sd.xy,.6);
 comp_36=`
 comp_37=`//CLOUDS
 comp_38=`uv2 = mul(uv1*float2(1,1),float2x2(q1,q2,-q2,q1));

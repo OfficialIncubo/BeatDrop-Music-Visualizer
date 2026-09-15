@@ -346,7 +346,7 @@ warp_3=`float dx,dy;
 warp_4=`shader_body {
 warp_5=`
 warp_6=`
-warp_7=`float2 uv1 = (uv_orig-.5) * aspect.xy;
+warp_7=`float2 uv1 = (uv_orig-.5) * aspect_sd.xy;
 warp_8=`
 warp_9=`float2 uv6 = uv1;
 warp_10=`

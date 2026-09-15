@@ -38,7 +38,7 @@ cx=0.500
 cy=0.500
 dx=0.00000
 dy=0.00000
-warp=0.00826
+warp=0.00683
 sx=0.99990
 sy=1.00000
 wave_r=0.000
@@ -162,7 +162,7 @@ wavecode_2_samples=512
 wavecode_2_sep=0
 wavecode_2_bSpectrum=0
 wavecode_2_bUseDots=1
-wavecode_2_bDrawThick=0
+wavecode_2_bDrawThick=1
 wavecode_2_bAdditive=1
 wavecode_2_scaling=0.89152
 wavecode_2_smoothing=0.82000
@@ -246,7 +246,7 @@ shapecode_0_sides=5
 shapecode_0_additive=0
 shapecode_0_thickOutline=0
 shapecode_0_textured=0
-shapecode_0_num_inst=1000
+shapecode_0_num_inst=700
 shapecode_0_x=0.900
 shapecode_0_y=0.900
 shapecode_0_rad=0.19710
@@ -366,7 +366,7 @@ shapecode_2_sides=3
 shapecode_2_additive=0
 shapecode_2_thickOutline=0
 shapecode_2_textured=0
-shapecode_2_num_inst=1000
+shapecode_2_num_inst=700
 shapecode_2_x=0.390
 shapecode_2_y=0.400
 shapecode_2_rad=0.01000
@@ -422,14 +422,15 @@ shape_2_per_frame34=
 shape_2_per_frame35=    tmp = .3;
 shape_2_per_frame36=    r2 = r*tmp; g2 = g*tmp; b2 = b*tmp; 
 shape_2_per_frame37=    a2=0; 
-shape_2_per_frame38=    ang = z1*1000;
-shape_2_per_frame39=  ,gmegabuf(self+12) += q30; rad = 0; ); //#age prematurely ?);
-shape_2_per_frame40=
-shape_2_per_frame41=, a=0; rad =0;) 
-shape_2_per_frame42=
+shape_2_per_frame38=//    ang = z1*1000;
+shape_2_per_frame39=ang = (frame%2)*6.28/6+time+instance;
+shape_2_per_frame40=  ,gmegabuf(self+12) += q30; rad = 0; ); //#age prematurely ?);
+shape_2_per_frame41=
+shape_2_per_frame42=, a=0; rad =0;) 
+shape_2_per_frame43=
 shapecode_3_enabled=1
 shapecode_3_sides=6
-shapecode_3_additive=1
+shapecode_3_additive=0
 shapecode_3_thickOutline=0
 shapecode_3_textured=0
 shapecode_3_num_inst=350
@@ -509,9 +510,9 @@ per_frame_init_25=n = 0; loop (150000,gmegabuf(n) = 0; n+=1);
 per_frame_init_26=fac = .4; reg19 = fac;
 per_frame_init_27=
 per_frame_init_28=//SPARKS
-per_frame_init_29=obj_num = 2000; reg00 = obj_num;
+per_frame_init_29=obj_num = 1400; reg00 = obj_num;
 per_frame_init_30=obj_size = 16; reg01 = obj_size;
-per_frame_init_31=max_age = 3.8; reg02 = max_age;
+per_frame_init_31=max_age = 4.5; reg02 = max_age;
 per_frame_init_32=head_ptr = 0; 
 per_frame_init_33=free = 0;
 per_frame_init_34=
@@ -519,7 +520,7 @@ per_frame_init_35=//SPARKS2
 per_frame_init_36=num2 = 2048; reg20 = num2;
 per_frame_init_37=free2 = 0;
 per_frame_init_38=ptr2 = 0;
-per_frame_init_39=mage2 = 1; reg22 = mage2;
+per_frame_init_39=mage2 = 1.5; reg22 = mage2;
 per_frame_init_40=base2 = 100000;
 per_frame_init_41=
 per_frame_init_42=//TAIL
@@ -565,7 +566,7 @@ per_frame_init_81=index2 = int(rand(32));
 per_frame_init_82=start = .9;
 per_frame_init_83=//-----------------------------------------
 per_frame_1=dt = gSpeed/fps; dt2 = dt ; 
-per_frame_2=dec_s = 1-.015*30/fps; dec_m = pow(.95, 30/fps); dec_f = pow(.85, 30/fps);
+per_frame_2=dec_s = exp(-.015*30/fps); dec_m = exp(-1.5/fps); dec_f = exp(-5/fps);
 per_frame_3=vol_att = (bass + mid + treb)/3;
 per_frame_4=avg = avg*dec_s + (1-dec_s)*vol_att*(1.5-.2/cal);
 per_frame_5=
@@ -613,14 +614,14 @@ per_frame_46=vx0 = reg56*speed;
 per_frame_47=vy0 = reg57*speed;
 per_frame_48=vz0 = reg58*speed;
 per_frame_49=x0 = x0 + vx0*dt ;          reg04 = x0; 
-per_frame_50=y0 = max(-.5,min(0.5,y0 + vy0*dt)) ; reg05 = y0; 
+per_frame_50=y0 = (y0 + vy0*dt)* (1-y0*y0*dt) ; reg05 = y0; 
 per_frame_51=z0 = z0 + vz0*dt ;          reg06 = z0; 
 per_frame_52=
 per_frame_53=ltest = 0;
 per_frame_54=style = n1 > 0; 
 per_frame_55=circles = (index2>=12); 
 per_frame_56=//SPARK QUEUE - insert new objects
-per_frame_57=if (style ==0, new = max(0,min(1800*dt*(mid>1.2),free)),0);
+per_frame_57=if (style ==0, new = max(0,min(1200*dt*(mid>1.2),free)),0);
 per_frame_58=if (style ==1, new = max(0,min(200*vol_att*(vol_att*200 > 50+obj_num-free),free*.8)),0);
 per_frame_59=if (new < 16, new = 0, 0);
 per_frame_60=n = 0; m = new; 
@@ -631,9 +632,9 @@ per_frame_64=if (new > 0,
 per_frame_65=  if (index%5==3,
 per_frame_66=    csum = sqrt(pow(bass_att,2) + pow(mid_att,2) + pow(treb_att,2)) ;
 per_frame_67=    flim = min(max(0,2*pow(rand(100)/100,2)-.5),1);
-per_frame_68=    colr = colr*.5 + .5* pow(bass_att,1)/csum;
-per_frame_69=    colb = colb*.5 + .5* pow(mid_att,1)/csum;
-per_frame_70=    colg = colg*.5 + .5* pow(treb_att,1)/csum;,0);
+per_frame_68=    colr = colr*.5 + .5* bass_att/csum;
+per_frame_69=    colb = colb*.5 + .5* mid_att/csum;
+per_frame_70=    colg = colg*.5 + .5* treb_att/csum;,0);
 per_frame_71=  while (exec2 (
 per_frame_72=    self = (head_ptr%obj_num)*obj_size;
 per_frame_73=    if (gmegabuf(self+12) <= 0,
@@ -892,24 +893,22 @@ per_frame_325=
 per_frame_326=start = max(0,start-dt2);
 per_frame_327=q3 = start;
 per_frame_328=if (ltest > 2000, fail = 1, 0);
-per_frame_329=monitor = q30;;
-per_frame_330=
-per_frame_331=
-per_frame_332=//frei: q4, q8, q9
 warp_1=`#define sat saturate
-warp_2=`
+warp_2=`float3 Get1 (float2 uvi) {return lerp (GetPixel(uvi), GetBlur1(uvi), .2);}
 warp_3=`shader_body
 warp_4=`{
 warp_5=`
 warp_6=`uv = 0.5 + (1.0 - abs( frac( uv * 0.5 ) * 2 - 1.0 )-.5); // Eo.S. mirror code
 warp_7=`
-warp_8=`ret = lerp(GetPixel(uv), GetBlur1(uv),0.2);
-warp_9=`uv = (uv+uv_orig)/2;
-warp_10=`//ret += lerp(GetPixel(uv), GetBlur1(uv),0.1);
-warp_11=`
-warp_12=`ret = ret * 0. - 0.004;
-warp_13=`}
-warp_14=`
+warp_8=`ret = Get1(uv);
+warp_9=`uv = (uv*2+uv_orig)/3;
+warp_10=`ret =+ max(0,Get1 (uv));
+warp_11=`uv = (uv+uv_orig*2)/3;
+warp_12=`ret += max(0,Get1 (uv));
+warp_13=`
+warp_14=`ret = ret/3 * 0.5 - 0.004;
+warp_15=`}
+warp_16=`
 comp_1=`#define sat saturate
 comp_2=`#define sampler_test sampler_moss1
 comp_3=`sampler sampler_pw_noise_lq;
@@ -922,7 +921,7 @@ comp_9=`static const float3 s = float3(q22,q25,q28);
 comp_10=`static const float3 ts = cross(t,s);
 comp_11=`static const float2 movxz = float2(q18,q19);
 comp_12=`static const float3 col = pow(float3((q17%10.0)/10,((q17/10.0)%10)/10.0,int(q17/100.0)/10.0),.8);
-comp_13=`static const float hlim = 9;
+comp_13=`static const float hlim = 10;
 comp_14=`float3 screen;
 comp_15=`
 comp_16=`float3 lavcol (float t) { return pow(.5,2*t*slow_roam_cos);}
@@ -974,7 +973,7 @@ comp_61=`  rs1.xy = 0.5 + (1.0 - abs( frac( rs.xy * 0.5 ) * 2 - 1.0 )-.5); // Eo
 comp_62=`  back = tex2D (sampler_test,rs1.xy);;
 comp_63=`  lprof =  back.g;
 comp_64=`  tmp =  1-(saturate(1.8*lprof-.3*(2-m))); 
-comp_65=`  forest += back * saturate(lprof*1)*.15 ;
+comp_65=`  forest += back * saturate(lprof*1)*.12 ;
 comp_66=`  gnd += tmp/pow(rs.z,2)*.3; 
 comp_67=`}
 comp_68=`forest *= 1-noise.x+lprof;
@@ -992,11 +991,11 @@ comp_79=`
 comp_80=`
 comp_81=`uv2 = uv1-float2(q11,q12);
 comp_82=`float flash = q13/(length(uv2));
-comp_83=`flash *= flash/(abs(frac(q12*32+int(1+treb_att)*aTan2(uv2.x,uv2.y))-.5)+.14);
+comp_83=`flash *= flash/(abs(frac(q12*32+min(6,int(1+treb_att))*aTan2(uv2.x,uv2.y))-.5)+.14);
 comp_84=`
 comp_85=`uv2 = uv1-float2(q14,q15);
 comp_86=`float head = pow(.0001/(length(uv2)),.8)*q16;
-comp_87=`ret += pow(head+flash,ncloud)*col;
+comp_87=`ret += pow(head+flash,ncloud)*saturate(col*2-0.8);
 comp_88=`
 comp_89=`ret += GetBlur3((uv-.5)/2+.5)/pow(rs.z,2)*(rs.z>0)*lprof*2;
 comp_90=`

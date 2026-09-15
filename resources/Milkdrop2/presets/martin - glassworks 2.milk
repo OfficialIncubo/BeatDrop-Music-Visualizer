@@ -545,7 +545,7 @@ comp_29=`dz.y = 2.0*GetBlur1(uv+ver*gk).g-2.0*GetBlur1(uv-ver*gk).g;
 comp_30=`dz *= GetBlur1(uv).g > 0.06;
 comp_31=`dz *= max(1,GetBlur2(uv).g*7);
 comp_32=`
-comp_33=`screen = float3 ((uv-0.5)*aspect.xy+dz*0.25,1);
+comp_33=`screen = float3 ((uv-0.5)*aspect_sd.xy+dz*0.25,1);
 comp_34=`rs = project(); float lrs = length(rs.xy);
 comp_35=`gmask = sat (2-3.5*lrs);
 comp_36=`uv2 = rs/8;

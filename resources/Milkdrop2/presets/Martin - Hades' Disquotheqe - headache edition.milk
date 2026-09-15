@@ -671,7 +671,7 @@ comp_32=`
 comp_33=`float3 get (float2 uvi, float r) {return lerp (GetPixel(uvi), GetBlur1(uvi),r);}
 comp_34=`
 comp_35=`shader_body {
-comp_36=`screen3 = float3 ((uv-0.5)*aspect.xy,myzoom);
+comp_36=`screen3 = float3 ((uv-0.5)*aspect_sd.xy,myzoom);
 comp_37=`rsl0 = project (lav_gnd); float3 struc;
 comp_38=`  for (int m=1; m <= quality; m++) {
 comp_39=`    rsl = frac(project (lav_gnd));

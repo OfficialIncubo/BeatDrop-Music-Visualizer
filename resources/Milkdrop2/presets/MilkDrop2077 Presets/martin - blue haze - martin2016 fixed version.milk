@@ -892,7 +892,7 @@ per_frame_135=bal = min(0.85,max(0.15,bal+ dt*0.1 * atan(treb -bass - (bal-0.5)*
 per_frame_136=q12 = bal;
 per_frame_137=
 per_frame_138=monitor = q12;
-warp_1=`static const float2 centre = float2 (q10-0.5,-(q11-0.5))/aspect.xy+0.5;
+warp_1=`static const float2 centre = float2 (q10-0.5,-(q11-0.5))/aspect_sd.xy+0.5;
 warp_2=`
 warp_3=`shader_body {
 warp_4=`ret = lerp(GetPixel(uv),GetBlur1(uv),0.2)*0.75;
@@ -924,7 +924,7 @@ comp_17=`float3 project (float2 uvi) {float z;
 comp_18=`  z = clamp(1/uvi.y,-16,16); return float3 (z*(uvi.x-0.5),z-2,z);}
 comp_19=`
 comp_20=`shader_body {
-comp_21=`uvc = (uv-0.5) * aspect.xy + 0.5 -centre;
+comp_21=`uvc = (uv-0.5) * aspect_sd.xy + 0.5 -centre;
 comp_22=`omask = saturate (15*(0.55-uvc.y));
 comp_23=`uv2 = project (uvc) * float2(1,1.5);
 comp_24=`float2 ring = (tex2D(sampler_noise_mq,-time/16+length(uv2)/2)-0.5).xy*sat(1-length(uv2));
@@ -936,12 +936,12 @@ comp_29=`float3 rets = max (retl,retr)*min(0.3+rad*2,1);
 comp_30=`struc = max(max(GetPixel(uv),rets)*float3(2,2,.7+1-2*blue)*1.3,GetBlur2(uv)*q1*3);
 comp_31=`ret = struc; 
 comp_32=`
-comp_33=`uv3 = (ring.x*0.2+ (uv2-0)*.25 +0.5+centre/aspect.xy);
+comp_33=`uv3 = (ring.x*0.2+ (uv2-0)*.25 +0.5+centre/aspect_sd.xy);
 comp_34=`uv3 = frac(uv3);
 comp_35=`ret += GetBlur1(uv3)*sat(2-length(uv2));
 comp_36=`
 comp_37=`//Planet
-comp_38=`ir0 = 24*(.15/(pos.y-0.1))/aspect.y;
+comp_38=`ir0 = 24*(.15/(pos.y-0.1))/aspect_sd.y;
 comp_39=`uv1 = (uvc-pos);
 comp_40=`k1 = sqrt(abs(1-ir0*ir0*uv1.y*uv1.y)+0.0); //sollte sqrt sein, 0.01 = test
 comp_41=`rs = float2 (acos(uv1.x*ir0/k1), uv1.y*ir0/k1);
@@ -954,7 +954,7 @@ comp_47=`
 comp_48=`ret *= !mask;
 comp_49=`ret += struc*mask*hmask; //struc vor dem Planeten zeigen
 comp_50=`
-comp_51=`uv4 = ((uvc-0.5)*.1 +0.5+centre/aspect.xy);
+comp_51=`uv4 = ((uvc-0.5)*.1 +0.5+centre/aspect_sd.xy);
 comp_52=`ret += sat (-dot (uv1,uvc-0.5))*mask*hmask*140*GetBlur1(uv4);
 comp_53=`
 comp_54=`ret += ((-uv1.y/ir0*20)*float3(0,0.4,0.9)+lavcol(sat(prof)*pow(k1,4)))*mask;
@@ -966,6 +966,6 @@ comp_59=`
 comp_60=`z = 1/(2-uv.y) ;
 comp_61=`uv3 = float2(uvc.x-.5,1)*z*float2(q8,q9)+float2(0,time*0.005);
 comp_62=`uv3.y -= noise3(uv3).r*-0.008;
-comp_63=`uv4 = ((uvc-float2 (q12,0.3))*.4 +0.5+centre/aspect.xy);
+comp_63=`uv4 = ((uvc-float2 (q12,0.3))*.4 +0.5+centre/aspect_sd.xy);
 comp_64=`ret += !mask*saturate(1-2*uvc.y)*2*saturate(noise3(uv3).r*GetBlur2(uv4)+float3(0,0.1,0.25));
 comp_65=`}

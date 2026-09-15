@@ -384,13 +384,13 @@ warp_13=`noise = tex2D(sampler_pw_noise_lq,rs/32);
 warp_14=`noise *= (noise >= .9);
 warp_15=`noise *= 1+.5*(lum(tex2D(sampler_noise_hq,16*rs))-.5);
 warp_16=`float4 noise2 = tex3D(sampler_noisevol_hq, 
-warp_17=`                      ((rs.xyy*1.4
+warp_17=`                      ((rs.xyy*2.4
 warp_18=`                       )*texsize.xyy*texsize_noisevol_hq.zww
 warp_19=`                      ).xyz*
 warp_20=`                      float3(1,1,0)*0.05 + 
-warp_21=`                      time*float3(0,0,1)*0.5
+warp_21=`                      time*float3(0,0,1)*0.2
 warp_22=`                     );
-warp_23=`if (noise.x+noise.y+noise.z > .01) noise += (noise2)*.5; 
+warp_23=`if (noise.x+noise.y+noise.z > .01) noise += (noise2)*.8; 
 warp_24=`ret1 = noise;
 warp_25=`
 warp_26=`z = 3*h1/abs(uv1.y);
@@ -398,7 +398,7 @@ warp_27=`rs.x = uv1.x * z;
 warp_28=`rs.y = z + q30;
 warp_29=`noise = tex2D(sampler_pw_noise_lq,rs/32);
 warp_30=`noise *= (noise >= .9);
-warp_31=`if (noise.x+noise.y+noise.z > .01) noise += (noise2)*.5; 
+warp_31=`if (noise.x+noise.y+noise.z > .01) noise += (noise2)*.8; 
 warp_32=`ret1 += noise;
 warp_33=`
 warp_34=`z = h1/abs(uv1.x);
@@ -407,7 +407,7 @@ warp_36=`rs.x = z + q30;
 warp_37=`noise = tex2D(sampler_pw_noise_lq,rs/32);
 warp_38=`noise *= (noise >= .9);
 warp_39=`noise *= 1+.5*(lum(tex2D(sampler_noise_hq,16*rs))-.5);
-warp_40=`if (noise.x+noise.y+noise.z > .01) noise += (noise2)*.5; 
+warp_40=`if (noise.x+noise.y+noise.z > .01) noise += (noise2)*.8; 
 warp_41=`ret1 += noise;
 warp_42=`
 warp_43=`z = 3*h1/abs(uv1.x);
@@ -415,7 +415,7 @@ warp_44=`rs.y = uv1.y * z;
 warp_45=`rs.x = z + q30;
 warp_46=`noise = tex2D(sampler_pw_noise_lq,rs/32);
 warp_47=`noise *= (noise >= .9);
-warp_48=`if (noise.x+noise.y+noise.z > .01) noise += (noise2)*.5; 
+warp_48=`if (noise.x+noise.y+noise.z > .01) noise += (noise2)*.8; 
 warp_49=`ret1 += noise;
 warp_50=`
 warp_51=`ret = ret1;    
@@ -436,12 +436,20 @@ comp_13=`float2 dz = float2 (dx,dy);
 comp_14=`
 comp_15=`uv1 = .3*sin((uv+.02*time)*6) + .2*dz;
 comp_16=`float3 dots = saturate(.004*q26/length(uv1))*float3(1,.8,.4);
-comp_17=`
-comp_18=`float3 clouds = (tex2D (sampler_rand00, uv_orig+dz));
-comp_19=`clouds += lum(clouds)-.7;
-comp_20=`
-comp_21=`float3 ret1 = .1*tex2D(sampler_main, uv) ;
-comp_22=`
-comp_23=`ret = -2*ret1 + dots  + .4*clouds;
-comp_24=`
-comp_25=`}
+comp_17=`float4 noise2 = tex3D(sampler_noisevol_hq, 
+comp_18=`                      ((uv1.xyy*.4
+comp_19=`                       )*texsize.xyy*texsize_noisevol_hq.zww
+comp_20=`                      ).xyz*
+comp_21=`                      float3(1,1,0)*0.05 + 
+comp_22=`                      time*float3(0,0,1)*0.2
+comp_23=`                     );
+comp_24=`if (dots.x+dots.y+dots.z > .14) dots *= (noise2)*2.2; 
+comp_25=`
+comp_26=`float3 clouds = (tex2D (sampler_rand00, uv_orig+dz));
+comp_27=`clouds += lum(clouds)-.7;
+comp_28=`
+comp_29=`float3 ret1 = .1*tex2D(sampler_main, uv) ;
+comp_30=`
+comp_31=`ret = -2*ret1 + dots  + .4*clouds;
+comp_32=`
+comp_33=`}

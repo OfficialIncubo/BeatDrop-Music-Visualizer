@@ -241,12 +241,12 @@ wave_3_per_point25=
 wave_3_per_point26=, a=0; ) ;
 wave_3_per_point27=
 wave_3_per_point28=t1 += 1;
-shapecode_0_enabled=1
-shapecode_0_sides=5
+shapecode_0_enabled=0
+shapecode_0_sides=4
 shapecode_0_additive=0
 shapecode_0_thickOutline=0
 shapecode_0_textured=0
-shapecode_0_num_inst=1000
+shapecode_0_num_inst=1
 shapecode_0_x=0.900
 shapecode_0_y=0.900
 shapecode_0_rad=0.19710
@@ -265,48 +265,6 @@ shapecode_0_border_r=0.000
 shapecode_0_border_g=0.000
 shapecode_0_border_b=1.000
 shapecode_0_border_a=0.000
-shape_0_per_frame1=self = instance*reg01;
-shape_0_per_frame2=age = gmegabuf(self+12);
-shape_0_per_frame3=max_age = reg02;
-shape_0_per_frame4=size = gmegabuf(self+13);
-shape_0_per_frame5=flim = gmegabuf(self+6);
-shape_0_per_frame6=if (age > 0,
-shape_0_per_frame7=  x0 = gmegabuf(self)-reg07;
-shape_0_per_frame8=  y0 = gmegabuf(self+1)-reg08;
-shape_0_per_frame9=  z0 = gmegabuf(self+2)-reg09;
-shape_0_per_frame10=
-shape_0_per_frame11=
-shape_0_per_frame12=  x1 = x0*reg30 + y0*reg31 + z0*reg32;
-shape_0_per_frame13=  y1 = x0*reg33 + y0*reg34 + z0*reg35;
-shape_0_per_frame14=  z1 = x0*reg36 + y0*reg37 + z0*reg38;
-shape_0_per_frame15=
-shape_0_per_frame16=
-shape_0_per_frame17=  if (z1 > 0,
-shape_0_per_frame18=    fac = reg19;;
-shape_0_per_frame19=    x = .5 + x1/z1*fac*q31;
-shape_0_per_frame20=    y = .5 - y1/z1*fac*q32;
-shape_0_per_frame21=
-shape_0_per_frame22=    megabuf(instance) = megabuf(instance)*.5 + .5*(rand(100)/100-.05);
-shape_0_per_frame23=
-shape_0_per_frame24=    bright = 1-pow(age/max_age,1);
-shape_0_per_frame25=    bright =  min(8,max(0,2*bright*((1-flim)+.5*flim/megabuf(instance) - .5*megabuf(instance))));
-shape_0_per_frame26=    a = .7;
-shape_0_per_frame27=    rad = min(0.2,.001*size/z1*bright); 
-shape_0_per_frame28=    
-shape_0_per_frame29=    k1 = 1;
-shape_0_per_frame30=    r=gmegabuf(self+9);
-shape_0_per_frame31=    g=gmegabuf(self+10);
-shape_0_per_frame32=    b=gmegabuf(self+11);
-shape_0_per_frame33=
-shape_0_per_frame34=
-shape_0_per_frame35=    tmp = .3;
-shape_0_per_frame36=    r2 = r*tmp; g2 = g*tmp; b2 = b*tmp; 
-shape_0_per_frame37=    a2=0; 
-shape_0_per_frame38=    ang = z1*1000;
-shape_0_per_frame39=  ,gmegabuf(self+12) += q30; rad = 0; ); //#age prematurely ?);
-shape_0_per_frame40=
-shape_0_per_frame41=, a=0; rad =0;) 
-shape_0_per_frame42=
 shapecode_1_enabled=1
 shapecode_1_sides=7
 shapecode_1_additive=0
@@ -350,7 +308,7 @@ shape_1_per_frame16=    x = .5 + x1/z1*fac*q31;
 shape_1_per_frame17=    y = .5 - y1/z1*fac*q32;
 shape_1_per_frame18=    a = max(0,min(1,1-age/reg12)) ;
 shape_1_per_frame19=   
-shape_1_per_frame20=    rad = .0006/z1*size*(1+ pow(1-age,6)+4*age/reg12);
+shape_1_per_frame20=    rad = .0005/z1*size*(1+ pow(1-age,6)+4*age/reg12);
 shape_1_per_frame21=  
 shape_1_per_frame22=    rad = min(rad,.1);
 shape_1_per_frame23=    r = min(1,a*4); g = a; b = pow(a,3); 
@@ -362,11 +320,11 @@ shape_1_per_frame28=
 shape_1_per_frame29=//if (instance == reg14-1, rad = .2, 0);
 shape_1_per_frame30=
 shapecode_2_enabled=1
-shapecode_2_sides=3
+shapecode_2_sides=7
 shapecode_2_additive=0
 shapecode_2_thickOutline=0
 shapecode_2_textured=0
-shapecode_2_num_inst=1000
+shapecode_2_num_inst=800
 shapecode_2_x=0.390
 shapecode_2_y=0.400
 shapecode_2_rad=0.01000
@@ -385,7 +343,7 @@ shapecode_2_border_r=0.000
 shapecode_2_border_g=0.000
 shapecode_2_border_b=0.000
 shapecode_2_border_a=0.000
-shape_2_per_frame1=self = (instance+reg00/2)*reg01;
+shape_2_per_frame1=self = instance*reg01;
 shape_2_per_frame2=age = gmegabuf(self+12);
 shape_2_per_frame3=max_age = reg02;
 shape_2_per_frame4=size = gmegabuf(self+13);
@@ -411,7 +369,7 @@ shape_2_per_frame23=
 shape_2_per_frame24=    bright = 1-pow(age/max_age,1);
 shape_2_per_frame25=    bright =  min(8,max(0,2*bright*((1-flim)+.5*flim/megabuf(instance) - .5*megabuf(instance))));
 shape_2_per_frame26=    a = .7;
-shape_2_per_frame27=    rad = min(0.2,.001*size/z1*bright); 
+shape_2_per_frame27=    rad = min(0.2,.0012*size/z1*bright); 
 shape_2_per_frame28=    
 shape_2_per_frame29=    k1 = 1;
 shape_2_per_frame30=    r=gmegabuf(self+9);
@@ -487,14 +445,14 @@ per_frame_init_3=//Camera angle is forced back into horizontal position
 per_frame_init_4=
 per_frame_init_5=//-------------- BEGIN MAIN PARAMS ---------------
 per_frame_init_6=//SPEEDS
-per_frame_init_7=gSpeed = .65;   //global speed, affects all other speeds incl. particle lifetimes
-per_frame_init_8=hSpeed = .03;  //firework head speed
-per_frame_init_9=pSpeed = .06;   //speed of primary particles
+per_frame_init_7=gSpeed = 0.76;   //global speed, affects all other speeds incl. particle lifetimes
+per_frame_init_8=hSpeed = .06;  //firework head speed
+per_frame_init_9=pSpeed = .05;   //speed of primary particles
 per_frame_init_10=tSpeed = hspeed*3.5;  //speed of tail particles
 per_frame_init_11=
 per_frame_init_12=//CAMERA
 per_frame_init_13=CamDist  = .03; //distance camera tries to stay behind firework 
-per_frame_init_14=CamSpeed = .27;  //camera follower speed
+per_frame_init_14=CamSpeed = .29;  //camera follower speed
 per_frame_init_15=CamLock = 6;    //how fast does camera angle lock on firework
 per_frame_init_16=HLock = .1;     //force camera angle back into horizontal view
 per_frame_init_17=
@@ -509,7 +467,7 @@ per_frame_init_25=n = 0; loop (150000,gmegabuf(n) = 0; n+=1);
 per_frame_init_26=fac = .4; reg19 = fac;
 per_frame_init_27=
 per_frame_init_28=//SPARKS
-per_frame_init_29=obj_num = 2000; reg00 = obj_num;
+per_frame_init_29=obj_num = 800; reg00 = obj_num;
 per_frame_init_30=obj_size = 16; reg01 = obj_size;
 per_frame_init_31=max_age = 3.8; reg02 = max_age;
 per_frame_init_32=head_ptr = 0; 
@@ -613,15 +571,15 @@ per_frame_46=vx0 = reg56*speed;
 per_frame_47=vy0 = reg57*speed;
 per_frame_48=vz0 = reg58*speed;
 per_frame_49=x0 = x0 + vx0*dt ;          reg04 = x0; 
-per_frame_50=y0 = max(-.5,min(0.5,y0 + vy0*dt)) ; reg05 = y0; 
+per_frame_50=y0 = (y0 + vy0*dt)* (1-y0*y0*dt*2) ; reg05 = y0; 
 per_frame_51=z0 = z0 + vz0*dt ;          reg06 = z0; 
 per_frame_52=
 per_frame_53=ltest = 0;
 per_frame_54=style = n1 > 0; 
 per_frame_55=circles = (index2>=12); 
 per_frame_56=//SPARK QUEUE - insert new objects
-per_frame_57=if (style ==0, new = max(0,min(1800*dt*(mid>1.2),free)),0);
-per_frame_58=if (style ==1, new = max(0,min(200*vol_att*(vol_att*200 > 50+obj_num-free),free*.8)),0);
+per_frame_57=if (style ==0, new = max(0,min(1000*dt*(mid>1.2),free)),0);
+per_frame_58=if (style ==1, new = max(0,min(250*vol_att*(vol_att*200 > 50+obj_num-free),free*.8)),0);
 per_frame_59=if (new < 16, new = 0, 0);
 per_frame_60=n = 0; m = new; 
 per_frame_61=dec = if (new > 0,0.3,dec_f); 
@@ -827,89 +785,104 @@ per_frame_260=y1 = x0_*reg33 + y0_*reg34 + z0_*reg35;
 per_frame_261=z1 = x0_*reg36 + y0_*reg37 + z0_*reg38;
 per_frame_262=q14 = .5 + x1/z1*fac;
 per_frame_263=q15 = .5 + y1/z1*fac;
-per_frame_264=q16 = if (z1>0, 1/z1* q29/3+20 + 40*vol_att,0) ;
-per_frame_265=q16 = max(0,q16/4) ;
+per_frame_264=q16 = if (z1>0, 1/z1 + 0*vol_att,0) ;
+per_frame_265=
 per_frame_266=
-per_frame_267=
-per_frame_268=//FOLLOW WITH CAMERA
-per_frame_269=reg07 = xcam; reg08 = ycam; reg09 = zcam;
-per_frame_270=dxcam = (x0-xcam)*dt*CamSpeed; dycam = (y0-ycam-.0)*dt*CamSpeed; dzcam = (z0-zcam-CamDist)*dt*CamSpeed; 
-per_frame_271=xcam += dxcam; ycam += dycam; zcam += dzcam; 
-per_frame_272=
-per_frame_273=//ROTATE VIEPOINT
-per_frame_274=x1 = (x0-XCam)*reg30 + (y0-yCam) *reg31 + (z0-zCam)*reg32;
-per_frame_275=y1 = (x0-XCam)*reg33 + (y0-YCam) *reg34 + (z0-zCam)*reg35;
-per_frame_276=dist = sqrt(pow(x0-xcam,2) + pow(y0-ycam,2) + pow(z0-zcam,2));
-per_frame_277=k1 = dt/max(dist,.02)*CamLock;
-per_frame_278=v1 =  -k1*(y1); v2 = k1*(x1); v3 = -reg31*k1*HLock;
-per_frame_279=
-per_frame_280=c1 = cos(v1); c2 = cos(v2); c3 = cos(v3); 
-per_frame_281=s1 = sin(v1); s2 = sin(v2); s3 = sin(v3);
-per_frame_282=reg40 = c2*c3; reg41 = c2*s3; reg42 = -s2;
-per_frame_283=reg43 = s1*s2*c3 - c1*s3; reg44 = s1*s2*s3 + c1*c3; reg45 = s1*c2;
-per_frame_284=reg46 = c1*s2*c3 + s1*s3; reg47 = c1*s2*s3 - s1*c3; reg48 = c1*c2;
-per_frame_285=
-per_frame_286=q20 = reg40*reg30 + reg41*reg33 + reg42*reg36;
-per_frame_287=q21 = reg40*reg31 + reg41*reg34 + reg42*reg37;
-per_frame_288=q22 = reg40*reg32 + reg41*reg35 + reg42*reg38;
-per_frame_289=q23 = reg43*reg30 + reg44*reg33 + reg45*reg36;
-per_frame_290=q24 = reg43*reg31 + reg44*reg34 + reg45*reg37;
-per_frame_291=q25 = reg43*reg32 + reg44*reg35 + reg45*reg38;
-per_frame_292=q26 = reg46*reg30 + reg47*reg33 + reg48*reg36;
-per_frame_293=q27 = reg46*reg31 + reg47*reg34 + reg48*reg37;
-per_frame_294=q28 = reg46*reg32 + reg47*reg35 + reg48*reg38;
-per_frame_295=reg30 =q20; reg31 =q21; reg32 =q22; 
-per_frame_296=reg33 =q23; reg34 =q24; reg35 =q25;
-per_frame_297=reg36 =q26; reg37 =q27; reg38 =q28;
-per_frame_298=
-per_frame_299=//Fake altitude
-per_frame_300=q10 = (1.3-ycam);
-per_frame_301=
-per_frame_302=//TEXTURE GND MOVEMENT
-per_frame_303=q18 = zcam*4; 
-per_frame_304=q19 = -xcam*4;
-per_frame_305=
-per_frame_306=//CLOUDS MOVEMENT
-per_frame_307=crot = crot + v3;
-per_frame_308=cfwd = cfwd + (dxcam*reg36 + dycam*reg37 + dzcam*reg38);
-per_frame_309=
-per_frame_310=q1 = cos(crot);q2 = sin(crot);
-per_frame_311=cmovx += -v1 * q1 + v2 * q2;
-per_frame_312=cmovy +=  v1 * q2 + v2 * q1;
-per_frame_313=q5 = cmovx*.1;
-per_frame_314=q6 = cmovy*.1;
-per_frame_315=q7 = cfwd*8;
-per_frame_316=
-per_frame_317=q30 = dt2;
-per_frame_318=q31 = aspectx;
-per_frame_319=q32 = aspecty;
-per_frame_320=
-per_frame_321=q17 = int(colr*10) + int(colg*10)*10 + int(colb*10)*100;
-per_frame_322=dx = -v2*.5; dy = v1*.5;
-per_frame_323=rot = v3;
-per_frame_324=zoom = 1+(dxcam*reg36 + dycam*reg37 + dzcam*reg38);
-per_frame_325=
-per_frame_326=start = max(0,start-dt2);
-per_frame_327=q3 = start;
-per_frame_328=if (ltest > 2000, fail = 1, 0);
-per_frame_329=monitor = q30;;
+per_frame_267=//FOLLOW WITH CAMERA
+per_frame_268=reg07 = xcam; reg08 = ycam; reg09 = zcam;
+per_frame_269=dxcam = (x0-xcam)*dt*CamSpeed; dycam = (y0-ycam-.0)*dt*CamSpeed; dzcam = (z0-zcam-CamDist)*dt*CamSpeed; 
+per_frame_270=xcam += dxcam; ycam += dycam; zcam += dzcam; 
+per_frame_271=
+per_frame_272=//ROTATE VIEPOINT
+per_frame_273=x1 = (x0-XCam)*reg30 + (y0-yCam) *reg31 + (z0-zCam)*reg32;
+per_frame_274=y1 = (x0-XCam)*reg33 + (y0-YCam) *reg34 + (z0-zCam)*reg35;
+per_frame_275=dist = sqrt(pow(x0-xcam,2) + pow(y0-ycam,2) + pow(z0-zcam,2));
+per_frame_276=k1 = dt/max(dist,.02)*CamLock;
+per_frame_277=v1 =  -k1*(y1); v2 = k1*(x1); v3 = -reg31*k1*HLock;
+per_frame_278=
+per_frame_279=c1 = cos(v1); c2 = cos(v2); c3 = cos(v3); 
+per_frame_280=s1 = sin(v1); s2 = sin(v2); s3 = sin(v3);
+per_frame_281=reg40 = c2*c3; reg41 = c2*s3; reg42 = -s2;
+per_frame_282=reg43 = s1*s2*c3 - c1*s3; reg44 = s1*s2*s3 + c1*c3; reg45 = s1*c2;
+per_frame_283=reg46 = c1*s2*c3 + s1*s3; reg47 = c1*s2*s3 - s1*c3; reg48 = c1*c2;
+per_frame_284=
+per_frame_285=q20 = reg40*reg30 + reg41*reg33 + reg42*reg36;
+per_frame_286=q21 = reg40*reg31 + reg41*reg34 + reg42*reg37;
+per_frame_287=q22 = reg40*reg32 + reg41*reg35 + reg42*reg38;
+per_frame_288=q23 = reg43*reg30 + reg44*reg33 + reg45*reg36;
+per_frame_289=q24 = reg43*reg31 + reg44*reg34 + reg45*reg37;
+per_frame_290=q25 = reg43*reg32 + reg44*reg35 + reg45*reg38;
+per_frame_291=q26 = reg46*reg30 + reg47*reg33 + reg48*reg36;
+per_frame_292=q27 = reg46*reg31 + reg47*reg34 + reg48*reg37;
+per_frame_293=q28 = reg46*reg32 + reg47*reg35 + reg48*reg38;
+per_frame_294=reg30 =q20; reg31 =q21; reg32 =q22; 
+per_frame_295=reg33 =q23; reg34 =q24; reg35 =q25;
+per_frame_296=reg36 =q26; reg37 =q27; reg38 =q28;
+per_frame_297=
+per_frame_298=//Fake altitude
+per_frame_299=q10 = (1.3-ycam);
+per_frame_300=
+per_frame_301=//TEXTURE GND MOVEMENT
+per_frame_302=q18 = zcam*4; 
+per_frame_303=q19 = -xcam*4;
+per_frame_304=
+per_frame_305=//CLOUDS MOVEMENT
+per_frame_306=crot = crot + v3;
+per_frame_307=cfwd = cfwd + (dxcam*reg36 + dycam*reg37 + dzcam*reg38);
+per_frame_308=
+per_frame_309=q1 = cos(crot);q2 = sin(crot);
+per_frame_310=cmovx += -v1 * q1 + v2 * q2;
+per_frame_311=cmovy +=  v1 * q2 + v2 * q1;
+per_frame_312=q5 = cmovx*.1;
+per_frame_313=q6 = cmovy*.1;
+per_frame_314=q7 = cfwd*8;
+per_frame_315=
+per_frame_316=q30 = dt2;
+per_frame_317=q31 = aspectx;
+per_frame_318=q32 = aspecty;
+per_frame_319=
+per_frame_320=q17 = int(colr*10) + int(colg*10)*10 + int(colb*10)*100;
+per_frame_321=dx = -v2*.5; dy = v1*.5;
+per_frame_322=rot = v3;
+per_frame_323=zoom = 1+(dxcam*reg36 + dycam*reg37 + dzcam*reg38);
+per_frame_324=
+per_frame_325=start = max(0,start-dt2);
+per_frame_326=//q3 = start;
+per_frame_327=if (ltest > 2000, fail = 1, 0);
+per_frame_328=monitor = q30;;
+per_frame_329=
 per_frame_330=
-per_frame_331=
-per_frame_332=//frei: q4, q8, q9
+per_frame_331=//frei: q3, q4, q8, q9
+per_frame_332=lx = vx0*reg30 + vy0*reg31 + vz0*reg32;
+per_frame_333=ly = vx0*reg33 + vy0*reg34 + vz0*reg35;
+per_frame_334=lz = vx0*reg36 + vy0*reg37 + vz0*reg38;
+per_frame_335=vabs = sqrt (vx0*vx0 + vy0*vy0);
+per_frame_336=
+per_frame_337=q8 = atan2(ly,lx);
+per_frame_338=q9 = exp(lz/vabs);
+per_frame_339=
+per_frame_340=//frei: q3, q4
+per_frame_341=
+per_frame_342=if (!(lx==0), q3=abs(.1/lx), q3=0);
+per_frame_343=if (!(ly==0), q4=abs(.1/ly), q4=0);
+per_frame_344=
+per_frame_345=monitor = q9;
 warp_1=`#define sat saturate
-warp_2=`
+warp_2=`float3 Get1 (float2 uvi) {return lerp (GetPixel(uvi), GetBlur1(uvi), 0.05);}
 warp_3=`shader_body
 warp_4=`{
 warp_5=`
 warp_6=`uv = 0.5 + (1.0 - abs( frac( uv * 0.5 ) * 2 - 1.0 )-.5); // Eo.S. mirror code
 warp_7=`
-warp_8=`ret = lerp(GetPixel(uv), GetBlur1(uv),0.2);
-warp_9=`uv = (uv+uv_orig)/2;
-warp_10=`//ret += lerp(GetPixel(uv), GetBlur1(uv),0.1);
-warp_11=`
-warp_12=`ret = ret * 0. - 0.004;
-warp_13=`}
-warp_14=`
+warp_8=`ret = Get1(uv);
+warp_9=`uv = (uv*2+uv_orig)/3;
+warp_10=`ret =+ max(0,Get1 (uv));
+warp_11=`uv = (uv+uv_orig*2)/3;
+warp_12=`ret += max(0,Get1 (uv));
+warp_13=`
+warp_14=`ret = ret/3 * .8 - 0.004;
+warp_15=`}
+warp_16=`
 comp_1=`#define sat saturate
 comp_2=`#define sampler_test sampler_moss1
 comp_3=`sampler sampler_pw_noise_lq;
@@ -948,7 +921,7 @@ comp_35=`screen = float3 ((uv-float2(.5,.5+.0*pow((uv.x-.5),2)))*aspect.xy,.6);
 comp_36=`
 comp_37=`//CLOUDS
 comp_38=`uv2 = mul(uv1*float2(1,1),float2x2(q1,q2,-q2,q1));
-comp_39=`float anz = 3.0; float t_rel = q7;
+comp_39=`float anz = 2; float t_rel = q7;
 comp_40=`cloud = 0;
 comp_41=`for (int n=1;n<=anz;n++) {
 comp_42=`    z = 1-frac(1.0*n/anz-1.0*frac(-t_rel/anz)); 
@@ -974,7 +947,7 @@ comp_61=`  rs1.xy = 0.5 + (1.0 - abs( frac( rs.xy * 0.5 ) * 2 - 1.0 )-.5); // Eo
 comp_62=`  back = tex2D (sampler_test,rs1.xy);;
 comp_63=`  lprof =  back.g;
 comp_64=`  tmp =  1-(saturate(1.8*lprof-.3*(2-m))); 
-comp_65=`  forest += back * saturate(lprof*1)*.15 ;
+comp_65=`  forest += back * saturate(lprof*1)*.2 ;
 comp_66=`  gnd += tmp/pow(rs.z,2)*.3; 
 comp_67=`}
 comp_68=`forest *= 1-noise.x+lprof;
@@ -995,14 +968,25 @@ comp_82=`float flash = q13/(length(uv2));
 comp_83=`flash *= flash/(abs(frac(q12*32+int(1+treb_att)*aTan2(uv2.x,uv2.y))-.5)+.14);
 comp_84=`
 comp_85=`uv2 = uv1-float2(q14,q15);
-comp_86=`float head = pow(.0001/(length(uv2)),.8)*q16;
-comp_87=`ret += pow(head+flash,ncloud)*col;
+comp_86=`float tt = q8+time*12;
+comp_87=`float2 uv3 = mul (uv2,float2x2(cos(tt),-sin(tt),sin(tt), cos(tt)));
 comp_88=`
-comp_89=`ret += GetBlur3((uv-.5)/2+.5)/pow(rs.z,2)*(rs.z>0)*lprof*2;
-comp_90=`
+comp_89=`float head = .0005/abs(length(abs(uv3.x)+abs(uv3.y)))*q16;
+comp_90=`//head = .002/(length(uv3*float2(q3,q4))-0.00*q16)*q16;
 comp_91=`
-comp_92=`}
+comp_92=`ret += pow(head+flash,ncloud)*saturate(col*2-1);
 comp_93=`
-comp_94=`//-------------------------------------------
-comp_95=`//Written by martin
+comp_94=`ret += GetBlur3((uv-.5)/2+.5)/pow(rs.z,2)*(rs.z>0)*lprof*2;
+comp_95=`
 comp_96=`
+comp_97=`float2 uv5  = (normalize(uv2)-float2(cos(q8),sin(q8)))*q16/6;
+comp_98=`float ray1 = saturate( (1-8*q9*length(uv5))) *0.1/length(uv2);
+comp_99=`ray1 = saturate(exp (-8*q9*length(uv5)) );
+comp_100=`ret += ray1*(0.25+2*cloud) * float3 (0.7, 0.8, 1);
+comp_101=`
+comp_102=`
+comp_103=`}
+comp_104=`
+comp_105=`//-------------------------------------------
+comp_106=`//Written by martin
+comp_107=`

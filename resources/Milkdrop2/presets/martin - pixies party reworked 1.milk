@@ -241,12 +241,12 @@ wave_3_per_point25=
 wave_3_per_point26=, a=0; ) ;
 wave_3_per_point27=
 wave_3_per_point28=t1 += 1;
-shapecode_0_enabled=1
-shapecode_0_sides=5
+shapecode_0_enabled=0
+shapecode_0_sides=4
 shapecode_0_additive=0
 shapecode_0_thickOutline=0
 shapecode_0_textured=0
-shapecode_0_num_inst=1000
+shapecode_0_num_inst=1
 shapecode_0_x=0.900
 shapecode_0_y=0.900
 shapecode_0_rad=0.19710
@@ -265,54 +265,12 @@ shapecode_0_border_r=0.000
 shapecode_0_border_g=0.000
 shapecode_0_border_b=1.000
 shapecode_0_border_a=0.000
-shape_0_per_frame1=self = instance*reg01;
-shape_0_per_frame2=age = gmegabuf(self+12);
-shape_0_per_frame3=max_age = reg02;
-shape_0_per_frame4=size = gmegabuf(self+13);
-shape_0_per_frame5=flim = gmegabuf(self+6);
-shape_0_per_frame6=if (age > 0,
-shape_0_per_frame7=  x0 = gmegabuf(self)-reg07;
-shape_0_per_frame8=  y0 = gmegabuf(self+1)-reg08;
-shape_0_per_frame9=  z0 = gmegabuf(self+2)-reg09;
-shape_0_per_frame10=
-shape_0_per_frame11=
-shape_0_per_frame12=  x1 = x0*reg30 + y0*reg31 + z0*reg32;
-shape_0_per_frame13=  y1 = x0*reg33 + y0*reg34 + z0*reg35;
-shape_0_per_frame14=  z1 = x0*reg36 + y0*reg37 + z0*reg38;
-shape_0_per_frame15=
-shape_0_per_frame16=
-shape_0_per_frame17=  if (z1 > 0,
-shape_0_per_frame18=    fac = reg19;;
-shape_0_per_frame19=    x = .5 + x1/z1*fac*q31;
-shape_0_per_frame20=    y = .5 - y1/z1*fac*q32;
-shape_0_per_frame21=
-shape_0_per_frame22=    megabuf(instance) = megabuf(instance)*.5 + .5*(rand(100)/100-.05);
-shape_0_per_frame23=
-shape_0_per_frame24=    bright = 1-pow(age/max_age,1);
-shape_0_per_frame25=    bright =  min(8,max(0,2*bright*((1-flim)+.5*flim/megabuf(instance) - .5*megabuf(instance))));
-shape_0_per_frame26=    a = .7;
-shape_0_per_frame27=    rad = min(0.2,.001*size/z1*bright); 
-shape_0_per_frame28=    
-shape_0_per_frame29=    k1 = 1;
-shape_0_per_frame30=    r=gmegabuf(self+9);
-shape_0_per_frame31=    g=gmegabuf(self+10);
-shape_0_per_frame32=    b=gmegabuf(self+11);
-shape_0_per_frame33=
-shape_0_per_frame34=
-shape_0_per_frame35=    tmp = .3;
-shape_0_per_frame36=    r2 = r*tmp; g2 = g*tmp; b2 = b*tmp; 
-shape_0_per_frame37=    a2=0; 
-shape_0_per_frame38=    ang = z1*1000;
-shape_0_per_frame39=  ,gmegabuf(self+12) += q30; rad = 0; ); //#age prematurely ?);
-shape_0_per_frame40=
-shape_0_per_frame41=, a=0; rad =0;) 
-shape_0_per_frame42=
 shapecode_1_enabled=1
-shapecode_1_sides=7
+shapecode_1_sides=6
 shapecode_1_additive=0
 shapecode_1_thickOutline=0
 shapecode_1_textured=0
-shapecode_1_num_inst=800
+shapecode_1_num_inst=1000
 shapecode_1_x=0.260
 shapecode_1_y=0.200
 shapecode_1_rad=0.01000
@@ -352,7 +310,7 @@ shape_1_per_frame18=    a = max(0,min(1,1-age/reg12)) ;
 shape_1_per_frame19=   
 shape_1_per_frame20=    rad = .0006/z1*size*(1+ pow(1-age,6)+4*age/reg12);
 shape_1_per_frame21=  
-shape_1_per_frame22=    rad = min(rad,.1);
+shape_1_per_frame22=    rad = min(rad,.14);
 shape_1_per_frame23=    r = min(1,a*4); g = a; b = pow(a,3); 
 shape_1_per_frame24=    a = .2; a2 = a*.3;
 shape_1_per_frame25=  ,gmegabuf(self+12)+=q30; rad= 0); //#age prematurely ?
@@ -362,7 +320,7 @@ shape_1_per_frame28=
 shape_1_per_frame29=//if (instance == reg14-1, rad = .2, 0);
 shape_1_per_frame30=
 shapecode_2_enabled=1
-shapecode_2_sides=3
+shapecode_2_sides=7
 shapecode_2_additive=0
 shapecode_2_thickOutline=0
 shapecode_2_textured=0
@@ -385,7 +343,7 @@ shapecode_2_border_r=0.000
 shapecode_2_border_g=0.000
 shapecode_2_border_b=0.000
 shapecode_2_border_a=0.000
-shape_2_per_frame1=self = (instance+reg00/2)*reg01;
+shape_2_per_frame1=self = instance*reg01;
 shape_2_per_frame2=age = gmegabuf(self+12);
 shape_2_per_frame3=max_age = reg02;
 shape_2_per_frame4=size = gmegabuf(self+13);
@@ -410,23 +368,21 @@ shape_2_per_frame22=    megabuf(instance) = megabuf(instance)*.5 + .5*(rand(100)
 shape_2_per_frame23=
 shape_2_per_frame24=    bright = 1-pow(age/max_age,1);
 shape_2_per_frame25=    bright =  min(8,max(0,2*bright*((1-flim)+.5*flim/megabuf(instance) - .5*megabuf(instance))));
-shape_2_per_frame26=    a = .7;
-shape_2_per_frame27=    rad = min(0.2,.001*size/z1*bright); 
+shape_2_per_frame26=    a = 0.7;
+shape_2_per_frame27=    rad = min(0.2,.0012*size/z1*bright); 
 shape_2_per_frame28=    
-shape_2_per_frame29=    k1 = 1;
-shape_2_per_frame30=    r=gmegabuf(self+9);
-shape_2_per_frame31=    g=gmegabuf(self+10);
-shape_2_per_frame32=    b=gmegabuf(self+11);
+shape_2_per_frame29=    r=gmegabuf(self+9);
+shape_2_per_frame30=    g=gmegabuf(self+10);
+shape_2_per_frame31=    b=gmegabuf(self+11);
+shape_2_per_frame32=
 shape_2_per_frame33=
-shape_2_per_frame34=
-shape_2_per_frame35=    tmp = .3;
-shape_2_per_frame36=    r2 = r*tmp; g2 = g*tmp; b2 = b*tmp; 
-shape_2_per_frame37=    a2=0; 
-shape_2_per_frame38=    ang = z1*1000;
-shape_2_per_frame39=  ,gmegabuf(self+12) += q30; rad = 0; ); //#age prematurely ?);
+shape_2_per_frame34=    tmp = 0.4;
+shape_2_per_frame35=    r2 = r*tmp; g2 = g*tmp; b2 = b*tmp; 
+shape_2_per_frame36=    ang = z1*1000;
+shape_2_per_frame37=  ,gmegabuf(self+12) += q30; rad = 0; ); //#age prematurely ?);
+shape_2_per_frame38=
+shape_2_per_frame39=, a=0; rad =0;) 
 shape_2_per_frame40=
-shape_2_per_frame41=, a=0; rad =0;) 
-shape_2_per_frame42=
 shapecode_3_enabled=1
 shapecode_3_sides=6
 shapecode_3_additive=1
@@ -509,7 +465,7 @@ per_frame_init_25=n = 0; loop (150000,gmegabuf(n) = 0; n+=1);
 per_frame_init_26=fac = .4; reg19 = fac;
 per_frame_init_27=
 per_frame_init_28=//SPARKS
-per_frame_init_29=obj_num = 2000; reg00 = obj_num;
+per_frame_init_29=obj_num = 1000; reg00 = obj_num;
 per_frame_init_30=obj_size = 16; reg01 = obj_size;
 per_frame_init_31=max_age = 3.8; reg02 = max_age;
 per_frame_init_32=head_ptr = 0; 
@@ -620,8 +576,8 @@ per_frame_53=ltest = 0;
 per_frame_54=style = n1 > 0; 
 per_frame_55=circles = (index2>=12); 
 per_frame_56=//SPARK QUEUE - insert new objects
-per_frame_57=if (style ==0, new = max(0,min(1800*dt*(mid>1.2),free)),0);
-per_frame_58=if (style ==1, new = max(0,min(200*vol_att*(vol_att*200 > 50+obj_num-free),free*.8)),0);
+per_frame_57=if (style ==0, new = max(0,min(1000*dt*(mid>1.2),free)),0);
+per_frame_58=if (style ==1, new = max(0,min(250*vol_att*(vol_att*200 > 50+obj_num-free),free*.8)),0);
 per_frame_59=if (new < 16, new = 0, 0);
 per_frame_60=n = 0; m = new; 
 per_frame_61=dec = if (new > 0,0.3,dec_f); 
@@ -901,13 +857,13 @@ warp_2=`
 warp_3=`shader_body
 warp_4=`{
 warp_5=`
-warp_6=`uv = 0.5 + (1.0 - abs( frac( uv * 0.5 ) * 2 - 1.0 )-.5); // Eo.S. mirror code
+warp_6=`//uv = 0.5 + (1.0 - abs( frac( uv * 0.5 ) * 2 - 1.0 )-.5); // Eo.S. mirror code
 warp_7=`
 warp_8=`ret = lerp(GetPixel(uv), GetBlur1(uv),0.2);
 warp_9=`uv = (uv+uv_orig)/2;
-warp_10=`//ret += lerp(GetPixel(uv), GetBlur1(uv),0.1);
+warp_10=`ret += lerp(GetPixel(uv), GetBlur1(uv),0.2);
 warp_11=`
-warp_12=`ret = ret * 0. - 0.004;
+warp_12=`ret = ret * 0.1;
 warp_13=`}
 warp_14=`
 comp_1=`#define sat saturate
@@ -992,7 +948,7 @@ comp_79=`
 comp_80=`
 comp_81=`uv2 = uv1-float2(q11,q12);
 comp_82=`float flash = q13/(length(uv2));
-comp_83=`flash *= flash/(abs(frac(q12*32+int(1+treb_att)*aTan2(uv2.x,uv2.y))-.5)+.14);
+comp_83=`flash *= flash/(abs(frac(q12*32+min(6,int(1+treb_att))*aTan2(uv2.x,uv2.y))-.5)+.14);
 comp_84=`
 comp_85=`uv2 = uv1-float2(q14,q15);
 comp_86=`float head = pow(.0001/(length(uv2)),.8)*q16;

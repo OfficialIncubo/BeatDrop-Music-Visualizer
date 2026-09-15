@@ -5165,9 +5165,9 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
 	if (!m_bScreenDependentRenderMode)
 	{
 		if (GetWidth() > GetHeight())
-			aspect_y_sd = GetHeight() / (float)GetWidth();
+			aspect_y_sd = GetHeight()/(float)GetWidth();
 		else
-			aspect_x_sd = GetWidth() / (float)GetHeight();
+			aspect_x_sd = GetWidth()/(float)GetHeight();
 	}
 
 	if (GetWidth() > GetHeight())

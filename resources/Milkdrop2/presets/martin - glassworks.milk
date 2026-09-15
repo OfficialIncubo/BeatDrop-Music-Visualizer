@@ -475,7 +475,7 @@ comp_28=`dz.y = 2.0*GetBlur1(uv+ver*k1).g-2.0*GetBlur1(uv-ver*k1).g;
 comp_29=`dz *= GetBlur1(uv).g > 0.08;
 comp_30=`uv += dz*0.08;
 comp_31=`
-comp_32=`screen = float3 ((uv-0.5)*aspect.xy+dz*.1,0.9);
+comp_32=`screen = float3 ((uv-0.5)*aspect_sd.xy+dz*.1,0.9);
 comp_33=`rs0 = project()/12 ;
 comp_34=`rs = rs0;
 comp_35=`uv2 = float2 (0.3*length (rs.xy), atan2 (rs.x,rs.y)/M_PI/4)/2;
