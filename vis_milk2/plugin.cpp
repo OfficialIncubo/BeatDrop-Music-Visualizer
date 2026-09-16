@@ -11288,6 +11288,8 @@ void CPlugin::LaunchCustomMessage(int nMsgNum)
 
 	m_supertext.bRedrawSuperText = true;
 	m_supertext.bIsSongTitle = false;
+	m_supertext.bSongTitleTwoLines = false;
+	m_supertext.szTextLine2W[0] = L'\0';
 	lstrcpyW(m_supertext.szTextW, m_CustomMessage[nMsgNum].szText);
 
 	// regular properties:
@@ -11345,7 +11347,27 @@ void CPlugin::LaunchSongTitleAnim()
 {
 	m_supertext.bRedrawSuperText = true;
 	m_supertext.bIsSongTitle = true;
-	lstrcpyW(m_supertext.szTextW, m_szSongTitle);
+	m_supertext.bSongTitleTwoLines = false;
+	m_supertext.szTextLine2W[0] = L'\0';
+
+	// MilkDrop 3 presents long track metadata as two centered lines.  Keep the
+	// established one-line animation for short titles and for sources that only
+	// provide a combined title string.
+	#if SUPPORT_SMTC
+	const std::wstring& artist = songtitlegetter.currentArtist;
+	const std::wstring& title = songtitlegetter.currentTitle;
+	if (wcslen(m_szSongTitle) > 20 && !artist.empty() && !title.empty())
+	{
+		lstrcpynW(m_supertext.szTextW, artist.c_str(), _countof(m_supertext.szTextW));
+		lstrcpynW(m_supertext.szTextLine2W, title.c_str(), _countof(m_supertext.szTextLine2W));
+		m_supertext.bSongTitleTwoLines =
+			m_supertext.szTextW[0] != L'\0' && m_supertext.szTextLine2W[0] != L'\0';
+	}
+	else
+	#endif
+	{
+		lstrcpynW(m_supertext.szTextW, m_szSongTitle, _countof(m_supertext.szTextW));
+	}
 	//lstrcpy(m_supertext.szText, " ");
 	lstrcpyW(m_supertext.nFontFace, m_fontinfo[SONGTITLE_FONT].szFace);
 	m_supertext.fFontSize   = (float)m_fontinfo[SONGTITLE_FONT].nSize;

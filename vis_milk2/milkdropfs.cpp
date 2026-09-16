@@ -414,7 +414,107 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
     else // song title
     {
         wchar_t* str = m_supertext.szTextW;
+		wchar_t* secondLine = m_supertext.szTextLine2W;
+		const bool twoLines = m_supertext.bSongTitleTwoLines && secondLine[0] != L'\0';
 
+		// Fit a single title line without splitting a UTF-16 surrogate pair.
+		auto fitTitleLine = [&](LPD3DXFONT font, wchar_t* line)
+		{
+			RECT measured = rect;
+			BeatDropText::Draw(font, line, -1, &measured,
+				DT_SINGLELINE | DT_CALCRECT, 0xFFFFFFFF);
+			if (measured.right - measured.left <= m_nTitleTexSizeX)
+				return;
+
+			const int length = static_cast<int>(wcslen(line));
+			const float percentToKeep = 0.91f * m_nTitleTexSizeX /
+				(float)(measured.right - measured.left);
+			if (length <= 8)
+				return;
+
+			int keep = (std::max)(0, (std::min)(length - 3, (int)(length * percentToKeep)));
+			if (keep > 0 && line[keep] >= 0xDC00 && line[keep] <= 0xDFFF &&
+				line[keep - 1] >= 0xD800 && line[keep - 1] <= 0xDBFF)
+				--keep;
+			lstrcpyW(&line[keep], L"...");
+		};
+
+		if (twoLines)
+		{
+			// MilkDrop 3 makes the track title modestly smaller than the artist.
+			// Temporary D3DX fonts are scoped and released on every return path.
+			// If allocation fails, retain the existing font so the animation still
+			// renders rather than going blank.
+			BeatDropText::ComPtr<ID3DXFont> smallerTitleFont;
+			BeatDropText::ComPtr<ID3DXFont> fittedArtistFont;
+			BeatDropText::ComPtr<ID3DXFont> fittedTitleFont;
+			LPD3DXFONT firstLineFont = m_d3dx_title_font_doublesize;
+			LPD3DXFONT secondLineFont = firstLineFont;
+			D3DXFONT_DESCW artistFontDesc = {};
+			if (SUCCEEDED(firstLineFont->GetDescW(&artistFontDesc)))
+			{
+				D3DXFONT_DESCW titleFontDesc = artistFontDesc;
+				titleFontDesc.Height = (std::max)(1, (titleFontDesc.Height * 2 + 2) / 3);
+				if (SUCCEEDED(D3DXCreateFontIndirectW(lpDevice, &titleFontDesc, &smallerTitleFont.p)))
+					secondLineFont = smallerTitleFont.p;
+			}
+
+			auto measureTitleLine = [&](LPD3DXFONT font, const wchar_t* line)
+			{
+				RECT measured = rect;
+				return BeatDropText::Draw(font, line, -1, &measured,
+					DT_SINGLELINE | DT_CALCRECT, 0xFFFFFFFF);
+			};
+
+			int firstHeight = measureTitleLine(firstLineFont, str);
+			int secondHeight = measureTitleLine(secondLineFont, secondLine);
+			int combinedHeight = firstHeight + secondHeight;
+
+			// The old title texture is intentionally wide and short.  At large
+			// nFontSize5 values, two full lines could extend beyond it.  Scale the
+			// source fonts to the texture's safe vertical area; the existing title
+			// animation scale compensates, so the configured on-screen size remains
+			// intact while no glyphs are cut off.
+			const int maximumTitleHeight = (m_nTitleTexSizeY * 19) / 21;
+			if (combinedHeight > maximumTitleHeight && artistFontDesc.Height > 0)
+			{
+				D3DXFONT_DESCW fittedArtistDesc = artistFontDesc;
+				fittedArtistDesc.Height = (std::max)(1,
+					(fittedArtistDesc.Height * maximumTitleHeight) / combinedHeight);
+				D3DXFONT_DESCW fittedTitleDesc = fittedArtistDesc;
+				fittedTitleDesc.Height = (std::max)(1, (fittedTitleDesc.Height * 2 + 2) / 3);
+				if (SUCCEEDED(D3DXCreateFontIndirectW(lpDevice, &fittedArtistDesc, &fittedArtistFont.p)) &&
+					SUCCEEDED(D3DXCreateFontIndirectW(lpDevice, &fittedTitleDesc, &fittedTitleFont.p)))
+				{
+					firstLineFont = fittedArtistFont.p;
+					secondLineFont = fittedTitleFont.p;
+					firstHeight = measureTitleLine(firstLineFont, str);
+					secondHeight = measureTitleLine(secondLineFont, secondLine);
+					combinedHeight = firstHeight + secondHeight;
+				}
+			}
+
+			fitTitleLine(firstLineFont, str);
+			fitTitleLine(secondLineFont, secondLine);
+			if (combinedHeight <= 0)
+				ret = false;
+			else
+			{
+				const int middle = m_nTitleTexSizeY / 2;
+				const int firstTop = middle - combinedHeight / 2;
+				RECT firstRect = { 0, firstTop, m_nTitleTexSizeX, firstTop + firstHeight };
+				RECT secondRect = { 0, firstRect.bottom, m_nTitleTexSizeX,
+					firstRect.bottom + secondHeight };
+				const int drawnFirst = BeatDropText::Draw(firstLineFont, str, -1,
+					&firstRect, DT_SINGLELINE | DT_CENTER, 0xFFFFFFFF);
+				const int drawnSecond = BeatDropText::Draw(secondLineFont, secondLine, -1,
+					&secondRect, DT_SINGLELINE | DT_CENTER, 0xFFFFFFFF);
+				m_supertext.nFontSizeUsed = drawnFirst;
+				ret = drawnFirst > 0 && drawnSecond > 0;
+			}
+		}
+		else
+		{
         // clip the text manually...
         // NOTE: DT_END_ELLIPSIS CAUSES NOTHING TO DRAW, IF YOU USE W/D3DX9!
         int h = 0;
@@ -467,6 +567,7 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
 
         // NOTE: DT_END_ELLIPSIS CAUSES NOTHING TO DRAW, IF YOU USE W/D3DX9!
 	    m_supertext.nFontSizeUsed = BeatDropText::Draw(m_d3dx_title_font_doublesize, str, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX | DT_END_ELLIPSIS*/ | DT_CENTER , 0xFFFFFFFF);
+		}
     }
 
     // Change the rendertarget back to the original setup

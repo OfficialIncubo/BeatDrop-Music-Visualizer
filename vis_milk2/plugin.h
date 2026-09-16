@@ -158,8 +158,10 @@ typedef struct
 {
 	int 	bRedrawSuperText;	// true if it needs redraw
 	int 	bIsSongTitle;		// false for custom message, true for song title
+	int 	bSongTitleTwoLines;	// true when artist and title are rendered separately
 	//char	szText[256];
 	wchar_t	szTextW[256];
+	wchar_t	szTextLine2W[256];
 	wchar_t	nFontFace[128];
 	int 	bBold;
 	int 	bItal;

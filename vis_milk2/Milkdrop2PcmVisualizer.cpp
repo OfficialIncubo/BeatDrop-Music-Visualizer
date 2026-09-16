@@ -1418,6 +1418,7 @@ int StartThreads(HINSTANCE instance) {
     LoopbackCaptureThreadFunctionArguments threadArgs;
     threadArgs.hr = E_UNEXPECTED; // thread will overwrite this
     threadArgs.pMMDevice = prefs.m_pMMDevice;
+    threadArgs.pMMDevice->AddRef(); // The capture thread owns its device reference.
     threadArgs.bInt16 = prefs.m_bInt16;
     threadArgs.hFile = prefs.m_hFile;
     threadArgs.hStartedEvent = hStartedEvent;
@@ -1431,6 +1432,8 @@ int StartThreads(HINSTANCE instance) {
     );
     if (NULL == hThread) {
         ERR(L"CreateThread failed: last error is %u", GetLastError());
+        threadArgs.pMMDevice->Release();
+        threadArgs.pMMDevice = NULL;
         return -__LINE__;
     }
     CloseHandleOnExit closeThread(hThread);
