@@ -120,7 +120,7 @@ wave_0_per_point23=b= r+value1;
 wavecode_1_enabled=1
 wavecode_1_samples=512
 wavecode_1_sep=0
-wavecode_1_bSpectrum=0
+wavecode_1_bSpectrum=1
 wavecode_1_bUseDots=0
 wavecode_1_bDrawThick=1
 wavecode_1_bAdditive=0

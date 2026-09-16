@@ -124,7 +124,7 @@ wavecode_1_bSpectrum=1
 wavecode_1_bUseDots=0
 wavecode_1_bDrawThick=1
 wavecode_1_bAdditive=0
-wavecode_1_scaling=0.463735
+wavecode_1_scaling=3.747630
 wavecode_1_smoothing=0.000000
 wavecode_1_r=1.000000
 wavecode_1_g=1.000000
@@ -155,9 +155,9 @@ wave_1_per_point4=fvar = sample*512;
 wave_1_per_point5=svar = fvar*128;
 wave_1_per_point6=tvar = 0|svar;
 wave_1_per_point7=nsample = tvar*4.5;
-wave_1_per_point8=x1 = -2.5+(5)*sin(sample);
-wave_1_per_point9=y1 = (1)*cos(t8*nsample);
-wave_1_per_point10=z1 = (1)*sin(t8*nsample);
+wave_1_per_point8=x1 = -.75+(1.5)*sin(sample);
+wave_1_per_point9=y1 = (value1)*cos(t8*nsample);
+wave_1_per_point10=z1 = (value1)*sin(t8*nsample);
 wave_1_per_point11=
 wave_1_per_point12=//modulate values to adjust for rotation on multiple axes, convert to world co-ordinates
 wave_1_per_point13=y2 = y1*cos(t1)-z1*sin(t1);
@@ -174,8 +174,8 @@ wave_1_per_point23=//draw 3d shape in 2d
 wave_1_per_point24=x=0.5+0.5*(x4/(1+z4*0.5));
 wave_1_per_point25=y=0.5+0.5*(y4/(1+z4*0.5));
 wave_1_per_point26=
-wave_1_per_point27=a = -.9+sin(sample*40+time*6);
-wave_1_per_point28=a = if(below(a,0),0,a);
+wave_1_per_point27=a = -.95+sin(nsample*time);
+wave_1_per_point28=a = if(below(a,0),0,if(above(a,.047),1,a));
 wavecode_2_enabled=0
 wavecode_2_samples=512
 wavecode_2_sep=0
