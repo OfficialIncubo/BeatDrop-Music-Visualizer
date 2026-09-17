@@ -2833,13 +2833,6 @@ void CPlugin::DrawCustomWaves()
         {
             if (pState->m_wave[i].enabled)
             {
-                int nSamples = pState->m_wave[i].samples;
-                int max_samples = pState->m_wave[i].bSpectrum ? 512 : NUM_WAVEFORM_SAMPLES;
-                int separator = min(max(0, pState->m_wave[i].sep), max_samples - 1);
-                if (nSamples > max_samples)
-                    nSamples = max_samples;
-                nSamples -= separator;
-
                 // 1. execute per-frame code
                 LoadCustomWavePerFrameEvallibVars(pState, i);
 
@@ -2863,13 +2856,14 @@ void CPlugin::DrawCustomWaves()
                 for (vi=0; vi<NUM_T_VAR; vi++)
                     *pState->m_wave[i].var_pp_t[vi] = *pState->m_wave[i].var_pf_t[vi];
 
-                nSamples = (int)*pState->m_wave[i].var_pf_samples;
-                // The source waveform has NUM_WAVEFORM_SAMPLES valid points
-                // (480 in this build), while the legacy custom-wave limit is
-                // 512. Clamp against the actual source buffer before j0 is
-                // calculated; otherwise a 512-sample custom wave reads before
-                // fWaveform[0] and creates large, non-musical spikes.
-                nSamples = min(max_samples, max(0, nSamples));
+                // A custom wave can generate up to 512 vertices, but waveform
+                // input has only NUM_WAVEFORM_SAMPLES valid samples (480 in
+                // this build).  Keep those two limits separate: larger custom
+                // waves resample the input instead of reading past it.
+                const int maxOutputSamples = 512;
+                const int maxInputSamples = pState->m_wave[i].bSpectrum ? 512 : NUM_WAVEFORM_SAMPLES;
+                int nSamples = min(maxOutputSamples, max(0, (int)*pState->m_wave[i].var_pf_samples));
+                const int separator = min(nSamples - 1, max(0, pState->m_wave[i].sep));
 
                 if ((nSamples >= 2) || (pState->m_wave[i].bUseDots && nSamples >= 1))
                 {
@@ -2879,19 +2873,26 @@ void CPlugin::DrawCustomWaves()
                     float *pdata1 = (pState->m_wave[i].bSpectrum) ? m_sound.fSpectrum[0] : m_sound.fWaveform[0];
                     float *pdata2 = (pState->m_wave[i].bSpectrum) ? m_sound.fSpectrum[1] : m_sound.fWaveform[1];
 
-                    // initialize tempdata[2][512]
-                    int j0 = (pState->m_wave[i].bSpectrum) ? 0 : (max_samples - nSamples)/2/**(1-pState->m_wave[i].bSpectrum)*/ - separator/2;
-                    int j1 = (pState->m_wave[i].bSpectrum) ? 0 : (max_samples - nSamples)/2/**(1-pState->m_wave[i].bSpectrum)*/ + separator/2;
-                    float t = (pState->m_wave[i].bSpectrum) ? (max_samples - separator)/(float)nSamples : 1;
+                    // "samples" controls output vertices.  In spectrum mode,
+                    // "sep" trims high-frequency input samples.  Oscilloscope
+                    // waves ignore sep and resample only when they request more
+                    // vertices than the 480-sample input can provide.
+                    float sampleScale = 1.0f;
+                    if (pState->m_wave[i].bSpectrum)
+                        sampleScale = (float)(maxInputSamples - separator) / (float)nSamples;
+                    else if (nSamples > maxInputSamples)
+                        sampleScale = (float)maxInputSamples / (float)nSamples;
+
                     float mix1 = powf(pState->m_wave[i].smoothing*0.98f, 0.5f);  // lower exponent -> more default smoothing
                     float mix2 = 1-mix1;
                     // SMOOTHING:
-                    tempdata[0][0] = pdata1[j0];
-                    tempdata[1][0] = pdata2[j1];
+                    tempdata[0][0] = pdata1[0];
+                    tempdata[1][0] = pdata2[0];
                     for (j=1; j<nSamples; j++)
                     {
-                        tempdata[0][j] = pdata1[(int)(j*t)+j0]*mix2 + tempdata[0][j-1]*mix1;
-                        tempdata[1][j] = pdata2[(int)(j*t)+j1]*mix2 + tempdata[1][j-1]*mix1;
+                        const int pcmSample = (int)(j * sampleScale);
+                        tempdata[0][j] = pdata1[pcmSample]*mix2 + tempdata[0][j-1]*mix1;
+                        tempdata[1][j] = pdata2[pcmSample]*mix2 + tempdata[1][j-1]*mix1;
                     }
                     // smooth again, backwards: [this fixes the asymmetry of the beginning & end..]
                     for (j=nSamples-2; j>=0; j--)
