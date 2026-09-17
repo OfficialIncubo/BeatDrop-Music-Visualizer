@@ -126,7 +126,7 @@ wave_0_per_point32=g = x2*z2;
 wavecode_1_enabled=1
 wavecode_1_samples=512
 wavecode_1_sep=0
-wavecode_1_bSpectrum=1
+wavecode_1_bSpectrum=0
 wavecode_1_bUseDots=1
 wavecode_1_bDrawThick=1
 wavecode_1_bAdditive=0
@@ -189,7 +189,7 @@ wave_1_per_point32=g = z3/x2;
 wavecode_2_enabled=1
 wavecode_2_samples=512
 wavecode_2_sep=0
-wavecode_2_bSpectrum=1
+wavecode_2_bSpectrum=0
 wavecode_2_bUseDots=1
 wavecode_2_bDrawThick=1
 wavecode_2_bAdditive=0
