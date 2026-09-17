@@ -81,7 +81,6 @@ jobs:
       run: |
         mkdir -p package/x86
         cp BeatDrop/BeatDrop_x86.exe package/x86/
-        cp BeatDrop/*.dll package/x86/
 
     - name: Build Release_OldOS_x86
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
@@ -94,7 +93,6 @@ jobs:
       run: |
         mkdir -p package/x86
         cp BeatDrop/BeatDrop_OldOS_x86.exe package/x86/
-        cp BeatDrop/*.dll package/x86/
 
     - name: Build x64 projectM-eval and dependencies
       shell: bash
@@ -119,7 +117,6 @@ jobs:
       run: |
         mkdir -p package/x64
         cp BeatDrop/BeatDrop_x64.exe package/x64/
-        cp BeatDrop/*.dll package/x64/
 
     - name: Build Release_OldOS_x64
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
@@ -132,7 +129,6 @@ jobs:
       run: |
         mkdir -p package/x64
         cp BeatDrop/BeatDrop_OldOS_x64.exe package/x64/
-        cp BeatDrop/*.dll package/x64/
 
     - name: Post-Build Packaging
       shell: bash
@@ -143,6 +139,8 @@ jobs:
             cp BeatDrop/LICENSE.txt "package/$arch/"
             cp BeatDrop/dxwebsetup.exe "package/$arch/"
             cp -R resources/Milkdrop2 "package/$arch/BeatDrop Resources"
+            mkdir -p "package/$arch/BeatDrop Resources/dlls/$arch"
+            cp -R "BeatDrop/BeatDrop Resources/dlls/$arch/." "package/$arch/BeatDrop Resources/dlls/$arch/"
             cp resources/beatdrop.ini resources/beatdrop_img.ini resources/beatdrop_msg.ini resources/precache.txt "package/$arch/"
           fi
         done

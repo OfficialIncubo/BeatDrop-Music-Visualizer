@@ -612,6 +612,7 @@ SPOUT :
 */
 
 #include "plugin.h"
+#include "portable_dll_loader.h"
 #include <chrono>
 #include "pluginshell.h"
 #include "utility.h"
@@ -12283,11 +12284,9 @@ uint32_t CPlugin::crc32(const char* data, size_t length) {
 // DIRECTX 9 CHECKING
 // Checks for DirectX 9 whenever it's available or not.
 bool CPlugin::CheckDX9DLL() {
-    // Try to load the DLL manually
-
-    HMODULE hD3DX = LoadLibrary(TEXT("D3DX9_43.dll"));
-
-    if (!hD3DX) {
+    // The portable DirectX helper is loaded once at startup and stays loaded
+    // for the visualizer lifetime, before any sprite or texture can use it.
+    if (!BeatDropPortableDll::PreloadD3DX9()) {
         if (MessageBoxA(GetPluginWindow(),
             "Failed to initialize DirectX 9.\n\nPlease install the DirectX End-User Runtimes.\n\nDo you want to open the DirectX download page?",
             "BeatDrop Music Visualizer", MB_YESNO | MB_SETFOREGROUND | MB_TOPMOST) == IDYES) {
@@ -12297,11 +12296,6 @@ bool CPlugin::CheckDX9DLL() {
         return false;
     }
 
-    // If successful, free the DLL (optional if you're linking statically)
-    FreeLibrary(hD3DX);
-
-    // Continue with your app
-    // ...
     return true;
 }
 
@@ -12323,6 +12317,12 @@ void CPlugin::RemoveAngleBrackets(wchar_t* str) {
 //
 // Registry method only works for DirectX 9 and lower but that is OK
 bool CPlugin::CheckForDirectX9c() {
+
+    // A portable package supplies D3DX9 itself.  d3d9.dll remains part of
+    // Windows, so do not require the legacy DirectX 9c registry value when
+    // the required helper library is already available in the package.
+    if (BeatDropPortableDll::IsD3DX9Available())
+        return true;
 
     // HKLM\Software\Microsoft\DirectX\Version should be 4.09.00.0904
     // handy information : http://en.wikipedia.org/wiki/DirectX

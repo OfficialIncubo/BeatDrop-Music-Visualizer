@@ -138,6 +138,10 @@
     <VcpkgEnableManifest>true</VcpkgEnableManifest>
     <VcpkgUseStatic>false</VcpkgUseStatic>
   </PropertyGroup>
+  <PropertyGroup>
+    <BeatDropDllArchitecture Condition="'$(Platform)'=='Win32'">x86</BeatDropDllArchitecture>
+    <BeatDropDllArchitecture Condition="'$(Platform)'=='x64'">x64</BeatDropDllArchitecture>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release_x86' Or '$(Configuration)'=='Release_x64'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -177,13 +181,12 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>windowsapp.lib;winhttp.lib;bcrypt.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>windowsapp.lib;winhttp.lib;bcrypt.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>
-      </DelayLoadDLLs>
+      <DelayLoadDLLs>d3dx9_43.dll;avformat-63.dll;avcodec-63.dll;avutil-61.dll;swscale-10.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <OptimizeReferences>true</OptimizeReferences>
@@ -198,8 +201,13 @@
     </Link>
     <PostBuildEvent>
       <Command>if not exist "..\BeatDrop" mkdir "..\BeatDrop"
+if not exist "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)" mkdir "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)"
 copy /y /v "$(TargetPath)" "..\BeatDrop\$(TargetName).exe"
-copy /y /v "$(OutDir)*.dll" "..\BeatDrop\"</Command>
+for %%F in ("$(OutDir)av*.dll" "$(OutDir)sw*.dll") do if exist "%%~fF" (copy /y /v "%%~fF" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\" &amp; if exist "..\BeatDrop\%%~nxF" del /q "..\BeatDrop\%%~nxF")
+if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" (echo Required portable DirectX compatibility DLL is missing. &amp; exit /b 1)
+if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" (echo Required portable DirectX DLL is missing. &amp; exit /b 1)
+copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_31.dll"
+copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_43.dll"</Command>
     </PostBuildEvent>
     <Manifest />
     <Manifest>
@@ -250,13 +258,12 @@ copy /y /v "$(OutDir)*.dll" "..\BeatDrop\"</Command>
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>winhttp.lib;bcrypt.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winhttp.lib;bcrypt.lib;DbgHelp.lib;Winmm.lib;d3d9.lib;d3dx9.lib;Shlwapi.lib;windowscodecs.lib;ole32.lib;avformat.lib;avcodec.lib;avutil.lib;swscale.lib;projectM_ns-eel2.lib;projectM_eval.lib;delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>..\ffmpeg\lib;..\lib;..\spoutlibrary;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
-      <DelayLoadDLLs>
-      </DelayLoadDLLs>
+      <DelayLoadDLLs>d3dx9_43.dll;avformat-63.dll;avcodec-63.dll;avutil-61.dll;swscale-10.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
       <OptimizeReferences>true</OptimizeReferences>
@@ -272,8 +279,13 @@ copy /y /v "$(OutDir)*.dll" "..\BeatDrop\"</Command>
     </Link>
     <PostBuildEvent>
       <Command>if not exist "..\BeatDrop" mkdir "..\BeatDrop"
+if not exist "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)" mkdir "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)"
 copy /y /v "$(TargetPath)" "..\BeatDrop\$(TargetName).exe"
-copy /y /v "$(OutDir)*.dll" "..\BeatDrop\"</Command>
+for %%F in ("$(OutDir)av*.dll" "$(OutDir)sw*.dll") do if exist "%%~fF" (copy /y /v "%%~fF" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\" &amp; if exist "..\BeatDrop\%%~nxF" del /q "..\BeatDrop\%%~nxF")
+if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" (echo Required portable DirectX compatibility DLL is missing. &amp; exit /b 1)
+if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" (echo Required portable DirectX DLL is missing. &amp; exit /b 1)
+copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_31.dll"
+copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_43.dll"</Command>
     </PostBuildEvent>
     <Manifest />
     <Manifest>
@@ -359,6 +371,7 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClCompile Include="MediaTexture.cpp" />
     <ClCompile Include="Milkdrop2PcmVisualizer.cpp" />
     <ClCompile Include="milkdropfs.cpp" />
+    <ClCompile Include="portable_dll_loader.cpp" />
     <ClCompile Include="plugin.cpp" />
     <ClCompile Include="pluginshell.cpp" />
     <ClCompile Include="songtitlegetter.cpp" />
@@ -402,6 +415,7 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClInclude Include="MediaTexture.h" />
     <ClInclude Include="Milkdrop2PcmVisualizer.h" />
     <ClInclude Include="plugin.h" />
+    <ClInclude Include="portable_dll_loader.h" />
     <ClInclude Include="pluginshell.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="shell_defines.h" />

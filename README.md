@@ -36,6 +36,7 @@ Highlights:
 - Real-time song information and time
 - Desktop Mode (SHIFT + W)
 - 32-bit and 64-bit architecture support
+- 100% portable: no DirectX runtime installation needed. Required DirectX and FFmpeg DLLs stay in `BeatDrop Resources\dlls`, not beside the executable.
 - [Spout](https://spout.zeal.co) integration
 - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library integration
 - Toggleable Speaker and Microphone Audio Source Modes
@@ -266,8 +267,8 @@ msbuild BeatDrop.sln /m /p:Configuration=Release_OldOS_x86 /p:Platform=Win32
 msbuild BeatDrop.sln /m /p:Configuration=Release_x64 /p:Platform=x64
 msbuild BeatDrop.sln /m /p:Configuration=Release_OldOS_x64 /p:Platform=x64
 ```
-6. Each configuration writes to its own directory under `vis_milk2` and copies its executable plus FFmpeg runtime DLLs to `BeatDrop`. Build and run one architecture at a time locally because x86 and x64 FFmpeg DLLs have the same filenames. GitHub Actions produces separate, self-contained artifacts for each architecture.
-7. Run the matching executable from the `BeatDrop` folder so it can find `beatdrop.ini`, `beatdrop_img.ini`, resources, presets, and the FFmpeg DLLs.
+6. Each configuration writes to its own directory under `vis_milk2`, then copies its executable to `BeatDrop`. Required DLLs are placed in `BeatDrop Resources\dlls\x86` or `BeatDrop Resources\dlls\x64`. Build and run one architecture at a time locally. GitHub Actions produces separate, self-contained artifacts for each architecture.
+7. Run the matching executable from the `BeatDrop` folder. It automatically loads the DLLs for its own architecture from `BeatDrop Resources\dlls`.
 
 ⚠️  Please note that disabling vcpkg manifest mode will give you some errors or missing libraries, so you need to manually install libraries with the command line.
 
@@ -317,7 +318,7 @@ If you have problems, ask me on Discord, Twitter or Instagram.
 
 # BEFORE YOU RUN BEATDROP
 
-Please download and install [DirectX End-User Runtime Web](https://www.microsoft.com/en-us/download/details.aspx?id=35) first.
+Release packages include the required DirectX helper DLL, so the DirectX End-User Runtime is not needed just to run BeatDrop. The DirectX SDK is still required when building from source. Optionally install [DirectX End-User Runtime Web](https://www.microsoft.com/en-us/download/details.aspx?id=35)
 
 Microsoft Visual C++ 2015-2022 Redistributable is also required to run. You can get it from [system requirements](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer#system-requirements) category.
 
@@ -413,7 +414,7 @@ Use BeatDrop with your favourite:
 * Minimum 2GB of RAM required
 * WASAPI - compatible sound card
 * [DXVK](https://github.com/doitsujin/dxvk) for Vulkan, DirectX 9 or higher - compatible GPU
-* DirectX End-User [Runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=8109) (also included in the installer) contains the required 32-bit helper libraries d3dx9_43.dll and d3dx9_31.dll
+* Windows includes Direct3D 9. BeatDrop packages required DirectX helpers beside its resources, so the DirectX End-User Runtime is not required or optional to install.
 * [Microsoft Visual C++ 2015-2022 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=52685) ([Mirror](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)) or [Microsoft Visual C++ Redistributable All-in-One](https://www-techpowerup-com.cdn.ampproject.org/v/s/www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/?amp=&amp_gsa=1&amp_js_v=a9&usqp=mq331AQIUAKwASCAAgM%3D#amp_tf=De%20la%20%251%24s&aoh=17542342520002&referrer=https%3A%2F%2Fwww.google.com&ampshare=https%3A%2F%2Fwww.techpowerup.com%2Fdownload%2Fvisual-c-redistributable-runtime-package-all-in-one%2F) (optional)
 
 # Acknowledgements
