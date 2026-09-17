@@ -123,10 +123,6 @@
 #include <locale>
 #include <codecvt>
 
-#include <ShellScalingApi.h> // for dpi awareness
-#pragma comment(lib, "shcore.lib") // for dpi awareness
-// older Windows versions: Entry Point Not Found Fix
-
 #include "plugin.h"
 #include "resource.h"
 #include "pluginshell.h"
@@ -148,6 +144,36 @@ namespace fs = std::filesystem;
 #define SAMPLE_SIZE 2304
 //#define DEFAULT_WIDTH 720;
 //#define DEFAULT_HEIGHT 720;
+
+namespace
+{
+    // SetProcessDpiAwareness is available only on Windows 8.1 and later.
+    // Resolve it dynamically so the executable still starts on Vista, 7, and
+    // 8, where the older system-DPI-aware API is the best available fallback.
+    void EnableBestAvailableDpiAwareness()
+    {
+        HMODULE shcore = LoadLibraryW(L"shcore.dll");
+        if (shcore)
+        {
+            typedef HRESULT(WINAPI* SetProcessDpiAwarenessFn)(int);
+            SetProcessDpiAwarenessFn setProcessDpiAwareness =
+                reinterpret_cast<SetProcessDpiAwarenessFn>(GetProcAddress(shcore, "SetProcessDpiAwareness"));
+            if (setProcessDpiAwareness)
+            {
+                // PROCESS_PER_MONITOR_DPI_AWARE is 2.  Avoid including or
+                // linking ShellScalingApi.h/shcore.lib, which creates an
+                // unsupported loader dependency on older Windows versions.
+                setProcessDpiAwareness(2);
+                FreeLibrary(shcore);
+                return;
+            }
+            FreeLibrary(shcore);
+        }
+
+        // SetProcessDPIAware is available from Windows Vista onward.
+        SetProcessDPIAware();
+    }
+}
 
 CPlugin g_plugin;
 HINSTANCE api_orig_hinstance = nullptr;
@@ -940,10 +966,9 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 	_CrtSetBreakAlloc(60);
 #endif
 
-	// SPOUT
-	// Set Per Monitor awareness
-	SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE); //older Windows versions: Entry Point Not Found Fix
-	// SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
+	// Use per-monitor DPI awareness where the OS provides it, while retaining
+	// a Vista-compatible fallback without an app-local shcore/API-set DLL.
+	EnableBestAvailableDpiAwareness();
 
 	// Register the windows class
 	WNDCLASSW wndClass;
