@@ -36,7 +36,7 @@ namespace
             _strnicmp(name, "swresample-", 11) == 0);
     }
 
-    bool BuildPackagedLibraryPath(const wchar_t* name, std::wstring& path)
+    bool BuildPackagedLibraryDirectory(std::wstring& directory)
     {
         wchar_t executablePath[MAX_PATH] = {};
         const DWORD length = GetModuleFileNameW(nullptr, executablePath, _countof(executablePath));
@@ -48,10 +48,18 @@ namespace
         if (slash == std::wstring::npos)
             return false;
 
-        path = executable.substr(0, slash + 1);
-        path += L"BeatDrop Resources\\dlls\\";
-        path += kArchitectureFolder;
-        path += L"\\";
+        directory = executable.substr(0, slash + 1);
+        directory += L"BeatDrop Resources\\dlls\\";
+        directory += kArchitectureFolder;
+        directory += L"\\";
+        return true;
+    }
+
+    bool BuildPackagedLibraryPath(const wchar_t* name, std::wstring& path)
+    {
+        if (!BuildPackagedLibraryDirectory(path))
+            return false;
+
         path += name;
         return true;
     }
@@ -124,23 +132,46 @@ namespace
 
     bool LoadFfmpegRuntime()
     {
-        // Load every dependency from the package directory before loading the
-        // FFmpeg entry point.  This avoids the normal DLL search path for the
-        // dependencies of avformat/avcodec and works on Vista without newer
-        // AddDllDirectory or LoadLibraryEx search flags.
-        static const wchar_t* const libraries[] = {
-            L"avutil-61.dll",
-            L"swresample-7.dll",
-            L"avcodec-63.dll",
-            L"avformat-63.dll",
-            L"swscale-10.dll"
+        // Discover the actual versioned filenames packaged by the build rather
+        // than baking FFmpeg ABI suffixes into the loader.  The order accounts
+        // for the normal dependency chain, and using full package paths keeps
+        // the chosen architecture isolated.  A family that is not linked by a
+        // future FFmpeg build is simply absent; the delay-load request below
+        // remains the authoritative check for the DLL that BeatDrop needs.
+        static const wchar_t* const componentPatterns[] = {
+            L"avutil-*.dll",
+            L"swresample-*.dll",
+            L"avcodec-*.dll",
+            L"avformat-*.dll",
+            L"swscale-*.dll"
         };
 
-        for (const wchar_t* library : libraries)
+        std::wstring directory;
+        if (!BuildPackagedLibraryDirectory(directory))
+            return false;
+
+        for (const wchar_t* pattern : componentPatterns)
         {
-            if (!FindOrLoadFromPackage(library))
-                return false;
+            WIN32_FIND_DATAW file = {};
+            const std::wstring searchPattern = directory + pattern;
+            HANDLE search = FindFirstFileW(searchPattern.c_str(), &file);
+            if (search == INVALID_HANDLE_VALUE)
+                continue;
+
+            do
+            {
+                if (!(file.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+                {
+                    // Keep going if an optional/stale DLL cannot load.  The
+                    // exact delay-load target is checked immediately after
+                    // this preloading pass and will fail cleanly if missing.
+                    FindOrLoadFromPackage(file.cFileName);
+                }
+            } while (FindNextFileW(search, &file));
+
+            FindClose(search);
         }
+
         return true;
     }
 

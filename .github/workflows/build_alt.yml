@@ -137,11 +137,15 @@ jobs:
         cp -R BeatDrop/Redist package/
         cp BeatDrop/LICENSE.txt BeatDrop/dxwebsetup.exe package/
         cp -R resources/Milkdrop2 "package/BeatDrop Resources"
+        rm -rf "package/BeatDrop Resources/dlls"
         for runtime_arch in x86 x64; do
           runtime_dir="BeatDrop/BeatDrop Resources/dlls/$runtime_arch"
           test -d "$runtime_dir" || { echo "Missing portable $runtime_arch runtime directory"; exit 1; }
-          for runtime_dll in d3dx9_31.dll d3dx9_43.dll avutil-61.dll swresample-7.dll avcodec-63.dll avformat-63.dll swscale-10.dll; do
+          for runtime_dll in d3dx9_31.dll d3dx9_43.dll; do
             test -f "$runtime_dir/$runtime_dll" || { echo "Missing portable $runtime_arch runtime DLL: $runtime_dll"; exit 1; }
+          done
+          for ffmpeg_family in avutil swresample avcodec avformat swscale; do
+            compgen -G "$runtime_dir/$ffmpeg_family-*.dll" > /dev/null || { echo "Missing portable $runtime_arch FFmpeg runtime: $ffmpeg_family"; exit 1; }
           done
           mkdir -p "package/BeatDrop Resources/dlls/$runtime_arch"
           cp -R "$runtime_dir/." "package/BeatDrop Resources/dlls/$runtime_arch/"
