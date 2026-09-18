@@ -518,7 +518,6 @@ static void ExecuteTrayMenuCommand(HWND hwnd, UINT command)
 	else if (command == TRAY_MENU_LOCK_PRESET)
 	{
 		g_plugin.m_bPresetLockedByUser = !g_plugin.m_bPresetLockedByUser;
-		g_plugin.AddNotif(g_plugin.m_bPresetLockedByUser ? L"Preset locked." : L"Preset unlocked.");
 	}
 	else if (command == TRAY_MENU_AUTO_LOCK_SILENCE)
 		g_plugin.ToggleAutoLockPresetWhenNoMusic(false);
