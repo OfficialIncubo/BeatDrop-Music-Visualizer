@@ -2,6 +2,9 @@
 
 #include <delayimp.h>
 #include <string>
+#include <winver.h>
+
+#pragma comment(lib, "version.lib")
 
 namespace
 {
@@ -71,6 +74,54 @@ namespace
         return LoadFromPackage(name);
     }
 
+    bool IsRunningUnderWine()
+    {
+        // Wine exposes this private ntdll export specifically so applications
+        // can select compatible workarounds without relying on an OS-version
+        // check (which Wine may intentionally emulate).
+        HMODULE ntdll = GetModuleHandleW(L"ntdll.dll");
+        return ntdll && GetProcAddress(ntdll, "wine_get_version") != nullptr;
+    }
+
+    bool IsWineBuiltinD3DX9(HMODULE library)
+    {
+        if (!IsRunningUnderWine() || !library)
+            return false;
+
+        wchar_t path[MAX_PATH] = {};
+        const DWORD pathLength = GetModuleFileNameW(library, path, _countof(path));
+        if (pathLength == 0 || pathLength >= _countof(path))
+            return true; // Do not risk the known Wine fallback when unknown.
+
+        DWORD ignored = 0;
+        const DWORD bytes = GetFileVersionInfoSizeW(path, &ignored);
+        if (bytes == 0)
+            return true;
+
+        std::wstring versionInfo(bytes, L'\0');
+        if (!GetFileVersionInfoW(path, 0, bytes, &versionInfo[0]))
+            return true;
+
+        struct Translation { WORD language; WORD codePage; };
+        Translation* translations = nullptr;
+        UINT translationBytes = 0;
+        if (!VerQueryValueW(&versionInfo[0], L"\\VarFileInfo\\Translation",
+                reinterpret_cast<void**>(&translations), &translationBytes) ||
+            translationBytes < sizeof(Translation))
+            return true;
+
+        wchar_t query[64] = {};
+        swprintf_s(query, L"\\StringFileInfo\\%04x%04x\\CompanyName",
+            translations[0].language, translations[0].codePage);
+        wchar_t* company = nullptr;
+        UINT companyLength = 0;
+        if (!VerQueryValueW(&versionInfo[0], query,
+                reinterpret_cast<void**>(&company), &companyLength) || !company)
+            return true;
+
+        return wcsstr(company, L"Wine") != nullptr;
+    }
+
     bool LoadFfmpegRuntime()
     {
         // Load every dependency from the package directory before loading the
@@ -128,7 +179,21 @@ namespace BeatDropPortableDll
 
     HMODULE LoadD3DX9()
     {
-        return LoadLibrary(L"d3dx9_43.dll");
+        // Prefer an installed runtime. Wine can host the native Microsoft DLL
+        // installed with Winetricks, but its builtin D3DX font path can fault
+        // during title-font creation. Reject only that implementation, then
+        // use BeatDrop's packaged native fallback.
+        if (HMODULE library = ::LoadLibraryW(L"d3dx9_43.dll"))
+        {
+            if (!IsWineBuiltinD3DX9(library))
+                return library;
+            FreeLibrary(library);
+        }
+
+        if (HMODULE library = LoadFromPackage(L"d3dx9_43.dll"))
+            return library;
+
+        return nullptr;
     }
 
     bool PreloadD3DX9()
@@ -136,8 +201,13 @@ namespace BeatDropPortableDll
         // d3d9.dll is a regular Windows dependency and is already loaded by
         // the executable.  Keep the one packaged DirectX helper BeatDrop uses
         // resident before sprites, textures, or text first call into D3DX.
-        if (GetModuleHandleW(L"d3dx9_43.dll"))
-            return true;
+        if (HMODULE library = GetModuleHandleW(L"d3dx9_43.dll"))
+        {
+            // A previously-loaded Wine builtin cannot be replaced safely in
+            // process.  Reject it so initialization reports the missing
+            // portable helper instead of reaching the buggy font code.
+            return !IsWineBuiltinD3DX9(library);
+        }
 
         return LoadD3DX9() != nullptr;
     }

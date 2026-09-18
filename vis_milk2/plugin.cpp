@@ -12288,7 +12288,7 @@ bool CPlugin::CheckDX9DLL() {
     // for the visualizer lifetime, before any sprite or texture can use it.
     if (!BeatDropPortableDll::PreloadD3DX9()) {
         if (MessageBoxA(GetPluginWindow(),
-            "Failed to initialize DirectX 9.\n\nPlease install the DirectX End-User Runtimes.\n\nDo you want to open the DirectX download page?",
+            "Failed to load DirectX 9.\n\nOn Wine, Winetricks, Winlator, or Lutris, restore the matching portable DLL in BeatDrop Resources\\dlls.\n\nOn Windows, install the DirectX End-User Runtimes.\n\nDo you want to open the DirectX download page?",
             "BeatDrop Music Visualizer", MB_YESNO | MB_SETFOREGROUND | MB_TOPMOST) == IDYES) {
             // open website in browser
             ShellExecuteA(NULL, "open", "https://www.microsoft.com/en-us/download/details.aspx?id=35", NULL, NULL, SW_SHOWNORMAL);
