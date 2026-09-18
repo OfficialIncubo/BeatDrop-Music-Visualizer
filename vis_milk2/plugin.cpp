@@ -7835,10 +7835,6 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
             }
         break;
 
-        case 'U':
-            ToggleBeatDetectionFreeze();
-            break;
-
 		//case 'T':
   //          if (bCtrlHeldDown)
   //          {
@@ -8021,8 +8017,9 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
 		return 0; // we processed (or absorbed) the key
 	
 	case 'u':	//m_pState->m_fWarpScale /= 1.1f;			
-        return 0; // we processed (or absorbed) the key
+        //return 0; // we processed (or absorbed) the key
 	case 'U':	//m_pState->m_fWarpScale *= 1.1f;			
+        ToggleBeatDetectionFreeze();
         return 0; // we processed (or absorbed) the key
 	case 'b':	//m_pState->m_fWarpAnimSpeed /= 1.1f;		
         return 0; // we processed (or absorbed) the key
@@ -12288,7 +12285,7 @@ bool CPlugin::CheckDX9DLL() {
     // for the visualizer lifetime, before any sprite or texture can use it.
     if (!BeatDropPortableDll::PreloadD3DX9()) {
         if (MessageBoxA(GetPluginWindow(),
-            "Failed to load DirectX 9.\n\nOn Wine, Winetricks, Winlator, or Lutris, restore the matching portable DLL in BeatDrop Resources\\dlls.\n\nOn Windows, install the DirectX End-User Runtimes.\n\nDo you want to open the DirectX download page?",
+            "Failed to load d3dx9_43.dll.\n\nOn Wine, Winlator, or Lutris, restore the matching portable DLL in BeatDrop Resources\\dlls.\n\nOn Windows, install the DirectX End-User Runtimes.\n\nDo you want to open the DirectX download page?",
             "BeatDrop Music Visualizer", MB_YESNO | MB_SETFOREGROUND | MB_TOPMOST) == IDYES) {
             // open website in browser
             ShellExecuteA(NULL, "open", "https://www.microsoft.com/en-us/download/details.aspx?id=35", NULL, NULL, SW_SHOWNORMAL);
