@@ -79,8 +79,8 @@ jobs:
       if: matrix.config == 'release' || matrix.config == 'full-package'
       shell: bash
       run: |
-        mkdir -p package/x86
-        cp BeatDrop/BeatDrop_x86.exe package/x86/
+        mkdir -p package
+        cp BeatDrop/BeatDrop_x86.exe package/
 
     - name: Build Release_OldOS_x86
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
@@ -91,8 +91,8 @@ jobs:
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
       shell: bash
       run: |
-        mkdir -p package/x86
-        cp BeatDrop/BeatDrop_OldOS_x86.exe package/x86/
+        mkdir -p package
+        cp BeatDrop/BeatDrop_OldOS_x86.exe package/
 
     - name: Build x64 projectM-eval and dependencies
       shell: bash
@@ -115,8 +115,8 @@ jobs:
       if: matrix.config == 'release' || matrix.config == 'full-package'
       shell: bash
       run: |
-        mkdir -p package/x64
-        cp BeatDrop/BeatDrop_x64.exe package/x64/
+        mkdir -p package
+        cp BeatDrop/BeatDrop_x64.exe package/
 
     - name: Build Release_OldOS_x64
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
@@ -127,30 +127,26 @@ jobs:
       if: matrix.config == 'release-oldos' || matrix.config == 'full-package'
       shell: bash
       run: |
-        mkdir -p package/x64
-        cp BeatDrop/BeatDrop_OldOS_x64.exe package/x64/
+        mkdir -p package
+        cp BeatDrop/BeatDrop_OldOS_x64.exe package/
 
     - name: Post-Build Packaging
       shell: bash
       run: |
-        for arch in x86 x64; do
-          if [ -d "package/$arch" ]; then
-            cp -R BeatDrop/Redist "package/$arch/"
-            cp BeatDrop/LICENSE.txt "package/$arch/"
-            cp BeatDrop/dxwebsetup.exe "package/$arch/"
-            cp -R resources/Milkdrop2 "package/$arch/BeatDrop Resources"
-            for runtime_arch in x86 x64; do
-              runtime_dir="BeatDrop/BeatDrop Resources/dlls/$runtime_arch"
-              test -d "$runtime_dir" || { echo "Missing portable $runtime_arch runtime directory"; exit 1; }
-              for runtime_dll in d3dx9_31.dll d3dx9_43.dll avutil-61.dll swresample-7.dll avcodec-63.dll avformat-63.dll swscale-10.dll; do
-                test -f "$runtime_dir/$runtime_dll" || { echo "Missing portable $runtime_arch runtime DLL: $runtime_dll"; exit 1; }
-              done
-              mkdir -p "package/$arch/BeatDrop Resources/dlls/$runtime_arch"
-              cp -R "$runtime_dir/." "package/$arch/BeatDrop Resources/dlls/$runtime_arch/"
-            done
-            cp resources/beatdrop.ini resources/beatdrop_img.ini resources/beatdrop_msg.ini resources/precache.txt "package/$arch/"
-          fi
+        test -d package || { echo "No executables were packaged"; exit 1; }
+        cp -R BeatDrop/Redist package/
+        cp BeatDrop/LICENSE.txt BeatDrop/dxwebsetup.exe package/
+        cp -R resources/Milkdrop2 "package/BeatDrop Resources"
+        for runtime_arch in x86 x64; do
+          runtime_dir="BeatDrop/BeatDrop Resources/dlls/$runtime_arch"
+          test -d "$runtime_dir" || { echo "Missing portable $runtime_arch runtime directory"; exit 1; }
+          for runtime_dll in d3dx9_31.dll d3dx9_43.dll avutil-61.dll swresample-7.dll avcodec-63.dll avformat-63.dll swscale-10.dll; do
+            test -f "$runtime_dir/$runtime_dll" || { echo "Missing portable $runtime_arch runtime DLL: $runtime_dll"; exit 1; }
+          done
+          mkdir -p "package/BeatDrop Resources/dlls/$runtime_arch"
+          cp -R "$runtime_dir/." "package/BeatDrop Resources/dlls/$runtime_arch/"
         done
+        cp resources/beatdrop.ini resources/beatdrop_img.ini resources/beatdrop_msg.ini resources/precache.txt package/
 
     - name: Upload Build Artifact
       uses: actions/upload-artifact@v7
