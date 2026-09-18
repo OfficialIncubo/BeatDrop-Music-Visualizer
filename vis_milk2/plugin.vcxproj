@@ -141,6 +141,8 @@
   <PropertyGroup>
     <BeatDropDllArchitecture Condition="'$(Platform)'=='Win32'">x86</BeatDropDllArchitecture>
     <BeatDropDllArchitecture Condition="'$(Platform)'=='x64'">x64</BeatDropDllArchitecture>
+    <BeatDropVcpkgTriplet Condition="'$(Platform)'=='Win32'">x86-windows</BeatDropVcpkgTriplet>
+    <BeatDropVcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows</BeatDropVcpkgTriplet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release_x86' Or '$(Configuration)'=='Release_x64'">
     <Midl>
@@ -203,7 +205,7 @@
       <Command>if not exist "..\BeatDrop" mkdir "..\BeatDrop"
 if not exist "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)" mkdir "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)"
 copy /y /v "$(TargetPath)" "..\BeatDrop\$(TargetName).exe"
-for %%F in (avutil-61.dll swresample-7.dll avcodec-63.dll avformat-63.dll swscale-10.dll) do if not exist "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\%%F" (echo Required FFmpeg runtime DLL %%F is missing. &amp; exit /b 1) else copy /y /v "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\%%F" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\%%F"
+for %%F in (avutil-61.dll swresample-7.dll avcodec-63.dll avformat-63.dll swscale-10.dll) do if exist "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\bin\%%F" (copy /y /v "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\bin\%%F" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\%%F") else if exist "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\$(BeatDropVcpkgTriplet)\bin\%%F" (copy /y /v "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\$(BeatDropVcpkgTriplet)\bin\%%F" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\%%F") else if exist "$(VcpkgInstalledDir)\$(BeatDropVcpkgTriplet)\bin\%%F" (copy /y /v "$(VcpkgInstalledDir)\$(BeatDropVcpkgTriplet)\bin\%%F" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\%%F") else (echo Required FFmpeg runtime DLL %%F is missing. &amp; exit /b 1)
 if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" (echo Required portable DirectX compatibility DLL is missing. &amp; exit /b 1)
 if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" (echo Required portable DirectX DLL is missing. &amp; exit /b 1)
 copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_31.dll"
@@ -281,7 +283,7 @@ copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9
       <Command>if not exist "..\BeatDrop" mkdir "..\BeatDrop"
 if not exist "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)" mkdir "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)"
 copy /y /v "$(TargetPath)" "..\BeatDrop\$(TargetName).exe"
-for %%F in (avutil-61.dll swresample-7.dll avcodec-63.dll avformat-63.dll swscale-10.dll) do if not exist "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\%%F" (echo Required FFmpeg runtime DLL %%F is missing. &amp; exit /b 1) else copy /y /v "$(VcpkgInstalledDir)\$(VcpkgTriplet)\bin\%%F" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\%%F"
+for %%F in (avutil-61.dll swresample-7.dll avcodec-63.dll avformat-63.dll swscale-10.dll) do if exist "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\bin\%%F" (copy /y /v "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\bin\%%F" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\%%F") else if exist "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\$(BeatDropVcpkgTriplet)\bin\%%F" (copy /y /v "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\$(BeatDropVcpkgTriplet)\bin\%%F" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\%%F") else if exist "$(VcpkgInstalledDir)\$(BeatDropVcpkgTriplet)\bin\%%F" (copy /y /v "$(VcpkgInstalledDir)\$(BeatDropVcpkgTriplet)\bin\%%F" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\%%F") else (echo Required FFmpeg runtime DLL %%F is missing. &amp; exit /b 1)
 if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" (echo Required portable DirectX compatibility DLL is missing. &amp; exit /b 1)
 if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" (echo Required portable DirectX DLL is missing. &amp; exit /b 1)
 copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_31.dll"
