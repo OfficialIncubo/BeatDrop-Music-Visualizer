@@ -75,7 +75,7 @@ per_frame_11=q5=bass_tresh+cos(.2*2)*(dx_r*dy_r);
 per_frame_12=q6=bass_thresh+0.1*(atan(abs(-rad+.5)))*q1;
 per_frame_13=q7=if(above(bass+bass_att,2),-1.5+bass+bass_att,0);
 per_frame_14=q8=below(rad- 0.1*x,0.18);
-per_frame_15=q9=if(below(rad,.5),.9+rad,.5+bass*3%1000*.1);
+per_frame_15=q9=if(below(rad,.5),.9+rad,.5+(bass*3)%1000*.1);
 per_frame_16=dx=q8;
 per_frame_17=
 per_pixel_1=zoom= if(below(q1,q6),0.3*dx,if(equal(q2,q5),0.2*(1-dx),if(above(q3,q4),0.3*dy,0.2*(1-dy)+if(equal(q4,q3),0.3* dx, if(above(q5,q2),0.25*(1-dx),if(below(q6,q1),0.3*dy,0.25*(1-dy)+if(equal(q7,q9),0.3*dx, if(below(q8,q7),0.2*(1-dx),if(equal(q9,q6),0.3*dy,0.2*(1-dy)))))))))) + .8 - 0.02*(min(q6+q1,.5))*bass_eff;
