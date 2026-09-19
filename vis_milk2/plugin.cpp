@@ -11824,7 +11824,7 @@ void CPlugin::DoCustomSoundAnalysis()
     }
 }
 
-void CPlugin::ToggleBeatDetectionFreeze()
+void CPlugin::ToggleBeatDetectionFreeze(bool showNotification)
 {
     m_bFreezeBeatDetection = !m_bFreezeBeatDetection;
 
@@ -11835,11 +11835,13 @@ void CPlugin::ToggleBeatDetectionFreeze()
             m_frozenBeatDetection[i] = mysound.imm_rel[i];
             m_frozenBeatDetection[i + 3] = mysound.avg_rel[i];
         }
-        AddNotif(L"Beat detection frozen");
+        if (showNotification)
+            AddNotif(L"Beat detection frozen");
     }
     else
     {
-        AddNotif(L"Beat detection unfrozen");
+        if (showNotification)
+            AddNotif(L"Beat detection unfrozen");
     }
 }
 

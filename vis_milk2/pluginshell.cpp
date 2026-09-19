@@ -542,7 +542,7 @@ static void ExecuteTrayMenuCommand(HWND hwnd, UINT command)
 	else if (command == TRAY_MENU_RESET_TIME)
 		g_plugin.ResetTimeVariable();
 	else if (command == TRAY_MENU_FREEZE_BEAT)
-		g_plugin.ToggleBeatDetectionFreeze();
+		g_plugin.ToggleBeatDetectionFreeze(false);
 	else if (command == TRAY_MENU_AUDIO_DEVICE)
 	{
 		g_plugin.m_bCaptureMic = !g_plugin.m_bCaptureMic;

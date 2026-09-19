@@ -562,7 +562,7 @@ public:
         td_mysounddata mysound;
         bool            m_bFreezeBeatDetection;
         float           m_frozenBeatDetection[6]; // bass, mid, treb, bass_att, mid_att, treb_att
-        void            ToggleBeatDetectionFreeze();
+        void            ToggleBeatDetectionFreeze(bool showNotification = true);
 
         // stuff for displaying text to user:
         bool		m_bShowFPS;
