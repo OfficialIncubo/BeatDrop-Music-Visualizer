@@ -93,9 +93,9 @@ wave_0_per_point4=
 wave_0_per_point5=state = if(below((timestart+explode_time) -(time*fire), 0), 0,  1);
 wave_0_per_point6=timestart = if(below((timestart+explode_time) -(time*fire), 0), time,  timestart);
 wave_0_per_point7=
-wave_0_per_point8=xpos = if(equal(state, 0), 0.5 + 0.3*sin(rand(1000)), xpos);
-wave_0_per_point9=ypos = if(equal(state, 0), 0.5 + 0.3*sin(rand(1000)), ypos);
-wave_0_per_point10=explode = if(equal(state, 0), rand(100)*0.0000001, explode);
+wave_0_per_point8=xpos = if(equal(state, 0), 0.5 + 0.3*sin(int(rand(1000))), xpos);
+wave_0_per_point9=ypos = if(equal(state, 0), 0.5 + 0.3*sin(int(rand(1000))), ypos);
+wave_0_per_point10=explode = if(equal(state, 0), int(rand(100))*0.0000001, explode);
 wave_0_per_point11=
 wave_0_per_point12=size = if(equal(state,1),size + 0.00001 + explode, 0);
 wave_0_per_point13=
@@ -126,9 +126,9 @@ wave_1_per_point4=
 wave_1_per_point5=state = if(below((timestart+explode_time) -(time*fire), 0), 0,  1);
 wave_1_per_point6=timestart = if(below((timestart+explode_time) -(time*fire), 0), time,  timestart);
 wave_1_per_point7=
-wave_1_per_point8=xpos = if(equal(state, 0), 0.5 + 0.3*sin(rand(1000)), xpos);
-wave_1_per_point9=ypos = if(equal(state, 0), 0.5 + 0.3*sin(rand(1000)), ypos);
-wave_1_per_point10=explode = if(equal(state, 0), rand(100)*0.0000001, explode);
+wave_1_per_point8=xpos = if(equal(state, 0), 0.5 + 0.3*sin(int(rand(1000))), xpos);
+wave_1_per_point9=ypos = if(equal(state, 0), 0.5 + 0.3*sin(int(rand(1000))), ypos);
+wave_1_per_point10=explode = if(equal(state, 0), int(rand(100))*0.0000001, explode);
 wave_1_per_point11=
 wave_1_per_point12=size = if(equal(state,1),size + 0.00001 + explode, 0);
 wave_1_per_point13=
@@ -159,9 +159,9 @@ wave_2_per_point4=
 wave_2_per_point5=state = if(below((timestart+explode_time) -(time*fire), 0), 0,  1);
 wave_2_per_point6=timestart = if(below((timestart+explode_time) -(time*fire), 0), time,  timestart);
 wave_2_per_point7=
-wave_2_per_point8=xpos = if(equal(state, 0), 0.5 + 0.3*sin(rand(1000)), xpos);
-wave_2_per_point9=ypos = if(equal(state, 0), 0.5 + 0.3*sin(rand(1000)), ypos);
-wave_2_per_point10=explode = if(equal(state, 0), rand(100)*0.0000001, explode);
+wave_2_per_point8=xpos = if(equal(state, 0), 0.5 + 0.3*sin(int(rand(1000))), xpos);
+wave_2_per_point9=ypos = if(equal(state, 0), 0.5 + 0.3*sin(int(rand(1000))), ypos);
+wave_2_per_point10=explode = if(equal(state, 0), int(rand(100))*0.0000001, explode);
 wave_2_per_point11=
 wave_2_per_point12=size = if(equal(state,1),size + 0.00001 + explode, 0);
 wave_2_per_point13=
@@ -192,9 +192,9 @@ wave_3_per_point4=
 wave_3_per_point5=state = if(below((timestart+explode_time) -(time*fire), 0), 0,  1);
 wave_3_per_point6=timestart = if(below((timestart+explode_time) -(time*fire), 0), time,  timestart);
 wave_3_per_point7=
-wave_3_per_point8=xpos = if(equal(state, 0), 0.5 + 0.3*sin(rand(1000)), xpos);
-wave_3_per_point9=ypos = if(equal(state, 0), 0.5 + 0.3*sin(rand(1000)), ypos);
-wave_3_per_point10=explode = if(equal(state, 0), rand(100)*0.0000001, explode);
+wave_3_per_point8=xpos = if(equal(state, 0), 0.5 + 0.3*sin(int(rand(1000))), xpos);
+wave_3_per_point9=ypos = if(equal(state, 0), 0.5 + 0.3*sin(int(rand(1000))), ypos);
+wave_3_per_point10=explode = if(equal(state, 0), int(rand(100))*0.0000001, explode);
 wave_3_per_point11=
 wave_3_per_point12=size = if(equal(state,1),size + 0.00001 + explode, 0);
 wave_3_per_point13=
