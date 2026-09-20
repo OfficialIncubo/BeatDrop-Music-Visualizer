@@ -1,0 +1,155 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=3
+[preset00]
+FFTAttack=0.500
+FFTDecay=0.700
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=1.000
+fWarpScale=2.853
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00600
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.005
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=                  oldq7=0;
+per_frame_init_2=                  oldq8=0;
+per_frame_1=q8 =  oldq8+ 0.03* ((bass*bass)+treb+mid);
+per_frame_2=oldq8 = q8;
+per_frame_3=ib_r = 0.5+0.5*sin(1.123*q8);
+per_frame_4=ib_g = 0.5+0.5*sin(q8*1.576);
+per_frame_5=ib_b = 0.5+0.5*cos(q8*1.465);
+per_frame_6=q7 = oldq7 + 0.03 * (2*bass+(bass_att*bass_att));
+per_frame_7=oldq7 = q7;
+per_frame_8=
+warp_1=`// Shader by Yohei Nishitsuji
+warp_2=`// https://fragcoord.xyz/s/dnvctkmz
+warp_3=`// Ported to MilkDrop by MilkDrop2077
+warp_4=`
+warp_5=`#define SCREEN_SPIN_SPEED 0.15
+warp_6=`
+warp_7=`float3 hsv(float h, float s, float v) {
+warp_8=`    float4 t = float4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+warp_9=`    float3 p = abs(frac(float3(h, h, h) + t.xyz) * 6.0 - float3(t.w, t.w, t.w));
+warp_10=`    return v * lerp(float3(t.x, t.x, t.x), clamp(p - float3(t.x, t.x, t.x), 0.0, 1.0), s);
+warp_11=`}
+warp_12=`
+warp_13=`float2x2 rotate2D(float a) {
+warp_14=`    return transpose(float2x2(cos(a), -sin(a), sin(a), cos(a)));
+warp_15=`}
+warp_16=`
+warp_17=`shader_body
+warp_18=`{
+warp_19=`    float2 fragCoord = uv_orig * texsize.xy;
+warp_20=`    float2 r = texsize.xy;
+warp_21=`    float4 o = float4(0.0, 0.0, 0.0, 1.0);
+warp_22=`
+warp_23=`    // Rotate the screen
+warp_24=`    float spinAngle = -time * SCREEN_SPIN_SPEED;
+warp_25=`    float2x2 spinMat = rotate2D(spinAngle);
+warp_26=`    float2 centered = fragCoord - 0.5 * r;
+warp_27=`    float2 spun = mul(centered, spinMat) + 0.5 * r;
+warp_28=`    float2 FC = spun;
+warp_29=`
+warp_30=`    // Watch for mouse outside the window = -1 in MilkDrop3
+warp_31=`    bool mouseValid = (mouse_x >= 0.0) && (mouse_y >= 0.0);
+warp_32=`    float2 mouseNorm = mouseValid ? float2(mouse_x, mouse_y) : float2(0.5, 0.5);
+warp_33=`
+warp_34=`    float2 m = (mouseNorm * r - 0.5 * r) / r;
+warp_35=`
+warp_36=`    float i = 0.0, z = 0.0, d = 0.0, s = 0.0;
+warp_37=`
+warp_38=`    // Clamp the bass values to avoid destroying the whole fractal
+warp_39=`    float bassPulse = 1.0 + clamp(bass_att - 1.0, -0.15, 5.0);
+warp_40=`
+warp_41=`    for (int iter = 0; iter < 130 && (i + 1.0 + z) < 130.0; iter++) {
+warp_42=`        i += 1.0;
+warp_43=`
+warp_44=`        float3 dir = normalize(float3(FC.xy * 2.0 - r, r.y));
+warp_45=`        dir.xy += m * 1.2;
+warp_46=`        float3 q = z * normalize(dir);
+warp_47=`
+warp_48=`        q.z += time;
+warp_49=`        q.yx = mul(q.yx + 2*sin(q8)-2*cos(q7), rotate2D(q.z * 0.2 + 1*sin(q7-q8)));
+warp_50=`
+warp_51=`        for (int k = 0; k < 3; k++) {
+warp_52=`            s = 4.0 * exp2(float(k));
+warp_53=`            q += cos(q.yzx * s + time) / s;
+warp_54=`        }
+warp_55=`
+warp_56=`        d = 0.008 + abs((length(q.yx) - 6.0) * q.x * bassPulse) / 5.0;
+warp_57=`        z += d;
+warp_58=`
+warp_59=`        o.rgb += hsv(0.07 + sin(z * 0.4) * 0.03 + m.x * 0.15, 0.75, 0.7) / d;
+warp_60=`    }
+warp_61=`
+warp_62=`    o = tanh(o / 9e2);
+warp_63=`
+warp_64=`    ret = o;
+warp_65=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    ret = GetPixel(uv);
+comp_4=`}
