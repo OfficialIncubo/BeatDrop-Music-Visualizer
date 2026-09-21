@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 21/09/2026 at 15:35:57.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 21/09/2026 at 15:51:57.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -107,7 +107,7 @@ shapecode_0_border_a=0.000
 shape_0_per_frame1=ma=ma+(above(bass,1)*3.1415*.01*bass);
 shape_0_per_frame2=ma=ma-(above(treb,1)*3.1415*.01*treb);
 shape_0_per_frame3=
-shape_0_per_frame4=if (q1 == 0, mx = 1; my = 1, no_else);
+shape_0_per_frame4=if (q1 == 0, mx = 1; my = .5, no_else);
 shape_0_per_frame5=
 shape_0_per_frame6=mx=mx+(.0002*cos(ma));
 shape_0_per_frame7=my=my+(.0002*sin(ma));
@@ -148,7 +148,7 @@ shapecode_1_border_a=0.000
 shape_1_per_frame1=ma=ma+(above(bass,1)*3.1415*.05*bass);
 shape_1_per_frame2=ma=ma-(above(mid,1)*3.1415*.05*mid);
 shape_1_per_frame3=
-shape_1_per_frame4=if (q1 == 0, mx = 1; my = 1, no_else);
+shape_1_per_frame4=if (q1 == 0, mx = 1; my = .5, no_else);
 shape_1_per_frame5=
 shape_1_per_frame6=mx=mx+(.0001*cos(ma));
 shape_1_per_frame7=my=my+(.0001*sin(ma));
@@ -189,7 +189,7 @@ shapecode_2_border_a=0.000
 shape_2_per_frame1=ma=ma+(above(mid,1)*3.1415*.01*mid);
 shape_2_per_frame2=ma=ma-(above(treb,1)*3.1415*.01*treb);
 shape_2_per_frame3=
-shape_2_per_frame4=if (q1 == 0, mx = 1; my = 1, no_else);
+shape_2_per_frame4=if (q1 == 0, mx = 1; my = .5, no_else);
 shape_2_per_frame5=
 shape_2_per_frame6=mx=mx+(.0004*cos(ma));
 shape_2_per_frame7=my=my+(.0004*sin(ma));
@@ -218,7 +218,12 @@ warp_5=`}
 comp_1=`shader_body
 comp_2=`{
 comp_3=`    uv.x = 1 - abs(uv.x - .5) - float2(.1,0);
-comp_4=`    uv.y = abs(uv.y - .5) - float2(-.075,0);
-comp_5=`    ret = GetPixel(uv);
-comp_6=`    ret = 1-ret;
-comp_7=`}
+comp_4=`    //uv.y = abs(uv.y - .5) - float2(-.075,0);
+comp_5=`
+comp_6=`    ret = GetPixel(uv);
+comp_7=`
+comp_8=`    float y_mask = saturate((uv.y - .035) * 30) * saturate ((.97 - uv.y) * 30);
+comp_9=`    ret *= y_mask;
+comp_10=`
+comp_11=`    ret = 1-ret;
+comp_12=`}

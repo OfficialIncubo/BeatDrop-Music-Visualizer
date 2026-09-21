@@ -30,7 +30,7 @@ bBrighten=0
 bDarken=1
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.001
+fWaveAlpha=0.000
 fWaveScale=1.286
 fWaveSmoothing=0.630
 fWaveParam=0.000
@@ -81,7 +81,7 @@ b2x=1.000
 b3x=1.000
 b1ed=0.250
 shapecode_0_enabled=1
-shapecode_0_sides=14
+shapecode_0_sides=100
 shapecode_0_additive=0
 shapecode_0_thickOutline=0
 shapecode_0_textured=0
@@ -122,7 +122,7 @@ shape_0_per_frame15=y=my;
 shape_0_per_frame16=
 shape_0_per_frame17=a=(above(bass+mid+treb,.8));
 shapecode_1_enabled=1
-shapecode_1_sides=14
+shapecode_1_sides=100
 shapecode_1_additive=0
 shapecode_1_thickOutline=0
 shapecode_1_textured=0
@@ -163,7 +163,7 @@ shape_1_per_frame15=y=my;
 shape_1_per_frame16=
 shape_1_per_frame17=a=(above(bass+mid+treb,.1));
 shapecode_2_enabled=1
-shapecode_2_sides=14
+shapecode_2_sides=100
 shapecode_2_additive=0
 shapecode_2_thickOutline=0
 shapecode_2_textured=0
@@ -210,7 +210,6 @@ per_frame_3=q1 = decay;
 per_frame_4=
 per_frame_5=warp = 0;
 per_frame_6=zoom = 1;
-per_frame_7=wave_a = 0;
 warp_1=`shader_body
 warp_2=`{
 warp_3=`    ret = tex2d(sampler_pw_main, uv);
