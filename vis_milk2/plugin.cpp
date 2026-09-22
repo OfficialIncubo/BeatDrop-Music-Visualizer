@@ -740,6 +740,7 @@ volatile HANDLE g_hThread;  // only r/w from our MAIN thread
 volatile bool g_bThreadAlive; // set true by MAIN thread, and set false upon exit from 2nd thread.
 volatile int  g_bThreadShouldQuit;  // set by MAIN thread to flag 2nd thread that it wants it to exit.
 static CRITICAL_SECTION g_cs;
+static std::mutex g_shaderCompilationMutex;
 
 #define IsAlphabetChar(x) ((x >= 'a' && x <= 'z') || (x >= 'A' && x <= 'Z'))
 #define IsAlphanumericChar(x) ((x >= 'a' && x <= 'z') || (x >= 'A' && x <= 'Z') || (x >= '0' && x <= '9') || x == '.')
@@ -4018,6 +4019,11 @@ bool CPlugin::LoadShaderFromFile( char* szFile, char* szFn, char* szProfile,
 bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, char* szProfile,
                                     LPD3DXCONSTANTTABLE* ppConstTable, void** ppShader, int shaderType, bool bHardErrors, bool bCompileOnly)
 {
+    // The precache worker and render thread share compiler diagnostics and
+    // shader-cache files. Serialize accesses so compiler state is not reused
+    // concurrently and presets never read a cache file mid-write.
+    std::lock_guard<std::mutex> shaderLock(g_shaderCompilationMutex);
+
     const char szWarpDefines[] = "#define rad _rad_ang.x\n"
                                  "#define ang _rad_ang.y\n"
                                  "#define uv _uv.xy\n"
@@ -4430,7 +4436,10 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
     SafeRelease( m_fallbackShaders_vs.warp.ptr );
     SafeRelease( m_fallbackShaders_ps.warp.ptr );
     */
-    SafeRelease( m_pShaderCompileErrors );
+    {
+        std::lock_guard<std::mutex> shaderLock(g_shaderCompilationMutex);
+        SafeRelease(m_pShaderCompileErrors);
+    }
     //SafeRelease( m_pCompiledFragments );
     //SafeRelease( m_pFragmentLinker );
 
@@ -4974,6 +4983,7 @@ void CPlugin::AddError(wchar_t* szMsg, float fDuration, int category, bool bBold
         ClearErrors(category);
 
     assert(category != ERR_ALL);
+    std::lock_guard<std::mutex> lock(m_errorsMutex);
     ErrorMsg x;
     x.msg = szMsg;
     x.birthTime = GetTime();
@@ -4985,6 +4995,7 @@ void CPlugin::AddError(wchar_t* szMsg, float fDuration, int category, bool bBold
 
 void CPlugin::ClearErrors(int category)  // 0=all categories
 {
+    std::lock_guard<std::mutex> lock(m_errorsMutex);
     int N = m_errors.size();
     for (int i=0; i<N; i++)
     if (category==ERR_ALL || m_errors[i].category == category)
@@ -6006,9 +6017,10 @@ void CPlugin::MyRenderUI(
 		// e) custom timed message:
 		if (!m_bWarningsDisabled2)
 		{
-			wchar_t buf[512] = {0};
+            wchar_t buf[512] = {0};
             SelectFont(SIMPLE_FONT);
             float t = GetTime();
+            std::lock_guard<std::mutex> lock(m_errorsMutex);
             int N = m_errors.size();
             for (int i=0; i<N; i++)
             {

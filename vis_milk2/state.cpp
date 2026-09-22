@@ -58,7 +58,11 @@ typedef std::vector<std::string> VarNameList;
 typedef std::vector<int> IntList;
 
 
-FILE* fLastFilePtr = NULL;
+// Preset imports can happen on the render thread and the shader-precache
+// worker at the same time. Keep the fast-reader cache local to each thread;
+// its file pointer and line-index vectors must never be shared across imports.
+thread_local FILE* fLastFilePtr = NULL;
+static std::mutex g_presetImportMutex;
 void GetFast_CLEAR() { fLastFilePtr = NULL; }
 bool _GetLineByName(FILE* f, const char* szVarName, char* szRet, int nMaxRetChars)
 {
@@ -67,9 +71,9 @@ bool _GetLineByName(FILE* f, const char* szVarName, char* szRet, int nMaxRetChar
     // the part of the line after the '=' sign (or space) goes into szRet.
     // szVarName can't have any spaces in it.
 
-    static int MyLineNum = 0;
-    static VarNameList line_varName;
-    static IntList     line_value_bytepos;
+    static thread_local int MyLineNum = 0;
+    static thread_local VarNameList line_varName;
+    static thread_local IntList     line_value_bytepos;
 
     if (f != fLastFilePtr)
     {
@@ -1307,6 +1311,11 @@ int  CShape::Import(FILE* f, const wchar_t* szFile, int i)
 
 bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DWORD ApplyFlags)
 {
+    // Shader precaching imports into a temporary CState on a worker thread.
+    // Serialize imports because preset parsing and EEL compilation also touch
+    // plugin-wide state that is not safe to mutate concurrently.
+    std::lock_guard<std::mutex> importLock(g_presetImportMutex);
+
     // if any ApplyFlags are missing, the settings will be copied from pOldState.  =)
 
     if (!pOldState)

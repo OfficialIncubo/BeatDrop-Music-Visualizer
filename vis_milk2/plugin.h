@@ -47,6 +47,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "lyrics_renderer.h"
 #include <vector>
 #include <random>
+#include <mutex>
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 
 //#include <core/sdk/IPlaybackService.h>
@@ -592,6 +593,7 @@ public:
                               // NOTE: each NOTIFY msg clears all the old NOTIFY messages!
         #define ERR_SCANNING_PRESETS 5
         #define ERR_SHADER_PRECACHE 6
+        std::mutex  m_errorsMutex;
         ErrorMsgList m_errors;
         void        AddNotif(wchar_t* szMsg);
         void        AddNotif(wchar_t* szMsg, float time);

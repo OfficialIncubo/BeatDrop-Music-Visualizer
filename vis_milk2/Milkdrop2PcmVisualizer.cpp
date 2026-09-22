@@ -310,6 +310,8 @@ static HMODULE module = nullptr;
 static std::atomic<HANDLE> thread = nullptr;
 static std::atomic<HANDLE> threadPrecache = nullptr;
 static unsigned threadId = 0;
+static unsigned threadPrecacheId = 0;
+static std::atomic<bool> shaderPrecacheCancel = false;
 static std::atomic<bool> desktopWindowDestroyed = false;
 static std::atomic<bool> intentionalWindowClose = false;
 static std::mutex pcmMutex;
@@ -319,6 +321,8 @@ static unsigned char pcmLeftOut[SAMPLE_SIZE];
 static unsigned char pcmRightOut[SAMPLE_SIZE];
 
 //static musik::core::sdk::IPlaybackService* playback = nullptr;
+
+void StopShaderPrecacheThread();
 
 static HICON icon = nullptr;
 
@@ -1180,6 +1184,9 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 		////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
+    // The precache worker calls into the plugin and must finish before plugin
+    // state and Direct3D resources are torn down.
+    StopShaderPrecacheThread();
     g_plugin.MyWriteConfig();
     g_plugin.PluginQuit();
 
@@ -1201,9 +1208,25 @@ void StartRenderThread(HINSTANCE instance) {
         &threadId);
 }
 
+void StopShaderPrecacheThread()
+{
+    shaderPrecacheCancel.store(true);
+    HANDLE precacheHandle = threadPrecache.exchange(nullptr);
+    if (precacheHandle)
+    {
+        WaitForSingleObject(precacheHandle, INFINITE);
+        CloseHandle(precacheHandle);
+    }
+}
+
 unsigned __stdcall DoShaderPrecache(void* param) {
 
-    Sleep(3000); // wait for the render thread to initialize the plugin completely
+    // Give the render thread time to finish plugin and Direct3D initialization.
+    for (int waited = 0; waited < 3000 && !shaderPrecacheCancel.load(); waited += 50)
+        Sleep(50);
+    if (shaderPrecacheCancel.load())
+        return 0;
+
     HINSTANCE instance = (HINSTANCE)param;
 
     if (g_plugin.m_bShaderCaching && g_plugin.m_bShaderPrecachingAtStartup) {
@@ -1250,6 +1273,8 @@ unsigned __stdcall DoShaderPrecache(void* param) {
         compiledList.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
 
         while (std::getline(file, line)) {
+            if (shaderPrecacheCancel.load())
+                break;
 
             // Skip BOM if present (UTF-8)
             if (!line.empty() && line[0] == '\xEF' && line[1] == '\xBB' && line[2] == '\xBF') {
@@ -1276,6 +1301,8 @@ unsigned __stdcall DoShaderPrecache(void* param) {
                 std::wstring dirPath = wLine.substr(0, line.length() - 1); // Remove '*'
                 if (std::filesystem::exists(dirPath)) {
                     for (const auto& entry : std::filesystem::directory_iterator(dirPath)) {
+                        if (shaderPrecacheCancel.load())
+                            break;
                         if (entry.is_regular_file()) {
                             PrecachePresetShaders(entry.path().wstring(), compiledList, compiledShaders);
                         }
@@ -1289,6 +1316,9 @@ unsigned __stdcall DoShaderPrecache(void* param) {
 
         file.close();
         compiledList.close();
+        if (shaderPrecacheCancel.load())
+            return 0;
+
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration<double>(end - start); // fractional seconds
         std::wstringstream ss;
@@ -1368,13 +1398,14 @@ void DeleteShaderCacheDirectory()
 }
 
 void StartShaderPrecacheThread(HINSTANCE instance) {
+    shaderPrecacheCancel.store(false);
     threadPrecache = (HANDLE)_beginthreadex(
         nullptr,
         0,
         &DoShaderPrecache,
         (void*)instance,
         0,
-        &threadId);
+        &threadPrecacheId);
 }
 
 int StartThreads(HINSTANCE instance) {
@@ -1484,9 +1515,12 @@ int StartThreads(HINSTANCE instance) {
     // at this point capture is running
     // wait for the user to press a key or for capture to error out
 
-    /*HANDLE thread =*/ StartRenderThread(instance);
     StartShaderPrecacheThread(instance);
+    /*HANDLE thread =*/ StartRenderThread(instance);
     WaitForSingleObject(thread, INFINITE);
+    // Also cover render-window startup failures that return before the render
+    // loop gets a chance to stop the worker.
+    StopShaderPrecacheThread();
 
     //NEED TO STOP CAPTURE
     // at this point capture is running

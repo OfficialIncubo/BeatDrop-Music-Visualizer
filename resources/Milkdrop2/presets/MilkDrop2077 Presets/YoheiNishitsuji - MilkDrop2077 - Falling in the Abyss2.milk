@@ -158,7 +158,7 @@ warp_18=`// In GLSL is column-major order and in HLSL, row-major order,
 warp_19=`// So we transpose the matrix with transpose() to be the same as GLSL.
 warp_20=`
 warp_21=`shader_body{
-warp_22=`uv = (-uv_orig) * aspect.xy;
+warp_22=`uv = (-uv_orig) * aspect_sd.xy;
 warp_23=`float t = time;
 warp_24=`float3 o = float3(0.0, 0.0, 0.0);
 warp_25=`float g = 0.0;
