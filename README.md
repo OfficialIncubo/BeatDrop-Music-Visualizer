@@ -347,10 +347,8 @@ If you want to have all the MilkDrop presets in your own, just download [this Me
 [![Softpedia](https://upload.wikimedia.org/wikipedia/commons/f/f4/Softpedia_logo.svg)](https://www.softpedia.com/get/Multimedia/Audio/Other-AUDIO-Tools/BeatDrop-Music-Visualizer.shtml)
 
 [![AlternativeTo](https://alternativeto.net/static/icons/a2/org-icon.png)](https://alternativeto.net/software/beatdrop/about/)
-
 [<img src="https://vjun.io/uploads/organization/profile_image/1/aa1adb2e-fff9-4492-9544-7f15dd17152e.png" alt="VJ Union" style="width:20%; height:auto;">](https://vjun.io/vdmo/beatdrop-music-visualiser-with-spout-1hof)
-
-[<img src="https://www.topdownload.club/img/logo.png" alt="TopDownload.Club" style="width:30%; height:auto;">](https://win.topdownload.club/beatdrop-music-visualizer-free-download-download.html)
+[![iTechGuides](https://www.itechguides.com/wp-content/themes/itg-prime/assets/favicon-192.png)](https://www.itechguides.com/products/beatdrop-music-visualizer/)
 
 [The Audio File](https://audio-file.org/2023/10/13/beatdrop-music-visualizer/)
 
