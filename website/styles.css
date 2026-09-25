@@ -58,7 +58,7 @@ h3 { font-size: 1.35rem; }
 .brand-wordmark-clip { display: block; width: auto; max-width: 0; margin-left: 0; overflow: hidden; opacity: 0; transition: max-width .32s ease, margin-left .32s ease, opacity .2s ease; }
 .site-header .brand .brand-wordmark-text { width: 320px; max-width: none; height: auto; flex: none; }
 .site-header .brand.is-expanded .brand-wordmark-clip { max-width: 320px; margin-left: 9px; opacity: 1; }
-.brand-wordmark-clip { position: relative; left: -16px; top: 2px; }
+.brand-wordmark-clip { position: relative; left: -16px; top: 3px; }
 .site-nav { display: flex; align-items: center; gap: 30px; font-size: .84rem; font-weight: 550; }
 .site-nav > a:not(.button):hover { color: var(--purple); text-decoration: underline; text-underline-offset: 6px; }
 .source-link { border-left: 1px solid var(--line); padding-left: 30px; }
