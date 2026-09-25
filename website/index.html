@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3f8">
+  <meta name="description" content="BeatDrop is a free, open-source MilkDrop music visualizer for Windows. Use 10,000+ presets for DJ sets, VJ performances, streams, videos, parties and everyday listening.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="BeatDrop Music Visualizer — Standalone MilkDrop music visualization with custom engine for Windows">
+  <meta property="og:description" content="Free MilkDrop standalone visual for Windows: DJ and VJ performances, streams, music videos, karaoke and your desktop.">
+  <meta property="og:image" content="https://officialincubo.github.io/BeatDrop-Music-Visualizer/assets/BDWebsiteThumbnail.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1920">
+  <meta property="og:image:height" content="1080">
+  <meta property="og:image:alt" content="BeatDrop Music Visualizer — free and open-source standalone MilkDrop music visualization for Windows">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://officialincubo.github.io/BeatDrop-Music-Visualizer/assets/BDWebsiteThumbnail.png">
+  <meta name="twitter:image:alt" content="BeatDrop Music Visualizer — free and open-source standalone MilkDrop music visualization for Windows">
+  <title>BeatDrop Music Visualizer — Standalone MilkDrop music visualization with custom engine for Windows</title>
+  <link rel="icon" type="image/png" href="assets/beatdrop-icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <script src="site-widgets.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="icon-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"/></symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="icon-expand" viewBox="0 0 24 24"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></symbol>
+  </svg>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner container">
+      <a class="brand" href="#top" aria-label="BeatDrop Music Visualizer home"><img class="brand-icon" src="assets/beatdrop-icon.png" width="48" height="48" alt=""><span class="brand-wordmark-clip" aria-hidden="true"><img class="brand-wordmark-text" src="assets/beatdrop-wordmark-text.png" width="2505" height="286" alt=""></span></a>
+      <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav" type="button"><span>Menu</span><span class="menu-bars" aria-hidden="true"></span></button>
+      <nav id="site-nav" class="site-nav" aria-label="Main navigation">
+        <a href="#gallery">Gallery</a><a href="#usage">Usage</a><a href="#features">Features</a><a href="#getting-started">Get started</a><a href="#public-use">Preset permissions</a>
+        <a class="source-link" href="https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer">GitHub <span aria-hidden="true">↗</span></a>
+        <a class="button button-small button-dark" href="#download">Download <svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg></a><a href="#support">Support</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero container" id="top" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <img class="hero-wordmark" src="assets/beatdrop-wordmark.png" alt="BeatDrop Music Visualizer" width="1920" height="720" fetchpriority="high">
+        <p class="eyebrow">Free & open source · For Windows</p>
+        <h1 id="hero-title">MilkDrop visuals.<br>For all your music.</h1>
+        <p class="hero-description">BeatDrop is a free, standalone MilkDrop music visualizer for Windows. Use it for DJ sets, VJ performances, streams, music videos, parties, karaoke—or just enjoy the visuals while you listen.</p>
+        <div class="hero-actions">
+          <a class="button button-purple" href="#download"><svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg> Download for Windows</a>
+          <a class="button button-outline" href="#demo" data-watch-demo><svg class="icon" aria-hidden="true"><use href="#icon-play"/></svg> Watch it in action</a>
+        </div>
+        <p class="hero-footnote">Reacts to system audio or a microphone. No specific music player is required.</p>
+        <a class="github-star" href="https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer" title="Open BeatDrop on GitHub to give the project a star"><span aria-hidden="true">☆</span> Star on GitHub <span id="github-stars" class="star-count" aria-label="GitHub star count loading">…</span></a>
+      </div>
+      <figure class="hero-media" id="demo">
+        <div class="demo-frame">
+          <video id="demo-video" controls muted playsinline preload="none" poster="assets/screenshots/video-first-frame.jpeg" aria-label="BeatDrop demonstration recording">
+            <source src="assets/beatdrop-demo.mp4" type="video/mp4">
+            <p>Your browser cannot play this video. <a href="assets/beatdrop-demo.mp4">Download the BeatDrop demonstration.</a></p>
+          </video>
+        </div>
+        <div class="video-toolbar js-only" aria-label="Video selection">
+          <button id="video-previous" class="video-arrow" type="button" aria-label="Previous video">←</button>
+          <span id="video-counter">Video 1 of 4</span>
+          <button id="video-next" class="video-arrow" type="button" aria-label="Next video">→</button>
+          <label class="video-shuffle"><input id="video-shuffle" type="checkbox" checked> Random order (off plays in order)</label>
+        </div>
+        <div class="video-choices" aria-label="Choose a demonstration video">
+          <span>Watch:</span>
+          <a href="assets/beatdrop-demo.mp4" data-demo-video data-label="Video 1" aria-current="true" aria-label="Watch video 1">1</a>
+          <a href="assets/beatdrop-demo-2.mp4" data-demo-video data-label="Video 2" aria-label="Watch video 2">2</a>
+          <a href="assets/beatdrop-demo-3.mp4" data-demo-video data-label="Video 3" aria-label="Watch video 3">3</a>
+          <a href="assets/beatdrop-demo-4.mp4" data-demo-video data-label="Video 4" aria-label="Watch video 4">4</a>
+        </div>
+        <figcaption><span class="caption-dot" aria-hidden="true"></span> All of them are actual footage from BeatDrop <span id="video-status" class="caption-secondary" role="status">Press play to preview</span></figcaption>
+      </figure>
+    </section>
+    <div class="facts container" aria-label="BeatDrop at a glance">
+      <div><strong>10,000+</strong><span>bundled presets</span></div>
+      <div><strong>Two audio modes</strong><span>System audio or Microphone</span></div>
+      <div><strong>32-bit & 64-bit</strong><span>Windows builds available</span></div>
+      <div><strong>Free to download</strong><span>open-source development</span></div>
+    </div>
+    <section class="use-cases container" id="usage" aria-labelledby="usage-title">
+      <div class="section-heading"><div><p class="eyebrow">What can I use BeatDrop for?</p><h2 id="usage-title">At home, on stream<br>or behind the DJ booth.</h2></div><p>Run it on its own or add its output to your existing visual setup. Choose presets that fit your music and the occasion.</p></div>
+      <div class="use-case-list">
+        <article><h3>DJ sets & VJ performances</h3><p>Run visuals alongside your mix, show them fullscreen, or send them through Spout to apps such as Resolume, NestDrop, TouchDesigner, Synesthesia etc.</p></article>
+        <article><h3>Streams & music videos</h3><p>Bring BeatDrop into OBS with a Spout plug-in or window capture. Combine it with other sources for livestreams, recordings and music videos.</p></article>
+        <article><h3>Parties & karaoke</h3><p>Show visuals on a party screen and add synchronized lyrics when available. Use microphone input when you want the visuals to react to sound in the room.</p></article>
+        <article><h3>Music & desktop visuals</h3><p>Listen with your usual player, keep a small borderless view open, or use Desktop Mode to display visuals behind your Windows icons.</p></article>
+        <article><h3>Displays & installations</h3><p>Use fullscreen visuals on a dedicated display, or route the output into a Spout-compatible setup for an installation or exhibition.</p></article>
+        <article><h3>Making your own presets</h3><p>Edit .milk presets, experiment with shapes and waves, and use mouse, keyboard, shader variables, video or GIF textures in your work. Press <kbd>M</kbd> to get started.</p></article>
+      </div>
+      <p class="use-case-permissions">For public or commercial work, <a href="#public-use">check the permissions for each preset and any other media you use</a>.</p>
+    </section>
+    <section class="gallery-section" id="gallery" aria-labelledby="gallery-title">
+      <div class="container">
+        <div class="section-heading gallery-heading">
+          <div><p class="eyebrow">See what it can do</p><h2 id="gallery-title">Take a look at BeatDrop.</h2></div>
+          <p>Browse these screenshots to see some of the included MilkDrop presets. The captions name the presets and their creators.</p>
+        </div>
+        <div class="gallery-viewer">
+          <a id="gallery-full" class="gallery-image-link" href="assets/screenshots/preset-1.png" aria-label="Open the BeatDrop startup preset screenshot at full size">
+            <img id="gallery-image" src="assets/screenshots/preset-1.png" width="1312" height="730" alt="The BeatDrop logo in front of a purple spectrum display" loading="lazy" decoding="async">
+            <span class="expand-label"><svg class="icon" aria-hidden="true"><use href="#icon-expand"/></svg> View full size</span>
+          </a>
+          <div class="gallery-toolbar">
+            <div><span class="gallery-count" id="gallery-count">01 / 10</span><span id="gallery-caption">The startup preset</span></div>
+            <div class="gallery-controls"><button type="button" class="icon-button" id="gallery-previous" aria-label="Previous screenshot">←</button><button type="button" class="icon-button" id="gallery-next" aria-label="Next screenshot">→</button></div>
+          </div>
+        </div>
+        <div class="gallery-thumbnails" aria-label="Choose a screenshot">
+          <a class="gallery-thumb is-active" href="assets/screenshots/preset-1.png" data-caption="The startup preset" data-alt="The BeatDrop logo in front of a purple spectrum display" aria-label="Show BeatDrop startup preset" aria-current="true"><img src="assets/screenshots/preset-1.png" width="1312" height="730" alt="" loading="lazy"></a>
+          <a class="gallery-thumb" href="assets/screenshots/preset-9.png" data-caption="Se7enSlasher - Globetrotting, a world-themed spectrum analyzer" data-alt="A globe surrounded by pink radial spectrum lines and stars in BeatDrop" aria-label="Show globe and radial spectrum"><img src="assets/screenshots/preset-9.png" width="1312" height="730" alt="" loading="lazy"></a>
+          <a class="gallery-thumb" href="assets/screenshots/preset-7.png" data-caption="Krash - Twisting Indecision" data-alt="Waves swirling in flow" aria-label="Show purple and green waves"><img src="assets/screenshots/preset-7.png" width="1312" height="730" alt="" loading="lazy"></a>
+          <a class="gallery-thumb" href="assets/screenshots/preset-6.png" data-caption="PieturP - influenca1" data-alt="Overlapping rings of white and coloured particle waveforms in BeatDrop" aria-label="Show rings of light"><img src="assets/screenshots/preset-6.png" width="1312" height="730" alt="" loading="lazy"></a>
+          <a class="gallery-thumb" href="assets/screenshots/preset-10.png" data-caption="Se7enSlasher - The Spectrum Analyzer is our Proeminence (Non-Overglow Edition)" data-alt="A rainbow of fine spectrum lines with an animated GIF as texture in BeatDrop" aria-label="Show rainbow waveform"><img src="assets/screenshots/preset-10.png" width="1312" height="730" alt="" loading="lazy"></a>
+          <a class="gallery-thumb" href="assets/screenshots/preset-12.png" data-caption="A familiar favourite: Spotiamp+'s Spectrum Preset Port (credit to fdeox)" data-alt="Green, yellow and red spectrum bars in BeatDrop" aria-label="Show classic spectrum bars"><img src="assets/screenshots/preset-12.png" width="1312" height="730" alt="" loading="lazy"></a>
+          <a class="gallery-thumb" href="assets/screenshots/preset-5.png" data-caption="fiShbRaiN - city slicker" data-alt="Fine blue trails and multicoloured particles in BeatDrop" aria-label="Show particle trails"><img src="assets/screenshots/preset-5.png" width="1312" height="730" alt="" loading="lazy"></a>
+          <a class="gallery-thumb" href="assets/screenshots/preset-8.png" data-caption="Illusion & Unchained - Invade My Mind" data-alt="Nested blue geometric frames crossed by waves in BeatDrop" aria-label="Show blue geometric patterns"><img src="assets/screenshots/preset-8.png" width="1312" height="730" alt="" loading="lazy"></a>
+          <a class="gallery-thumb" href="assets/screenshots/preset-3.png" data-caption="baked - demon isolation" data-alt="Symmetrical, flowing colors in BeatDrop" aria-label="Show flowing pink textures"><img src="assets/screenshots/preset-3.png" width="1312" height="730" alt="" loading="lazy"></a>
+          <a class="gallery-thumb" href="assets/screenshots/preset-4.png" data-caption="Aderrasi - Airhandler (Kali Mix) - Painterly (Geiss composite mix)" data-alt="Color cycling fluid patterns and pale waves in BeatDrop" aria-label="Show green fluid patterns"><img src="assets/screenshots/preset-4.png" width="1312" height="730" alt="" loading="lazy"></a>
+        </div>
+        <p class="gallery-note">Visuals by the MilkDrop preset community. <a href="#public-use">Read about permissions for public use <span aria-hidden="true">↗</span></a></p>
+        <p class="sr-only" id="gallery-status" aria-live="polite"></p>
+      </div>
+    </section>
+    <section class="features-section container" id="features" aria-labelledby="features-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">More ways to enjoy MilkDrop</p><h2 id="features-title">What’s included in BeatDrop?</h2></div>
+        <p>Enjoy the presets as they are, or experiment with window modes, media inputs and the built-in editor.</p>
+      </div>
+      <article class="feature-row">
+        <figure class="feature-picture spout-picture"><img src="assets/screenshots/spout-input.jpg" width="1140" height="942" loading="lazy" decoding="async" alt="A Spout Sender image is received and composited inside a BeatDrop preset"><figcaption>A live Spout source invoked as a sprite, brought into BeatDrop.</figcaption></figure>
+        <div class="feature-copy"><p class="eyebrow">Spout · Video · GIFs</p><h3>Make BeatDrop part<br>of your visual setup.</h3><p>Send the visualizer’s output to Spout-compatible apps such as OBS, Resolume, NestDrop, TouchDesigner, Synesthesia etc. You can also bring a Spout feed as a sprite by putting <code>Spout/</code> or <code>Spout\</code> prefixes, along with the sender name to your image path from your <code>beatdrop_img.ini</code> file, or add GIFs and videos as sprites and textures. Presets will automatically load GIFs and videos if available.</p><p class="feature-detail">OBS requires a Spout plug-in. Check preset permissions before using visuals in a stream or performance.</p><a class="text-link" href="https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer#features">Explore media and Spout support <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a></div>
+      </article>
+      <article class="feature-row feature-row-reverse">
+        <figure class="feature-picture"><img src="assets/screenshots/preset-13.png" width="2880" height="1800" loading="lazy" decoding="async" alt="BeatDrop's animated visualizer running behind Windows desktop icons"><figcaption>Desktop mode, running behind your icons.</figcaption></figure>
+        <div class="feature-copy"><p class="eyebrow">Desktop · Borderless · Fullscreen</p><h3>Choose how the<br>visuals are displayed.</h3><p>Fill your screen, place a borderless window beside your music player, or put the visualizer on your desktop. Use the view that suits your desktop, recording or performance setup.</p><div class="shortcut-pair"><span><kbd>Shift</kbd> + <kbd>W</kbd> Desktop mode</span><span><kbd>Ctrl</kbd> + <kbd>W</kbd> Hide window</span><span><kbd>F2</kbd> Borderless mode</span><span><kbd>F7</kbd> Always on top</span><span><kbd>Alt</kbd> + <kbd>Enter</kbd> Full-screen</span></div></div>
+      </article>
+      <article class="feature-row">
+        <figure class="feature-picture"><img src="assets/screenshots/preset-11.png" width="1312" height="730" loading="lazy" decoding="async" alt="A synchronized lyric line displayed over a BeatDrop visualization"><figcaption>Synchronized lyrics displayed over the visuals.</figcaption></figure>
+        <div class="feature-copy"><p class="eyebrow">Song information · Synchronized lyrics</p><h3>Show track information<br>and synchronized lyrics.</h3><p>Show the current track and synchronized LRC lyrics over the visuals. Fine-tune the timing in the built-in lyrics editor and keep lyrics cached locally.</p><p class="feature-detail">Song information and playback timing use supported media players on the standard Windows 10/11 build. Lyrics depend on availability.</p><div class="shortcut-pair"><span><kbd>Ctrl</kbd> + <kbd>L</kbd> Toggle lyrics</span></div></div>
+      </article>
+      <article class="feature-row feature-row-reverse control-guide" aria-labelledby="control-guide-title">
+        <figure class="feature-picture menu-showcase"><img src="assets/screenshots/visualizer-context-menu.png" width="1312" height="1522" alt="BeatDrop’s menu with display, lyrics, audio, preset and music playback options" loading="lazy" decoding="async"><figcaption>Open the menu by right-clicking the visualizer or BeatDrop’s taskbar tray icon.</figcaption></figure>
+        <div class="feature-copy control-copy">
+          <p class="eyebrow">Menu · Playback controls</p>
+          <h3 id="control-guide-title">Quick access to BeatDrop’s controls.</h3>
+          <p>Right-click the visualizer, or right-click BeatDrop’s icon in the taskbar tray, to open its menu. Change display options, adjust audio and lyrics, manage presets, or control music playback from there.</p>
+          <p>For keyboard control, use these shortcuts while BeatDrop is active. The arrow keys seek through the current track.</p>
+          <div class="transport-grid" role="group" aria-label="BeatDrop playback keyboard shortcuts">
+            <div class="transport-control"><span class="transport-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 5v14M19 6l-10 6 10 6V6Z"/></svg></span><span class="transport-label">Previous track</span><kbd>Z</kbd></div>
+            <div class="transport-control"><span class="transport-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 4 10 8-10 8V4Zm14 1v14M22 5v14"/></svg></span><span class="transport-label">Play / pause</span><kbd>X</kbd></div>
+            <div class="transport-control"><span class="transport-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1"/></svg></span><span class="transport-label">Stop</span><kbd>C</kbd></div>
+            <div class="transport-control"><span class="transport-symbol" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 5v14M5 6l10 6-10 6V6Z"/></svg></span><span class="transport-label">Next track</span><kbd>V</kbd></div>
+          </div>
+          <div class="seek-shortcuts"><span>Seek in track</span><span><kbd>←</kbd> Seek left</span><span><kbd>→</kbd> Seek right</span></div>
+        </div>
+      </article>
+      <div class="feature-notes">
+        <article><span class="note-number">01</span><h3>Load and edit MilkDrop presets</h3><p>Load .milk presets with drag and drop. Edit up to 16 custom shapes and waves, with new waveforms, code and shader variables to experiment with.</p></article>
+        <article><span class="note-number">02</span><h3>Shader precaching and caching</h3><p>Precache shaders or let them cache as you go. Cached shaders reduce compilation waits when you revisit a preset.</p></article>
+        <article><span class="note-number">03</span><h3>Audio from your PC</h3><p>Capture system sound or switch to a microphone. BeatDrop follows default audio-device changes and supports high sample rates.</p></article>
+      </div>
+    </section>
+    <section class="download-section" id="download" aria-labelledby="download-title">
+      <div class="container download-layout">
+        <div><p class="eyebrow">Ready when you are</p><h2 id="download-title">Download BeatDrop<br>for Windows.</h2><p>Choose a build for your computer and start using BeatDrop for your music, recordings or live visuals.</p><a class="button button-light" href="https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/releases/latest"><svg class="icon" aria-hidden="true"><use href="#icon-download"/></svg> Get BeatDrop for Windows</a><a class="download-secondary" href="https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/releases">All releases & release notes <span aria-hidden="true">↗</span></a></div>
+        <div class="download-details"><h3>Choose your build</h3><dl><div><dt>Standard</dt><dd>Windows 10 and Windows 11</dd></div><div><dt>Architecture</dt><dd>x64 for 64-bit Windows; x86 for 32-bit Windows</dd></div><div><dt>Older Windows</dt><dd>Look for an OldOS build. Song information and synchronized playback features are limited.</dd></div></dl><a href="https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer#system-requirements">Full system requirements <span aria-hidden="true">↗</span></a></div>
+      </div>
+    </section>
+    <section class="start-section container" id="getting-started" aria-labelledby="start-title">
+      <div class="section-heading"><div><p class="eyebrow">Getting started</p><h2 id="start-title">Download, extract and run.</h2></div><p>Use the release package and keep its resource folders together. You don’t need to compile the source code.</p></div>
+      <ol class="steps">
+        <li><span class="step-number">1</span><h3>Download & extract</h3><p>Choose either the installer or portable package from the latest release. If you choose portable, extract the full archive and keep <code>BeatDrop Resources</code> beside the executable.</p></li>
+        <li><span class="step-number">2</span><h3>Open BeatDrop & play music</h3><p>Start the matching executable, then play audio in Spotify, YouTube, VLC, Winamp, WACUP or another app. BeatDrop listens to system audio by default; you do not need to install Winamp or WACUP specifically.</p></li>
+        <li><span class="step-number">3</span><h3>Explore your presets</h3><p>Use the preset browser (<kbd>L</kbd>) or drop a .milk file into the visualizer. Press <kbd>F1</kbd> for the full list of controls and shortcuts.</p></li>
+      </ol>
+      <div class="help-strip"><p><strong>Need a hand?</strong> Check the README for setup details and runtime requirements.</p><a class="text-link" href="https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer#readme">Read the guide <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a></div>
+    </section>
+    <section class="faq-section container" aria-labelledby="faq-title">
+      <div><p class="eyebrow">Frequently asked questions</p><h2 id="faq-title">Questions about BeatDrop</h2></div>
+      <div class="faq-list">
+        <details><summary>Where do I download and install BeatDrop?<span aria-hidden="true">+</span></summary><p>Get the latest package from <a href="https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/releases/latest">GitHub Releases</a>. Under the release’s Assets, choose the installer or portable package for your Windows system; the “Source code” archives are for developers. Run the installer, or extract the portable package and keep the complete folder—including <code>BeatDrop Resources</code>—together. Then start the matching BeatDrop executable. Check the release notes and <a href="https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer#system-requirements">runtime requirements</a> if Windows reports a missing dependency.</p></details>
+        <details><summary>Can I use BeatDrop for DJ or VJ performances?<span aria-hidden="true">+</span></summary><p>Yes. BeatDrop can provide audio-reactive visuals for DJ sets and VJ performances, either fullscreen or through Spout in compatible apps. Capture your mix through system audio, or select microphone input for an external audio source. Make sure the audio reaches the selected input and check your routing before a show. For paid performances, streams and other public uses, check the <a href="#public-use">licenses of the presets and media</a> you plan to use.</p></details>
+        <details><summary>Does BeatDrop run on Linux?<span aria-hidden="true">+</span></summary><p>There is no native Linux build. You can try running the Windows version through Wine, using tools such as Winetricks for dependencies or Lutris to manage the setup. Graphics and audio configuration depend on your machine, so compatibility is not guaranteed.</p><p>Incubo_ has also run BeatDrop in <a href="https://github.com/brunodev85/winlator">Winlator on Android</a> using Turnip Vulkan, Zink OpenGL, DXVK + VKD3D and PulseAudio settings. This is a reported working configuration, not a requirement for every Linux or Android device. BeatDrop uses Direct3D 9, which <a href="https://github.com/doitsujin/dxvk">DXVK</a> can translate to Vulkan; VKD3D is not required for its Direct3D 9 renderer.</p><p>Desktop Mode and Windows media-session features (including automatic track information and playback timing used by synchronized lyrics) did not work in the reported Wine-based setup. Use windowed or fullscreen mode and expect some Windows-specific features to be unavailable. See the <a href="https://lutris.net/about/">Lutris overview</a> for more about its Wine support.</p></details>
+        <details><summary>Do I need Winamp, WACUP or a particular music player?<span aria-hidden="true">+</span></summary><p>No. BeatDrop captures Windows system audio, so any app that plays sound can provide the music. Winamp, WACUP or any media players are optional; install or use one only if you want it as your player.</p></details>
+        <details><summary>Can I use microphone audio?<span aria-hidden="true">+</span></summary><p>Yes. Press <kbd>Ctrl</kbd> + <kbd>D</kbd>, or use the context menu, to switch between speaker capture and microphone input.</p></details>
+        <details><summary>Can I run BeatDrop on a Mac with Parallels or Prism?<span aria-hidden="true">+</span></summary><p>BeatDrop’s official releases are for Windows, and I have not tested BeatDrop in Parallels or Prism. In the <a href="https://x.com/MilkDrop2077/status/1978471903703797787?s=20">community reply you linked</a>, MilkDrop2077 says they have seen MilkDrop 3 run on an M3 using Parallels, or in a Windows 11 ARM virtual machine with Prism. That report is about MilkDrop 3; it does not confirm BeatDrop compatibility. Results can vary with the Mac, virtual machine and graphics setup. You can also try the <a href="https://github.com/padresb/BeatDrop-Music-Visualizer-MacOS">community macOS port</a>, which is maintained separately.</p></details>
+        <details><summary>Can I use the visuals in videos or live shows?<span aria-hidden="true">+</span></summary><p>Permissions depend on the presets you use. Some carry noncommercial restrictions, and credit alone does not grant permission. Read the <a href="#public-use">preset permissions below</a> and check the original author’s terms for your intended use.</p></details>
+      </div>
+    </section>
+    <section class="permissions-section" id="public-use" aria-labelledby="permissions-title">
+      <div class="container permissions-layout">
+        <div><p class="eyebrow">Respect the artists</p><h2 id="permissions-title">Using MilkDrop<br>presets in public.</h2><p>Every preset is someone’s work. Before using one in a video, stream, event or commercial project, check its source and license.</p></div>
+        <div class="permissions-copy">
+          <h3>The app and the presets have different licenses.</h3><p>BeatDrop’s code is available under the BSD 3-Clause License, except where otherwise noted. That license does not automatically cover the presets, textures, music or other media you use with it.</p>
+          <h3>Some presets have noncommercial restrictions.</h3><p>BeatDrop’s preset notice identifies many Shadertoy conversions as CC BY-NC-SA 3.0. For those presets, give the required attribution, follow the ShareAlike terms when distributing adaptations, and obtain separate permission for commercial use.</p>
+          <h3>Credit the author and check before sharing.</h3><p>Keep the preset name and original author credits. Follow the individual license; if the permissions are missing or unclear, ask the creator. A credit does not replace permission.</p>
+          <div class="license-links"><a href="licenses/PRESET-LICENSE.txt">BeatDrop preset notice ↗</a><a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA 3.0 ↗</a><a href="https://github.com/IkeC/Milkwave#public-use-of-milkdrop-presets">Milkwave’s public-use notes ↗</a><a href="licenses/LICENSE.txt">Software license ↗</a></div>
+        </div>
+      </div>
+    </section>
+    <section class="support-section" id="support" aria-labelledby="support-title">
+      <div class="container support-inner">
+        <div class="support-copy"><p class="eyebrow">Support independent development</p><h2 id="support-title">Help keep BeatDrop growing.</h2><p>BeatDrop is free to download and developed independently. If it has been useful for your DJ or VJ sets, streams, events or everyday listening, you can support the project with a Ko-fi donation. Contributions help cover hosting and development tools and leave more time for fixes and new features.</p><p class="support-note">Support is optional. BeatDrop remains free to download, and a donation does not change the permissions for presets or other media.</p></div>
+        <a class="button button-light support-button" href="https://ko-fi.com/officialincubo_" target="_blank" rel="noopener noreferrer"><span aria-hidden="true">☕</span> Support me on Ko-fi <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a>
+      </div>
+    </section>
+    <section class="community-section container">
+      <div><p class="eyebrow">An ongoing community project</p><h2>Get in touch.</h2><p>Have a question, found a bug, or made something with BeatDrop? Join the Discord, open an issue on GitHub, or email <a class="contact-email" href="mailto:beatdropmusicvisualizer@gmail.com">beatdropmusicvisualizer@gmail.com</a>. Preset contributions, feature requests and improvements are welcome.</p></div><div class="community-links"><a class="button button-dark" href="https://discord.gg/rp5cBDtGuM">Join the Discord <svg class="icon" aria-hidden="true"><use href="#icon-arrow"/></svg></a><a class="text-link" href="https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer">Explore the source on GitHub ↗</a></div>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <div class="container"><div class="footer-top"><a class="brand" href="#top" aria-label="Back to top"><img src="assets/beatdrop-icon.png" width="48" height="48" alt="BeatDrop B logo"></a><p><strong>BeatDrop Music Visualizer</strong><br>Standalone MilkDrop music visualization with custom engine for Windows.</p><nav aria-label="Footer navigation"><a href="https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues">Report an issue</a><a href="https://x.com/BeatDropVis">Follow BeatDrop</a><a href="mailto:beatdropmusicvisualizer@gmail.com">Contact</a><a href="licenses/LICENSE.txt">License</a></nav></div><div class="footer-bottom"><p>Continued by Incubo_ and contributors. Based on <a href="https://github.com/mvsoft74/BeatDrop">BeatDrop by Maxim Volskiy</a> and <a href="https://www.geisswerks.com/milkdrop/">MilkDrop by Ryan Geiss</a>, with the work of many preset artists.</p><a href="https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer#acknowledgements">Full acknowledgements ↗</a></div></div>
+  </footer>
+  <dialog id="image-dialog" class="image-dialog" aria-label="Screenshot viewer">
+    <div class="dialog-layout"><button class="dialog-close icon-button" type="button" aria-label="Close screenshot viewer" autofocus><svg class="icon" aria-hidden="true"><use href="#icon-close"/></svg></button><img id="dialog-image" src="assets/screenshots/preset-1.png" alt="" width="1312" height="730"><div class="dialog-caption"><button id="dialog-previous" class="icon-button" type="button" aria-label="Previous screenshot">←</button><p id="dialog-caption"></p><button id="dialog-next" class="icon-button" type="button" aria-label="Next screenshot">→</button></div></div>
+  </dialog>
+</body>
+</html>
