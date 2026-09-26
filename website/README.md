@@ -8,7 +8,11 @@ This is a static landing page for BeatDrop. It has no build step or paid service
 - Playback starts on request. Only the selected video is loaded; the other recordings are links, not hidden video players.
 - Random video selection is on by default. After a clip ends, another clip is chosen without immediately repeating the last one. Turn random selection off to play clips in order, looping back to the first clip after the fourth.
 - The header shows the B icon at the top of the page. After the hero wordmark scrolls out of view, its text fades and slides in beside the icon; it fades away again when scrolling back up.
-- The Features section includes the media playback shortcuts and a screenshot of the visualizer context menu. The same menu is available by right-clicking the visualizer or taskbar tray icon.
+- The mobile header keeps the original B logo artwork and gives the wordmark more room beside it. The expanded-wordmark scroll transition remains the same.
+- The hero links to GitHub, Ko-fi and BeatDrop's X/Twitter account. Following or donating is optional.
+- The Features section documents synchronized lyrics, the lyrics editor shortcut and workflow, on-screen information hotkeys, system date/time shader variables, and FFT/wave shader functions.
+- Shader examples rotate with a 4.5-second crossfade and no carousel buttons. Rotation pauses offscreen or in a hidden tab and is disabled when reduced motion is requested.
+- The Features section also shows the context menu. Users can open that menu by right-clicking the visualizer or BeatDrop's taskbar tray icon.
 - The screenshot gallery starts with the BeatDrop startup preset and preserves the supplied preset-author captions. It supports arrows, thumbnail selection and a full-size dialog.
 - Without JavaScript, video and screenshot links still open the original files, the navigation remains visible, and the FAQs use native HTML controls.
 
@@ -17,11 +21,13 @@ This is a static landing page for BeatDrop. It has no build step or paid service
 The star button opens the repository; it does not star automatically. The count is fetched without credentials and cached locally for one hour. An unavailable count displays a dash rather than a guessed number. Failure to retrieve it does not affect the rest of the site.
 
 The contact links open a mail composer addressed to `beatdropmusicvisualizer@gmail.com`. No message is sent by the website.
-The support section links to the project maintainer's Ko-fi page. Donations are optional and do not change preset or media permissions.
+The support section and hero link to the project maintainer's Ko-fi page. Donations are optional and do not change preset or media permissions. The hero and footer link to BeatDrop's X/Twitter account.
 
 ## Content and permissions
 
-The Linux FAQ distinguishes Wine-based compatibility from a native Linux build. The Winlator settings are attributed to the maintainer's Android experience, with the reported Desktop Mode and Windows media-session limitations retained. The macOS FAQ separates a community report about MilkDrop 3 from unconfirmed BeatDrop compatibility in Parallels or Prism.
+The Linux FAQ distinguishes Wine-based compatibility from a native Linux build. The Winlator settings are attributed to the maintainer's Android experience, with the reported Desktop Mode and Windows media-session limitations retained. The macOS FAQ separates a community report about MilkDrop 3 from unconfirmed BeatDrop compatibility in Parallels or Prism, and notes that the separate community port may behave differently.
+
+The getting-started section links the MilkDrop MegaPack download. Presets have their own authors and usage terms, which remain separate from BeatDrop's software license.
 
 The original software license and preset notice are in `licenses/`. Preset-specific restrictions are explained separately from the software's BSD license. Media supplied for this page has not been assigned a new blanket license.
 

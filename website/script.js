@@ -2,6 +2,12 @@
 
 document.documentElement.classList.add('js');
 
+document.querySelectorAll('[data-current-year]').forEach((date) => {
+  const year = new Date().getFullYear();
+  date.dateTime = String(year);
+  date.textContent = String(year);
+});
+
 const menuToggle = document.querySelector('.menu-toggle');
 const nav = document.querySelector('#site-nav');
 
@@ -47,6 +53,67 @@ if ('IntersectionObserver' in window && headerBrand && heroWordmark) {
   observeHeroWordmark();
   window.addEventListener('resize', observeHeroWordmark, { passive: true });
 }
+
+document.querySelectorAll('[data-shader-slideshow]').forEach((slideshow) => {
+  const slides = [...slideshow.querySelectorAll('[data-shader-slides] [data-src]')];
+  const images = [...slideshow.querySelectorAll('.shader-slideshow-frame img')];
+  const caption = slideshow.querySelector('[data-shader-caption]');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  if (slides.length < 2 || images.length < 2 || !caption) return;
+
+  let slideIndex = 0;
+  let activeImageIndex = 0;
+  let timer;
+  let changingSlide = false;
+  let inView = !('IntersectionObserver' in window);
+
+  const scheduleNext = () => {
+    clearTimeout(timer);
+    const canRotate = !document.hidden && inView && !reducedMotion.matches && !changingSlide;
+    slideshow.dataset.rotating = String(canRotate);
+    if (canRotate) timer = setTimeout(showNext, 4500);
+  };
+
+  const showNext = async () => {
+    changingSlide = true;
+    const nextIndex = (slideIndex + 1) % slides.length;
+    const next = slides[nextIndex];
+    const nextImageIndex = 1 - activeImageIndex;
+    const nextImage = images[nextImageIndex];
+    nextImage.src = next.dataset.src;
+    nextImage.alt = next.dataset.alt;
+    try {
+      await nextImage.decode();
+    } catch {
+      changingSlide = false;
+      scheduleNext();
+      return;
+    }
+    if (document.hidden || !inView || reducedMotion.matches) {
+      changingSlide = false;
+      scheduleNext();
+      return;
+    }
+    nextImage.classList.add('is-active');
+    images[activeImageIndex].classList.remove('is-active');
+    caption.textContent = next.dataset.caption;
+    slideIndex = nextIndex;
+    activeImageIndex = nextImageIndex;
+    changingSlide = false;
+    scheduleNext();
+  };
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      scheduleNext();
+    }, { rootMargin: '120px 0px' });
+    observer.observe(slideshow);
+  }
+  document.addEventListener('visibilitychange', scheduleNext);
+  reducedMotion.addEventListener('change', scheduleNext);
+  scheduleNext();
+});
 
 const thumbnails = [...document.querySelectorAll('.gallery-thumb')];
 const galleryImage = document.querySelector('#gallery-image');
