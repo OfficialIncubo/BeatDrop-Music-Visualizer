@@ -816,6 +816,10 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 SendMessageW(hWnd, WM_NCLBUTTONDOWN, HTCAPTION, lParam);
                 return 0;
             }
+            // This window procedure handles the renderer directly instead of
+            // going through CPluginShell::WindowProc. Forward client clicks so
+            // MilkDrop presets receive mouse/mousedown/mouseclick updates.
+            g_plugin.PluginShellWindowProc(hWnd, uMsg, wParam, lParam);
             break;
         }
 
@@ -877,14 +881,21 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         case WM_RBUTTONUP:
         case WM_NCRBUTTONUP:
         {
+            // Keep the preset input state in sync even though this window
+            // procedure also uses right-click release to open its context menu.
+            g_plugin.PluginShellWindowProc(hWnd, uMsg, wParam, lParam);
             if (suppressRightClickMenu)
             {
                 suppressRightClickMenu = false;
+                ReleaseCapture();
                 return 0;
             }
             // Delay the context menu so the existing double-right-click
             // gesture remains available for Monitor stretch mode.
             SetTimer(hWnd, BEATDROP_TIMER_RIGHT_CLICK_MENU, GetDoubleClickTime(), NULL);
+            // Consume WM_RBUTTONUP to avoid DefWindowProc generating a second
+            // context menu; release the capture that began on button-down.
+            ReleaseCapture();
             return 0;
         }
 

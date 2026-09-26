@@ -6524,9 +6524,15 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
          break;
 
      case WM_LBUTTONUP:
-         m_mouseDown = 0;
+         m_mouseDown = (wParam & (MK_LBUTTON | MK_RBUTTON)) != 0;
          break;
      case WM_RBUTTONUP:
+         m_mouseDown = (wParam & (MK_LBUTTON | MK_RBUTTON)) != 0;
+         break;
+     case WM_CANCELMODE:
+     case WM_CAPTURECHANGED:
+         // A modal menu or another window can take capture before the matching
+         // button-up arrives. Do not leave preset mouse state stuck in that case.
          m_mouseDown = 0;
          break;
 
