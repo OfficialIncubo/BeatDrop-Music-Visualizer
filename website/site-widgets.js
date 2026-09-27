@@ -46,7 +46,7 @@
         const rate = video.playbackRate;
         video.pause();
         current = selected;
-        // Only the selected clip is loaded, even with all four links visible.
+        // Load the selected clip on demand instead of preloading the full playlist.
         video.preload = 'metadata';
         video.src = links[current].href;
         if (current === 0 && firstPoster) video.setAttribute('poster', firstPoster);

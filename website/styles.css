@@ -82,8 +82,10 @@ h3 { font-size: 1.35rem; }
 .video-arrow { display: inline-flex; align-items: center; justify-content: center; width: 42px; height: 42px; border: 1px solid #c6bed1; border-radius: 4px; background: white; color: var(--purple); font-size: 1.15rem; }
 .video-arrow:hover { background: #eae4f2; }
 #video-counter { min-width: 78px; text-align: center; font-variant-numeric: tabular-nums; }
-.video-shuffle { display: inline-flex; align-items: center; gap: 7px; margin-left: auto; min-height: 44px; cursor: pointer; color: var(--muted); }
+.video-playback-options { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; margin-left: auto; }
+.video-shuffle { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; cursor: pointer; color: var(--muted); }
 .video-shuffle input { width: 17px; height: 17px; margin: 0; accent-color: var(--purple); }
+.video-playback-status { color: var(--muted); font-size: .7rem; line-height: 1.4; text-align: right; }
 .video-choices { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 8px; font-size: .72rem; color: var(--muted); }
 .video-choices > span { margin-right: 5px; }
 .video-choices a { display: inline-flex; min-width: 42px; min-height: 42px; align-items: center; justify-content: center; border-radius: 4px; border: 1px solid var(--line); font-weight: 600; }
@@ -386,6 +388,9 @@ code { font-size: .85em; padding: 2px 4px; background: #e9e3f0; border-radius: 3
   .megapack-callout .button { width: 100%; }
   .download-details dl { display: block; }
   .transport-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .seek-shortcuts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .seek-shortcuts > span:first-child { grid-column: 1 / -1; margin-right: 0; }
+  .seek-shortcuts > span:not(:first-child) { justify-content: center; white-space: nowrap; }
   .download-section h2 br { display: none; }
   .help-strip { flex-direction: column; gap: 15px; }
   .faq-section h2, .community-section h2 { font-size: 2rem; }
@@ -411,7 +416,8 @@ code { font-size: .85em; padding: 2px 4px; background: #e9e3f0; border-radius: 3
 }
 @media (max-width: 480px) {
   .use-case-list { grid-template-columns: 1fr; }
-  .video-shuffle { width: 100%; margin-left: 0; }
+  .video-playback-options { flex: 1 1 100%; align-items: flex-end; margin-left: 0; }
+  .video-shuffle { width: 100%; justify-content: flex-end; }
   .hero-media .caption-secondary { flex-basis: 100%; margin-left: 14px; }
   .video-toolbar { gap: 8px; }
   .footer-top nav { flex-wrap: wrap; gap: 12px 20px; }

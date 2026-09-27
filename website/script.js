@@ -209,6 +209,15 @@ const demoPlayer = BeatDropWidgets.mountVideoPlaylist({
   counter: document.querySelector('#video-counter'),
   status: document.querySelector('#video-status')
 });
+BeatDropWidgets.mountVideoPlaylist({
+  video: document.querySelector('#interaction-demo-video'),
+  links: [...document.querySelectorAll('[data-interaction-video]')],
+  previous: document.querySelector('#interaction-video-previous'),
+  next: document.querySelector('#interaction-video-next'),
+  shuffle: document.querySelector('#interaction-video-shuffle'),
+  counter: document.querySelector('#interaction-video-counter'),
+  status: document.querySelector('#interaction-video-status')
+});
 document.querySelector('[data-watch-demo]').addEventListener('click', () => {
   demoPlayer.play();
 });

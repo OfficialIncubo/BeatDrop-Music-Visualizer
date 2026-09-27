@@ -5,8 +5,12 @@ name: Alternate Build
 on:
   push:
     branches: ["**"]
+    paths-ignore:
+      - 'website/**'
   pull_request:
     branches: ["**"]
+    paths-ignore:
+      - 'website/**'
   workflow_dispatch: # Allows you to run this workflow manually
 
 jobs:

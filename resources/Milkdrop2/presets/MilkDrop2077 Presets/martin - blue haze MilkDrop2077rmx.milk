@@ -366,7 +366,7 @@ per_frame_137=
 per_frame_138=monitor = q12;
 warp_1=`// MilkDrop 3.37
 warp_2=`
-warp_3=`static const float2 centre = float2 (q10-0.5,-(q11-0.5))/aspect.xy+0.5;
+warp_3=`static const float2 centre = float2 (q10-0.5,-(q11-0.5))/aspect_sd.xy+0.5;
 warp_4=`
 warp_5=`shader_body
 warp_6=`{
