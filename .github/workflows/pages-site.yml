@@ -35,3 +35,15 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
+      - name: Notify IndexNow about the updated homepage
+        env:
+          INDEXNOW_KEY: 099883b8c1d2d9d4819dd2fd71140910
+        run: |
+          if curl --fail-with-body --silent --show-error \
+            -X POST 'https://api.indexnow.org/indexnow' \
+            -H 'Content-Type: application/json; charset=utf-8' \
+            --data "{\"host\":\"officialincubo.github.io\",\"key\":\"${INDEXNOW_KEY}\",\"keyLocation\":\"https://officialincubo.github.io/BeatDrop-Music-Visualizer/${INDEXNOW_KEY}.txt\",\"urlList\":[\"https://officialincubo.github.io/BeatDrop-Music-Visualizer/\"]}"; then
+            echo 'IndexNow accepted the homepage notification.'
+          else
+            echo 'IndexNow notification failed; the Pages deployment itself succeeded.'
+          fi
