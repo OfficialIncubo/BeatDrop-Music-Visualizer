@@ -185,6 +185,7 @@ NOTIFYICONDATA nid = {};
 bool renderWindowHidden = false;
 HWND g_hWnd = NULL;
 bool trayIconRegistered = false;
+bool desktopModeHotkeyRegistered = false;
 // Keep the HWND that owns the shell entry separately from nid.hWnd. During
 // desktop recovery the renderer HWND can be replaced before the old entry is
 // deleted, which otherwise leaves duplicate notification icons behind.
@@ -193,6 +194,49 @@ static HWND trayIconOwnerHwnd = NULL;
 void UpdateTrayIconForHiddenWindow();
 void UpdateTrayIconForShownWindow();
 void UpdateTrayIconForDesktopMode();
+
+static void HandleCtrlW(HWND hwnd)
+{
+	if (g_plugin.m_bDesktopMode)
+		return;
+
+	if (!IsWindowVisible(hwnd))
+	{
+		RestoreRenderWindowIcon(hwnd);
+		UpdateTrayIconForShownWindow();
+		SetForegroundWindow(hwnd);
+		SetFocus(hwnd);
+	}
+	else
+	{
+		ShowWindow(hwnd, SW_HIDE);
+		UpdateTrayIconForHiddenWindow();
+	}
+}
+
+static void HandleShiftW(HWND hwnd)
+{
+	if (!IsWindowVisible(hwnd))
+	{
+		if (g_plugin.m_bDesktopMode)
+		{
+			ShowWindow(hwnd, SW_SHOW);
+			UpdateTrayIconForDesktopMode();
+		}
+		else
+		{
+			RestoreRenderWindowIcon(hwnd);
+			UpdateTrayIconForShownWindow();
+		}
+	}
+	g_plugin.m_mouseDown = 0;
+	g_plugin.ToggleDesktopMode(hwnd);
+	if (g_plugin.m_bDesktopMode)
+		g_plugin.StartDesktopModeRecoveryTimers(hwnd);
+	else
+		StopDesktopModeTimers(hwnd);
+}
+
 static const UINT WM_TRAY_MENU_COMMAND = WM_APP + 10;
 static volatile LONG trayMenuOpen = 0;
 
@@ -295,7 +339,7 @@ static void ShowTrayContextMenu(HWND hwnd, bool visualWindowMenu)
 		return;
 	}
 
-	const bool desktopMode = g_plugin.m_bDesktopMode;
+	const bool desktopMode = g_plugin.m_bDesktopMode || IsDesktopModeAttached(hwnd);
 	if (renderWindowHidden || desktopMode)
 	{
 		const wchar_t* showText = renderWindowHidden
@@ -303,12 +347,15 @@ static void ShowTrayContextMenu(HWND hwnd, bool visualWindowMenu)
 			: L"Switch to normal visual window";
 		AppendMenuW(menu, MF_STRING, TRAY_MENU_SHOW_WINDOW, showText);
 	}
-	if (visualWindowMenu)
+	if (visualWindowMenu || desktopMode)
 	{
 		AppendMenuW(menu, MF_STRING | (fullscreen ? MF_CHECKED : MF_UNCHECKED),
 			TRAY_MENU_FULLSCREEN, L"Full-screen mode");
 		AppendMenuW(menu, MF_STRING | (stretch ? MF_CHECKED : MF_UNCHECKED),
 			TRAY_MENU_MONITOR_STRETCH, L"Monitor stretch mode");
+	}
+	if (visualWindowMenu)
+	{
 		UINT borderlessFlags = MF_STRING | (borderless ? MF_CHECKED : MF_UNCHECKED);
 		if (fullscreen || stretch || desktopMode)
 			borderlessFlags |= MF_GRAYED;
@@ -2870,6 +2917,14 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 
 	switch (uMsg)
 	{
+	case WM_HOTKEY:
+		if (wParam == BEATDROP_HOTKEY_DESKTOP_MODE)
+		{
+			HandleShiftW(hWnd);
+			return 0;
+		}
+		break;
+
 	case WM_ERASEBKGND:
 		// Repaint window when song is paused and image needs to be repainted:
 		if (m_lpDX && m_lpDX->m_lpDevice && GetFrame() > 0)
@@ -3138,28 +3193,20 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 			// Incubo_ - The show render window is moved to WM_USER + 1, the custom system tray message handler
 			case 'w':
 			case 'W':
-				if (GetKeyState(VK_CONTROL) & 0x8000)
-				{
-					if (IsWindowVisible(GetPluginWindow()))
-					{
-						ShowWindow(GetPluginWindow(), SW_HIDE);
-						UpdateTrayIconForHiddenWindow();
-					}
-					/*
-					Don't to else because the window and the icon from taskbar is hidden,
-					but it pops up the icon to system tray, where you can double click
-					to show the render window. Check WM_USER + 1.
-					*/
-				}
-				else if (GetKeyState(VK_SHIFT) & 0x8000)
-				{
-					g_plugin.ToggleDesktopMode(GetPluginWindow());
-					if (g_plugin.m_bDesktopMode)
-						SetTimer(GetPluginWindow(), TIMER_DESKTOP_WATCHDOG, 1000, NULL);
-					else
-						StopDesktopModeTimers(GetPluginWindow());
-				}
+			{
+				const bool controlDown = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+				const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+				// When global Shift+W registration succeeded, WM_HOTKEY performs
+				// that action. Consume the focused event to avoid toggling twice.
+				if (shiftDown && desktopModeHotkeyRegistered)
+					return 0;
+
+				if (controlDown)
+					HandleCtrlW(GetPluginWindow());
+				else if (shiftDown)
+					HandleShiftW(GetPluginWindow());
 				return 0;
+			}
 
 		    case VK_ESCAPE:
 			    if (m_show_help)

@@ -7990,10 +7990,14 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
 	case 'w':
 		//m_pState->m_nWaveMode++;
 		//if (m_pState->m_nWaveMode >= NUM_WAVES) m_pState->m_nWaveMode = 0;
+		if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_SHIFT) & 0x8000))
+			return 1; // Let the shell handle Ctrl+W / Shift+W shortcuts.
 		return 0; // we processed (or absorbed) the key
 	case 'W':
 		//m_pState->m_nWaveMode--;
 		//if (m_pState->m_nWaveMode < 0) m_pState->m_nWaveMode = NUM_WAVES - 1;
+		if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_SHIFT) & 0x8000))
+			return 1; // Let the shell handle Ctrl+W / Shift+W shortcuts.
 		return 0; // we processed (or absorbed) the key
 	case 'e':
 		//m_pState->m_fWaveAlpha -= 0.1f;

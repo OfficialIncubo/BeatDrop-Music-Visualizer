@@ -639,6 +639,10 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             // Borderless windows do not consistently receive synthesized
             // gestures, so request raw touch input as a fallback.
             RegisterTouchWindow(hWnd, 0);
+            // Register Shift+W system-wide so Desktop Mode can be toggled
+            // while another application has focus.
+            desktopModeHotkeyRegistered = RegisterHotKey(
+                hWnd, BEATDROP_HOTKEY_DESKTOP_MODE, MOD_SHIFT, 'W') != FALSE;
             // WM_CREATE also initializes the notification-area icon in the
             // plugin shell. Preserve that initialization path.
             g_plugin.PluginShellWindowProc(hWnd, uMsg, wParam, lParam);
@@ -660,6 +664,9 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
         }
 
         case WM_DESTROY: {
+            if (desktopModeHotkeyRegistered)
+                UnregisterHotKey(hWnd, BEATDROP_HOTKEY_DESKTOP_MODE);
+            desktopModeHotkeyRegistered = false;
             if (g_plugin.m_bDesktopMode && !intentionalWindowClose.load()) {
                 desktopWindowDestroyed = true;
                 return 0;
