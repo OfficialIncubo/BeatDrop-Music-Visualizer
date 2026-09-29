@@ -20,6 +20,7 @@ namespace
             return false;
 
         return _stricmp(name, "d3dx9_43.dll") == 0 ||
+            _stricmp(name, "d3dx9_31.dll") == 0 ||
             _strnicmp(name, "avcodec-", 8) == 0 ||
             _strnicmp(name, "avformat-", 9) == 0 ||
             _strnicmp(name, "avutil-", 7) == 0 ||
@@ -130,6 +131,25 @@ namespace
         return wcsstr(company, L"Wine") != nullptr;
     }
 
+    HMODULE LoadLegacyD3DX9Compiler()
+    {
+        // BeatDrop compiles MilkDrop shaders with
+        // D3DXSHADER_USE_LEGACY_D3DX9_31_DLL. D3DX9_43 loads this compiler by
+        // its bare DLL name later, so load the packaged copy first while we
+        // can address it by its full path. Once resident, Windows can resolve
+        // that later request to the already-loaded module even though the
+        // nested resources directory is not on the process DLL search path.
+        if (HMODULE library = GetModuleHandleW(L"d3dx9_31.dll"))
+            return library;
+
+        if (HMODULE library = LoadFromPackage(L"d3dx9_31.dll"))
+            return library;
+
+        // Preserve development/system-runtime compatibility when the
+        // packaged legacy compiler is not present.
+        return ::LoadLibraryW(L"d3dx9_31.dll");
+    }
+
     bool LoadFfmpegRuntime()
     {
         // Discover the actual versioned filenames packaged by the build rather
@@ -178,6 +198,12 @@ namespace
     FARPROC WINAPI DelayLoadHook(unsigned notification, PDelayLoadInfo delayInfo)
     {
         if (notification != dliNotePreLoadLibrary || !delayInfo || !IsManagedLibrary(delayInfo->szDll))
+            return nullptr;
+
+        // The optional startup check can be disabled after the first run, so
+        // also prepare the legacy compiler whenever D3DX9 is first delay-loaded.
+        if (_stricmp(delayInfo->szDll, "d3dx9_43.dll") == 0 &&
+            !LoadLegacyD3DX9Compiler())
             return nullptr;
 
         if (IsFfmpegLibrary(delayInfo->szDll) && !LoadFfmpegRuntime())
@@ -230,17 +256,25 @@ namespace BeatDropPortableDll
     bool PreloadD3DX9()
     {
         // d3d9.dll is a regular Windows dependency and is already loaded by
-        // the executable.  Keep the one packaged DirectX helper BeatDrop uses
-        // resident before sprites, textures, or text first call into D3DX.
+        // the executable. Keep BeatDrop's packaged D3DX helpers resident
+        // before sprites, textures, text, or preset shaders first use them.
         if (HMODULE library = GetModuleHandleW(L"d3dx9_43.dll"))
         {
             // A previously-loaded Wine builtin cannot be replaced safely in
             // process.  Reject it so initialization reports the missing
             // portable helper instead of reaching the buggy font code.
-            return !IsWineBuiltinD3DX9(library);
+            if (IsWineBuiltinD3DX9(library))
+                return false;
+        }
+        else if (!LoadD3DX9())
+        {
+            return false;
         }
 
-        return LoadD3DX9() != nullptr;
+        // Keep the legacy shader compiler resident before the first preset
+        // shader is compiled. The D3DX compile flag otherwise causes a late
+        // bare-name load that cannot find our architecture-specific package.
+        return LoadLegacyD3DX9Compiler() != nullptr;
     }
 
     bool IsD3DX9Available()
