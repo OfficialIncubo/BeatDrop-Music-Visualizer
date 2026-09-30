@@ -134,6 +134,7 @@ jobs:
         test -d package || { echo "No executables were packaged"; exit 1; }
         cp -R BeatDrop/Redist package/
         cp BeatDrop/LICENSE.txt BeatDrop/dxwebsetup.exe package/
+        cp "BeatDrop/PRESET LICENSE.txt" package/
         cp -R resources/Milkdrop2 "package/BeatDrop Resources"
         rm -rf "package/BeatDrop Resources/dlls"
         for runtime_arch in x86 x64; do
