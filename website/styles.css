@@ -184,6 +184,10 @@ kbd { font-family: inherit; font-size: .77rem; display: inline-block; background
 .download-section .eyebrow { color: #d0b8ef; }
 .download-section h2 { font-size: clamp(2rem, 3.2vw, 3rem); }
 .download-layout > div:first-child > p:not(.eyebrow) { color: #d5c6e3; font-size: .97rem; margin: 24px 0 29px; max-width: 475px; }
+.download-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.download-actions .button { min-width: 205px; }
+.download-portable { color: white; border-color: #9d83b4; }
+.download-portable:hover { background: #48296c; border-color: #c7aade; }
 .download-secondary { font-size: .79rem; color: #dbcbea; display: block; width: fit-content; text-decoration: underline; text-underline-offset: 4px; margin-top: 19px; }
 .download-details { padding-left: 40px; border-left: 1px solid #62487d; }
 .download-details h3 { font-size: 1.05rem; letter-spacing: -.01em; }
@@ -351,6 +355,8 @@ code { font-size: .85em; padding: 2px 4px; background: #e9e3f0; border-radius: 3
 }
 @media (max-width: 480px) {
   .container { width: calc(100% - 40px); }
+  .download-actions { display: grid; grid-template-columns: 1fr; }
+  .download-actions .button { width: 100%; min-width: 0; }
   .header-inner.container { width: calc(100% - 24px); column-gap: 8px; }
   .js .menu-toggle { gap: 10px; padding-inline: 10px; }
   .hero { padding-top: 25px; }
