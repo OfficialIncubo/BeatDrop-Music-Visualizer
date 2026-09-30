@@ -60,9 +60,20 @@ h3 { font-size: 1.35rem; }
 .site-header .brand.is-expanded .brand-wordmark-clip { max-width: 320px; margin-left: 9px; opacity: 1; }
 .brand-wordmark-clip { position: relative; left: -16px; top: 3px; }
 .site-nav { display: flex; align-items: center; gap: 30px; font-size: .84rem; font-weight: 550; }
+.site-nav > a { white-space: nowrap; }
 .site-nav > a:not(.button):hover { color: var(--purple); text-decoration: underline; text-underline-offset: 6px; }
 .source-link { border-left: 1px solid var(--line); padding-left: 30px; }
 .menu-toggle { display: none; }
+@media (max-width: 1400px) {
+  .header-inner { min-height: 70px; flex-wrap: wrap; gap: 0; }
+  .js .menu-toggle { display: flex; align-items: center; gap: 13px; border: 1px solid #cdc3d9; background: transparent; border-radius: 4px; padding: 10px 12px; min-height: 44px; font-size: .78rem; color: var(--ink); }
+  .menu-bars { width: 16px; height: 10px; border-block: 1px solid currentColor; position: relative; }
+  .menu-bars::after { content: ""; position: absolute; left: 0; right: 0; top: 4px; border-top: 1px solid currentColor; }
+  .site-nav { display: flex; width: 100%; flex-wrap: wrap; padding-bottom: 17px; gap: 16px 22px; }
+  .js .site-nav { display: none; }
+  .js .site-nav.is-open { display: flex; }
+  .source-link { border: 0; padding: 0; }
+}
 .hero { display: grid; grid-template-columns: .95fr 1.18fr; align-items: center; gap: 60px; padding-block: 55px 65px; }
 .hero-copy { min-width: 0; }
 .hero-wordmark { width: 330px; height: auto; margin: 0 0 25px -14px; }
@@ -393,7 +404,11 @@ code { font-size: .85em; padding: 2px 4px; background: #e9e3f0; border-radius: 3
   .megapack-callout { flex-direction: column; align-items: flex-start; gap: 22px; padding: 23px 20px; }
   .megapack-callout .button { width: 100%; }
   .download-details dl { display: block; }
-  .transport-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .transport-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; }
+  .transport-control { min-height: 108px; padding-inline: 3px; gap: 6px; }
+  .transport-symbol { width: 34px; height: 34px; }
+  .transport-label { font-size: .58rem; }
+  .transport-control kbd { font-size: .62rem; }
   .seek-shortcuts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .seek-shortcuts > span:first-child { grid-column: 1 / -1; margin-right: 0; }
   .seek-shortcuts > span:not(:first-child) { justify-content: center; white-space: nowrap; }

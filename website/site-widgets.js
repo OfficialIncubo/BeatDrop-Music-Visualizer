@@ -3,8 +3,8 @@
 // Kept independent of the rest of the page so failures in a remote star-count
 // request cannot interrupt video or gallery controls.
 (function (root) {
-  function mountVideoPlaylist({ video, links, previous, next, shuffle, counter, status, random = Math.random }) {
-    let current = 0;
+  function mountVideoPlaylist({ video, links, previous, next, shuffle, counter, status, random = Math.random, randomStart = false }) {
+    let current = randomStart ? Math.floor(random() * links.length) : 0;
     let generation = 0;
     const firstPoster = video.getAttribute('poster');
 
@@ -15,6 +15,11 @@
         if (index === current) link.setAttribute('aria-current', 'true');
         else link.removeAttribute('aria-current');
       });
+    }
+
+    if (randomStart && current !== 0) {
+      video.src = links[current].href;
+      video.removeAttribute('poster');
     }
 
     function updateStatus() {

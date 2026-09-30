@@ -61,11 +61,20 @@ document.querySelectorAll('[data-shader-slideshow]').forEach((slideshow) => {
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
   if (slides.length < 2 || images.length < 2 || !caption) return;
 
-  let slideIndex = 0;
+  let slideIndex = Math.floor(Math.random() * slides.length);
   let activeImageIndex = 0;
   let timer;
   let changingSlide = false;
   let inView = !('IntersectionObserver' in window);
+
+  images[activeImageIndex].src = slides[slideIndex].dataset.src;
+  images[activeImageIndex].alt = slides[slideIndex].dataset.alt;
+  caption.textContent = slides[slideIndex].dataset.caption;
+
+  function pickRandomSlideIndex() {
+    const offset = 1 + Math.floor(Math.random() * (slides.length - 1));
+    return (slideIndex + offset) % slides.length;
+  }
 
   const scheduleNext = () => {
     clearTimeout(timer);
@@ -76,7 +85,7 @@ document.querySelectorAll('[data-shader-slideshow]').forEach((slideshow) => {
 
   const showNext = async () => {
     changingSlide = true;
-    const nextIndex = (slideIndex + 1) % slides.length;
+    const nextIndex = pickRandomSlideIndex();
     const next = slides[nextIndex];
     const nextImageIndex = 1 - activeImageIndex;
     const nextImage = images[nextImageIndex];
@@ -207,19 +216,39 @@ const demoPlayer = BeatDropWidgets.mountVideoPlaylist({
   next: document.querySelector('#video-next'),
   shuffle: document.querySelector('#video-shuffle'),
   counter: document.querySelector('#video-counter'),
-  status: document.querySelector('#video-status')
+  status: document.querySelector('#video-status'),
+  randomStart: true
 });
-BeatDropWidgets.mountVideoPlaylist({
+const interactionPlayer = BeatDropWidgets.mountVideoPlaylist({
   video: document.querySelector('#interaction-demo-video'),
   links: [...document.querySelectorAll('[data-interaction-video]')],
   previous: document.querySelector('#interaction-video-previous'),
   next: document.querySelector('#interaction-video-next'),
   shuffle: document.querySelector('#interaction-video-shuffle'),
   counter: document.querySelector('#interaction-video-counter'),
-  status: document.querySelector('#interaction-video-status')
-});
-document.querySelector('[data-watch-demo]').addEventListener('click', () => {
-  demoPlayer.play();
+  status: document.querySelector('#interaction-video-status'),
+  randomStart: true
 });
 
+function autoplayWhenVisible(element, player) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let started = false;
+  const start = () => {
+    if (started) return;
+    started = true;
+    player.play();
+  };
+  if (!('IntersectionObserver' in window)) {
+    start();
+    return;
+  }
+  const observer = new IntersectionObserver(([entry]) => {
+    if (!entry.isIntersecting) return;
+    observer.disconnect();
+    start();
+  }, { rootMargin: '100px 0px', threshold: 0.1 });
+  observer.observe(element);
+}
+autoplayWhenVisible(document.querySelector('#demo-video'), demoPlayer);
+autoplayWhenVisible(document.querySelector('#interaction-demo-video'), interactionPlayer);
 BeatDropWidgets.loadGitHubStars(document.querySelector('#github-stars'));

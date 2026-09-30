@@ -4,14 +4,14 @@ This is a static landing page for BeatDrop. It has no build step or paid service
 
 ## Media and controls
 
-- The four supplied MP4 recordings appear in the opening player. Previous/next arrows and numbered links change the video.
-- Playback starts on request. Only the selected video is loaded; the other recordings are links, not hidden video players.
-- Random video selection is on by default. After a clip ends, another clip is chosen without immediately repeating the last one. Turn random selection off to play clips in order, looping back to the first clip after the fourth.
-- The header shows the B icon at the top of the page. After the hero wordmark scrolls out of view, its text fades and slides in beside the icon; it fades away again when scrolling back up.
+- The opening player has four MP4 recordings, and the preset-interactions section has six. Each player starts with a randomly selected clip on every page visit and begins muted playback when it scrolls into view. Autoplay is skipped when reduced motion is requested. Only the selected video is loaded; the other recordings are links, not hidden video players.
+- Random video selection is on by default. After a clip ends, another is chosen without immediately repeating the last one. Turn random selection off to play clips in order, looping back to the first clip.
+- The FFT/Wave slideshow starts with a random example on every page visit, then randomly changes examples with a 4.5-second crossfade. Rotation pauses offscreen or in a hidden tab and is disabled when reduced motion is requested.
+- The header shows the B icon at the top of the page. After the hero wordmark scrolls out of view, its text fades and slides in beside the icon; it fades away again when scrolling back up. At narrower desktop widths the header switches to its menu layout before the expanded wordmark squeezes the navigation.
 - The mobile header keeps the original B logo artwork and gives the wordmark more room beside it. The expanded-wordmark scroll transition remains the same.
 - The hero links to GitHub, Ko-fi and BeatDrop's X/Twitter account. Following or donating is optional.
 - The Features section documents synchronized lyrics, the lyrics editor shortcut and workflow, on-screen information hotkeys, system date/time shader variables, and FFT/wave shader functions.
-- Shader examples rotate with a 4.5-second crossfade and no carousel buttons. Rotation pauses offscreen or in a hidden tab and is disabled when reduced motion is requested.
+- The hero offers a direct route to the screenshot gallery.
 - The Features section also shows the context menu. Users can open that menu by right-clicking the visualizer or BeatDrop's taskbar tray icon.
 - The screenshot gallery starts with the BeatDrop startup preset and preserves the supplied preset-author captions. It supports arrows, thumbnail selection and a full-size dialog.
 - Without JavaScript, video and screenshot links still open the original files, the navigation remains visible, and the FAQs use native HTML controls.
