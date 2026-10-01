@@ -1,19 +1,19 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 23:07:51.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 21:36:47.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
 ###################################################################################################
 
 MILKDROP_PRESET_VERSION=201
-PSVERSION=4
-PSVERSION_WARP=4
-PSVERSION_COMP=4
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
 [preset00]
 fRating=5.000
 fGammaAdj=1.460
 fDecay=0.935
-FFTAttack=1.000
-FFTDecay=0.650
+FFTAttack=0.500
+FFTDecay=0.700
 fVideoEchoZoom=1.007
 fVideoEchoAlpha=0.500
 nVideoEchoOrientation=2
@@ -85,26 +85,38 @@ warp_2=`This shader has been ported to BeatDrop/MilkDrop (HLSL) by Incubo_/Se7en
 warp_3=`Try Spotiamp+: https://github.com/fdeox/spotiamp-plus
 warp_4=`*/
 warp_5=`
-warp_6=`float3 hsv(float h, float s, float v) {
-warp_7=`    float3 rgb = clamp(abs(fmod(h*6+float3(0,4,2),6)-3)-1,0,1);
-warp_8=`    return v * lerp(float3(1,1,1), rgb, s);
-warp_9=`}
-warp_10=`float hash(float2 p){ return frac(sin(dot(p,float2(41.3,289.1)))*43758.5); }
-warp_11=`float noise(float2 p){
-warp_12=`    float2 i=floor(p), f=frac(p); f=f*f*(3-2*f);
-warp_13=`    return lerp(lerp(hash(i),hash(i+float2(1,0)),f.x),
-warp_14=`                lerp(hash(i+float2(0,1)),hash(i+float2(1,1)),f.x), f.y);
-warp_15=`}
-warp_16=`float fbm(float2 p){ float v=0, a=.5; for(int k=0;k<4;k++){ v+=a*noise(p); p*=2; a*=.5; } return v; }
+warp_6=`float specLog(float x){ return get_fft(pow(clamp(x,0.0,1.0), 1.8)); }
+warp_7=`/*
+warp_8=`float3 hsv(float h, float s, float v) {
+warp_9=`    float3 rgb = clamp(abs(fmod(h*6+float3(0,4,2),6)-3)-1,0,1);
+warp_10=`    return v * lerp(float3(1,1,1), rgb, s);
+warp_11=`}
+warp_12=`*/
+warp_13=`
+warp_14=`float3 pal(float x, float3 a, float3 b, float3 c, float3 d){ 
+warp_15=`    return a + b * cos(M_PI_2 * (c * x + d));
+warp_16=`}
 warp_17=`
-warp_18=`shader_body {
-warp_19=`        uv.y=1-uv.y; // Y UV flipping, first
-warp_20=`        uv -= .5;
-warp_21=`        float t = time*.25;
-warp_22=`        float2 p = uv*2.0;
-warp_23=`        p += float2(fbm(p+t), fbm(p-t))*(1.0+bass_att);
-warp_24=`        float f = fbm(p*2+t);
-warp_25=`        ret = hsv(frac(f+t*0.1+treb_att), 0.7, f*(0.5+vol_att+bass_att));
-warp_26=`}
+warp_18=`shader_body
+warp_19=`{
+warp_20=`    float3 col = 0;
+warp_21=`    float t = time*.25;
+warp_22=`    //Obligatory Y flipping
+warp_23=`    uv.y = 1-uv.y;
+warp_24=`    float2 sc = uv;
+warp_25=`
+warp_26=`    float n = 48.0;
+warp_27=`    float bi = floor(sc.x*n);
+warp_28=`    float fx = frac(sc.x*n);
+warp_29=`    float v = specLog(abs((bi+0.5)/n - 0.5)*2.0);
+warp_30=`    float y = sc.y - 0.42;
+warp_31=`    float h = v*0.5;
+warp_32=`    float bar = step(0.12, fx)*step(fx, 0.88);
+warp_33=`    float3 c = pal(v + (bi/n)*0.3 + t*0.1, float3(.5,.5,.5), float3(.5,.5,.5), float3(1,1,1), float3(0.0,0.33,0.67));
+warp_34=`    if (y >= 0.0) col = c*bar*step(y, h)*(0.5 + 0.6*y/(h+0.001));
+warp_35=`    else col = c*bar*step(-y, h*0.5)*0.35*(1.0 + y/(h*0.5+0.001));
+warp_36=`    col += float3(.6,.6,.6)*smoothstep(0.004,0.0,abs(y))*0.4;
+warp_37=`    ret = col;
+warp_38=`}
 comp_1=`shader_body
 comp_2=`{ ret = GetPixel(uv); }

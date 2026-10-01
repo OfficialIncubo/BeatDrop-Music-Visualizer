@@ -1,0 +1,139 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 22:30:43.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=2
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.235
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`/*
+warp_2=`This shader has been ported to BeatDrop/MilkDrop (HLSL) by Incubo_/Se7enSlasher/DJ XcitMosphere.
+warp_3=`Try Spotiamp+: https://github.com/fdeox/spotiamp-plus
+warp_4=`*/
+warp_5=`
+warp_6=`float hash21(float2 p)
+warp_7=`{
+warp_8=`    return frac(sin(dot(p, float2(127.1, 311.7))) * 43758.5453);
+warp_9=`}
+warp_10=`
+warp_11=`float vnoise(float2 p)
+warp_12=`{
+warp_13=`    float2 i = floor(p);
+warp_14=`    float2 f = frac(p);
+warp_15=`    f = f * f * (3.0 - 2.0 * f);
+warp_16=`    float a = hash21(i);
+warp_17=`    float b = hash21(i + float2(1.0, 0.0));
+warp_18=`    float c = hash21(i + float2(0.0, 1.0));
+warp_19=`    float d = hash21(i + float2(1.0, 1.0));
+warp_20=`    return lerp(lerp(a, b, f.x), lerp(c, d, f.x), f.y);
+warp_21=`}
+warp_22=`
+warp_23=`float fbm(float2 p)
+warp_24=`{
+warp_25=`    float s = 0.0;
+warp_26=`    float a = 0.5;
+warp_27=`    for (int i = 0; i < 4; i++)
+warp_28=`    {
+warp_29=`        s += a * vnoise(p);
+warp_30=`        p = float2(1.6 * p.x - 1.2 * p.y, 1.2 * p.x + 1.6 * p.y);
+warp_31=`        a *= 0.5;
+warp_32=`    }
+warp_33=`    return s;
+warp_34=`}
+warp_35=`
+warp_36=`shader_body
+warp_37=`{
+warp_38=`    uv.y = 1-uv.y;
+warp_39=`    float2 my_uv = (uv - 0.5) * aspect.xy * 2;
+warp_40=`
+warp_41=`    float2 d = my_uv - float2(0.0, 0.15);
+warp_42=`    float a = atan2(d.y, d.x);
+warp_43=`
+warp_44=`    float rays = pow(0.5 + 0.5 * sin(a * 14.0 + time * 0.3), 3.0) * 0.6 + 
+warp_45=`                 pow(0.5 + 0.5 * sin(a * 23.0 - time * 0.2), 4.0) * 0.4;
+warp_46=`
+warp_47=`    float cloud = smoothstep(0.4, 0.75, fbm(my_uv * 2.5 + float2(time * 0.05, 0.0)));
+warp_48=`
+warp_49=`    float3 col = float3(1.0, 0.8, 0.45) * rays * exp(-length(d) * 2.2) * (0.5 + bass_att * 1.2) * (1.0 - cloud * 0.6);
+warp_50=`    col += float3(1.0, 0.95, 0.8) * smoothstep(0.09 + bass_att * 0.02, 0.07, length(d));
+warp_51=`    col = lerp(col, float3(0.9, 0.8, 0.7) * (0.3 + mid * 0.4), cloud * 0.5);
+warp_52=`    col += float3(0.25, 0.3, 0.55) * smoothstep(0.5, -0.5, my_uv.y) * 0.3;
+warp_53=`
+warp_54=`    ret = col;
+warp_55=`}
+comp_1=`shader_body
+comp_2=`{ ret = GetPixel(uv); }

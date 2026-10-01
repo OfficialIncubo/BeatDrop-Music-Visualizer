@@ -1,13 +1,13 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 23:07:51.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 22:39:29.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
 ###################################################################################################
 
 MILKDROP_PRESET_VERSION=201
-PSVERSION=4
-PSVERSION_WARP=4
-PSVERSION_COMP=4
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
 [preset00]
 fRating=5.000
 fGammaAdj=1.460
@@ -85,26 +85,39 @@ warp_2=`This shader has been ported to BeatDrop/MilkDrop (HLSL) by Incubo_/Se7en
 warp_3=`Try Spotiamp+: https://github.com/fdeox/spotiamp-plus
 warp_4=`*/
 warp_5=`
-warp_6=`float3 hsv(float h, float s, float v) {
-warp_7=`    float3 rgb = clamp(abs(fmod(h*6+float3(0,4,2),6)-3)-1,0,1);
-warp_8=`    return v * lerp(float3(1,1,1), rgb, s);
-warp_9=`}
-warp_10=`float hash(float2 p){ return frac(sin(dot(p,float2(41.3,289.1)))*43758.5); }
-warp_11=`float noise(float2 p){
-warp_12=`    float2 i=floor(p), f=frac(p); f=f*f*(3-2*f);
-warp_13=`    return lerp(lerp(hash(i),hash(i+float2(1,0)),f.x),
-warp_14=`                lerp(hash(i+float2(0,1)),hash(i+float2(1,1)),f.x), f.y);
-warp_15=`}
-warp_16=`float fbm(float2 p){ float v=0, a=.5; for(int k=0;k<4;k++){ v+=a*noise(p); p*=2; a*=.5; } return v; }
-warp_17=`
-warp_18=`shader_body {
-warp_19=`        uv.y=1-uv.y; // Y UV flipping, first
-warp_20=`        uv -= .5;
-warp_21=`        float t = time*.25;
-warp_22=`        float2 p = uv*2.0;
-warp_23=`        p += float2(fbm(p+t), fbm(p-t))*(1.0+bass_att);
-warp_24=`        float f = fbm(p*2+t);
-warp_25=`        ret = hsv(frac(f+t*0.1+treb_att), 0.7, f*(0.5+vol_att+bass_att));
-warp_26=`}
+warp_6=`float specLog(float x){ return get_fft(pow(saturate(x), 1.8)); }
+warp_7=`#if defined (HAS_FFT_PEAK)
+warp_8=`float specLogCap(float x){ return get_fft_peak(pow(saturate(x), 1.8)); }
+warp_9=`#endif
+warp_10=`
+warp_11=`float hash(float2 p)
+warp_12=`{
+warp_13=`    return frac(sin(dot(p, float2(41.3, 289.1))) * 43758.5453);
+warp_14=`}
+warp_15=`
+warp_16=`float3 hsv(float h, float s, float v)
+warp_17=`{
+warp_18=`    float4 k = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+warp_19=`    float3 p = abs(frac(h + k.xyz) * 6.0 - k.www);
+warp_20=`    return v * lerp(k.xxx, saturate(p - k.xxx), s);
+warp_21=`}
+warp_22=`
+warp_23=`shader_body
+warp_24=`{
+warp_25=`    uv.y = 1.0 - uv.y;
+warp_26=`    float2 sc = uv;
+warp_27=`
+warp_28=`    float2 g = float2(24.0, 18.0);
+warp_29=`    float cx = floor(sc.x * g.x);
+warp_30=`    float v = specLog((cx + 0.5) / g.x);
+warp_31=`    float y = sc.y * g.y + (time*10) + (1.0 + v * 6.0 + hash(float2(cx, 1.0)) * 2.0);
+warp_32=`    float on = step(0.72 - v * 0.4, hash(float2(cx, floor(y))));
+warp_33=`    float2 f = frac(float2(sc.x * g.x, y));
+warp_34=`    float box = step(0.08, f.x) * step(f.x, 0.92) * step(0.08, f.y) * step(f.y, 0.92);
+warp_35=`
+warp_36=`    float3 col = hsv(frac(cx / g.x * 0.7 + 0.55), 0.75, 1.0) * on * box * (0.35 + v);
+warp_37=`
+warp_38=`    ret = col;
+warp_39=`}
 comp_1=`shader_body
 comp_2=`{ ret = GetPixel(uv); }

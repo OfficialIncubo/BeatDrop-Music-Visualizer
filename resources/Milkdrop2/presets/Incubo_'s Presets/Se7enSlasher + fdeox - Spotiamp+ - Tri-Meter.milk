@@ -1,19 +1,19 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 23:07:51.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 22:09:24.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
 ###################################################################################################
 
 MILKDROP_PRESET_VERSION=201
-PSVERSION=4
-PSVERSION_WARP=4
-PSVERSION_COMP=4
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
 [preset00]
 fRating=5.000
 fGammaAdj=1.460
 fDecay=0.935
 FFTAttack=1.000
-FFTDecay=0.650
+FFTDecay=0.700
 fVideoEchoZoom=1.007
 fVideoEchoAlpha=0.500
 nVideoEchoOrientation=2
@@ -89,22 +89,24 @@ warp_6=`float3 hsv(float h, float s, float v) {
 warp_7=`    float3 rgb = clamp(abs(fmod(h*6+float3(0,4,2),6)-3)-1,0,1);
 warp_8=`    return v * lerp(float3(1,1,1), rgb, s);
 warp_9=`}
-warp_10=`float hash(float2 p){ return frac(sin(dot(p,float2(41.3,289.1)))*43758.5); }
-warp_11=`float noise(float2 p){
-warp_12=`    float2 i=floor(p), f=frac(p); f=f*f*(3-2*f);
-warp_13=`    return lerp(lerp(hash(i),hash(i+float2(1,0)),f.x),
-warp_14=`                lerp(hash(i+float2(0,1)),hash(i+float2(1,1)),f.x), f.y);
-warp_15=`}
-warp_16=`float fbm(float2 p){ float v=0, a=.5; for(int k=0;k<4;k++){ v+=a*noise(p); p*=2; a*=.5; } return v; }
-warp_17=`
-warp_18=`shader_body {
-warp_19=`        uv.y=1-uv.y; // Y UV flipping, first
-warp_20=`        uv -= .5;
-warp_21=`        float t = time*.25;
-warp_22=`        float2 p = uv*2.0;
-warp_23=`        p += float2(fbm(p+t), fbm(p-t))*(1.0+bass_att);
-warp_24=`        float f = fbm(p*2+t);
-warp_25=`        ret = hsv(frac(f+t*0.1+treb_att), 0.7, f*(0.5+vol_att+bass_att));
-warp_26=`}
+warp_10=`
+warp_11=`shader_body
+warp_12=`{
+warp_13=`    float3 col = 0;
+warp_14=`    //Obligatory Y flipping
+warp_15=`    uv.y = 1-uv.y;
+warp_16=`
+warp_17=`    float2 sc = uv;
+warp_18=`    float mc = floor(sc.x*3.0);
+warp_19=`    float fx = frac(sc.x*3.0);
+warp_20=`    float v = mc < 0.5 ? bass_att/3 : (mc < 1.5 ? mid_att/3 : treb_att/3);
+warp_21=`    v = clamp(v*1.4, 0.0, 1.0);
+warp_22=`    float seg = floor(sc.y*20.0);
+warp_23=`    float fy = frac(sc.y*20.0);
+warp_24=`    float on = step(seg/20.0, v - 0.001);
+warp_25=`    float box = step(0.15,fx)*step(fx,0.85)*step(0.15,fy)*step(fy,0.85);
+warp_26=`    col = hsv(0.33 - 0.33*seg/19.0, 0.85, 1.0)*box*(on + 0.08);
+warp_27=`    ret = col;
+warp_28=`}
 comp_1=`shader_body
 comp_2=`{ ret = GetPixel(uv); }
