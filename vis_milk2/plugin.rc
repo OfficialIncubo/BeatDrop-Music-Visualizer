@@ -54,7 +54,8 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_PLUGIN_ICON         ICON                    "plugin_icon.ico"
+IDI_PLUGIN_ICON         ICON                    "beatdrop_icon.ico"
+IDI_LYRICS_EDITOR_ICON  ICON                    "beatdrop_lyrics_editor_icon.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////

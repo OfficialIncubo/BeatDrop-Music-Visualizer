@@ -2,6 +2,7 @@
 
 #include "lyrics_lrc.h"
 #include "lyrics_manager.h"
+#include "resource.h"
 #include "songtitlegetter.h"
 
 #include <algorithm>
@@ -696,6 +697,8 @@ void BeatDropLyricsEditor::Open(HWND owner, BeatDropLyricsManager* manager,
         windowClass.lpfnWndProc = WindowProc;
         windowClass.hInstance = GetModuleHandleW(nullptr);
         windowClass.hCursor = LoadCursorW(nullptr, MAKEINTRESOURCEW(32512));
+        windowClass.hIcon = LoadIconW(windowClass.hInstance,
+            MAKEINTRESOURCEW(IDI_LYRICS_EDITOR_ICON));
         windowClass.hbrBackground = WindowBrush();
         windowClass.lpszClassName = kClassName;
         RegisterClassW(&windowClass);

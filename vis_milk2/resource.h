@@ -95,6 +95,7 @@
 #define IDS_MENU_SMOOTH_TT              118
 #define IDS_MENU_MYSTERY_PARAMETER      119
 #define IDI_PLUGIN_ICON                 120
+#define IDI_LYRICS_EDITOR_ICON          131
 #define IDS_MENU_MYSTERY_PARAMETER_TT   120
 #define IDS_MENU_POSITION_X             121
 #define IDS_MENU_POSITION_X_TT          122

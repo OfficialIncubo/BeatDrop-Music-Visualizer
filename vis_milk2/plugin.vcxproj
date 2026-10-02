@@ -390,7 +390,8 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClCompile Include="wasabi.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="plugin_icon.ico" />
+    <Image Include="beatdrop_icon.ico" />
+    <Image Include="beatdrop_lyrics_editor_icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\audio\cleanup.h" />

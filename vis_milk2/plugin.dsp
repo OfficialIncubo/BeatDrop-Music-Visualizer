@@ -105,7 +105,7 @@ SOURCE=.\plugin.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\plugin_icon.ico
+SOURCE=.\beatdrop_icon.ico
 # End Source File
 # Begin Source File
 

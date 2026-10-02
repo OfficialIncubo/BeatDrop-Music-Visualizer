@@ -129,7 +129,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="plugin_icon.ico">
+    <Image Include="beatdrop_icon.ico">
       <Filter>library\resources</Filter>
     </Image>
   </ItemGroup>

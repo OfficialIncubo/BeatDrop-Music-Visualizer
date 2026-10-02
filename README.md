@@ -211,8 +211,8 @@ The lyric overlay is font-only: its default is `Times New Roman`, Italic in `RGB
 
 ### Compatibility
 
-The `Release_OldOS` builds remain compatible with Windows Vista through Windows 11: the editor, local LRC cache, and independent Direct3D 9 renderer are retained without WinRT. Automatic system now-playing position/seek integration requires the Windows 10+ SMTC API.
-Note that the standard builds work on Windows 10 or Windows 11. For Windows Vista, 7, 8 and 8.1, use the matching `BeatDrop_OldOS_x86.exe` or `BeatDrop_OldOS_x64.exe` build, which omits this feature for better compatibility.
+The `Release_OldOS` builds remain compatible with Windows Vista through Windows 11: the editor, local LRC cache, and independent Direct3D 9 renderer are retained without WinRT. The post-install launcher uses the standard executable on Windows 10 and later, and prefers it on Windows 8.1 when that executable is included in the package; otherwise, it uses the OldOS build. BeatDrop currently uses `GlobalSystemMediaTransportControlsSessionManager` for system now-playing metadata, playback position and seeking; Microsoft lists that global-session API as Windows 10, version 1809 or later. Windows 8.1 has the earlier system media controls API, but it is not the global-session API BeatDrop uses.
+For Windows Vista, 7 and 8, use the matching `BeatDrop_OldOS_x86.exe` or `BeatDrop_OldOS_x64.exe` build. Automatic global SMTC metadata, timeline and seek support requires Windows 10 version 1809 or later.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## INTEGRATED WITH [PROJECTM-EVAL](https://github.com/projectM-visualizer/projectm-eval) FOR OPTIMIZATION
@@ -407,8 +407,8 @@ Use BeatDrop with your favourite:
   ...
 
 # System Requirements
-* For building without SMTC (old OS build): Windows Vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11
-* For building with SMTC (normal build): Windows 8.1, Windows 10, Windows 11
+* OldOS build (without SMTC): Windows Vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11
+* Normal build: Windows 8.1, Windows 10, Windows 11; automatic global SMTC session features require Windows 10 version 1809 or later
 * Minimum 2GB of RAM required
 * WASAPI - compatible sound card
 * [DXVK](https://github.com/doitsujin/dxvk) for Vulkan, DirectX 9 or higher - compatible GPU
