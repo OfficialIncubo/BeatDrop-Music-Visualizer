@@ -408,7 +408,7 @@ Use BeatDrop with your favourite:
 
 # System Requirements
 * For building without SMTC (old OS build): Windows Vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11
-* For building with SMTC (normal build): Windows 10, Windows 11
+* For building with SMTC (normal build): Windows 8.1, Windows 10, Windows 11
 * Minimum 2GB of RAM required
 * WASAPI - compatible sound card
 * [DXVK](https://github.com/doitsujin/dxvk) for Vulkan, DirectX 9 or higher - compatible GPU
