@@ -12,7 +12,7 @@
    CTRL + SHIFT + E     open lyrics editor
    SHIFT + UP           increase window opacity
    SHIFT + DOWN         decrease window opacity
-   SHIFT + W            desktop mode (it pops up the icon on the taskbar tray icon; hover for tooltip)
+   CTRL + SHIFT + W     desktop mode (it pops up the icon on the taskbar tray icon; hover for tooltip)
    Q                    reset audio sensitivity
    UP                   increase audio sensitivity
    DOWN                 decrease audio sensitivity

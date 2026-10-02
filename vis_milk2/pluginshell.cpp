@@ -3196,15 +3196,15 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 			{
 				const bool controlDown = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
 				const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-				// When global Shift+W registration succeeded, WM_HOTKEY performs
+				// When global Ctrl+Shift+W registration succeeded, WM_HOTKEY performs
 				// that action. Consume the focused event to avoid toggling twice.
-				if (shiftDown && desktopModeHotkeyRegistered)
+				if (controlDown && shiftDown && desktopModeHotkeyRegistered)
 					return 0;
 
-				if (controlDown)
-					HandleCtrlW(GetPluginWindow());
-				else if (shiftDown)
+				if (controlDown && shiftDown)
 					HandleShiftW(GetPluginWindow());
+				else if (controlDown)
+					HandleCtrlW(GetPluginWindow());
 				return 0;
 			}
 
