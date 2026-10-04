@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 22:51:19.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 04/10/2026 at 20:57:33.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -85,42 +85,70 @@ warp_2=`This shader has been ported to BeatDrop/MilkDrop (HLSL) by Incubo_/Se7en
 warp_3=`Try Spotiamp+: https://github.com/fdeox/spotiamp-plus
 warp_4=`*/
 warp_5=`
-warp_6=`float specLog(float x){ return get_fft(pow(clamp(x,0.0,1.0), 1.8)); }
-warp_7=`#if defined (HAS_FFT_PEAK)
-warp_8=`float specLogCap(float x){ return get_fft_peak(pow(clamp(x,0.0,1.0), 1.8)); }
-warp_9=`#endif
+warp_6=`float specLog(float x)
+warp_7=`{ 
+warp_8=`    return get_fft(pow(saturate(x), 1.8)); 
+warp_9=`}
 warp_10=`
-warp_11=`shader_body
-warp_12=`{
-warp_13=`    float2 sc = uv;
-warp_14=`    float3 col = 0;
-warp_15=`    //Obligatory Y flipping
-warp_16=`    uv.y = 1-uv.y;
-warp_17=`    uv = (uv-.5)*aspect.xy;
-warp_18=`
-warp_19=`        float hz = -0.08;
-warp_20=`        col = lerp(float3(0.05,0.0,0.12), float3(0.55,0.08,0.45), smoothstep(0.5,hz,uv.y));
-warp_21=`        float2 sp = uv - float2(0, 0.12);
-warp_22=`        float sr = 0.26 + bass_att*0.03;
-warp_23=`        float sun = smoothstep(sr, sr-0.01, length(sp));
-warp_24=`        float gap = step(0, sin(sp.y*70 - time*2.0) + 1 + sp.y*9);
-warp_25=`        sun *= sp.y > -0.02 ? 1 : gap;
-warp_26=`        col = lerp(col, lerp(float3(1.0,0.85,0.25), float3(1.0,0.2,0.55), smoothstep(0.26,-0.2,sp.y)), sun);
-warp_27=`        col += float3(1.0,0.3,0.6)*0.3*exp(-length(sp)*4.0);
-warp_28=`        float mh = hz + 0.02 + specLog(abs(sc.x-0.5)*1.7)*0.2;
-warp_29=`        if (uv.y < mh && uv.y > hz) col = lerp(float3(0.06,0.0,0.12), float3(0.28,0.05,0.38), (uv.y-hz)/(mh-hz+0.001));
-warp_30=`        col += float3(0.3,0.9,1.0)*smoothstep(0.004,0.0,abs(uv.y-mh))*step(hz,uv.y);
-warp_31=`        if (uv.y < hz) {
-warp_32=`          float d = hz - uv.y;
-warp_33=`          float z = 0.12/d;
-warp_34=`          float2 g = float2(uv.x*z + 0.5, z + time*1.2);
-warp_35=`          float2 f = abs(frac(g)-0.5);
-warp_36=`          float lw = clamp(0.035*z, 0.03, 0.45);
-warp_37=`          float line = smoothstep(0.5-lw, 0.5, max(f.x, f.y));
-warp_38=`          col = float3(0.04,0.0,0.08) + float3(1.0,0.25,0.85)*line*(0.7+mid)*exp(-z*0.09);
-warp_39=`          col += float3(0.8,0.2,0.6)*exp(-d*22.0)*0.6;
-warp_40=`        }
-warp_41=`    ret = col;
-warp_42=`}
+warp_11=`#if defined (HAS_FFT_PEAK)
+warp_12=`float specLogCap(float x)
+warp_13=`{ 
+warp_14=`    return get_fft_peak(pow(saturate(x), 1.8)); 
+warp_15=`}
+warp_16=`#endif
+warp_17=`
+warp_18=`shader_body
+warp_19=`{
+warp_20=`    uv.y = 1.0 - uv.y;
+warp_21=`    float2 sc = uv;
+warp_22=`
+warp_23=`    // Standardized Spotiamp+ UV scaling
+warp_24=`    uv -= 0.5;
+warp_25=`    uv.x /= aspect.y;
+warp_26=`
+warp_27=`    float hz = -0.08;
+warp_28=`    
+warp_29=`    // Background gradient
+warp_30=`    float3 col = lerp(float3(0.05, 0.0, 0.12), float3(0.55, 0.08, 0.45), smoothstep(0.5, hz, uv.y));
+warp_31=`
+warp_32=`    // Synthwave Sun
+warp_33=`    float2 sp = uv - float2(0.0, 0.12);
+warp_34=`    float sr = 0.26 + bass_att * 0.03;
+warp_35=`    float sun = smoothstep(sr, sr - 0.01, length(sp));
+warp_36=`    
+warp_37=`    // Sun horizontal blind cutouts
+warp_38=`    float gap = step(0.0, sin(sp.y * 70.0 - time * 2.0) + 1.0 + sp.y * 9.0);
+warp_39=`    sun *= (sp.y > -0.02) ? 1.0 : gap;
+warp_40=`
+warp_41=`    // Sun coloring and ambient backlight glow
+warp_42=`    col = lerp(col, lerp(float3(1.0, 0.85, 0.25), float3(1.0, 0.2, 0.55), smoothstep(0.26, -0.2, sp.y)), sun);
+warp_43=`    col += float3(1.0, 0.3, 0.6) * 0.3 * exp(-length(sp) * 4.0);
+warp_44=`
+warp_45=`    // Spectrum Equalizer Mountains Horizon
+warp_46=`    float fft_pos = saturate(abs(sc.x - 0.5) * 1.8);
+warp_47=`    float mh = hz + 0.02 + specLog(fft_pos) * 0.2;
+warp_48=`
+warp_49=`    if (uv.y < mh && uv.y > hz) 
+warp_50=`    {
+warp_51=`        col = lerp(float3(0.06, 0.0, 0.12), float3(0.28, 0.05, 0.38), (uv.y - hz) / (mh - hz + 0.001));
+warp_52=`    }
+warp_53=`    col += float3(0.3, 0.9, 1.0) * smoothstep(0.004, 0.0, abs(uv.y - mh)) * step(hz, uv.y);
+warp_54=`
+warp_55=`    // Perspective Grid Floor below horizon
+warp_56=`    if (uv.y < hz) 
+warp_57=`    {
+warp_58=`        float d = hz - uv.y;
+warp_59=`        float z = 0.12 / d;
+warp_60=`        float2 g = float2(uv.x * z + 0.5, z + time * 1.2);
+warp_61=`        float2 f = abs(frac(g) - 0.5);
+warp_62=`        float lw = clamp(0.035 * z, 0.03, 0.45);
+warp_63=`        float line = smoothstep(0.5 - lw, 0.5, max(f.x, f.y));
+warp_64=`
+warp_65=`        col = float3(0.04, 0.0, 0.08) + float3(1.0, 0.25, 0.85) * line * (0.7 + mid_att) * exp(-z * 0.09);
+warp_66=`        col += float3(0.8, 0.2, 0.6) * exp(-d * 22.0) * 0.6;
+warp_67=`    }
+warp_68=`
+warp_69=`    ret = col;
+warp_70=`}
 comp_1=`shader_body
 comp_2=`{ ret = GetPixel(uv); }

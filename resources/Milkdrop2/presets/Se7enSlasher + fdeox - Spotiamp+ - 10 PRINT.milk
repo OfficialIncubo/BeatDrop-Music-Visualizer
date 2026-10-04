@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 23:11:22.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 04/10/2026 at 20:49:03.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -103,24 +103,27 @@ warp_20=`shader_body
 warp_21=`{
 warp_22=`    uv.y = 1.0 - uv.y;
 warp_23=`    float2 sc = uv;
-warp_24=`    float2 my_uv = (uv - 0.5) * aspect.xy * 2;
-warp_25=`
-warp_26=`    float2 p = my_uv * (10.0 + mid_att * 4.0) + float2(0.0, time * 0.8);
-warp_27=`    float2 id = floor(p);
-warp_28=`    float2 f = frac(p);
-warp_29=`
-warp_30=`    float d = hash21(id) > 0.5 ? abs(f.x - f.y) : abs(f.x + f.y - 1.0);
-warp_31=`
-warp_32=`    float3 bg = float3(0.21, 0.16, 0.62);
-warp_33=`    float3 col = lerp(bg, float3(0.49, 0.44, 0.95), smoothstep(0.12, 0.05, d * 0.707)) * (0.6 + vol_att * 0.6);
+warp_24=`
+warp_25=`    // Standardized Spotiamp+ UV scaling
+warp_26=`    float2 my_uv = uv - 0.5;
+warp_27=`    my_uv.x /= aspect.y;
+warp_28=`
+warp_29=`    float2 p = my_uv * (10.0 + mid_att * 4.0) + float2(0.0, time * 0.8);
+warp_30=`    float2 id = floor(p);
+warp_31=`    float2 f = frac(p);
+warp_32=`
+warp_33=`    float d = hash21(id) > 0.5 ? abs(f.x - f.y) : abs(f.x + f.y - 1.0);
 warp_34=`
-warp_35=`    // C64 loading screen border flash
-warp_36=`    if (abs(my_uv.x) > 0.44 * aspect.x || abs(my_uv.y) > 0.44)
-warp_37=`    {
-warp_38=`        col = lerp(float3(0.49, 0.44, 0.95), hsv(frac(floor(sc.y * 40.0 + time * 25.0) * 0.37), 0.8, 0.9), step(1.1, bass_att));
-warp_39=`    }
-warp_40=`
-warp_41=`    ret = col;
-warp_42=`}
+warp_35=`    float3 bg = float3(0.21, 0.16, 0.62);
+warp_36=`    float3 col = lerp(bg, float3(0.49, 0.44, 0.95), smoothstep(0.12, 0.05, d * 0.707)) * (0.6 + vol_att * 0.6);
+warp_37=`
+warp_38=`    // C64 loading screen border flash calibrated to 0.44 bounds
+warp_39=`    if (abs(my_uv.x) > 0.44 / aspect.y || abs(my_uv.y) > 0.44)
+warp_40=`    {
+warp_41=`        col = lerp(float3(0.49, 0.44, 0.95), hsv(frac(floor(sc.y * 40.0 + time * 25.0) * 0.37), 0.8, 0.9), step(1.1, bass_att));
+warp_42=`    }
+warp_43=`
+warp_44=`    ret = col;
+warp_45=`}
 comp_1=`shader_body
 comp_2=`{ ret = GetPixel(uv); }

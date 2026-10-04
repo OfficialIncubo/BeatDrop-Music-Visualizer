@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 22:50:11.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 04/10/2026 at 21:12:28.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -95,19 +95,21 @@ warp_12=`
 warp_13=`shader_body
 warp_14=`{
 warp_15=`    uv.y = 1.0 - uv.y;
-warp_16=`    float2 my_uv = (uv - 0.5) * aspect.xy * 2;
-warp_17=`
-warp_18=`    float3 col = float3(0.0, 0.0, 0.0);
+warp_16=`    // Standardized Spotiamp+ UV scaling
+warp_17=`    float2 my_uv = uv - 0.5;
+warp_18=`    my_uv.x /= aspect.y;
 warp_19=`
-warp_20=`    for (int k = 0; k < 15; k++)
-warp_21=`    {
-warp_22=`        float fk = float(k);
-warp_23=`        float2 pb = float2((fk - 7.0) / 7.0 * 0.4 * aspect.x * 0.9, sin(time * (1.6 + fk * 0.07)) * 0.3);
-warp_24=`        float radius = 0.025 + get_fft(fk / 15.0) * 0.025;
-warp_25=`        col += hsv(fk / 15.0, 0.65, 1.0) * smoothstep(radius, radius * 0.3, length(my_uv - pb)) * 1.3;
-warp_26=`    }
-warp_27=`
-warp_28=`    ret = col;
-warp_29=`}
+warp_20=`    float3 col = float3(0.0, 0.0, 0.0);
+warp_21=`
+warp_22=`    for (int k = 0; k < 15; k++)
+warp_23=`    {
+warp_24=`        float fk = float(k);
+warp_25=`        float2 pb = float2((fk - 7.0) / 7.0 * 0.4 * aspect.x * 0.9, sin(time * (1.6 + fk * 0.07)) * 0.3);
+warp_26=`        float radius = 0.025 + get_fft(fk / 15.0) * 0.025;
+warp_27=`        col += hsv(fk / 15.0, 0.65, 1.0) * smoothstep(radius, radius * 0.3, length(my_uv - pb)) * 1.3;
+warp_28=`    }
+warp_29=`
+warp_30=`    ret = col;
+warp_31=`}
 comp_1=`shader_body
 comp_2=`{ ret = GetPixel(uv); }

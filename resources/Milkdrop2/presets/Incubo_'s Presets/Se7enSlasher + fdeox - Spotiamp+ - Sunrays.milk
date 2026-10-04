@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 22:30:43.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 04/10/2026 at 20:59:45.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -117,23 +117,26 @@ warp_34=`}
 warp_35=`
 warp_36=`shader_body
 warp_37=`{
-warp_38=`    uv.y = 1-uv.y;
-warp_39=`    float2 my_uv = (uv - 0.5) * aspect.xy * 2;
-warp_40=`
-warp_41=`    float2 d = my_uv - float2(0.0, 0.15);
-warp_42=`    float a = atan2(d.y, d.x);
+warp_38=`    uv.y = 1.0 - uv.y;
+warp_39=`
+warp_40=`    // Standardized Spotiamp+ UV scaling
+warp_41=`    float2 my_uv = uv - 0.5;
+warp_42=`    my_uv.x /= aspect.y;
 warp_43=`
-warp_44=`    float rays = pow(0.5 + 0.5 * sin(a * 14.0 + time * 0.3), 3.0) * 0.6 + 
-warp_45=`                 pow(0.5 + 0.5 * sin(a * 23.0 - time * 0.2), 4.0) * 0.4;
+warp_44=`    float2 d = my_uv - float2(0.0, 0.15);
+warp_45=`    float a = atan2(d.y, d.x);
 warp_46=`
-warp_47=`    float cloud = smoothstep(0.4, 0.75, fbm(my_uv * 2.5 + float2(time * 0.05, 0.0)));
-warp_48=`
-warp_49=`    float3 col = float3(1.0, 0.8, 0.45) * rays * exp(-length(d) * 2.2) * (0.5 + bass_att * 1.2) * (1.0 - cloud * 0.6);
-warp_50=`    col += float3(1.0, 0.95, 0.8) * smoothstep(0.09 + bass_att * 0.02, 0.07, length(d));
-warp_51=`    col = lerp(col, float3(0.9, 0.8, 0.7) * (0.3 + mid * 0.4), cloud * 0.5);
-warp_52=`    col += float3(0.25, 0.3, 0.55) * smoothstep(0.5, -0.5, my_uv.y) * 0.3;
-warp_53=`
-warp_54=`    ret = col;
-warp_55=`}
+warp_47=`    float rays = pow(0.5 + 0.5 * sin(a * 14.0 + time * 0.3), 3.0) * 0.6 + 
+warp_48=`                 pow(0.5 + 0.5 * sin(a * 23.0 - time * 0.2), 4.0) * 0.4;
+warp_49=`
+warp_50=`    float cloud = smoothstep(0.4, 0.75, fbm(my_uv * 2.5 + float2(time * 0.05, 0.0)));
+warp_51=`
+warp_52=`    float3 col = float3(1.0, 0.8, 0.45) * rays * exp(-length(d) * 2.2) * (0.5 + bass_att * 1.2) * (1.0 - cloud * 0.6);
+warp_53=`    col += float3(1.0, 0.95, 0.8) * smoothstep(0.09 + bass_att * 0.02, 0.07, length(d));
+warp_54=`    col = lerp(col, float3(0.9, 0.8, 0.7) * (0.3 + mid_att * 0.4), cloud * 0.5);
+warp_55=`    col += float3(0.25, 0.3, 0.55) * smoothstep(0.5, -0.5, my_uv.y) * 0.3;
+warp_56=`
+warp_57=`    ret = col;
+warp_58=`}
 comp_1=`shader_body
 comp_2=`{ ret = GetPixel(uv); }

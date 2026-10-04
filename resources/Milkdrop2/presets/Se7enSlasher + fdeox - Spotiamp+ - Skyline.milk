@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 21:22:47.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 04/10/2026 at 20:58:56.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -86,108 +86,113 @@ warp_3=`Try Spotiamp+: https://github.com/fdeox/spotiamp-plus
 warp_4=`*/
 warp_5=`
 warp_6=`// Non-linear pseudo-random hashes (eliminates diagonal / staircase alignment artifacts)
-warp_7=`float hash21(float2 p) {
-warp_8=`    p = frac(p * float2(123.34, 456.21));
-warp_9=`    p += dot(p, p + 45.32);
-warp_10=`    return frac(p.x * p.y);
-warp_11=`}
-warp_12=`
-warp_13=`float2 hash22(float2 p) {
-warp_14=`    float3 p3 = frac(float3(p.xyx) * float3(0.1031, 0.1030, 0.0973));
-warp_15=`    p3 += dot(p3, p3.yzx + 33.33);
-warp_16=`    return frac((p3.xx + p3.yz) * p3.zy);
-warp_17=`}
-warp_18=`
-warp_19=`float specLog(float x) {
-warp_20=`    return get_fft(pow(saturate(x), 1.8));
-warp_21=`}
-warp_22=`
-warp_23=`shader_body
-warp_24=`{
-warp_25=`    // 1. Correct Y-orientation (sc: 0,0 = bottom-left, 1,1 = top-right)
-warp_26=`    float2 sc = float2(uv.x, 1.0 - uv.y);
-warp_27=`
-warp_28=`    // 2. Sky background gradient (night sky)
-warp_29=`    float3 col = lerp(float3(0.02, 0.02, 0.07), float3(0.16, 0.06, 0.26), sc.y);
-warp_30=`
-warp_31=`    // 3. Anti-Aliased & Per-Star Twinkling Starfield
-warp_32=`    float3 starCol = float3(0.0, 0.0, 0.0);
-warp_33=`    if (sc.y > 0.35) {
-warp_34=`        float aspect_ratio = aspect.x / aspect.y;
-warp_35=`        float2 starGrid = sc * float2(90.0 * aspect_ratio, 90.0);
-warp_36=`        float2 id = floor(starGrid);
-warp_37=`        float2 gv = frac(starGrid) - 0.5;
-warp_38=`
-warp_39=`        float cellHash = hash21(id);
-warp_40=`
-warp_41=`        // Filter ~25% of grid cells to contain a star
-warp_42=`        if (cellHash > 0.75) {
-warp_43=`            // Organic jittered star position within cell bounds
-warp_44=`            float2 posOffset = (hash22(id) - 0.5) * 0.6;
-warp_45=`            float d = length(gv - posOffset);
-warp_46=`
-warp_47=`            // Independent twinkle per star (unique speed & sine phase offset)
-warp_48=`            float twinkleSpeed = 1.5 + hash21(id + 13.7) * 4.5;
-warp_49=`            float twinklePhase = hash21(id + 47.3) * 6.283185;
-warp_50=`            float twinkle = 0.25 + 0.75 * pow(0.5 + 0.5 * sin(time * twinkleSpeed + twinklePhase), 3.0);
+warp_7=`float hash21(float2 p) 
+warp_8=`{
+warp_9=`    p = frac(p * float2(123.34, 456.21));
+warp_10=`    p += dot(p, p + 45.32);
+warp_11=`    return frac(p.x * p.y);
+warp_12=`}
+warp_13=`
+warp_14=`float2 hash22(float2 p) 
+warp_15=`{
+warp_16=`    float3 p3 = frac(float3(p.xyx) * float3(0.1031, 0.1030, 0.0973));
+warp_17=`    p3 += dot(p3, p3.yzx + 33.33);
+warp_18=`    return frac((p3.xx + p3.yz) * p3.zy);
+warp_19=`}
+warp_20=`
+warp_21=`float specLog(float x) 
+warp_22=`{
+warp_23=`    return get_fft(pow(saturate(x), 1.8));
+warp_24=`}
+warp_25=`
+warp_26=`shader_body
+warp_27=`{
+warp_28=`    // 1. Correct Y-orientation (sc: 0,0 = bottom-left, 1,1 = top-right)
+warp_29=`    float2 sc = float2(uv.x, 1.0 - uv.y);
+warp_30=`    float aspect_ratio = aspect.x / aspect.y;
+warp_31=`
+warp_32=`    // 2. Sky background gradient (night sky)
+warp_33=`    float3 col = lerp(float3(0.02, 0.02, 0.07), float3(0.16, 0.06, 0.26), sc.y);
+warp_34=`
+warp_35=`    // 3. Anti-Aliased & Per-Star Twinkling Starfield
+warp_36=`    float3 starCol = float3(0.0, 0.0, 0.0);
+warp_37=`    if (sc.y > 0.35) 
+warp_38=`    {
+warp_39=`        float2 starGrid = sc * float2(90.0 * aspect_ratio, 90.0);
+warp_40=`        float2 id = floor(starGrid);
+warp_41=`        float2 gv = frac(starGrid) - 0.5;
+warp_42=`
+warp_43=`        float cellHash = hash21(id);
+warp_44=`
+warp_45=`        // Filter ~25% of grid cells to contain a star
+warp_46=`        if (cellHash > 0.75) 
+warp_47=`        {
+warp_48=`            // Organic jittered star position within cell bounds
+warp_49=`            float2 posOffset = (hash22(id) - 0.5) * 0.6;
+warp_50=`            float d = length(gv - posOffset);
 warp_51=`
-warp_52=`            // Shimmer boost on high audio frequencies (treble)
-warp_53=`            twinkle *= (0.85 + treb * 0.4);
-warp_54=`
-warp_55=`            // Anti-aliased circular core
-warp_56=`            float starSize = 0.08 + hash21(id + 81.1) * 0.07;
-warp_57=`            float starCore = smoothstep(starSize, 0.0, d) * twinkle;
-warp_58=`
-warp_59=`            // Subtle color variation per star (warm white to pale blue)
-warp_60=`            float3 starTint = lerp(float3(1.0, 0.92, 0.8), float3(0.7, 0.88, 1.0), hash21(id + 93.3));
-warp_61=`
-warp_62=`            // Smooth horizon fade towards building tops
-warp_63=`            float skyFade = smoothstep(0.35, 0.55, sc.y);
-warp_64=`            starCol = starTint * starCore * skyFade;
-warp_65=`        }
-warp_66=`    }
-warp_67=`    col += starCol;
-warp_68=`
-warp_69=`    // 4. Moon (Aspect-ratio corrected perfect circle)
-warp_70=`    float aspect_ratio = aspect.x / aspect.y;
-warp_71=`    float2 moon_uv = (sc - float2(0.3, 0.8)) * float2(aspect_ratio, 1.0);
-warp_72=`    float moon = smoothstep(0.055, 0.05, length(moon_uv));
-warp_73=`    col += float3(1.0, 0.95, 0.8) * moon;
-warp_74=`
-warp_75=`    // 5. City Skyline Towers & Windows
-warp_76=`    float n = 22.0; // Number of building columns
-warp_77=`    float bi = floor(sc.x * n);
-warp_78=`    float bx = frac(sc.x * n);
-warp_79=`
-warp_80=`    // Logarithmic FFT spectrum + random height offset per building
-warp_81=`    float h = 0.12 + specLog((bi + 0.5) / n) * 0.62 + hash21(float2(bi, 3.0)) * 0.12;
-warp_82=`
-warp_83=`    if (sc.y < h && bx > 0.06) {
-warp_84=`        col = float3(0.03, 0.03, 0.07); // Dark building silhouette
-warp_85=`
-warp_86=`        // Window grid mapping
-warp_87=`        float2 wc = float2(bx * 4.0, sc.y * 55.0);
-warp_88=`        float2 cell = floor(wc);
-warp_89=`        float2 inCell = frac(wc);
+warp_52=`            // Independent twinkle per star (unique speed & sine phase offset)
+warp_53=`            float twinkleSpeed = 1.5 + hash21(id + 13.7) * 4.5;
+warp_54=`            float twinklePhase = hash21(id + 47.3) * 6.283185;
+warp_55=`            float twinkle = 0.25 + 0.75 * pow(0.5 + 0.5 * sin(time * twinkleSpeed + twinklePhase), 3.0);
+warp_56=`
+warp_57=`            // Shimmer boost on high audio frequencies (treble)
+warp_58=`            twinkle *= (0.85 + treb_att * 0.4);
+warp_59=`
+warp_60=`            // Anti-aliased circular core
+warp_61=`            float starSize = 0.08 + hash21(id + 81.1) * 0.07;
+warp_62=`            float starCore = smoothstep(starSize, 0.0, d) * twinkle;
+warp_63=`
+warp_64=`            // Subtle color variation per star (warm white to pale blue)
+warp_65=`            float3 starTint = lerp(float3(1.0, 0.92, 0.8), float3(0.7, 0.88, 1.0), hash21(id + 93.3));
+warp_66=`
+warp_67=`            // Smooth horizon fade towards building tops
+warp_68=`            float skyFade = smoothstep(0.35, 0.55, sc.y);
+warp_69=`            starCol = starTint * starCore * skyFade;
+warp_70=`        }
+warp_71=`    }
+warp_72=`    col += starCol;
+warp_73=`
+warp_74=`    // 4. Moon (Aspect-ratio corrected perfect circle)
+warp_75=`    float2 moon_uv = (sc - float2(0.3, 0.8)) * float2(aspect_ratio, 1.0);
+warp_76=`    float moon = smoothstep(0.055, 0.05, length(moon_uv));
+warp_77=`    col += float3(1.0, 0.95, 0.8) * moon;
+warp_78=`
+warp_79=`    // 5. City Skyline Towers & Windows
+warp_80=`    float n = 22.0; // Number of building columns
+warp_81=`    float bi = floor(sc.x * n);
+warp_82=`    float bx = frac(sc.x * n);
+warp_83=`
+warp_84=`    // Logarithmic FFT spectrum + random height offset per building
+warp_85=`    float h = 0.12 + specLog((bi + 0.5) / n) * 0.62 + hash21(float2(bi, 3.0)) * 0.12;
+warp_86=`
+warp_87=`    if (sc.y < h && bx > 0.06) 
+warp_88=`    {
+warp_89=`        col = float3(0.03, 0.03, 0.07); // Dark building silhouette
 warp_90=`
-warp_91=`        // Audio-driven flickering windows (Bass opens up more lit windows)
-warp_92=`        float lit = step(0.62 - bass * 0.3, hash21(cell + bi * 13.1 + floor(time * 0.4 + hash21(cell + bi) * 9.0)));
-warp_93=`
-warp_94=`        // Window frame bounds
-warp_95=`        float win = step(0.2, inCell.x) * step(inCell.x, 0.8) * 
-warp_96=`                    step(0.25, inCell.y) * step(inCell.y, 0.75) * 
-warp_97=`                    step(0.5, cell.x) * step(cell.x, 2.5);
+warp_91=`        // Window grid mapping
+warp_92=`        float2 wc = float2(bx * 4.0, sc.y * 55.0);
+warp_93=`        float2 cell = floor(wc);
+warp_94=`        float2 inCell = frac(wc);
+warp_95=`
+warp_96=`        // Audio-driven flickering windows (Bass opens up more lit windows)
+warp_97=`        float lit = step(0.62 - bass_att * 0.3, hash21(cell + bi * 13.1 + floor(time * 0.4 + hash21(cell + bi) * 9.0)));
 warp_98=`
-warp_99=`        // Window tint (amber to cyan/blue mix) modulated by Mid frequencies
-warp_100=`        float3 winColor = lerp(float3(1.0, 0.8, 0.4), float3(0.45, 0.8, 1.0), hash21(cell + bi));
-warp_101=`        col += win * lit * winColor * (0.55 + mid * 0.8);
-warp_102=`
-warp_103=`        // Roof neon line modulated by Treble frequencies
-warp_104=`        float roofGlow = smoothstep(0.006, 0.0, abs(sc.y - h));
-warp_105=`        col += float3(0.9, 0.3, 0.8) * roofGlow * (0.4 + treb);
-warp_106=`    }
+warp_99=`        // Window frame bounds
+warp_100=`        float win = step(0.2, inCell.x) * step(inCell.x, 0.8) * 
+warp_101=`                    step(0.25, inCell.y) * step(inCell.y, 0.75) * 
+warp_102=`                    step(0.5, cell.x) * step(cell.x, 2.5);
+warp_103=`
+warp_104=`        // Window tint (amber to cyan/blue mix) modulated by Mid frequencies
+warp_105=`        float3 winColor = lerp(float3(1.0, 0.8, 0.4), float3(0.45, 0.8, 1.0), hash21(cell + bi));
+warp_106=`        col += win * lit * winColor * (0.55 + mid_att * 0.8);
 warp_107=`
-warp_108=`    ret = col;
-warp_109=`}
+warp_108=`        // Roof neon line modulated by Treble frequencies
+warp_109=`        float roofGlow = smoothstep(0.006, 0.0, abs(sc.y - h));
+warp_110=`        col += float3(0.9, 0.3, 0.8) * roofGlow * (0.4 + treb_att);
+warp_111=`    }
+warp_112=`
+warp_113=`    ret = col;
+warp_114=`}
 comp_1=`shader_body
 comp_2=`{ ret = GetPixel(uv); }

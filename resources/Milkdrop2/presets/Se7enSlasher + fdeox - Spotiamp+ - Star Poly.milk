@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 22:30:07.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 04/10/2026 at 21:16:17.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -103,26 +103,28 @@ warp_20=`
 warp_21=`shader_body
 warp_22=`{
 warp_23=`    uv.y = 1 - uv.y;
-warp_24=`    float2 my_uv = (uv - 0.5) * aspect.xy * 2;
-warp_25=`    float r = length(my_uv);
-warp_26=`    float a = atan2(my_uv.y, my_uv.x);
-warp_27=`
-warp_28=`    float glow = 0.0;
-warp_29=`    for (int k = 0; k < 5; k++)
-warp_30=`    {
-warp_31=`        float fk = float(k);
-warp_32=`        float n = 5.0 + fk;
-warp_33=`        float period = 6.2831853 / n;
-warp_34=`        float aa = frac((a + time * (0.5 - fk * 0.2)) / period) * period - 3.14159265 / n;
-warp_35=`        float2 q = r * float2(cos(aa), abs(sin(aa)));
-warp_36=`        float ro = 0.1 + fk * 0.07 + get_fft(fk / 5.0) * 0.04;
-warp_37=`        float2 B = ro * 0.45 * float2(cos(3.14159265 / n), sin(3.14159265 / n));
-warp_38=`        glow += 0.003 / (sdSeg(q, float2(ro, 0.0), B) + 0.003) * (1.0 - fk * 0.12);
-warp_39=`    }
-warp_40=`
-warp_41=`    float3 col = hsv(frac(time * 0.15 + r), 0.7, 1.0) * glow * 0.8;
+warp_24=`    // Standardized Spotiamp+ UV scaling
+warp_25=`    float2 my_uv = uv - 0.5;
+warp_26=`    my_uv.x /= aspect.y;
+warp_27=`    float r = length(my_uv);
+warp_28=`    float a = atan2(my_uv.y, my_uv.x);
+warp_29=`
+warp_30=`    float glow = 0.0;
+warp_31=`    for (int k = 0; k < 5; k++)
+warp_32=`    {
+warp_33=`        float fk = float(k);
+warp_34=`        float n = 5.0 + fk;
+warp_35=`        float period = 6.2831853 / n;
+warp_36=`        float aa = frac((a + time * (0.5 - fk * 0.2)) / period) * period - 3.14159265 / n;
+warp_37=`        float2 q = r * float2(cos(aa), abs(sin(aa)));
+warp_38=`        float ro = 0.1 + fk * 0.07 + get_fft(fk / 5.0) * 0.04;
+warp_39=`        float2 B = ro * 0.45 * float2(cos(3.14159265 / n), sin(3.14159265 / n));
+warp_40=`        glow += 0.003 / (sdSeg(q, float2(ro, 0.0), B) + 0.003) * (1.0 - fk * 0.12);
+warp_41=`    }
 warp_42=`
-warp_43=`    ret = col;
-warp_44=`}
+warp_43=`    float3 col = hsv(frac(time * 0.15 + r), 0.7, 1.0) * glow * 0.8;
+warp_44=`
+warp_45=`    ret = col;
+warp_46=`}
 comp_1=`shader_body
 comp_2=`{ ret = GetPixel(uv); }

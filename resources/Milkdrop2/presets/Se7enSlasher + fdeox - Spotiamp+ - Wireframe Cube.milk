@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 22:48:01.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 04/10/2026 at 21:19:13.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -103,47 +103,49 @@ warp_20=`
 warp_21=`shader_body
 warp_22=`{
 warp_23=`    uv.y = 1.0 - uv.y;
-warp_24=`    float2 my_uv = (uv - 0.5) * aspect.xy * 2;
-warp_25=`
-warp_26=`    float ay = time * 0.6;
-warp_27=`    float ax = time * 0.37;
-warp_28=`    float s = 0.22 * (1.0 + bass_att * 0.1);
-warp_29=`    float glow = 0.0;
-warp_30=`
-warp_31=`    for (int ai = 0; ai < 3; ai++)
-warp_32=`    {
-warp_33=`        for (int ei = 0; ei < 4; ei++)
-warp_34=`        {
-warp_35=`            float fe = float(ei);
-warp_36=`            float2 sg = float2(fmod(fe, 2.0) * 2.0 - 1.0, floor(fe / 2.0) * 2.0 - 1.0);
-warp_37=`            float3 p0 = float3(-1.0, sg);
-warp_38=`            float3 p1 = float3(1.0, sg);
-warp_39=`            if (ai == 1)
-warp_40=`            {
-warp_41=`                p0 = float3(sg.x, -1.0, sg.y);
-warp_42=`                p1 = float3(sg.x, 1.0, sg.y);
-warp_43=`            }
-warp_44=`            if (ai == 2)
-warp_45=`            {
-warp_46=`                p0 = float3(sg, -1.0);
-warp_47=`                p1 = float3(sg, 1.0);
-warp_48=`            }
-warp_49=`
-warp_50=`            float3 ry_p0 = float3(p0.x * cos(ay) - p0.z * sin(ay), p0.y, p0.x * sin(ay) + p0.z * cos(ay));
-warp_51=`            p0 = float3(ry_p0.x, ry_p0.y * cos(ax) - ry_p0.z * sin(ax), ry_p0.y * sin(ax) + ry_p0.z * cos(ax)) * s;
-warp_52=`
-warp_53=`            float3 ry_p1 = float3(p1.x * cos(ay) - p1.z * sin(ay), p1.y, p1.x * sin(ay) + p1.z * cos(ay));
-warp_54=`            p1 = float3(ry_p1.x, ry_p1.y * cos(ax) - ry_p1.z * sin(ax), ry_p1.y * sin(ax) + ry_p1.z * cos(ax)) * s;
-warp_55=`
-warp_56=`            float2 A = p0.xy * 1.2 / (1.2 + p0.z);
-warp_57=`            float2 B = p1.xy * 1.2 / (1.2 + p1.z);
-warp_58=`            glow += 0.0025 / (sdSeg(my_uv, A, B) + 0.002);
-warp_59=`        }
-warp_60=`    }
-warp_61=`
-warp_62=`    float3 col = hsv(frac(time * 0.1 + 0.45), 0.6, 1.0) * glow * 0.6;
+warp_24=`    // Standardized Spotiamp+ UV scaling
+warp_25=`    float2 my_uv = uv - 0.5;
+warp_26=`    my_uv.x /= aspect.y;
+warp_27=`
+warp_28=`    float ay = time * 0.6;
+warp_29=`    float ax = time * 0.37;
+warp_30=`    float s = 0.22 * (1.0 + bass_att * 0.1);
+warp_31=`    float glow = 0.0;
+warp_32=`
+warp_33=`    for (int ai = 0; ai < 3; ai++)
+warp_34=`    {
+warp_35=`        for (int ei = 0; ei < 4; ei++)
+warp_36=`        {
+warp_37=`            float fe = float(ei);
+warp_38=`            float2 sg = float2(fmod(fe, 2.0) * 2.0 - 1.0, floor(fe / 2.0) * 2.0 - 1.0);
+warp_39=`            float3 p0 = float3(-1.0, sg);
+warp_40=`            float3 p1 = float3(1.0, sg);
+warp_41=`            if (ai == 1)
+warp_42=`            {
+warp_43=`                p0 = float3(sg.x, -1.0, sg.y);
+warp_44=`                p1 = float3(sg.x, 1.0, sg.y);
+warp_45=`            }
+warp_46=`            if (ai == 2)
+warp_47=`            {
+warp_48=`                p0 = float3(sg, -1.0);
+warp_49=`                p1 = float3(sg, 1.0);
+warp_50=`            }
+warp_51=`
+warp_52=`            float3 ry_p0 = float3(p0.x * cos(ay) - p0.z * sin(ay), p0.y, p0.x * sin(ay) + p0.z * cos(ay));
+warp_53=`            p0 = float3(ry_p0.x, ry_p0.y * cos(ax) - ry_p0.z * sin(ax), ry_p0.y * sin(ax) + ry_p0.z * cos(ax)) * s;
+warp_54=`
+warp_55=`            float3 ry_p1 = float3(p1.x * cos(ay) - p1.z * sin(ay), p1.y, p1.x * sin(ay) + p1.z * cos(ay));
+warp_56=`            p1 = float3(ry_p1.x, ry_p1.y * cos(ax) - ry_p1.z * sin(ax), ry_p1.y * sin(ax) + ry_p1.z * cos(ax)) * s;
+warp_57=`
+warp_58=`            float2 A = p0.xy * 1.2 / (1.2 + p0.z);
+warp_59=`            float2 B = p1.xy * 1.2 / (1.2 + p1.z);
+warp_60=`            glow += 0.0025 / (sdSeg(my_uv, A, B) + 0.002);
+warp_61=`        }
+warp_62=`    }
 warp_63=`
-warp_64=`    ret = col;
-warp_65=`}
+warp_64=`    float3 col = hsv(frac(time * 0.1 + 0.45), 0.6, 1.0) * glow * 0.6;
+warp_65=`
+warp_66=`    ret = col;
+warp_67=`}
 comp_1=`shader_body
 comp_2=`{ ret = GetPixel(uv); }

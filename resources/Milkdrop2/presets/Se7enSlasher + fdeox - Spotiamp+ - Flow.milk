@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 23:07:51.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 04/10/2026 at 20:43:04.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -100,11 +100,12 @@ warp_17=`
 warp_18=`shader_body {
 warp_19=`        uv.y=1-uv.y; // Y UV flipping, first
 warp_20=`        uv -= .5;
-warp_21=`        float t = time*.25;
-warp_22=`        float2 p = uv*2.0;
-warp_23=`        p += float2(fbm(p+t), fbm(p-t))*(1.0+bass_att);
-warp_24=`        float f = fbm(p*2+t);
-warp_25=`        ret = hsv(frac(f+t*0.1+treb_att), 0.7, f*(0.5+vol_att+bass_att));
-warp_26=`}
+warp_21=`        uv.x /= aspect.y;
+warp_22=`        float t = time*.25;
+warp_23=`        float2 p = uv*2.0;
+warp_24=`        p += float2(fbm(p+t), fbm(p-t))*(1.0+bass_att);
+warp_25=`        float f = fbm(p*2+t);
+warp_26=`        ret = hsv(frac(f+t*0.1+treb_att), 0.7, f*(0.5+vol_att+bass_att));
+warp_27=`}
 comp_1=`shader_body
 comp_2=`{ ret = GetPixel(uv); }

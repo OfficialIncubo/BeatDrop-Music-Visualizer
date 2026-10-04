@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 22:46:04.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 04/10/2026 at 21:04:18.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -100,22 +100,24 @@ warp_17=`
 warp_18=`shader_body
 warp_19=`{
 warp_20=`    uv.y = 1.0 - uv.y;
-warp_21=`    float2 my_uv = (uv - 0.5) * aspect.xy * 2;
-warp_22=`    float r = length(my_uv);
-warp_23=`    float a = atan2(my_uv.y, my_uv.x);
-warp_24=`
-warp_25=`    float petals = 12.0;
-warp_26=`    float u2 = frac((a + time * 0.3) / 6.2831853 + 1000.0) * petals;
-warp_27=`    float seg = floor(u2);
-warp_28=`    float local = frac(u2) - 0.5;
-warp_29=`    float len = 0.12 + specLog((seg + 0.5) / petals) * 0.33;
-warp_30=`    float edge = len * sqrt(max(1.0 - abs(local) * 2.0, 0.0));
-warp_31=`    float petal = smoothstep(edge + 0.01, edge - 0.01, r) * step(0.03, r);
-warp_32=`
-warp_33=`    float3 col = hsv(frac(seg / petals * 0.3 + time * 0.1), 0.7, 1.0) * petal * (0.4 + r / len * 0.8);
-warp_34=`    col += float3(1.0, 0.9, 0.4) * smoothstep(0.05, 0.03, r) * (0.8 + bass);
-warp_35=`
-warp_36=`    ret = col;
-warp_37=`}
+warp_21=`     // Standardized Spotiamp+ UV scaling
+warp_22=`    float2 my_uv = uv - 0.5;
+warp_23=`    my_uv.x /= aspect.y;
+warp_24=`    float r = length(my_uv);
+warp_25=`    float a = atan2(my_uv.y, my_uv.x);
+warp_26=`
+warp_27=`    float petals = 12.0;
+warp_28=`    float u2 = frac((a + time * 0.3) / 6.2831853 + 1000.0) * petals;
+warp_29=`    float seg = floor(u2);
+warp_30=`    float local = frac(u2) - 0.5;
+warp_31=`    float len = 0.12 + specLog((seg + 0.5) / petals) * 0.33;
+warp_32=`    float edge = len * sqrt(max(1.0 - abs(local) * 2.0, 0.0));
+warp_33=`    float petal = smoothstep(edge + 0.01, edge - 0.01, r) * step(0.03, r);
+warp_34=`
+warp_35=`    float3 col = hsv(frac(seg / petals * 0.3 + time * 0.1), 0.7, 1.0) * petal * (0.4 + r / len * 0.8);
+warp_36=`    col += float3(1.0, 0.9, 0.4) * smoothstep(0.05, 0.03, r) * (0.8 + bass);
+warp_37=`
+warp_38=`    ret = col;
+warp_39=`}
 comp_1=`shader_body
 comp_2=`{ ret = GetPixel(uv); }

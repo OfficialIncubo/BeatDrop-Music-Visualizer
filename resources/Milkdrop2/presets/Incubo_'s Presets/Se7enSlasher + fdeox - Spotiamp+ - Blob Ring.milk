@@ -1,4 +1,4 @@
-This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 01/10/2026 at 21:45:14.
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 04/10/2026 at 20:52:16.
 Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
 Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
 Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
@@ -85,28 +85,37 @@ warp_2=`This shader has been ported to BeatDrop/MilkDrop (HLSL) by Incubo_/Se7en
 warp_3=`Try Spotiamp+: https://github.com/fdeox/spotiamp-plus
 warp_4=`*/
 warp_5=`
-warp_6=`float specLog(float x){ return get_fft(pow(clamp(x,0.0,1.0), 1.8)); }
-warp_7=`float3 hsv(float h, float s, float v) {
-warp_8=`    float3 rgb = clamp(abs(fmod(h*6+float3(0,4,2),6)-3)-1,0,1);
-warp_9=`    return v * lerp(float3(1,1,1), rgb, s);
-warp_10=`}
-warp_11=`
-warp_12=`shader_body
-warp_13=`{
-warp_14=`    float3 col = 0;
-warp_15=`    //Obligatory Y flipping
-warp_16=`    uv.y = 1-uv.y;
-warp_17=`    uv = (uv-.5)*aspect.xy*2;
-warp_18=`    float2 sc = uv;
-warp_19=`
-warp_20=`    float a = atan2(uv.y, uv.x);
-warp_21=`    float t = time*.25;
-warp_22=`    float r = length(uv);
-warp_23=`    float f = abs(a)/M_PI;
-warp_24=`    float radius = 0.2 + specLog(f)*0.2 + bass*0.04;
-warp_25=`    col = hsv(frac(f*0.5 + t*0.2), 0.7, 1.0)*(0.004/(abs(r - radius)+0.004));
-warp_26=`    col += hsv(frac(f*0.5 + t*0.2 + 0.5), 0.6, 1.0)*0.3*smoothstep(radius, 0.0, r)*vol;
-warp_27=`    ret = col;
-warp_28=`}
+warp_6=`float specLog(float x)
+warp_7=`{ 
+warp_8=`    return get_fft(pow(saturate(x), 1.8)); 
+warp_9=`}
+warp_10=`
+warp_11=`float3 hsv(float h, float s, float v)
+warp_12=`{
+warp_13=`    float4 k = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+warp_14=`    float3 p = abs(frac(h + k.xyz) * 6.0 - k.www);
+warp_15=`    return v * lerp(k.xxx, saturate(p - k.xxx), s);
+warp_16=`}
+warp_17=`
+warp_18=`shader_body
+warp_19=`{
+warp_20=`    uv.y = 1.0 - uv.y;
+warp_21=`
+warp_22=`    // Standardized Spotiamp+ UV scaling
+warp_23=`    float2 my_uv = uv - 0.5;
+warp_24=`    my_uv.x /= aspect.y;
+warp_25=`
+warp_26=`    float a = atan2(my_uv.y, my_uv.x);
+warp_27=`    float t = time * 0.25;
+warp_28=`    float r = length(my_uv);
+warp_29=`    float f = abs(a) / 3.14159265;
+warp_30=`
+warp_31=`    float radius = 0.2 + specLog(f) * 0.2 + bass_att * 0.04;
+warp_32=`
+warp_33=`    float3 col = hsv(frac(f * 0.5 + t * 0.2), 0.7, 1.0) * (0.004 / (abs(r - radius) + 0.004));
+warp_34=`    col += hsv(frac(f * 0.5 + t * 0.2 + 0.5), 0.6, 1.0) * 0.3 * smoothstep(radius, 0.0, r) * vol_att;
+warp_35=`
+warp_36=`    ret = col;
+warp_37=`}
 comp_1=`shader_body
 comp_2=`{ ret = GetPixel(uv); }
