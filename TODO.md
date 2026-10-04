@@ -14,16 +14,10 @@
 
 # For the next (or further) version of BeatDrop
 
-* \[ ] Window-Independent Spout Output (https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0) (CAN'T DO)
-* \[x] Ability to change the audio device from output to input (microphone) and vice-versa by pressing B hotkey (now CTRL + D)
-* \[x] GIF Support for both Sprites and Textures: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/34 (HIGH PRIORITY)
-* \[x] Video Support for both Sprites and Textures (HIGH PRIORITY)
-* \[x] Webcam Support, blending the visual: https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/issues/4 (NOT PLANNED, Use as Spout Input Sprite instead)
-* \[x] Re-precache shaders when it happened a crash (When BeatDrop crashes after loading presets while precaching shaders, the option from .ini file will still stay on and it needs re-precaching after the next run).
-* \[x] Save screenshot feature (CTRL + X)
-* \[x] Audio sensitivity
-* \[x] Allow drag & drop folder that contains .milk presets
-* \[x] Screenshot Feature
+- [ ] Window-Independent Spout Output (https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0) (CAN'T DO)
+- [ ] An hybrid transition shaders and normal transitions; people can write some custom transitions using HLSL from BeatDrop Resources/transitions folder and loads it on next preset, else the MilkDrop's built-in ones. Should be in 3 modes: HLSL, Normal and Hybrid
+- [ ] Offer free watermark and watermarkless downloads to GH releases and itch.io (not out yet). Watermark version should be on GH releases + itch.io and should offer the watermarkless version after paying from itch.io
+- [ ] Fix screen timeout or idle sleep on different modes; it keeps enabled when changing from monitor stretch mode to full-screen mode, for example
 
 # User-proposed features:
 * \[ ] _madmads_ on Discord: A hotkey to disable animated song title (or real-time song title feature)
