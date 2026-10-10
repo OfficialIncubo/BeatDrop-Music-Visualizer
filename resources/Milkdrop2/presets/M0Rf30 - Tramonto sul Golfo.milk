@@ -1,0 +1,295 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=3
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000000
+fGammaAdj=1.000000
+fDecay=1.000000
+fVideoEchoZoom=1.000000
+fVideoEchoAlpha=0.000000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000000
+fWaveScale=1.000000
+fWaveSmoothing=0.500000
+fWaveParam=0.000000
+fModWaveAlphaStart=0.750000
+fModWaveAlphaEnd=0.950000
+fWarpAnimSpeed=1.000000
+fWarpScale=1.000000
+fZoomExponent=1.000000
+fShader=0.000000
+zoom=1.000000
+rot=0.000000
+cx=0.500000
+cy=0.500000
+dx=0.000000
+dy=0.000000
+warp=0.000000
+sx=1.000000
+sy=1.000000
+wave_r=1.000000
+wave_g=1.000000
+wave_b=1.000000
+wave_x=0.500000
+wave_y=0.500000
+ob_size=0.000000
+ob_r=0.000000
+ob_g=0.000000
+ob_b=0.000000
+ob_a=0.000000
+ib_size=0.000000
+ib_r=0.000000
+ib_g=0.000000
+ib_b=0.000000
+ib_a=0.000000
+nMotionVectorsX=0.000000
+nMotionVectorsY=0.000000
+mv_dx=0.000000
+mv_dy=0.000000
+mv_l=0.000000
+mv_r=1.000000
+mv_g=1.000000
+mv_b=1.000000
+mv_a=0.000000
+b1n=0.000000
+b2n=0.000000
+b3n=0.000000
+b1x=1.000000
+b2x=1.000000
+b3x=1.000000
+b1ed=0.250000
+wavecode_0_enabled=0
+wavecode_1_enabled=0
+wavecode_2_enabled=0
+wavecode_3_enabled=0
+shapecode_0_enabled=0
+shapecode_1_enabled=0
+shapecode_2_enabled=0
+shapecode_3_enabled=0
+per_frame_init_1=env=0; senv=0; cacc=0; tacc=0; ts=0; bs=0; bm=1; bd=0.3; tl=0;
+per_frame_1=dt = min(max(time-tl,0.004),0.1); tl = time; bm = bm + (bass-bm)*(1-exp(-dt/0.8)); bd = bd + (abs(bass-bm)-bd)*(1-exp(-dt/2.5));
+per_frame_2=kick = min(max(((bass-bm)/max(bd,0.1) - 0.8)/1.5, 0), 1);
+per_frame_3=env = max(env*pow(0.88, dt*60), kick*1.3);
+per_frame_4=senv = senv + (env - senv)*(1 - pow(0.80, dt*60));
+per_frame_5=bs = bs + (bass_att - bs)*(1-pow(0.96,dt*60));
+per_frame_6=ts = ts + (treb_att - ts)*(1-pow(0.86,dt*60));
+per_frame_7=cacc = cacc + dt*(0.30 + 0.12*bs);
+per_frame_8=tacc = tacc + dt*(0.55 + 1.5*ts);
+per_frame_9=q1 = min(senv,1.2);
+per_frame_10=q2 = cacc;
+per_frame_11=q3 = tacc;
+per_frame_12=q4 = min(ts*0.8,1.3);
+per_frame_13=q5 = min(bs,1.5);
+per_frame_14=q8 = 0.5 + 0.5*sin(time*0.35 - 1.0);
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  float2 asp = float2(texsize.x / texsize.y, 1.0);
+warp_4=`  float2 p = float2((uv.x - 0.5) * asp.x, 1.0 - uv.y);
+warp_5=`  float v = p.y;
+warp_6=`  float h0 = 0.40;
+warp_7=`  float sk = saturate((v - h0) / 0.6);
+warp_8=`  float dv = h0 - v;
+warp_9=`
+warp_10=`  // slow drifting advection (clouds slide left, faster aloft) with gentle curl
+warp_11=`  float3 nz = tex3D(sampler_noisevol_hq, float3(uv.x * 0.45, uv.y * 0.9, q2 * 0.04));
+warp_12=`  float2 uv2 = uv + float2(0.00045 + 0.0007 * sk, 0.0) + (nz.xy - 0.5) * 0.0018 * (0.3 + sk);
+warp_13=`  float3 old = tex2D(sampler_fc_main, uv2).xyz;
+warp_14=`
+warp_15=`  // fresh cloud field: horizontally stretched fbm, morphing in 3D noise
+warp_16=`  float cz = q2 * 0.05;
+warp_17=`  float n1 = tex3D(sampler_noisevol_hq, float3(p.x * 0.13 + 0.3, v * 0.55, cz)).x;
+warp_18=`  float n2 = tex3D(sampler_noisevol_hq, float3(p.x * 0.28 + 0.1, v * 1.25, cz * 1.7 + 0.4)).x;
+warp_19=`  float n3 = tex3D(sampler_noisevol_lq, float3(p.x * 0.55, v * 2.4, cz * 2.5 + 0.7)).x;
+warp_20=`  float n = n1 * 0.60 + n2 * 0.32 + n3 * 0.08;
+warp_21=`  float cd = smoothstep(0.40, 0.78, n);
+warp_22=`  cd *= smoothstep(0.0, 0.06, sk) * (1.0 - 0.35 * sk);
+warp_23=`  cd *= step(0.0, -dv);
+warp_24=`
+warp_25=`  float rate = 0.05 + 0.6 * step(frame, 20.0);
+warp_26=`  float cloud = lerp(old.r, cd, rate);
+warp_27=`
+warp_28=`  // sea sparkle field: perspective-stretched dashes twinkling in 3D noise
+warp_29=`  float dvv = max(dv, 0.0);
+warp_30=`  float z = 1.0 / (dvv + 0.03);
+warp_31=`  float2 sp = float2(p.x * z * 0.10, z * 0.22 + q2 * 0.02);
+warp_32=`  float s1 = tex3D(sampler_noisevol_hq, float3(sp, q3 * 0.07)).x;
+warp_33=`  float s2 = tex3D(sampler_noisevol_lq, float3(sp.x * 1.9 + 0.3, sp.y * 1.7, q3 * 0.11 + 0.5)).x;
+warp_34=`  float s = s1 * 0.5 + s2 * 0.5;
+warp_35=`  float thr = 0.635 - 0.12 * saturate(q4);
+warp_36=`  float spark = smoothstep(thr, thr + 0.10, s) * step(0.0, dv);
+warp_37=`  float glit = max(spark * (0.55 + 0.45 * saturate(q4)), old.g * 0.80);
+warp_38=`  glit *= step(0.0, dv);
+warp_39=`
+warp_40=`  ret = float3(cloud, glit, 0.0);
+warp_41=`}
+comp_1=`float cone(float x, float c, float h, float wl, float wr, float k)
+comp_2=`{
+comp_3=`  float a = (x < c) ? (c - x) / wl : (x - c) / wr;
+comp_4=`  return h * pow(saturate(1.0 - a), k);
+comp_5=`}
+comp_6=`
+comp_7=`float ves(float x)
+comp_8=`{
+comp_9=`  float hs = cone(x, 0.20, 0.185, 0.52, 0.27, 1.35);
+comp_10=`  hs = min(hs, 0.158 + 0.006 * sin(x * 90.0));
+comp_11=`  float hv = cone(x, 0.58, 0.240, 0.34, 0.75, 1.45);
+comp_12=`  hv = min(hv, 0.208);
+comp_13=`  hv -= 0.013 * exp(-pow((x - 0.585) / 0.032, 2.0));
+comp_14=`  float m = max(hs, hv);
+comp_15=`  float r = 0.0022 * sin(x * 61.0 + 0.7) + 0.0013 * sin(x * 137.0 + 2.0);
+comp_16=`  return m + r * saturate(m * 40.0);
+comp_17=`}
+comp_18=`
+comp_19=`float farl(float x)
+comp_20=`{
+comp_21=`  float c1 = cone(x, -0.66, 0.058, 0.14, 0.20, 1.1);
+comp_22=`  float c2 = cone(x, -0.55, 0.036, 0.10, 0.14, 1.1);
+comp_23=`  float rd = 0.016 * smoothstep(0.1, -0.5, x) * (0.75 + 0.25 * sin(x * 9.0 + 1.0));
+comp_24=`  return max(max(c1, c2), rd);
+comp_25=`}
+comp_26=`
+comp_27=`float3 skyg(float sk, float tod)
+comp_28=`{
+comp_29=`  float3 cHor = lerp(float3(1.00, 0.80, 0.40), float3(1.00, 0.62, 0.34), tod);
+comp_30=`  float3 cMid = lerp(float3(0.98, 0.46, 0.36), float3(0.92, 0.33, 0.42), tod);
+comp_31=`  float3 cHi  = lerp(float3(0.46, 0.24, 0.55), float3(0.32, 0.17, 0.52), tod);
+comp_32=`  float3 cTop = float3(0.10, 0.07, 0.27);
+comp_33=`  float3 c = lerp(cHor, cMid, smoothstep(0.0, 0.30, sk));
+comp_34=`  c = lerp(c, cHi, smoothstep(0.20, 0.62, sk));
+comp_35=`  c = lerp(c, cTop, smoothstep(0.58, 1.0, sk));
+comp_36=`  return c;
+comp_37=`}
+comp_38=`
+comp_39=`shader_body
+comp_40=`{
+comp_41=`  float2 asp = float2(texsize.x / texsize.y, 1.0);
+comp_42=`  float2 p = float2((uv.x - 0.5) * asp.x, 1.0 - uv.y);
+comp_43=`  float v = p.y;
+comp_44=`  float h0 = 0.40;
+comp_45=`  float dv = h0 - v;
+comp_46=`  float dvv = max(dv, 0.0);
+comp_47=`  float sk = saturate((v - h0) / 0.6);
+comp_48=`  float tod = q8;
+comp_49=`  float kick = q1;
+comp_50=`
+comp_51=`  float3 data = tex2D(sampler_main, uv).xyz;
+comp_52=`
+comp_53=`  // ---------------- sky ----------------
+comp_54=`  float3 sky = skyg(sk, tod);
+comp_55=`  float2 sunp = float2(-0.34, h0 + 0.082 + 0.010 * sin(time * 0.3));
+comp_56=`  float2 ds = p - sunp;
+comp_57=`  float d = length(ds);
+comp_58=`  float R = 0.080 * (1.0 + 0.05 * q5 + 0.10 * kick);
+comp_59=`  float glow1 = exp(-d * 4.2);
+comp_60=`  float glow2 = exp(-d * 15.0);
+comp_61=`
+comp_62=`  // clouds: lit on the sun-facing edge
+comp_63=`  float c = data.r;
+comp_64=`  float2 tow = normalize(float2(-ds.x, ds.y) + 0.0001) * float2(0.7, 1.0) * 0.028;
+comp_65=`  float c2 = tex2D(sampler_main, uv + tow).r;
+comp_66=`  float rim = saturate((c - c2) * 3.0);
+comp_67=`  float3 cshade = sky * float3(0.62, 0.45, 0.66) + float3(0.04, 0.02, 0.07);
+comp_68=`  float3 clit = float3(1.0, 0.64, 0.38) * (0.55 + glow1 * 1.3);
+comp_69=`  float3 ccol = lerp(cshade, clit, saturate(rim * 1.3 + glow1 * 0.45));
+comp_70=`  sky = lerp(sky, ccol, saturate(c * 0.80));
+comp_71=`
+comp_72=`  float rays = 0.5 + 0.5 * sin(atan2(ds.y, ds.x) * 9.0 + time * 0.07 + 2.0 * sin(atan2(ds.y, ds.x) * 3.0));
+comp_73=`  sky += float3(1.0, 0.62, 0.28) * glow1 * (0.42 + 0.22 * rays * smoothstep(0.0, 0.5, ds.y + 0.2)) * (1.0 + 0.50 * kick);
+comp_74=`  sky += float3(1.0, 0.82, 0.55) * glow2 * 0.45;
+comp_75=`  float disc = smoothstep(R, R * 0.86, d);
+comp_76=`  float3 sunc = lerp(float3(1.0, 0.94, 0.74), float3(1.0, 0.62, 0.30), pow(saturate(d / R), 2.0));
+comp_77=`  sky = lerp(sky, sunc * 1.75, disc * (1.0 - 0.6 * c));
+comp_78=`
+comp_79=`  // ---------------- far coast (Capri / Sorrento) ----------------
+comp_80=`  float fh = h0 + farl(p.x);
+comp_81=`  float fm = smoothstep(0.0015, -0.0015, v - fh);
+comp_82=`  float3 farc = lerp(sky, float3(0.42, 0.22, 0.46), 0.55);
+comp_83=`  farc = lerp(farc, float3(1.0, 0.72, 0.45), 0.25 * exp(-(v - h0) * 22.0));
+comp_84=`  sky = lerp(sky, farc, fm);
+comp_85=`
+comp_86=`  // ---------------- Vesuvius ----------------
+comp_87=`  float vh = h0 + ves(p.x);
+comp_88=`  float vm = smoothstep(0.0012, -0.0012, v - vh);
+comp_89=`  float haze = exp(-(v - h0) * 11.0);
+comp_90=`  float3 vcol = lerp(float3(0.085, 0.040, 0.140), float3(0.95, 0.55, 0.42), saturate(haze * 0.75));
+comp_91=`  float edge = smoothstep(0.022, 0.0, vh - v) * (1.0 - vm * 0.0);
+comp_92=`  float slope = ves(p.x + 0.006) - ves(p.x - 0.006);
+comp_93=`  float sidelit = saturate(0.55 + 0.9 * (sunp.x - p.x));
+comp_94=`  float flank = saturate(-slope * 38.0) * saturate((vh - v) / 0.14 + 0.0) ;
+comp_95=`  vcol += float3(0.95, 0.42, 0.34) * flank * 0.32 * (1.0 - haze * 0.5);
+comp_96=`  vcol += float3(1.0, 0.48, 0.30) * edge * 0.35 * sidelit;
+comp_97=`  // faint steam from the crater
+comp_98=`  float steam = exp(-pow((p.x - 0.585 - (v - 0.60) * 0.30) / (0.02 + (v - 0.60) * 0.14), 2.0)) * smoothstep(0.60, 0.65, v) * smoothstep(0.85, 0.65, v);
+comp_99=`  sky = lerp(sky, float3(0.62, 0.36, 0.52), steam * 0.28);
+comp_100=`  sky = lerp(sky, vcol, vm);
+comp_101=`
+comp_102=`  // ---------------- sea ----------------
+comp_103=`  float z = 1.0 / (dvv + 0.03);
+comp_104=`  float3 s0 = lerp(float3(1.00, 0.62, 0.40), float3(0.98, 0.50, 0.42), tod);
+comp_105=`  float3 s1c = float3(0.62, 0.27, 0.46);
+comp_106=`  float3 s2c = float3(0.20, 0.13, 0.36);
+comp_107=`  float3 s3c = float3(0.035, 0.10, 0.21);
+comp_108=`  float3 sea = lerp(s0, s1c, smoothstep(0.0, 0.07, dvv));
+comp_109=`  sea = lerp(sea, s2c, smoothstep(0.05, 0.20, dvv));
+comp_110=`  sea = lerp(sea, s3c, smoothstep(0.16, 0.42, dvv));
+comp_111=`  float rip = tex3D(sampler_noisevol_hq, float3(p.x * z * 0.022, z * 0.30, q3 * 0.03)).x - 0.5;
+comp_112=`  sea *= 1.0 + rip * 0.30;
+comp_113=`
+comp_114=`  float wob = 0.018 * sin(dvv * 130.0 + q3 * 2.6) * (0.2 + dvv * 3.0) + 0.015 * rip * dvv * 6.0;
+comp_115=`  float dxs = p.x - sunp.x + wob;
+comp_116=`  float w = 0.022 + dvv * 0.55;
+comp_117=`  float m = exp(-pow(dxs / w, 2.0));
+comp_118=`  float f = exp(-dvv * 1.3);
+comp_119=`  sea += float3(1.0, 0.55, 0.24) * m * 0.34 * f * (1.0 + 0.70 * kick);
+comp_120=`
+comp_121=`  // reflected volcano
+comp_122=`  float rh = ves(p.x + 0.012 * sin(dvv * 95.0 + q3 * 1.7) * (0.3 + dvv * 4.0)) * 0.80;
+comp_123=`  float rm = smoothstep(0.012, -0.012, dvv - rh) * exp(-dvv * 6.0);
+comp_124=`  sea = lerp(sea, float3(0.06, 0.03, 0.13) + sea * 0.16, rm * 0.70);
+comp_125=`
+comp_126=`  // glitter: stored sparkle field + horizontal bloom taps
+comp_127=`  float g0 = data.g;
+comp_128=`  float g1 = tex2D(sampler_main, uv + float2(0.0045, 0.0)).g + tex2D(sampler_main, uv - float2(0.0045, 0.0)).g;
+comp_129=`  float gl = g0 * 0.7 + g1 * 0.25;
+comp_130=`  float gmask = m * f * 1.15 + 0.12 * f * smoothstep(0.0, 0.03, dvv);
+comp_131=`  sea += float3(1.0, 0.82, 0.50) * pow(gl, 0.85) * gmask * (1.05 + 1.2 * q4 + 0.6 * kick);
+comp_132=`
+comp_133=`  // ---------------- compose ----------------
+comp_134=`  float skm = smoothstep(-0.0015, 0.0015, v - h0);
+comp_135=`  float3 col = lerp(sea, sky, skm);
+comp_136=`  // vesuvius body may extend over the horizon line only via vm already; sea above is masked
+comp_137=`  col += float3(1.0, 0.70, 0.40) * exp(-abs(dv) * 50.0) * 0.16 * (1.0 + 0.7 * kick);
+comp_138=`
+comp_139=`  // foreground headland (bottom right)
+comp_140=`  float hx = saturate((p.x - 0.22) / 0.67);
+comp_141=`  float fgh = 0.010 + 0.19 * pow(hx, 2.0) + 0.006 * sin(p.x * 47.0 + 1.0) * hx + 0.004 * sin(p.x * 113.0) * hx;
+comp_142=`  float fgm = smoothstep(0.002, -0.002, v - fgh) * smoothstep(0.22, 0.26, p.x);
+comp_143=`  float fgrim = smoothstep(0.018, 0.0, fgh - v);
+comp_144=`  float3 fgc = float3(0.020, 0.012, 0.050) + float3(0.55, 0.22, 0.20) * fgrim * 0.22 * (0.5 + 0.5 * q8);
+comp_145=`  col = lerp(col, fgc, fgm);
+comp_146=`
+comp_147=`  // grade
+comp_148=`  col = 1.0 - exp(-col * 1.55);
+comp_149=`  col = pow(col, float3(1.02, 1.04, 1.08));
+comp_150=`  float l = dot(col, float3(0.3, 0.55, 0.15));
+comp_151=`  col = lerp(float3(l, l, l), col, 1.12);
+comp_152=`  float2 vq = (uv - 0.5) * float2(1.0, 0.9);
+comp_153=`  col *= 1.0 - 0.60 * pow(saturate(length(vq) * 1.35), 2.4);
+comp_154=`  float3 dith = tex2D(sampler_noise_lq, uv * texsize.xy / 256.0 + rand_frame.xy).xyz - 0.5;
+comp_155=`  col += dith / 110.0;
+comp_156=`  ret = saturate(col);
+comp_157=`}
