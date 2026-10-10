@@ -83,7 +83,7 @@ per_frame_19=y_speed = if( above( wave_y_mod, 0 ), if( below( wave_y_mod, 0.001 
 per_frame_20=wave_y_mod = wave_y_mod + y_speed;
 per_frame_21=wave_y = bottom_extreme + wave_y_mod;
 per_pixel_1=zoom = pow(rad,0.05)+.050;
-per_pixel_2=zoom =(.7+x-.7)|(.7+y+.5)
+per_pixel_2=zoom = int(.7+y+.5)
 per_frame_init_1=right_extreme = 0.9;
 per_frame_init_2=left_extreme = 0.1;
 per_frame_init_3=bottom_extreme = 0.3;

@@ -353,4 +353,4 @@ per_frame_17=ff = frame/100;
 per_frame_18=rot = rot + 0.160*( 1.40*sin(1.381*time) + 1.40*sin(1.579*time) );
 per_frame_19=zoom=max(0.97, min(0.15+0.7*bass_att, 1.75 ));
 per_pixel_1=rot=if(equal(zoom,1),rot,if(above(sin(abs(ang)),.618),2,rot));
-per_pixel_2=zoom=if(equal(q2,.7),if(equal(x*20%2+y*20%2,0),zoom+.15*q1,zoom),zoom+curvage);
+per_pixel_2=zoom=if(equal(q2,.7),if(equal((x*20)%2+(y*20)%2,0),zoom+.15*q1,zoom),zoom+curvage);

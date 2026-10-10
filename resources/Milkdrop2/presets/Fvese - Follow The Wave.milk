@@ -78,4 +78,4 @@ per_frame_14=sx = sx + 0.0555*pow(rad,x*2)*sin(time)/vol;
 per_frame_15=sy = sy + 0.0777*pow(rad,y*2)*sin(time)/vol;
 per_frame_16=monitor = fps;
 per_frame_17=
-per_pixel_1=zoom =(.7+x-.7)|(.7+y+.5)
+per_pixel_1=zoom = int(.7+y+.5)

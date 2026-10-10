@@ -18,7 +18,7 @@ bBrighten=0
 bDarken=0
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.000000
+fWaveAlpha=0.001000
 fWaveScale=0.640100
 fWaveSmoothing=0.270000
 fWaveParam=0.000000
@@ -86,12 +86,12 @@ per_frame_22=beatcounter = if(above(beatcounter,7), 0, beatcounter);
 per_frame_23=beateven = beatcounter%2;
 per_frame_24=//dx = dx + beateven*0.01;
 per_frame_25=q2 = beateven;
-per_pixel_1=qx = (-2&(x*10+0.9))*0.1+0.05;
-per_pixel_2=qy = (-2&(y*10+0.9))*0.1+0.05;
+per_pixel_1=qx = (int(x*10))*0.1+0.05;
+per_pixel_2=qy = (int(y*10))*0.1+0.05;
 per_pixel_3=box=(1-rad)+0.5*abs(x*3-0.4*sin(q1))%2 + 0.5*abs(y*3+0.4*sin(q1))%2;
 per_pixel_4=box = 3*qy+3*qx;
 per_pixel_5=q1 = 8.05+(sin(x+0.137*time)-cos(y+0.213*time));
 per_pixel_6=zoom = if(above(box,1.5),q1*.1,zoom);
 per_pixel_7=rot = if(above(box,1.5),1*sin(0.385*time),rot);
-per_pixel_8=cx= q2*(-1&(x*4-0.5))*0.25+0.05;
-per_pixel_9=cy= q2*(-1&(y*4-0.5))*0.25+0.05;
+per_pixel_8=cx= q2*(int(x*4))*0.25+0.05;
+per_pixel_9=cy= q2*(int(y*4))*0.25+0.05;

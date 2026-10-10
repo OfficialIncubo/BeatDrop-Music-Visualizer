@@ -2,7 +2,6 @@
 
 #include "lyrics_lrc.h"
 #include "lyrics_manager.h"
-#include "resource.h"
 #include "songtitlegetter.h"
 
 #include <algorithm>
@@ -360,9 +359,9 @@ namespace
     bool FirstTimestamp(const std::wstring& line, size_t& start, size_t& end,
         double& seconds);
 
-    std::wstring PlainLyrics(const std::wstring& syncedLyrics)
+    std::wstring PlainLyrics(const std::wstring& lyrics)
     {
-        std::wistringstream input(syncedLyrics);
+        std::wistringstream input(lyrics);
         std::wostringstream output;
         std::wstring row;
         bool firstLine = true;
@@ -385,6 +384,136 @@ namespace
             firstLine = false;
         }
         return output.str();
+    }
+
+    std::wstring SynchronizedLyrics(const std::wstring& lyrics)
+    {
+        std::wistringstream input(lyrics);
+        std::wostringstream output;
+        std::wstring row;
+        bool firstLine = true;
+        while (std::getline(input, row))
+        {
+            if (!row.empty() && row.back() == L'\r')
+                row.pop_back();
+
+            size_t start = 0;
+            size_t end = 0;
+            double seconds = 0.0;
+            if (!FirstTimestamp(row, start, end, seconds) || start != 0)
+                continue;
+
+            if (!firstLine)
+                output << L"\n";
+            output << row;
+            firstLine = false;
+        }
+        return output.str();
+    }
+
+    std::wstring LrcMetadataValue(const std::wstring& source,
+        const std::wstring& requestedKey)
+    {
+        std::wistringstream input(source);
+        std::wstring row;
+        while (std::getline(input, row))
+        {
+            row = BeatDropLrc::Trim(row);
+            if (row.empty())
+                continue;
+            if (row.front() != L'[')
+                break;
+
+            const size_t close = row.find(L']');
+            if (close == std::wstring::npos)
+                break;
+
+            const std::wstring tag = row.substr(1, close - 1);
+            double timestamp = 0.0;
+            if (BeatDropLrc::ParseTimestamp(tag, timestamp))
+                break;
+
+            const size_t colon = tag.find(L':');
+            if (colon == std::wstring::npos)
+                continue;
+
+            std::wstring key = BeatDropLrc::Trim(tag.substr(0, colon));
+            if (key.size() != requestedKey.size())
+                continue;
+            bool matches = true;
+            for (size_t index = 0; index < key.size(); ++index)
+            {
+                if (std::towlower(key[index]) != std::towlower(requestedKey[index]))
+                {
+                    matches = false;
+                    break;
+                }
+            }
+            if (matches)
+                return BeatDropLrc::Trim(tag.substr(colon + 1));
+        }
+        return std::wstring();
+    }
+
+    bool ParseDurationValue(const std::wstring& rawValue, double& seconds)
+    {
+        const std::wstring value = BeatDropLrc::Trim(rawValue);
+        if (value.empty())
+            return false;
+
+        const size_t colon = value.find(L':');
+        unsigned long long minutes = 0;
+        size_t decimalStart = 0;
+        if (colon != std::wstring::npos)
+        {
+            if (value.find(L':', colon + 1) != std::wstring::npos || colon == 0)
+                return false;
+            if (!BeatDropLrc::ParseUnsigned(value.substr(0, colon), minutes))
+                return false;
+            decimalStart = colon + 1;
+        }
+
+        double parsed = 0.0;
+        double fractionScale = 0.1;
+        bool sawDigit = false;
+        bool sawDecimal = false;
+        unsigned long long wholeSeconds = 0;
+        for (size_t index = decimalStart; index < value.size(); ++index)
+        {
+            const wchar_t ch = value[index];
+            if (ch == L'.' && !sawDecimal)
+            {
+                sawDecimal = true;
+                continue;
+            }
+            if (ch < L'0' || ch > L'9')
+                return false;
+            sawDigit = true;
+            const unsigned digit = static_cast<unsigned>(ch - L'0');
+            if (!sawDecimal)
+            {
+                if (wholeSeconds > (3600ULL - digit) / 10ULL)
+                    return false;
+                wholeSeconds = wholeSeconds * 10ULL + digit;
+            }
+            else
+            {
+                parsed += digit * fractionScale;
+                fractionScale *= 0.1;
+            }
+        }
+        if (!sawDigit)
+            return false;
+        if (colon != std::wstring::npos && wholeSeconds >= 60)
+            return false;
+
+        parsed += static_cast<double>(wholeSeconds);
+        if (colon != std::wstring::npos)
+            parsed += static_cast<double>(minutes) * 60.0;
+        if (parsed <= 0.0 || parsed > 3600.0)
+            return false;
+        seconds = parsed;
+        return true;
     }
 
     struct UploadResult
@@ -697,8 +826,6 @@ void BeatDropLyricsEditor::Open(HWND owner, BeatDropLyricsManager* manager,
         windowClass.lpfnWndProc = WindowProc;
         windowClass.hInstance = GetModuleHandleW(nullptr);
         windowClass.hCursor = LoadCursorW(nullptr, MAKEINTRESOURCEW(32512));
-        windowClass.hIcon = LoadIconW(windowClass.hInstance,
-            MAKEINTRESOURCEW(IDI_LYRICS_EDITOR_ICON));
         windowClass.hbrBackground = WindowBrush();
         windowClass.lpszClassName = kClassName;
         RegisterClassW(&windowClass);
@@ -1292,46 +1419,87 @@ void BeatDropLyricsEditor::Upload()
     if (!m_parsed)
         return;
 
-    const std::wstring syncedLyrics = Read(m_parsed);
-    if (BeatDropLrc::Parse(syncedLyrics).empty())
+    const std::wstring editorLyrics = Read(m_parsed);
+    const std::wstring plainLyrics = PlainLyrics(editorLyrics);
+    const std::wstring syncedLyrics = SynchronizedLyrics(editorLyrics);
+    const bool hasPlainLyrics = !BeatDropLrc::Trim(plainLyrics).empty();
+    const bool hasSyncedLyrics = !BeatDropLrc::Parse(syncedLyrics).empty();
+    if (!hasPlainLyrics && !hasSyncedLyrics)
     {
-        SetStatus(L"Add at least one timestamp before publishing to LRCLIB.");
+        SetStatus(L"Add lyric text before publishing to LRCLIB.");
         return;
     }
-    if (m_artist.empty() || m_title.empty())
+    const std::wstring sourceLyrics = Read(m_input);
+    const std::wstring headerArtist = LrcMetadataValue(sourceLyrics, L"ar");
+    const std::wstring headerTitle = LrcMetadataValue(sourceLyrics, L"ti");
+    const std::wstring headerAlbum = LrcMetadataValue(sourceLyrics, L"al");
+    const std::wstring artist = headerArtist.empty() ? m_artist : headerArtist;
+    const std::wstring title = headerTitle.empty() ? m_title : headerTitle;
+    const std::wstring album = headerAlbum.empty() ?
+        songtitlegetter.currentAlbum : headerAlbum;
+    if (artist.empty() || title.empty())
     {
-        SetStatus(L"A current artist and title are required for an LRCLIB upload.");
+        SetStatus(L"Artist and title are required. Add [ar:] and [ti:] tags, "
+            L"or make sure the current track provides them.");
         return;
     }
 
-    const int confirmation = MessageBoxW(m_hwnd,
-        L"This will publish the artist, title, album, duration, and lyric text "
-        L"to the public LRCLIB service. LRCLIB also requires a proof-of-work "
-        L"calculation before publishing.\n\nContinue?",
+    double durationSeconds = 0.0;
+    const std::wstring headerDuration = LrcMetadataValue(sourceLyrics, L"length");
+    const std::wstring headerDurationFallback = headerDuration.empty() ?
+        LrcMetadataValue(sourceLyrics, L"duration") : std::wstring();
+    if (!ParseDurationValue(headerDuration.empty() ? headerDurationFallback : headerDuration,
+        durationSeconds))
+    {
+        const int64_t durationMilliseconds = songtitlegetter.GetDurationMilliseconds();
+        durationSeconds = durationMilliseconds > 0 ?
+            durationMilliseconds / 1000.0 : 0.0;
+    }
+
+    std::wstring publicationType;
+    if (hasSyncedLyrics && hasPlainLyrics)
+        publicationType = L"plain lyrics and the timestamped lines as synchronized lyrics";
+    else if (hasSyncedLyrics)
+        publicationType = L"synchronized lyrics";
+    else
+        publicationType = L"plain, unsynchronized lyrics only";
+
+    std::wstring durationLabel = durationSeconds > 0.0 ?
+        std::to_wstring(durationSeconds) + L" seconds" : L"unavailable (0 seconds)";
+    const std::wstring confirmationMessage =
+        L"This will publish the artist, title, album, duration, and " +
+        publicationType + L" to the public LRCLIB service. Untimestamped lines "
+        L"will be included in the plain lyrics; only timestamped lines will be "
+        L"included in synchronized lyrics. LRCLIB also requires a proof-of-work "
+        L"calculation before publishing.\n\nTrack: " + title + L"\nArtist: " +
+        artist + L"\nAlbum: " + (album.empty() ? L"(not provided)" : album) +
+        L"\nDuration: " + durationLabel + L"\n\nContinue?";
+    const int confirmation = MessageBoxW(m_hwnd, confirmationMessage.c_str(),
         L"Publish lyrics to LRCLIB", MB_YESNO | MB_ICONINFORMATION | MB_DEFBUTTON2);
     if (confirmation != IDYES)
         return;
 
     const HWND editorWindow = m_hwnd;
-    const std::wstring artist = m_artist;
-    const std::wstring title = m_title;
-    const std::wstring album = songtitlegetter.currentAlbum;
-    const int64_t durationMilliseconds = songtitlegetter.GetDurationMilliseconds();
-    const double durationSeconds = durationMilliseconds > 0 ?
-        durationMilliseconds / 1000.0 : 0.0;
+    const std::wstring successMessage = L"Lyrics uploaded to LRCLIB.\n\nTrack: " +
+        title + L"\nArtist: " + artist;
     SetStatus(L"Requesting an LRCLIB publishing challenge...");
 
-    std::thread([editorWindow, artist, title, album, syncedLyrics, durationSeconds]
+    std::thread([editorWindow, artist, title, album, plainLyrics, syncedLyrics,
+        durationSeconds, successMessage]
     {
+        const std::string plainUtf8 = BeatDropLyricsManager::Utf8(plainLyrics);
         const std::string syncedUtf8 = BeatDropLyricsManager::Utf8(syncedLyrics);
+        const std::string plainJson = BeatDropLrc::Trim(plainLyrics).empty() ?
+            std::string("null") : std::string("\"") + JsonEscape(plainUtf8) + "\"";
+        const std::string syncedJson = BeatDropLrc::Trim(syncedLyrics).empty() ?
+            std::string("null") : std::string("\"") + JsonEscape(syncedUtf8) + "\"";
         const std::string payload =
             "{\"trackName\":\"" + JsonEscape(BeatDropLyricsManager::Utf8(title)) +
             "\",\"artistName\":\"" + JsonEscape(BeatDropLyricsManager::Utf8(artist)) +
             "\",\"albumName\":\"" + JsonEscape(BeatDropLyricsManager::Utf8(album)) +
             "\",\"duration\":" + std::to_string(durationSeconds) +
-            ",\"plainLyrics\":\"" + JsonEscape(BeatDropLyricsManager::Utf8(
-                PlainLyrics(syncedLyrics))) +
-            "\",\"syncedLyrics\":\"" + JsonEscape(syncedUtf8) + "\"}";
+            ",\"plainLyrics\":" + plainJson +
+            ",\"syncedLyrics\":" + syncedJson + "}";
 
         DWORD status = 0;
         std::string challenge;
@@ -1371,7 +1539,7 @@ void BeatDropLyricsEditor::Upload()
                 L"LRCLIB rejected the upload (HTTP " + std::to_wstring(status) + L").");
             return;
         }
-        PostUploadResult(editorWindow, true, L"Lyrics uploaded to LRCLIB.");
+        PostUploadResult(editorWindow, true, successMessage);
     }).detach();
 }
 

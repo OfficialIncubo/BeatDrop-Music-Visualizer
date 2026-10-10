@@ -65,7 +65,7 @@ per_frame_1=wave_r = int(rand(100))/100;
 per_frame_2=wave_g = int(rand(100))/75;
 per_frame_3=wave_b = int(rand(100))/50;
 per_frame_4=time = time/100;
-per_frame_5=zoom =zoom+pow(.8+x&.8+y,pow(.1,y))&bass;
+per_frame_5=zoom = int(bass+.5);
 per_frame_6=ob_size =bass;
 per_frame_7=ib_r =bass;
 per_frame_8=ib_g =mid;

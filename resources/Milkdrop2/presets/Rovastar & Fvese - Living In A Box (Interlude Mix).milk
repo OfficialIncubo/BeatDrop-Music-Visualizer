@@ -75,4 +75,4 @@ per_frame_11=ib_a = 1-bass_eff;
 per_frame_12=ib_r = 1-wave_r;
 per_frame_13=ib_b = 1-wave_g;
 per_frame_14=ib_g = 1-wave_b;
-per_pixel_1=zoom=pow(.8+x&.8+y,pow(y,5));
+per_pixel_1=zoom=pow(int(.8+y+.5),pow(y,5));

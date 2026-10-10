@@ -77,7 +77,7 @@ per_frame_13=ib_b = 0.5+blue*sin(time);
 per_frame_14=ib_r = 0.5+red*sin(time);
 per_frame_15=ib_size = size;
 per_frame_16=monitor = size;
-per_pixel_1=zoom=pow(.8+x&.8+y,pow(y,5));
+per_pixel_1=zoom=pow(int(.8+y+.5),pow(y,5));
 per_frame_init_1=green = 0.01*int(rand(50));
 per_frame_init_2=red = 0.01*int(rand(50));
 per_frame_init_3=blue = 0.01*int(rand(50));
