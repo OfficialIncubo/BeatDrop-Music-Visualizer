@@ -1340,9 +1340,25 @@ void CPluginShell::StartDesktopModeRecoveryTimers(HWND hwnd)
 
 void CPluginShell::ResetTimeVariable()
 {
+	// A soft cut has already installed the destination preset as m_pState.
+	// Finish its cross-fade before moving the clock backwards so blend progress
+	// cannot become negative and render an invalid intermediate frame.
+	if (g_plugin.m_pState && g_plugin.m_pState->m_bBlending)
+		g_plugin.m_pState->m_bBlending = false;
+
+	// Error notifications use the visualizer time. Shift their lifetime along
+	// with the clock so resetting it does not expire messages prematurely.
+	const float timeOffset = m_time;
+	if (timeOffset != 0.0f)
+	{
+		std::lock_guard<std::mutex> lock(g_plugin.m_errorsMutex);
+		for (auto& message : g_plugin.m_errors)
+		{
+			message.birthTime -= timeOffset;
+			message.expireTime -= timeOffset;
+		}
+	}
 	m_time = 0;
-	memset(m_time_hist, 0, sizeof(m_time_hist));
-	m_time_hist_pos = 0;
 	g_plugin.m_fPresetStartTime = g_plugin.GetTime();
 	g_plugin.m_fNextPresetTime = -1.0f;
 }
@@ -2324,18 +2340,10 @@ void CPluginShell::DoTime()
 
 	m_time += 1.0f/m_fps;
 	if (m_time >= m_dTimeVariableResetDelay)
-	{
-		m_time = 0; // Reset the time variable after 250000 seconds.
-		g_plugin.m_fPresetStartTime = GetTime();
-		g_plugin.m_fNextPresetTime = -1.0f;		// flags UpdateTime() to recompute this
-	}
+		ResetTimeVariable(); // Reset the time variable after 250000 seconds.
 
 	if ((GetKeyState(VK_CONTROL) & 0x8000) && (GetKeyState('T') & 0x8000))
-	{
-		m_time = 0;
-		g_plugin.m_fPresetStartTime = GetTime();
-		g_plugin.m_fNextPresetTime = -1.0f;		// flags UpdateTime() to recompute this
-	}
+		ResetTimeVariable();
 
 	// timekeeping goals:
 	//    1. keep 'm_time' increasing SMOOTHLY: (smooth animation depends on it)
