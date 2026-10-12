@@ -59,6 +59,7 @@ private:
     std::wstring m_artist;
     std::wstring m_title;
     std::wstring m_lastLoadedLrc;
+    std::wstring m_lastManagerStatus;
     std::wstring m_lastAppliedParsed;
     struct HistoryState
     {

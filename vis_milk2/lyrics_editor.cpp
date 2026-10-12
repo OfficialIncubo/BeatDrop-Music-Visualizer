@@ -818,6 +818,22 @@ namespace
         // Exactly one empty line separates LRC metadata from its timed script.
         return header + L"\r\n\r\n" + synchronizedLyrics.substr(firstLyric);
     }
+
+    std::wstring LyricsReadyStatus(const std::wstring& lyrics)
+    {
+        if (BeatDropLrc::Trim(lyrics).empty())
+            return L"Write, paste or import lyrics, then select each line and capture timestamps.";
+        return BeatDropLrc::Parse(lyrics).empty() ?
+            L"Plain lyrics ready. Select each line and capture timestamps to synchronize them." :
+            L"Synchronized lyrics ready.";
+    }
+
+    std::wstring TrackLookupStatus(const BeatDropLyricsManager* manager)
+    {
+        if (manager && manager->Status() == L"No lyrics found")
+            return L"No lyrics found for this track. Write, paste or import lyrics to synchronize them.";
+        return L"Looking up lyrics for this track...";
+    }
 }
 
 void BeatDropLyricsEditor::Open(HWND owner, BeatDropLyricsManager* manager,
@@ -852,6 +868,12 @@ void BeatDropLyricsEditor::Open(HWND owner, BeatDropLyricsManager* manager,
     FormatParsedText();
     UpdateHistoryButtons();
     SetWindowTextW(m_hwnd, (L"BeatDrop Lyrics Editor - " + m_artist + L" - " + m_title).c_str());
+    m_lastManagerStatus = m_manager ? m_manager->Status() : std::wstring();
+    const std::wstring parsedLyrics = Read(m_parsed);
+    SetStatus(m_title.empty() ?
+        L"Write, paste or import lyrics, then select each line and capture timestamps." :
+        (parsedLyrics.empty() ? TrackLookupStatus(m_manager) :
+            LyricsReadyStatus(parsedLyrics)));
     ShowWindow(m_hwnd, SW_SHOWNORMAL);
     SetForegroundWindow(m_hwnd);
 }
@@ -990,7 +1012,7 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
             WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_AUTOCHECKBOX, 0, 0, 1, 1,
             m_hwnd, menuId(ID_AUTO_APPLY), nullptr, nullptr);
         SendMessageW(autoApply, BM_SETCHECK, BST_CHECKED, 0);
-        m_status = CreateWindowW(L"STATIC", L"Lyrics ready",
+        m_status = CreateWindowW(L"STATIC", L"",
             WS_CHILD | WS_VISIBLE | SS_CENTER | SS_ENDELLIPSIS,
             0, 0, 1, 1, m_hwnd, menuId(ID_STATUS), nullptr, nullptr);
 
@@ -1007,6 +1029,12 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
         FormatParsedText();
         UpdateHistoryButtons();
         SetWindowTextW(m_hwnd, (L"BeatDrop Lyrics Editor - " + m_artist + L" - " + m_title).c_str());
+        m_lastManagerStatus = m_manager ? m_manager->Status() : std::wstring();
+        const std::wstring parsedLyrics = Read(m_parsed);
+        SetStatus(m_title.empty() ?
+            L"Write, paste or import lyrics, then select each line and capture timestamps." :
+            (parsedLyrics.empty() ? TrackLookupStatus(m_manager) :
+                LyricsReadyStatus(parsedLyrics)));
         SetTimer(m_hwnd, STATUS_TIMER, 500, nullptr);
         ResizeControls();
         return 0;
@@ -1034,6 +1062,7 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
                 m_artist = currentArtist;
                 m_title = currentTitle;
                 m_lastLoadedLrc.clear();
+                m_lastManagerStatus.clear();
                 Write(m_input, std::wstring());
                 Write(m_parsed, std::wstring());
                 m_lastAppliedParsed.clear();
@@ -1056,10 +1085,11 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
                 else
                 {
                     m_manager->UpdateTrack(std::wstring(), std::wstring(), std::wstring(), 0.0);
-                    SetStatus(L"Waiting for a now-playing track.");
+                    SetStatus(L"Write, paste or import lyrics, then select each line and capture timestamps.");
                 }
             }
 
+            const std::wstring managerStatus = m_manager->Status();
             const std::wstring fetched = NormalizeInputText(m_manager->CurrentLrc());
             if (!fetched.empty() && fetched != m_lastLoadedLrc &&
                 Read(m_input) == m_lastLoadedLrc &&
@@ -1070,14 +1100,14 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
                 Write(m_parsed, BuildParsedText(fetched));
                 m_lastAppliedParsed = Read(m_parsed);
                 FormatParsedText();
-                SetStatus(BeatDropLrc::Parse(fetched).empty() ?
-                    L"Loaded unsynchronized lyrics; capture timestamps to synchronize them." :
-                    L"Loaded synchronized lyrics for the current track.");
+                SetStatus(LyricsReadyStatus(Read(m_parsed)));
             }
-            else if (fetched.empty() && m_manager->Status() == L"No lyrics found")
+            else if (fetched.empty() && managerStatus == L"No lyrics found" &&
+                managerStatus != m_lastManagerStatus)
             {
                 SetStatus(L"No lyrics found for this track. Import or paste lyrics to synchronize them.");
             }
+            m_lastManagerStatus = managerStatus;
 
             // Covers IME/input-method edits and Rich Edit notification gaps
             // that exist on older Windows controls.
@@ -1374,9 +1404,12 @@ void BeatDropLyricsEditor::ParseText()
     Write(m_parsed, BuildParsedText(source));
     FormatParsedText();
     ApplyParsedToRenderer();
-    SetStatus(BeatDropLrc::Parse(source).empty() ?
-        L"Plain lyric lines are ready; select each line and capture a timestamp." :
-        L"Timed lyrics parsed into the editable pane.");
+    if (BeatDropLrc::Trim(source).empty())
+        SetStatus(L"Lyrics are empty. Write, paste or import lyrics to begin.");
+    else
+        SetStatus(BeatDropLrc::Parse(source).empty() ?
+            L"Plain lyrics ready. Select each line and capture timestamps to synchronize them." :
+            L"Timed lyrics parsed into the editable pane.");
 }
 
 void BeatDropLyricsEditor::Save()
