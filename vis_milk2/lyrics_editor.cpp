@@ -519,12 +519,18 @@ namespace
     struct UploadResult
     {
         bool succeeded = false;
-        std::wstring message;
+        std::wstring popupMessage;
+        std::wstring statusMessage;
     };
 
-    void PostUploadResult(HWND editorWindow, bool succeeded, const std::wstring& message)
+    void PostUploadResult(HWND editorWindow, bool succeeded,
+        const std::wstring& popupMessage,
+        const std::wstring& statusMessage = std::wstring())
     {
-        std::unique_ptr<UploadResult> result(new UploadResult{succeeded, message});
+        const std::wstring& editorStatus = statusMessage.empty() ?
+            popupMessage : statusMessage;
+        std::unique_ptr<UploadResult> result(new UploadResult{
+            succeeded, popupMessage, editorStatus});
         if (IsWindow(editorWindow) && PostMessageW(editorWindow, UPLOAD_FINISHED,
             0, reinterpret_cast<LPARAM>(result.get())))
             result.release();
@@ -1195,8 +1201,8 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
             reinterpret_cast<UploadResult*>(lParam));
         if (!result)
             return 0;
-        SetStatus(result->message);
-        MessageBoxW(m_hwnd, result->message.c_str(), L"LRCLIB upload",
+        SetStatus(result->statusMessage);
+        MessageBoxW(m_hwnd, result->popupMessage.c_str(), L"LRCLIB upload",
             MB_OK | (result->succeeded ? MB_ICONINFORMATION : MB_ICONERROR));
         return 0;
     }
@@ -1539,7 +1545,8 @@ void BeatDropLyricsEditor::Upload()
                 L"LRCLIB rejected the upload (HTTP " + std::to_wstring(status) + L").");
             return;
         }
-        PostUploadResult(editorWindow, true, successMessage);
+        PostUploadResult(editorWindow, true, successMessage,
+            L"Lyrics uploaded to LRCLIB");
     }).detach();
 }
 
