@@ -1538,7 +1538,8 @@ void CPlugin::DrawMotionVectors()
 						if (fx > 0.0001f && fx < 0.9999f)
 						{
 							float fx2, fy2;
-							ReversePropagatePoint(fx, fy, &fx2, &fy2);	// NOTE: THIS IS REALLY A REVERSE-PROPAGATION
+							float fys = 1.0f - fy;
+							ReversePropagatePoint(fx, fys, &fx2, &fy2);	// NOTE: THIS IS REALLY A REVERSE-PROPAGATION
 							//fx2 = fx*2 - fx2;
 							//fy2 = fy*2 - fy2;
 							//fx2 = fx + 1.0f/(float)m_nTexSize;
@@ -1547,7 +1548,7 @@ void CPlugin::DrawMotionVectors()
 							// enforce minimum trail lengths:
 							{
 								float dx = (fx2 - fx);
-								float dy = (fy2 - fy);
+								float dy = (fy2 - fys);
 								dx *= len_mult;
 								dy *= len_mult;
 								float len = sqrtf(dx*dx + dy*dy);
@@ -1565,18 +1566,18 @@ void CPlugin::DrawMotionVectors()
 								else
 								{
 									dx = min_len;
-									dy = min_len;
+									dy = -min_len;
 								}
 
 								fx2 = fx + dx;
-								fy2 = fy + dy;
+								fy2 = fys + dy;
 							}
 							/**/
 
 							v[n].x = fx * 2.0f - 1.0f;
-							v[n].y = fy * 2.0f - 1.0f;
+							v[n].y = -(fys * 2.0f - 1.0f);
 							v[n+1].x = fx2 * 2.0f - 1.0f;
-							v[n+1].y = fy2 * 2.0f - 1.0f;
+							v[n+1].y = -(fy2 * 2.0f - 1.0f);
 
 							// actually, project it in the reverse direction
 							//v[n+1].x = v[n].x*2.0f - v[n+1].x;// + dx*2;
@@ -5287,8 +5288,8 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
     if (h[0]) pCT->SetVector( lpDevice, h[0], &D3DXVECTOR4( aspect_x, aspect_y, 1.0f/aspect_x, 1.0f/aspect_y ));
     if (h[1]) pCT->SetVector( lpDevice, h[1], &D3DXVECTOR4( aspect_x_sd, aspect_y_sd, 1.0f/aspect_x_sd, 1.0f/aspect_y_sd ));
     if (h[2]) pCT->SetVector( lpDevice, h[2], &D3DXVECTOR4(GetTime(), GetFps(), (float)GetFrame(), progress));
-    if (h[3]) pCT->SetVector( lpDevice, h[3], &D3DXVECTOR4(mysound.imm_rel[0], mysound.imm_rel[1], mysound.imm_rel[2], 0.3333f*(mysound.imm_rel[0], mysound.imm_rel[1], mysound.imm_rel[2]) ));
-    if (h[4]) pCT->SetVector( lpDevice, h[4], &D3DXVECTOR4(mysound.avg_rel[0], mysound.avg_rel[1], mysound.avg_rel[2], 0.3333f*(mysound.avg_rel[0], mysound.avg_rel[1], mysound.avg_rel[2]) ));
+    if (h[3]) pCT->SetVector( lpDevice, h[3], &D3DXVECTOR4(mysound.imm_rel[0], mysound.imm_rel[1], mysound.imm_rel[2], 0.3333f*(mysound.imm_rel[0]+mysound.imm_rel[1]+mysound.imm_rel[2]) ));
+    if (h[4]) pCT->SetVector( lpDevice, h[4], &D3DXVECTOR4(mysound.avg_rel[0], mysound.avg_rel[1], mysound.avg_rel[2], 0.3333f*(mysound.avg_rel[0]+mysound.avg_rel[1]+mysound.avg_rel[2]) ));
     if (h[5]) pCT->SetVector( lpDevice, h[5], &D3DXVECTOR4( blur_max[0]-blur_min[0], blur_min[0], blur_max[1]-blur_min[1], blur_min[1] ));
     if (h[6]) pCT->SetVector( lpDevice, h[6], &D3DXVECTOR4( blur_max[2]-blur_min[2], blur_min[2], blur_min[0], blur_max[0] ));
     if (h[7]) pCT->SetVector( lpDevice, h[7], &D3DXVECTOR4((float)m_nTexSizeX, (float)m_nTexSizeY, 1.0f/(float)m_nTexSizeX, 1.0f/(float)m_nTexSizeY ));
