@@ -17,6 +17,7 @@
 v2:
 - [ ] Full MilkDrop 3 Double Presets support
 - [ ] MilkDrop 3's Sprites in presets support (with MILKDROP_PRESET_VERSION=300 + preset sprite code)
+- [ ] DirectX 11 migration
 - More to come...
 
 v1.5.1:
