@@ -66,5 +66,5 @@ per_frame_2=wave_mystery = if (below(wave_x,0.7), -0.45, wave_mystery);
 per_frame_3=wave_x = if (above(treb,1), -0.11, wave_x);
 per_frame_4=warp = 0;
 per_frame_5=decay = 1;
-per_frame_6=wave_type = if (equal(wave_x,0.5), 7, 0);
+per_frame_6=wave_mode = if (equal(wave_x,0.5), 7, 0);
 per_pixel_1=rot = rot - 0.05*rad

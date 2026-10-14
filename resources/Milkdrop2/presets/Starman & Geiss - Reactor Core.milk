@@ -182,9 +182,9 @@ shapecode_2_border_r=1.000000
 shapecode_2_border_g=0.000000
 shapecode_2_border_b=0.000000
 shapecode_2_border_a=1.000000
-shape_0_per_frame1 =border_g = 0.5*sin(bass*1.11);
-shape_1_per_frame1 =border_r = 0.5*sin(bass*1.11);
-shape_2_per_frame1 =border_g = 0.5*sin(bass*1.11);
+shape_0_per_frame1=border_g = 0.5*sin(bass*1.11);
+shape_1_per_frame1=border_r = 0.5*sin(bass*1.11);
+shape_2_per_frame1=border_g = 0.5*sin(bass*1.11);
 per_frame_1=wave_x = wave_x + 0.150*( 0.60*sin(2.121*time) + 0.40*sin(1.621*time) );
 per_frame_2=wave_y = wave_y + 0.150*( 0.60*sin(1.742*time) + 0.40*sin(2.322*time) );
 per_frame_3=wave_r = wave_r + 0.200*( 0.60*sin(0.823*time) + 0.40*sin(0.916*time) );
