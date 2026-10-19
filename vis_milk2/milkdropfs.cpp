@@ -1444,9 +1444,10 @@ void CPlugin::RenderFrame(int bRedraw)
 
     // Draw the loading status after sending the frame so it remains visible
     // in BeatDrop without appearing in the Spout texture.
-    if (m_bShowLoadingPresetMessage && m_nLoadingPreset > 0)
+    if (m_bShowLoadingShadersMessage &&
+        (m_nLoadingPreset == 2 || m_nLoadingPreset == 5))
     {
-        m_loadingPresetRenderer.SetLine(L"Loading preset...", GetTime());
+        m_loadingPresetRenderer.SetLine(L"Loading shaders...", GetTime());
         m_loadingPresetRenderer.Render(lpDevice, GetWidth(), GetHeight(),
             GetTime(), 0.5f);
     }

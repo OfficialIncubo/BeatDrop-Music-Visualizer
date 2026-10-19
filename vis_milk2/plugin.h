@@ -583,7 +583,7 @@ public:
         int         m_nLyricsFontColorR = 180;
         int         m_nLyricsFontColorG = 0;
         int         m_nLyricsFontColorB = 255;
-        bool        m_bShowLoadingPresetMessage = true;
+        bool        m_bShowLoadingShadersMessage = true;
         float		m_fShowRatingUntilThisTime;
 
         #define ERR_ALL    0
