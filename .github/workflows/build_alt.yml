@@ -53,8 +53,7 @@ jobs:
     - name: Install Legacy DirectX SDK
       shell: powershell
       run: |
-        choco install directx-sdk -y
-        echo "DXSDK_DIR=C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)" >> $env:GITHUB_ENV
+        . .github/scripts/install-directx-sdk.ps1
 
     - name: Clone projectM-eval
       shell: bash

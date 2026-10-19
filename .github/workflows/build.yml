@@ -45,8 +45,7 @@ jobs:
     - name: Install Legacy DirectX SDK
       shell: powershell
       run: |
-        choco install directx-sdk -y
-        echo "DXSDK_DIR=C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)" >> $env:GITHUB_ENV
+        . .github/scripts/install-directx-sdk.ps1
 
     - name: Install x86 dependencies and build Release_x86
       if: matrix.config == 'release' || matrix.config == 'full-package'
