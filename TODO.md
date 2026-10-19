@@ -17,15 +17,18 @@
 v2:
 - [ ] Full MilkDrop 3 Double Presets support
 - [ ] MilkDrop 3's Sprites in presets support (with MILKDROP_PRESET_VERSION=300 + preset sprite code)
-- [ ] DirectX 11 migration
+- [ ] DirectX 11 migration (if possible)
 - More to come...
+
+v1.5.2:
+- Cockos/WDL EEL2 eval integration (probably replacing projectM-eval or having both) ([see doc](https://www.cockos.com/EEL2/))
 
 v1.5.1:
 - [ ] Window-Independent Spout Output (https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0) (CAN'T DO)
 - [ ] An hybrid transition shaders and normal transitions; people can write some custom transitions using HLSL with .fx, .hlsl or .bdtrans format (choose only one) from BeatDrop Resources/transitions folder and loads it on next preset, else the MilkDrop's built-in ones. Should be in 3 modes: HLSL, Normal and Hybrid
 - [ ] Webcam support: enable/disable with `W` hotkey and has three layers: deep (without burn), deep (with burn) and top (with 50% webcam renderer)
 - [ ] Offer free watermark and watermarkless downloads to GH releases and itch.io (not out yet). Watermark version should be on GH releases + itch.io and should offer the watermarkless version after paying from itch.io
-- [ ] A detailed crash log screen 
+- [ ] A detailed crash log screen that lets you see what happened and send logs
 - [ ] Fix screen timeout or idle sleep on different modes; it keeps enabled when changing from monitor stretch mode to full-screen mode, for example
 
 # User-proposed features:
