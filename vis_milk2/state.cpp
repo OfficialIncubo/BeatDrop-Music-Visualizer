@@ -314,6 +314,24 @@ static size_t GetOffsetForLineColumn(const std::string& source, int lineNumber, 
 	return requested < source.size() ? requested : source.size();
 }
 
+static size_t GetOriginalOffsetForCompiledOffset(const char* originalCode, size_t compiledOffset)
+{
+	if (!originalCode) return compiledOffset;
+	size_t sourceOffset = 0;
+	while (originalCode[sourceOffset])
+	{
+		if (originalCode[sourceOffset] == LINEFEED_CONTROL_CHAR)
+		{
+			++sourceOffset;
+			continue;
+		}
+		if (compiledOffset == 0) return sourceOffset;
+		--compiledOffset;
+		++sourceOffset;
+	}
+	return sourceOffset;
+}
+
 static std::wstring BuildExpressionCompileError(const wchar_t* presetName, const char* section,
 	const char* originalCode, const char* compiledCode, NSEEL_VMCTX evalContext)
 {
@@ -373,8 +391,25 @@ static std::wstring BuildExpressionCompileError(const wchar_t* presetName, const
 	if (reason.empty() && compilerError && compilerError[0]) reason = compilerError;
 	if (reason.empty()) reason = "syntax error";
 
-	std::string sourceLine = GetLineAt(originalCode ? originalCode : "", line);
-	if (sourceLine.empty()) sourceLine = GetLineAt(source, line);
+	// Compilation removes MilkDrop's internal line separators to retain legacy
+	// parsing behavior. Map the compiler's flattened position back to the source
+	// line for a useful diagnostic.
+	const char* diagnosticSource = originalCode ? originalCode : "";
+	const size_t originalOffset = GetOriginalOffsetForCompiledOffset(diagnosticSource,
+		GetOffsetForLineColumn(source, line, column));
+	line = 1;
+	size_t lineStart = 0;
+	for (size_t i = 0; i < originalOffset && diagnosticSource[i]; ++i)
+	{
+		if (diagnosticSource[i] == LINEFEED_CONTROL_CHAR || diagnosticSource[i] == '\n')
+		{
+			++line;
+			lineStart = i + 1;
+		}
+	}
+	column = (int)(originalOffset - lineStart) + 1;
+	std::string sourceLine = GetLineAt(diagnosticSource, line);
+	if (sourceLine.empty()) sourceLine = GetLineAt(source, 1);
 	size_t marker = (size_t)(column > 0 ? column - 1 : 0);
 	if (marker > sourceLine.size()) marker = sourceLine.size();
 	sourceLine.insert(marker, "<!>");
@@ -1933,9 +1968,12 @@ void CState::FreeVarsAndCode(bool bFree)
 
 void CState::StripLinefeedCharsAndComments(char *src, char *dest)
 {
-	// Preserve source positions for projectM-eval diagnostics. Comments are
-	// replaced with spaces so line and column numbers still match the preset.
+	// Keep the legacy parser input: MilkDrop's internal line separators are
+	// removed, including when they split a token or numeric literal across
+	// numbered code rows. The diagnostic builder maps compiler offsets back to
+	// the original source text.
 	const int len = (int)strlen(src);
+	int destPos = 0;
 	bool lineComment = false;
 	bool blockComment = false;
 	bool hasCode = false;
@@ -1945,43 +1983,44 @@ void CState::StripLinefeedCharsAndComments(char *src, char *dest)
 		{
 			if (src[i] == '*' && i + 1 < len && src[i + 1] == '/')
 			{
-				dest[i] = dest[i + 1] = ' ';
+				dest[destPos++] = ' ';
+				dest[destPos++] = ' ';
 				++i;
 				blockComment = false;
 			}
-			else
-				dest[i] = src[i] == LINEFEED_CONTROL_CHAR ? '\n' : ' ';
+			else if (src[i] != LINEFEED_CONTROL_CHAR)
+				dest[destPos++] = ' ';
 		}
 		else if (lineComment)
 		{
 			if (src[i] == LINEFEED_CONTROL_CHAR)
-			{
-				dest[i] = '\n';
 				lineComment = false;
-			}
 			else
-				dest[i] = ' ';
+				dest[destPos++] = ' ';
 		}
 		else if (i + 1 < len && ((src[i] == '/' && src[i + 1] == '/') || (src[i] == '\\' && src[i + 1] == '\\')))
 		{
-			dest[i] = dest[i + 1] = ' ';
+			dest[destPos++] = ' ';
+			dest[destPos++] = ' ';
 			++i;
 			lineComment = true;
 		}
 		else if (i + 1 < len && src[i] == '/' && src[i + 1] == '*')
 		{
-			dest[i] = dest[i + 1] = ' ';
+			dest[destPos++] = ' ';
+			dest[destPos++] = ' ';
 			++i;
 			blockComment = true;
 		}
 		else
 		{
-			dest[i] = src[i] == LINEFEED_CONTROL_CHAR ? '\n' : src[i];
+			if (src[i] == LINEFEED_CONTROL_CHAR) continue;
+			dest[destPos++] = src[i];
 			if (src[i] != ' ' && src[i] != '\t' && src[i] != '\r' && src[i] != LINEFEED_CONTROL_CHAR)
 				hasCode = true;
 		}
 	}
-	dest[len] = 0;
+	dest[destPos] = 0;
 	if (!hasCode)
 		dest[0] = 0;
 }
