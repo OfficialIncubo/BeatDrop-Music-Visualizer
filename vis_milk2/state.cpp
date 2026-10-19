@@ -38,12 +38,353 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <assert.h>
 #include <ctime>
+#include <string>
+#include <cctype>
 #include "wasabi.h"
 #include "AMDDetection.h"
 
 extern CPlugin g_plugin;		// declared in main.cpp
 
 #define FRAND ((rand() % 7381)/7380.0f)
+
+// projectM-eval's native API reports the source line and column that the
+// ns-eel2 compatibility shim does not include in its legacy error getter.
+struct projectm_eval_context;
+extern "C" const char* projectm_eval_get_error(projectm_eval_context* ctx, int* line, int* column);
+
+namespace
+{
+struct EvalFunctionInfo { const char* name; int argumentCount; };
+
+// Built-ins documented by the projectM-eval/Milkdrop expression syntax.
+static const EvalFunctionInfo kEvalFunctions[] =
+{
+	{ "above", 2 }, { "abs", 1 }, { "acos", 1 }, { "asin", 1 },
+	{ "assign", 2 }, { "atan", 1 }, { "atan2", 2 }, { "band", 2 },
+	{ "below", 2 }, { "bnot", 1 }, { "bor", 2 }, { "ceil", 1 },
+	{ "cos", 1 }, { "equal", 2 }, { "exec2", 2 }, { "exec3", 3 },
+	{ "exp", 1 }, { "floor", 1 }, { "freembuf", 1 }, { "gmegabuf", 1 },
+	{ "if", 3 }, { "int", 1 }, { "invsqrt", 1 }, { "log", 1 },
+	{ "log10", 1 }, { "loop", 2 }, { "max", 2 }, { "megabuf", 1 },
+	{ "memcpy", 3 }, { "memset", 3 }, { "min", 2 }, { "pow", 2 },
+	{ "rand", 1 }, { "sigmoid", 2 }, { "sign", 1 }, { "sin", 1 },
+	{ "sqr", 1 }, { "sqrt", 1 }, { "tan", 1 }, { "while", 1 }
+};
+
+static bool IsIdentifierStart(char c)
+{
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+}
+
+static bool IsIdentifierChar(char c)
+{
+	return IsIdentifierStart(c) || (c >= '0' && c <= '9');
+}
+
+static std::string LowercaseAscii(const std::string& value)
+{
+	std::string result(value);
+	for (size_t i = 0; i < result.size(); ++i)
+		result[i] = (char)std::tolower((unsigned char)result[i]);
+	return result;
+}
+
+static bool GetBuiltinFunctionArity(const std::string& name, int* argumentCount)
+{
+	const std::string lowered = LowercaseAscii(name);
+	for (size_t i = 0; i < sizeof(kEvalFunctions) / sizeof(kEvalFunctions[0]); ++i)
+	{
+		if (lowered == kEvalFunctions[i].name)
+		{
+			if (argumentCount) *argumentCount = kEvalFunctions[i].argumentCount;
+			return true;
+		}
+	}
+	return false;
+}
+
+static int CountCallArguments(const std::string& source, size_t openParen, size_t closeParen);
+
+static bool FindUserFunctionArity(const std::string& source, const std::string& name, int* argumentCount)
+{
+	const std::string loweredSource = LowercaseAscii(source);
+	const std::string loweredName = LowercaseAscii(name);
+	size_t searchFrom = 0;
+	while ((searchFrom = loweredSource.find("function", searchFrom)) != std::string::npos)
+	{
+		if ((searchFrom == 0 || !IsIdentifierChar(loweredSource[searchFrom - 1])) &&
+			(searchFrom + 8 >= loweredSource.size() || !IsIdentifierChar(loweredSource[searchFrom + 8])))
+		{
+			size_t nameStart = searchFrom + 8;
+			while (nameStart < loweredSource.size() && std::isspace((unsigned char)loweredSource[nameStart])) ++nameStart;
+			size_t nameEnd = nameStart;
+			while (nameEnd < loweredSource.size() && IsIdentifierChar(loweredSource[nameEnd])) ++nameEnd;
+			if (nameEnd > nameStart && loweredSource.compare(nameStart, nameEnd - nameStart, loweredName) == 0)
+			{
+				size_t openParen = nameEnd;
+				while (openParen < loweredSource.size() && std::isspace((unsigned char)loweredSource[openParen])) ++openParen;
+				if (openParen < loweredSource.size() && loweredSource[openParen] == '(')
+				{
+					int depth = 1;
+					size_t closeParen = openParen + 1;
+					for (; closeParen < loweredSource.size() && depth > 0; ++closeParen)
+					{
+						if (loweredSource[closeParen] == '(') ++depth;
+						else if (loweredSource[closeParen] == ')') --depth;
+					}
+					if (depth == 0)
+					{
+						if (argumentCount) *argumentCount = CountCallArguments(loweredSource, openParen, closeParen - 1);
+						return true;
+					}
+				}
+				return true;
+			}
+		}
+		searchFrom += 8;
+	}
+	return false;
+}
+
+static int CountCallArguments(const std::string& source, size_t openParen, size_t closeParen)
+{
+	if (openParen + 1 >= closeParen) return 0;
+	int parenDepth = 0, bracketDepth = 0, count = 0;
+	bool hasContent = false;
+	for (size_t i = openParen + 1; i < closeParen; ++i)
+	{
+		const char c = source[i];
+		if (c == '(') ++parenDepth;
+		else if (c == ')' && parenDepth > 0) --parenDepth;
+		else if (c == '[') ++bracketDepth;
+		else if (c == ']' && bracketDepth > 0) --bracketDepth;
+		else if (c == ',' && parenDepth == 0 && bracketDepth == 0)
+		{
+			++count;
+			hasContent = false;
+			continue;
+		}
+		if (!std::isspace((unsigned char)c)) hasContent = true;
+	}
+	return hasContent ? count + 1 : count;
+}
+
+struct EvalCallSite
+{
+	std::string name;
+	size_t nameStart;
+	size_t openParen;
+	size_t closeParen;
+	int argumentCount;
+};
+
+static bool FindCallAtOffset(const std::string& source, size_t offset, EvalCallSite* result)
+{
+	bool found = false;
+	size_t bestSpan = (size_t)-1;
+	for (size_t i = 0; i < source.size(); )
+	{
+		if (!IsIdentifierStart(source[i])) { ++i; continue; }
+		const size_t nameStart = i++;
+		if (nameStart > offset) break;
+		while (i < source.size() && IsIdentifierChar(source[i])) ++i;
+		const size_t nameEnd = i;
+		size_t openParen = i;
+		while (openParen < source.size() && std::isspace((unsigned char)source[openParen])) ++openParen;
+		if (openParen >= source.size() || source[openParen] != '(') continue;
+
+		int depth = 1;
+		size_t closeParen = source.size();
+		for (size_t j = openParen + 1; j < source.size(); ++j)
+		{
+			if (source[j] == '(') ++depth;
+			else if (source[j] == ')' && --depth == 0) { closeParen = j; break; }
+		}
+		if (offset >= nameStart && offset <= closeParen + (closeParen < source.size() ? 1 : 0) && closeParen - nameStart < bestSpan)
+		{
+			result->name = source.substr(nameStart, nameEnd - nameStart);
+			result->nameStart = nameStart;
+			result->openParen = openParen;
+			result->closeParen = closeParen;
+			result->argumentCount = CountCallArguments(source, openParen, closeParen);
+			bestSpan = closeParen - nameStart;
+			found = true;
+		}
+	}
+	return found;
+}
+
+static bool FindFunctionUsedAsVariable(const std::string& source, size_t offset, std::string* functionName, size_t* functionStart)
+{
+	for (size_t i = 0; i < source.size(); )
+	{
+		if (!IsIdentifierStart(source[i])) { ++i; continue; }
+		const size_t start = i++;
+		while (i < source.size() && IsIdentifierChar(source[i])) ++i;
+		const size_t end = i;
+		const std::string name = source.substr(start, end - start);
+	// Only built-ins are reserved as variable names in this evaluator. Checking
+	// user-defined declarations here would require rescanning the full source
+	// for every token on malformed, potentially large preset code.
+	if (!GetBuiltinFunctionArity(name, NULL)) continue;
+
+		size_t next = end;
+		while (next < source.size() && std::isspace((unsigned char)source[next])) ++next;
+		const bool assignedTo = next < source.size() &&
+			(source[next] == '=' || (next + 1 < source.size() &&
+			 ((source[next] == '+' || source[next] == '-' || source[next] == '*' || source[next] == '/' || source[next] == '%' || source[next] == '^' || source[next] == '&' || source[next] == '|') && source[next + 1] == '=')));
+		const bool called = next < source.size() && source[next] == '(';
+		size_t prev = start;
+		while (prev > 0 && std::isspace((unsigned char)source[prev - 1])) --prev;
+		const char previousChar = prev > 0 ? source[prev - 1] : 0;
+		const bool bareFunctionValue = !called && !assignedTo &&
+			(previousChar == 0 || previousChar == '=' || previousChar == ',' || previousChar == '(' || previousChar == ';' ||
+			 previousChar == '+' || previousChar == '-' || previousChar == '*' || previousChar == '/' || previousChar == '^');
+		if ((assignedTo || bareFunctionValue) && offset + 2 >= start && offset <= next + 2)
+		{
+			*functionName = name;
+			*functionStart = start;
+			return true;
+		}
+	}
+	return false;
+}
+
+static bool FindUnclosedDelimiter(const std::string& source, char* expectedClosing)
+{
+	std::vector<char> delimiters;
+	bool mismatchedClosing = false;
+	for (size_t i = 0; i < source.size(); ++i)
+	{
+		if (source[i] == '$' && i + 2 < source.size() && source[i + 1] == '\'')
+		{
+			i += 2;
+			if (i + 1 < source.size() && source[i + 1] == '\'') ++i;
+			continue;
+		}
+		if (source[i] == '(' || source[i] == '[') delimiters.push_back(source[i]);
+		else if (source[i] == ')' || source[i] == ']')
+		{
+			if (!delimiters.empty() && ((source[i] == ')' && delimiters.back() == '(') || (source[i] == ']' && delimiters.back() == '[')))
+				delimiters.pop_back();
+			else
+				mismatchedClosing = true;
+		}
+	}
+	if (delimiters.empty() || mismatchedClosing) return false;
+	*expectedClosing = delimiters.back() == '(' ? ')' : ']';
+	return true;
+}
+
+static std::wstring NarrowToWide(const std::string& text, UINT codePage)
+{
+	if (text.empty()) return std::wstring();
+	const int required = MultiByteToWideChar(codePage, 0, text.c_str(), (int)text.size(), NULL, 0);
+	if (required <= 0) return std::wstring(text.begin(), text.end());
+	std::wstring wide((size_t)required, L'\0');
+	MultiByteToWideChar(codePage, 0, text.c_str(), (int)text.size(), &wide[0], required);
+	return wide;
+}
+
+static std::string GetLineAt(const std::string& source, int lineNumber)
+{
+	if (lineNumber < 1) return std::string();
+	size_t start = 0;
+	for (int line = 1; line < lineNumber; ++line)
+	{
+		const size_t lineFeed = source.find_first_of(std::string("\n") + (char)LINEFEED_CONTROL_CHAR, start);
+		if (lineFeed == std::string::npos) return std::string();
+		start = lineFeed + 1;
+	}
+	size_t end = source.find_first_of(std::string("\n") + (char)LINEFEED_CONTROL_CHAR, start);
+	if (end == std::string::npos) end = source.size();
+	return source.substr(start, end - start);
+}
+
+static size_t GetOffsetForLineColumn(const std::string& source, int lineNumber, int columnNumber)
+{
+	size_t offset = 0;
+	for (int line = 1; line < lineNumber; ++line)
+	{
+		const size_t lineFeed = source.find('\n', offset);
+		if (lineFeed == std::string::npos) return source.size();
+		offset = lineFeed + 1;
+	}
+	const size_t requested = offset + (size_t)(columnNumber > 0 ? columnNumber - 1 : 0);
+	return requested < source.size() ? requested : source.size();
+}
+
+static std::wstring BuildExpressionCompileError(const wchar_t* presetName, const char* section,
+	const char* originalCode, const char* compiledCode, NSEEL_VMCTX evalContext)
+{
+	int line = 1, column = 1;
+	const char* compilerError = projectm_eval_get_error(reinterpret_cast<projectm_eval_context*>(evalContext), &line, &column);
+	const std::string source = compiledCode ? compiledCode : "";
+	if (line < 1) line = 1;
+	if (column < 1) column = 1;
+	const size_t errorOffset = GetOffsetForLineColumn(source, line, column);
+
+	std::string reason;
+	std::string functionName;
+	size_t functionStart = errorOffset;
+	if (FindFunctionUsedAsVariable(source, errorOffset, &functionName, &functionStart))
+	{
+		reason = "'" + functionName + "' is a function, not a variable";
+		line = 1;
+		for (size_t i = 0; i < functionStart; ++i) if (source[i] == '\n') ++line;
+		const size_t lineFeed = source.rfind('\n', functionStart);
+		column = (int)(functionStart - (lineFeed == std::string::npos ? 0 : lineFeed + 1)) + 1;
+	}
+	else
+	{
+		EvalCallSite call;
+		if (FindCallAtOffset(source, errorOffset, &call))
+		{
+			int expectedArguments = 0;
+			const bool known = GetBuiltinFunctionArity(call.name, &expectedArguments) ||
+				FindUserFunctionArity(source, call.name, &expectedArguments);
+			char unmatchedDelimiter = 0;
+			if (known && call.argumentCount != expectedArguments && call.closeParen < source.size() &&
+				!FindUnclosedDelimiter(source, &unmatchedDelimiter))
+			{
+				reason = "function '" + call.name + "' expects " + std::to_string(expectedArguments) +
+					(expectedArguments == 1 ? " parameter, got " : " parameters, got ") + std::to_string(call.argumentCount);
+				functionStart = call.closeParen;
+				line = 1;
+				for (size_t i = 0; i < functionStart; ++i) if (source[i] == '\n') ++line;
+				const size_t lineFeed = source.rfind('\n', functionStart);
+				column = (int)(functionStart - (lineFeed == std::string::npos ? 0 : lineFeed + 1)) + 1;
+			}
+			if (reason.empty() && !known)
+			{
+				reason = "function '" + call.name + "' is undefined";
+				functionStart = call.nameStart;
+				line = 1;
+				for (size_t i = 0; i < functionStart; ++i) if (source[i] == '\n') ++line;
+				const size_t lineFeed = source.rfind('\n', functionStart);
+				column = (int)(functionStart - (lineFeed == std::string::npos ? 0 : lineFeed + 1)) + 1;
+			}
+		}
+	}
+
+	char expectedClosing = 0;
+	if (reason.empty() && FindUnclosedDelimiter(source, &expectedClosing))
+		reason = std::string("missing closing '") + expectedClosing + "'";
+	if (reason.empty() && compilerError && compilerError[0]) reason = compilerError;
+	if (reason.empty()) reason = "syntax error";
+
+	std::string sourceLine = GetLineAt(originalCode ? originalCode : "", line);
+	if (sourceLine.empty()) sourceLine = GetLineAt(source, line);
+	size_t marker = (size_t)(column > 0 ? column - 1 : 0);
+	if (marker > sourceLine.size()) marker = sourceLine.size();
+	sourceLine.insert(marker, "<!>");
+
+	return L"warning: preset \"" + std::wstring(presetName ? presetName : L"") + L"\": error in '" +
+		NarrowToWide(section ? section : "expression", CP_ACP) + L"' code - in line " +
+		std::to_wstring(line) + L", column " + std::to_wstring(column) + L": " +
+		NarrowToWide(reason, CP_ACP) + L": " + NarrowToWide(sourceLine, CP_ACP);
+}
+}
 
 
 
@@ -1592,29 +1933,57 @@ void CState::FreeVarsAndCode(bool bFree)
 
 void CState::StripLinefeedCharsAndComments(char *src, char *dest)
 {
-	// replaces all LINEFEED_CONTROL_CHAR characters in src with a space in dest;
-	// also strips out all comments (beginning with '//' and going til end of line).
-	// Restriction: sizeof(dest) must be >= sizeof(src).
-
-	int i2 = 0;
-	int len = strlen(src);
-	int bComment = false;
-	for (int i=0; i<len; i++)
+	// Preserve source positions for projectM-eval diagnostics. Comments are
+	// replaced with spaces so line and column numbers still match the preset.
+	const int len = (int)strlen(src);
+	bool lineComment = false;
+	bool blockComment = false;
+	bool hasCode = false;
+	for (int i = 0; i < len; ++i)
 	{
-		if (bComment)
+		if (blockComment)
+		{
+			if (src[i] == '*' && i + 1 < len && src[i + 1] == '/')
+			{
+				dest[i] = dest[i + 1] = ' ';
+				++i;
+				blockComment = false;
+			}
+			else
+				dest[i] = src[i] == LINEFEED_CONTROL_CHAR ? '\n' : ' ';
+		}
+		else if (lineComment)
 		{
 			if (src[i] == LINEFEED_CONTROL_CHAR)
-				bComment = false;
+			{
+				dest[i] = '\n';
+				lineComment = false;
+			}
+			else
+				dest[i] = ' ';
+		}
+		else if (i + 1 < len && ((src[i] == '/' && src[i + 1] == '/') || (src[i] == '\\' && src[i + 1] == '\\')))
+		{
+			dest[i] = dest[i + 1] = ' ';
+			++i;
+			lineComment = true;
+		}
+		else if (i + 1 < len && src[i] == '/' && src[i + 1] == '*')
+		{
+			dest[i] = dest[i + 1] = ' ';
+			++i;
+			blockComment = true;
 		}
 		else
 		{
-			if ((src[i] =='\\' && src[i+1] =='\\') || (src[i] =='/' && src[i+1] =='/'))
-				bComment = true;
-			else if (src[i] != LINEFEED_CONTROL_CHAR)
-				dest[i2++] = src[i];
+			dest[i] = src[i] == LINEFEED_CONTROL_CHAR ? '\n' : src[i];
+			if (src[i] != ' ' && src[i] != '\t' && src[i] != '\r' && src[i] != LINEFEED_CONTROL_CHAR)
+				hasCode = true;
 		}
 	}
-	dest[i2] = 0;
+	dest[len] = 0;
+	if (!hasCode)
+		dest[0] = 0;
 }
 
 void CState::RecompileExpressions(int flags, int bReInit)
@@ -1776,9 +2145,8 @@ void CState::RecompileExpressions(int flags, int bReInit)
 
 			    if ( ! (pf_codehandle_init = NSEEL_code_compile(m_pf_eel, buf)))
 			    {
-                    wchar_t buf[1024];
-				    swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_PRESET_INIT_CODE), m_szDesc);
-                    g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				    std::wstring message = BuildExpressionCompileError(m_szDesc, "preset_init", m_szPerFrameInit, buf, m_pf_eel);
+				    g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 
                     for (int vi=0; vi<NUM_Q_VAR; vi++)
 				        q_values_after_init_code[vi] = 0;
@@ -1810,9 +2178,8 @@ void CState::RecompileExpressions(int flags, int bReInit)
 	        {
 			    if ( ! (m_pf_codehandle = NSEEL_code_compile(m_pf_eel, buf)))
 			    {
-                    wchar_t buf[1024];
-				    swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_PER_FRAME_CODE), m_szDesc);
-                    g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				    std::wstring message = BuildExpressionCompileError(m_szDesc, "per-frame", m_szPerFrameExpr, buf, m_pf_eel);
+				    g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 			    }
 	        }
 
@@ -1822,9 +2189,8 @@ void CState::RecompileExpressions(int flags, int bReInit)
 	        {
 			    if ( ! (m_pp_codehandle = NSEEL_code_compile(m_pv_eel, buf)))
 			    {
-                    wchar_t buf[1024];
-				    swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_PER_VERTEX_CODE), m_szDesc);
-                    g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				    std::wstring message = BuildExpressionCompileError(m_szDesc, "per-vertex", m_szPerPixelExpr, buf, m_pv_eel);
+				    g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 			    }
 	        }
 
@@ -1844,9 +2210,10 @@ void CState::RecompileExpressions(int flags, int bReInit)
 		                NSEEL_CODEHANDLE	codehandle_temp;
 			            if ( ! (codehandle_temp = NSEEL_code_compile(m_wave[i].m_pf_eel, buf)))
 			            {
-                            wchar_t buf[1024];
-				            swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_WAVE_X_INIT_CODE), m_szDesc, i);
-                            g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				            char section[64];
+				            sprintf(section, "wave %d init", i);
+				            std::wstring message = BuildExpressionCompileError(m_szDesc, section, m_wave[i].m_szInit, buf, m_wave[i].m_pf_eel);
+				            g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 
                             for (int vi=0; vi<NUM_Q_VAR; vi++)
                                 *m_wave[i].var_pf_q[vi] = q_values_after_init_code[vi];
@@ -1881,9 +2248,10 @@ void CState::RecompileExpressions(int flags, int bReInit)
 		            #ifndef _NO_EXPR_
 			            if ( ! (m_wave[i].m_pf_codehandle = NSEEL_code_compile(m_wave[i].m_pf_eel, buf)))
 			            {
-                            wchar_t buf[1024];
-				            swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_WAVE_X_PER_FRAME_CODE), m_szDesc, i);
-                            g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				            char section[64];
+				            sprintf(section, "wave %d per-frame", i);
+				            std::wstring message = BuildExpressionCompileError(m_szDesc, section, m_wave[i].m_szPerFrame, buf, m_wave[i].m_pf_eel);
+				            g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 			            }
                     #endif
                 }
@@ -1894,9 +2262,10 @@ void CState::RecompileExpressions(int flags, int bReInit)
                 {
 			        if ( ! (m_wave[i].m_pp_codehandle = NSEEL_code_compile(m_wave[i].m_pp_eel, buf)))
 			        {
-                        wchar_t buf[1024];
-				        swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_WAVE_X_PER_POINT_CODE), m_szDesc, i);
-                        g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				        char section[64];
+				        sprintf(section, "wave %d per-point", i);
+				        std::wstring message = BuildExpressionCompileError(m_szDesc, section, m_wave[i].m_szPerPoint, buf, m_wave[i].m_pp_eel);
+				        g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 			        }
                 }
             }
@@ -1915,9 +2284,10 @@ void CState::RecompileExpressions(int flags, int bReInit)
 		                NSEEL_CODEHANDLE	codehandle_temp;
 			            if ( ! (codehandle_temp = NSEEL_code_compile(m_shape[i].m_pf_eel, buf)))
 			            {
-                            wchar_t buf[1024];
-				            swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_SHAPE_X_INIT_CODE), m_szDesc, i);
-                            g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				            char section[64];
+				            sprintf(section, "shape %d init", i);
+				            std::wstring message = BuildExpressionCompileError(m_szDesc, section, m_shape[i].m_szInit, buf, m_shape[i].m_pf_eel);
+				            g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 
                             for (int vi=0; vi<NUM_Q_VAR; vi++)
                                 *m_shape[i].var_pf_q[vi] = q_values_after_init_code[vi];
@@ -1952,9 +2322,10 @@ void CState::RecompileExpressions(int flags, int bReInit)
 		            #ifndef _NO_EXPR_
 			            if ( ! (m_shape[i].m_pf_codehandle = NSEEL_code_compile(m_shape[i].m_pf_eel, buf)))
 			            {
-                            wchar_t buf[1024];
-				            swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_SHAPE_X_PER_FRAME_CODE), m_szDesc, i);
-                            g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				            char section[64];
+				            sprintf(section, "shape %d per-frame", i);
+				            std::wstring message = BuildExpressionCompileError(m_szDesc, section, m_shape[i].m_szPerFrame, buf, m_shape[i].m_pf_eel);
+				            g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 			            }
 		            #endif
                 }
