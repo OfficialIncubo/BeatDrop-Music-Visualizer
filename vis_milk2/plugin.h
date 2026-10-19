@@ -583,6 +583,7 @@ public:
         int         m_nLyricsFontColorR = 180;
         int         m_nLyricsFontColorG = 0;
         int         m_nLyricsFontColorB = 255;
+        bool        m_bShowLoadingPresetMessage = true;
         float		m_fShowRatingUntilThisTime;
 
         #define ERR_ALL    0
@@ -618,6 +619,7 @@ public:
         BeatDropLyricsManager m_lyricsManager;
         BeatDropLyricsEditor m_lyricsEditor;
         BeatDropLyricsRenderer m_lyricsRenderer;
+        BeatDropLyricsRenderer m_loadingPresetRenderer;
 
         // stuff for menu system:
         CMilkMenu	*m_pCurMenu;	// should always be valid!
