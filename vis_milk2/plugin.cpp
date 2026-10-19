@@ -1405,7 +1405,6 @@ void CPlugin::MyReadConfig()
     m_bEnableSongTitlePollExplicit = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePollExplicit", m_bEnableSongTitlePollExplicit, pIni);
     #endif
     m_bEnableLyrics = GetPrivateProfileBoolW(L"settings", L"bEnableLyrics", m_bEnableLyrics, pIni);
-    m_bShowLoadingShadersMessage = GetPrivateProfileBoolW(L"settings", L"bShowLoadingShadersMessage", m_bShowLoadingShadersMessage, pIni);
     GetPrivateProfileStringW(L"settings", L"szFontFace6", m_szLyricsFontFace,
         m_szLyricsFontFace, _countof(m_szLyricsFontFace), pIni);
     m_bLyricsFontBold = GetPrivateProfileBoolW(L"settings", L"bFontBold6",
@@ -1569,8 +1568,6 @@ void CPlugin::MyWriteConfig()
 
 	WritePrivateProfileIntW(m_bSongTitleAnims,		L"bSongTitleAnims",		pIni, L"settings");
 	WritePrivateProfileIntW(m_bEnableLyrics,		L"bEnableLyrics",		pIni, L"settings");
-	WritePrivateProfileIntW(m_bShowLoadingShadersMessage, L"bShowLoadingShadersMessage",
-		pIni, L"settings");
 	WritePrivateProfileStringW(L"settings", L"szFontFace6", m_szLyricsFontFace, pIni);
 	WritePrivateProfileIntW(m_bLyricsFontBold, L"bFontBold6", pIni, L"settings");
 	WritePrivateProfileIntW(m_bLyricsFontItalic, L"bFontItalic6", pIni, L"settings");
@@ -4454,7 +4451,6 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
     SafeRelease(m_lpDDSTitle);
     SafeRelease(m_d3dx_title_font_doublesize);
     m_lyricsRenderer.OnDeviceLost();
-    m_loadingPresetRenderer.OnDeviceLost();
 
     // NOTE: THIS CODE IS IN THE RIGHT PLACE.
     if (m_gdi_title_font_doublesize)
@@ -10044,11 +10040,7 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
     if (!wcscmp(m_pState->m_szDesc, INVALID_PRESET_DESC))
         fBlendTime = 0;
 
-    // Load the first preset synchronously so startup never renders the default
-    // placeholder state before the configured startup preset is ready. The
-    // loading message is useful for later preset changes, where an existing
-    // preset remains visible while shaders are compiled in stages.
-    if (fBlendTime == 0 && (!m_bShowLoadingShadersMessage || !m_bInitialPresetSelected))
+    if (fBlendTime == 0)
     {
         // do it all NOW!
 	    if (wcscmp(loadPresetFilename, m_szCurrentPresetFile) != 0) //[sic]

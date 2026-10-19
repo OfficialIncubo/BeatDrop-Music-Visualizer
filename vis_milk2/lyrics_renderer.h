@@ -23,8 +23,7 @@ public:
     // song-title renderer's texture or typography.
     void SetFont(const wchar_t* face, bool bold, bool italic, int size,
         bool antiAliased, int red, int green, int blue);
-    void Render(LPDIRECT3DDEVICE9 device, int width, int height, float now,
-        float verticalPosition = 0.82f);
+    void Render(LPDIRECT3DDEVICE9 device, int width, int height, float now);
 
     // Called while the D3D device is being torn down.  Text is retained and
     // rendered again lazily after a resize, fullscreen switch, or device reset.
@@ -36,8 +35,7 @@ private:
     bool RenderTextToTexture(LPDIRECT3DDEVICE9 device, IDirect3DTexture9* texture,
         const std::wstring& text);
     void DrawTexture(LPDIRECT3DDEVICE9 device, IDirect3DTexture9* texture,
-        int width, int height, float alpha, float scale,
-        float verticalPosition) const;
+        int width, int height, float alpha, float scale) const;
     static float Clamp01(float value);
 
     IDirect3DTexture9* m_currentTexture = nullptr;
