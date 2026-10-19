@@ -7,6 +7,9 @@
 
 class BeatDropLyricsManager;
 
+// Returns -1 for normal application startup, otherwise the upload helper's exit code.
+int RunBeatDropLyricsUploadHelper(const char* commandLine);
+
 // Native timed-LRC editor adapted from Goury's original BeatDrop lyrics work.
 // The editor is intentionally separate from the renderer: it can be used to
 // import and repair local LRC files even where Now Playing is unavailable.
@@ -26,6 +29,7 @@ private:
     void Save();
     void ClearCache();
     void Upload();
+    void UpdateUploadStatus();
     void Import();
     void CaptureTimestamp();
     void CaptureAndAdvance();
@@ -71,4 +75,5 @@ private:
     int m_selectedLine = 0;
     bool m_applyingHistory = false;
     bool m_writingText = false;
+    LONG m_lastUploadPhase = -1;
 };

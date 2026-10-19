@@ -1690,6 +1690,9 @@ int StartThreads(HINSTANCE instance) {
     }
 #else
     int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow) {
+        const int uploadResult = RunBeatDropLyricsUploadHelper(szCmdLine);
+        if (uploadResult >= 0)
+            return uploadResult;
         api_orig_hinstance = hInstance;
 		// SPOUT
 		if (g_plugin.CheckForDirectX9c())

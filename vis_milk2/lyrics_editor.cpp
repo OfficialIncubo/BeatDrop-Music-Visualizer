@@ -12,12 +12,12 @@
 #include <commctrl.h>
 #include <commdlg.h>
 #include <cstdint>
+#include <cstring>
+#include <cstdlib>
 #include <cwctype>
 #include <fstream>
-#include <memory>
 #include <richedit.h>
 #include <sstream>
-#include <thread>
 #include <winhttp.h>
 
 extern SongTitleGetter songtitlegetter;
@@ -52,7 +52,38 @@ namespace
     constexpr int ID_AUTO_APPLY = 1025;
     constexpr int ID_CLEAR_CACHE = 1026;
     constexpr UINT_PTR STATUS_TIMER = 1;
-    constexpr UINT UPLOAD_FINISHED = WM_APP + 42;
+    // Only the Preparing -> CancelRequested or Preparing -> Publishing transition
+    // can win. Never promise cancellation after a publish request can be sent.
+    enum UploadPhase : LONG { Preparing, CancelRequested, Publishing, Uploaded, UploadFailed, UploadCancelled };
+    struct SharedUpload
+    {
+        volatile LONG phase;
+        char payload[2 * 1024 * 1024];
+        wchar_t successMessage[2048];
+        wchar_t statusMessage[512];
+    };
+    struct UploadJob
+    {
+        HANDLE mapping = nullptr;
+        HANDLE process = nullptr;
+        SharedUpload* data = nullptr;
+        void Close()
+        {
+            if (data) UnmapViewOfFile(data);
+            if (mapping) CloseHandle(mapping);
+            if (process) CloseHandle(process);
+            data = nullptr;
+            mapping = process = nullptr;
+        }
+        ~UploadJob() { Close(); }
+    };
+    UploadJob uploadJob;
+    SharedUpload* workerUpload = nullptr;
+
+    LONG CurrentUploadPhase(SharedUpload* data)
+    {
+        return InterlockedCompareExchange(&data->phase, Preparing, Preparing);
+    }
     const wchar_t* kClassName = L"BeatDropLyricsEditorWindow";
 
     const wchar_t* RichEditClass()
@@ -301,6 +332,8 @@ namespace
         // a slow proof-of-work does not freeze text editing or playback sync.
         for (uint64_t nonce = 0; nonce < 1000000000ULL; ++nonce)
         {
+            if (workerUpload && CurrentUploadPhase(workerUpload) == CancelRequested)
+                return std::string();
             std::array<BYTE, 32> hash = {};
             const std::string candidate = prefix + std::to_string(nonce);
             if (Sha256(candidate, hash) && HashMeetsTarget(hash, target))
@@ -516,24 +549,92 @@ namespace
         return true;
     }
 
-    struct UploadResult
-    {
-        bool succeeded = false;
-        std::wstring popupMessage;
-        std::wstring statusMessage;
-    };
-
-    void PostUploadResult(HWND editorWindow, bool succeeded,
+    void PostUploadResult(bool succeeded,
         const std::wstring& popupMessage,
         const std::wstring& statusMessage = std::wstring())
     {
-        const std::wstring& editorStatus = statusMessage.empty() ?
-            popupMessage : statusMessage;
-        std::unique_ptr<UploadResult> result(new UploadResult{
-            succeeded, popupMessage, editorStatus});
-        if (IsWindow(editorWindow) && PostMessageW(editorWindow, UPLOAD_FINISHED,
-            0, reinterpret_cast<LPARAM>(result.get())))
-            result.release();
+        const bool cancelled = CurrentUploadPhase(workerUpload) == CancelRequested;
+        const std::wstring message = cancelled ?
+            L"Lyrics upload cancelled. No lyrics were submitted to LRCLIB." : popupMessage;
+        const std::wstring editorStatus = cancelled ? L"Lyrics upload cancelled" :
+            (statusMessage.empty() ? popupMessage : statusMessage);
+        wcsncpy_s(workerUpload->statusMessage, editorStatus.c_str(), _TRUNCATE);
+        InterlockedExchange(&workerUpload->phase,
+            cancelled ? UploadCancelled : succeeded ? Uploaded : UploadFailed);
+        // The helper owns this dialog, so closing the editor or visualizer does
+        // not destroy it. Publish the final state before waiting for dismissal.
+        MessageBoxW(nullptr, message.c_str(), L"LRCLIB upload",
+            MB_OK | MB_SETFOREGROUND |
+            ((succeeded || cancelled) ? MB_ICONINFORMATION : MB_ICONERROR));
+    }
+
+    bool BeginUpload(const std::string& payload, const std::wstring& successMessage)
+    {
+        if (payload.size() >= sizeof(SharedUpload::payload) ||
+            successMessage.size() >= sizeof(SharedUpload::successMessage) / sizeof(wchar_t))
+            return false;
+        uploadJob.Close();
+        SECURITY_ATTRIBUTES security = {sizeof(security), nullptr, TRUE};
+        uploadJob.mapping = CreateFileMappingW(INVALID_HANDLE_VALUE, &security,
+            PAGE_READWRITE, 0, sizeof(SharedUpload), nullptr);
+        if (!uploadJob.mapping)
+        {
+            uploadJob.Close();
+            return false;
+        }
+        uploadJob.data = static_cast<SharedUpload*>(MapViewOfFile(uploadJob.mapping,
+            FILE_MAP_ALL_ACCESS, 0, 0, sizeof(SharedUpload)));
+        if (!uploadJob.data)
+        {
+            uploadJob.Close();
+            return false;
+        }
+        strcpy_s(uploadJob.data->payload, payload.c_str());
+        wcscpy_s(uploadJob.data->successMessage, successMessage.c_str());
+        wcscpy_s(uploadJob.data->statusMessage, L"Preparing lyrics upload. You can cancel before publishing.");
+        wchar_t executable[32768] = {};
+        const DWORD length = GetModuleFileNameW(nullptr, executable, _countof(executable));
+        if (!length || length >= _countof(executable))
+        {
+            uploadJob.Close();
+            return false;
+        }
+        std::wstring command = std::wstring(L"\"") + executable +
+            L"\" --beatdrop-lyrics-upload " + std::to_wstring(
+                reinterpret_cast<uintptr_t>(uploadJob.mapping));
+        // Inherit only the job mapping, whose handle is duplicated into the child
+        // before CreateProcess returns. Closing BeatDrop immediately is safe.
+        SIZE_T attributeBytes = 0;
+        InitializeProcThreadAttributeList(nullptr, 1, 0, &attributeBytes);
+        std::vector<BYTE> attributes(attributeBytes);
+        STARTUPINFOEXW startup = {};
+        startup.StartupInfo.cb = sizeof(startup);
+        startup.lpAttributeList = reinterpret_cast<LPPROC_THREAD_ATTRIBUTE_LIST>(attributes.data());
+        if (!InitializeProcThreadAttributeList(startup.lpAttributeList, 1, 0, &attributeBytes))
+        {
+            uploadJob.Close();
+            return false;
+        }
+        if (!UpdateProcThreadAttribute(startup.lpAttributeList, 0,
+            PROC_THREAD_ATTRIBUTE_HANDLE_LIST, &uploadJob.mapping, sizeof(HANDLE), nullptr, nullptr))
+        {
+            DeleteProcThreadAttributeList(startup.lpAttributeList);
+            uploadJob.Close();
+            return false;
+        }
+        PROCESS_INFORMATION process = {};
+        const BOOL started = CreateProcessW(executable, &command[0], nullptr, nullptr, TRUE,
+            EXTENDED_STARTUPINFO_PRESENT, nullptr, nullptr, &startup.StartupInfo, &process);
+        DeleteProcThreadAttributeList(startup.lpAttributeList);
+        SetHandleInformation(uploadJob.mapping, HANDLE_FLAG_INHERIT, 0);
+        if (!started)
+        {
+            uploadJob.Close();
+            return false;
+        }
+        CloseHandle(process.hThread);
+        uploadJob.process = process.hProcess;
+        return true;
     }
 
     bool LineRange(const std::wstring& document, int line, size_t& start, size_t& end)
@@ -1035,6 +1136,8 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
             L"Write, paste or import lyrics, then select each line and capture timestamps." :
             (parsedLyrics.empty() ? TrackLookupStatus(m_manager) :
                 LyricsReadyStatus(parsedLyrics)));
+        m_lastUploadPhase = -1;
+        UpdateUploadStatus();
         SetTimer(m_hwnd, STATUS_TIMER, 500, nullptr);
         ResizeControls();
         return 0;
@@ -1114,6 +1217,7 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
             if (AutoApplyEnabled() && Read(m_parsed) != m_lastAppliedParsed)
                 ApplyParsedToRenderer();
         }
+        UpdateUploadStatus();
         return 0;
     case WM_ERASEBKGND:
     {
@@ -1225,17 +1329,6 @@ LRESULT BeatDropLyricsEditor::HandleMessage(UINT message, WPARAM wParam, LPARAM 
     case WM_CLOSE:
         DestroyWindow(m_hwnd);
         return 0;
-    case UPLOAD_FINISHED:
-    {
-        std::unique_ptr<UploadResult> result(
-            reinterpret_cast<UploadResult*>(lParam));
-        if (!result)
-            return 0;
-        SetStatus(result->statusMessage);
-        MessageBoxW(m_hwnd, result->popupMessage.c_str(), L"LRCLIB upload",
-            MB_OK | (result->succeeded ? MB_ICONINFORMATION : MB_ICONERROR));
-        return 0;
-    }
     case WM_DESTROY:
         KillTimer(m_hwnd, STATUS_TIMER);
         if (m_parsed && m_oldParsedProc)
@@ -1455,6 +1548,12 @@ void BeatDropLyricsEditor::ClearCache()
 
 void BeatDropLyricsEditor::Upload()
 {
+    if (uploadJob.data && CurrentUploadPhase(uploadJob.data) <= Publishing)
+    {
+        InterlockedCompareExchange(&uploadJob.data->phase, CancelRequested, Preparing);
+        UpdateUploadStatus();
+        return;
+    }
     if (!m_parsed)
         return;
 
@@ -1518,50 +1617,91 @@ void BeatDropLyricsEditor::Upload()
     if (confirmation != IDYES)
         return;
 
-    const HWND editorWindow = m_hwnd;
     const std::wstring successMessage = L"Lyrics uploaded to LRCLIB.\n\nTrack: " +
         title + L"\nArtist: " + artist;
-    SetStatus(L"Requesting an LRCLIB publishing challenge...");
+    const std::string plainUtf8 = BeatDropLyricsManager::Utf8(plainLyrics);
+    const std::string syncedUtf8 = BeatDropLyricsManager::Utf8(syncedLyrics);
+    const std::string plainJson = BeatDropLrc::Trim(plainLyrics).empty() ?
+        std::string("null") : std::string("\"") + JsonEscape(plainUtf8) + "\"";
+    const std::string syncedJson = BeatDropLrc::Trim(syncedLyrics).empty() ?
+        std::string("null") : std::string("\"") + JsonEscape(syncedUtf8) + "\"";
+    const std::string payload =
+        "{\"trackName\":\"" + JsonEscape(BeatDropLyricsManager::Utf8(title)) +
+        "\",\"artistName\":\"" + JsonEscape(BeatDropLyricsManager::Utf8(artist)) +
+        "\",\"albumName\":\"" + JsonEscape(BeatDropLyricsManager::Utf8(album)) +
+        "\",\"duration\":" + std::to_string(durationSeconds) +
+        ",\"plainLyrics\":" + plainJson +
+        ",\"syncedLyrics\":" + syncedJson + "}";
 
-    std::thread([editorWindow, artist, title, album, plainLyrics, syncedLyrics,
-        durationSeconds, successMessage]
+    if (!BeginUpload(payload, successMessage))
     {
-        const std::string plainUtf8 = BeatDropLyricsManager::Utf8(plainLyrics);
-        const std::string syncedUtf8 = BeatDropLyricsManager::Utf8(syncedLyrics);
-        const std::string plainJson = BeatDropLrc::Trim(plainLyrics).empty() ?
-            std::string("null") : std::string("\"") + JsonEscape(plainUtf8) + "\"";
-        const std::string syncedJson = BeatDropLrc::Trim(syncedLyrics).empty() ?
-            std::string("null") : std::string("\"") + JsonEscape(syncedUtf8) + "\"";
-        const std::string payload =
-            "{\"trackName\":\"" + JsonEscape(BeatDropLyricsManager::Utf8(title)) +
-            "\",\"artistName\":\"" + JsonEscape(BeatDropLyricsManager::Utf8(artist)) +
-            "\",\"albumName\":\"" + JsonEscape(BeatDropLyricsManager::Utf8(album)) +
-            "\",\"duration\":" + std::to_string(durationSeconds) +
-            ",\"plainLyrics\":" + plainJson +
-            ",\"syncedLyrics\":" + syncedJson + "}";
+        SetStatus(L"Could not start the background lyrics upload. Check available memory and executable access.");
+        return;
+    }
+    m_lastUploadPhase = -1;
+    UpdateUploadStatus();
+}
 
+// This entry point runs before DirectX, audio, media sessions or visualizer
+// threads are started. The helper owns a copy of the confirmed publication.
+int RunBeatDropLyricsUploadHelper(const char* commandLine)
+{
+    const std::string command = commandLine ? commandLine : "";
+    const std::string prefix = "--beatdrop-lyrics-upload ";
+    if (command.compare(0, prefix.size(), prefix) != 0)
+        return -1;
+    const std::string id = command.substr(prefix.size());
+    if (id.empty() || id.find_first_not_of("0123456789") != std::string::npos)
+        return 1;
+    HANDLE mapping = reinterpret_cast<HANDLE>(static_cast<uintptr_t>(std::strtoull(id.c_str(), nullptr, 10)));
+    if (!mapping)
+        return 1;
+    workerUpload = static_cast<SharedUpload*>(MapViewOfFile(mapping,
+        FILE_MAP_ALL_ACCESS, 0, 0, sizeof(SharedUpload)));
+    if (!workerUpload)
+    {
+        CloseHandle(mapping);
+        return 1;
+    }
+    // Always release our handles, including when proof-of-work or HTTP fails.
+    struct Cleanup
+    {
+        HANDLE mapping;
+        ~Cleanup() { UnmapViewOfFile(workerUpload); workerUpload = nullptr; CloseHandle(mapping); }
+    } cleanup{mapping};
+    workerUpload->payload[_countof(workerUpload->payload) - 1] = '\0';
+    workerUpload->successMessage[_countof(workerUpload->successMessage) - 1] = L'\0';
+    try
+    {
+        const std::string payload = workerUpload->payload;
+        if (CurrentUploadPhase(workerUpload) == CancelRequested)
+        {
+            PostUploadResult(false, L"Lyrics upload cancelled.");
+            return 0;
+        }
         DWORD status = 0;
         std::string challenge;
-        if (!PostLrclib(L"/api/request-challenge", "{}", L"", status, challenge))
+        if (!PostLrclib(L"/api/request-challenge", "{}", L"", status, challenge) ||
+            status < 200 || status >= 300)
         {
-            PostUploadResult(editorWindow, false,
+            PostUploadResult(false,
                 L"Could not request an LRCLIB publishing challenge.");
-            return;
+            return 1;
         }
         const std::string prefix = JsonStringValue(challenge, "prefix");
         const std::string target = JsonStringValue(challenge, "target");
         if (prefix.empty() || target.empty())
         {
-            PostUploadResult(editorWindow, false,
+            PostUploadResult(false,
                 L"LRCLIB returned an invalid publishing challenge.");
-            return;
+            return 1;
         }
         const std::string nonce = SolveChallenge(prefix, target);
         if (nonce.empty())
         {
-            PostUploadResult(editorWindow, false,
+            PostUploadResult(false,
                 L"Could not solve the LRCLIB proof-of-work challenge.");
-            return;
+            return 1;
         }
 
         const std::wstring token = L"X-Publish-Token: " +
@@ -1570,17 +1710,62 @@ void BeatDropLyricsEditor::Upload()
         // This is not a batch, but leaving a short gap between the challenge
         // and publish calls follows LRCLIB's client-throttling guidance.
         Sleep(250);
+        if (InterlockedCompareExchange(&workerUpload->phase, Publishing, Preparing) != Preparing)
+        {
+            PostUploadResult(false, L"Lyrics upload cancelled.");
+            return 0;
+        }
+        status = 0;
         std::string response;
         if (!PostLrclib(L"/api/publish", payload, token, status, response) ||
             status < 200 || status >= 300)
         {
-            PostUploadResult(editorWindow, false,
-                L"LRCLIB rejected the upload (HTTP " + std::to_wstring(status) + L").");
-            return;
+            PostUploadResult(false,
+                status ? L"LRCLIB rejected the upload (HTTP " + std::to_wstring(status) + L")." :
+                L"No confirmation was received from LRCLIB. The upload may have been accepted. "
+                L"Check LRCLIB before trying again.");
+            return 1;
         }
-        PostUploadResult(editorWindow, true, successMessage,
+        PostUploadResult(true, workerUpload->successMessage,
             L"Lyrics uploaded to LRCLIB");
-    }).detach();
+        return 0;
+    }
+    catch (...)
+    {
+        PostUploadResult(false, L"The lyrics upload stopped unexpectedly. If publishing had started, "
+            L"check LRCLIB before trying again.");
+        return 1;
+    }
+}
+
+void BeatDropLyricsEditor::UpdateUploadStatus()
+{
+    if (!uploadJob.data)
+        return;
+    LONG phase = CurrentUploadPhase(uploadJob.data);
+    if (phase <= Publishing && WaitForSingleObject(uploadJob.process, 0) == WAIT_OBJECT_0)
+    {
+        wcscpy_s(uploadJob.data->statusMessage,
+            L"The upload process stopped. Check LRCLIB before trying again.");
+        InterlockedExchange(&uploadJob.data->phase, UploadFailed);
+        phase = UploadFailed;
+    }
+    HWND button = GetDlgItem(m_hwnd, ID_UPLOAD);
+    if (phase == m_lastUploadPhase)
+        return;
+    const wchar_t* caption = phase == Preparing ? L"Cancel upload" :
+        phase == CancelRequested ? L"Cancelling..." :
+        phase == Publishing ? L"Publishing..." : L"Upload to LRCLIB";
+    SetWindowTextW(button, caption);
+    EnableWindow(button, phase != Publishing && phase != CancelRequested);
+    InvalidateRect(button, nullptr, TRUE);
+    if (phase != m_lastUploadPhase)
+    {
+        m_lastUploadPhase = phase;
+        SetStatus(phase == CancelRequested ? L"Cancelling lyrics upload..." :
+            phase == Publishing ? L"Publishing to LRCLIB. Waiting for confirmation..." :
+            uploadJob.data->statusMessage);
+    }
 }
 
 void BeatDropLyricsEditor::Import()

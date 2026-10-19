@@ -187,7 +187,7 @@ Now it can get the song information from any media players using SMTC, sending i
 
 ### Overview
 
-Press `CTRL + L` to enable or disable lyrics. On the standard Windows 10+ build, BeatDrop uses the same SMTC playback position, seek state and duration shown by the song-time overlay to select the active `.lrc` line. Matching synchronized lyrics are fetched in the background from LRCLIB, then cached under `%LOCALAPPDATA%\BeatDrop\Lyrics` as `Artist - Title.lrc`. Cached files include BeatDrop's LRC metadata header and remain available locally.
+Press `CTRL + L` to enable or disable lyrics. On the standard Windows 10+ build, BeatDrop uses the same [SMTC](https://learn.microsoft.com/en-us/uwp/api/windows.media.systemmediatransportcontrols) playback position, seek state and duration shown by the song-time overlay to select the active `.lrc` line. Matching synchronized lyrics are fetched in the background from [LRCLIB](https://lrclib.net), then cached under `%LOCALAPPDATA%\BeatDrop\Lyrics` as `Artist - Title.lrc`. Cached files include BeatDrop's LRC metadata header and remain available locally.
 
 ![BeatDropLyricsEditorScreenshot](https://github.com/user-attachments/assets/17ed5ef7-16b8-4fab-9fae-7144f6975654)
 
@@ -202,8 +202,13 @@ Hotkeys:
 
 ### LRCLIB upload
 
-After synchronizing at least one lyric line, click `Upload to LRCLIB`. BeatDrop shows a confirmation dialog before publishing the current artist, title, album, duration, plain lyrics and timestamped LRC lyrics to LRCLIB.
-Uploads are public and may create a new revision for an existing track, so verify the metadata and timing first. BeatDrop obtains the required one-time proof-of-work publish token automatically; no LRCLIB account or API key is required.
+Click `Upload to LRCLIB` to publish plain lyrics, synchronized lyrics, or a mixture of both. Review the artist, title, album and duration in the confirmation dialog first. For mixed lyrics, all lines are included as plain text; only timestamped lines are included as synchronized lyrics. LRC metadata tags supply track details and are excluded from the lyric text.
+
+The upload runs in a separate background process using the confirmed lyrics and metadata. Changing tracks, closing the editor, closing the music player or exiting BeatDrop does not stop it. A result popup appears even when the editor or visualizer is closed. Success popups include the track and artist; the editor status reads `Lyrics uploaded to LRCLIB`.
+
+While BeatDrop prepares the upload and solves [LRCLIB](https://lrclib.net)'s publishing challenge, the button reads `Cancel upload`. Cancellation may wait for the current network request to finish, but prevents the lyrics from being submitted. Once the final request starts, the button reads `Publishing...` and cannot be cancelled: LRCLIB may already be accepting the submission. The button returns to `Upload to LRCLIB` when the job finishes or cancellation completes.
+
+Cancellation before publishing submits no partial lyrics. A connection failure during publishing can leave the outcome unknown, so check [LRCLIB](https://lrclib.net) before retrying. Closing the editor is not a cancellation; while BeatDrop is still running, reopen the editor to cancel a job still in preparation. Windows shutdown or forcibly ending the upload process can interrupt it. Uploads are public and cannot be retracted with the Cancel button.
 
 ### Customization
 
