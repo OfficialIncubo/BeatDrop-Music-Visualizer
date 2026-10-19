@@ -50,6 +50,12 @@ jobs:
         restore-keys: |
           vcpkg-archives-${{ runner.os }}-
 
+    - name: Cache Legacy DirectX SDK
+      uses: actions/cache@v6
+      with:
+        path: C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)
+        key: directx-sdk-${{ hashFiles('.github/scripts/install-directx-sdk.ps1') }}
+
     - name: Install Legacy DirectX SDK
       shell: powershell
       run: |
