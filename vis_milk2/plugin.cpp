@@ -10044,7 +10044,11 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
     if (!wcscmp(m_pState->m_szDesc, INVALID_PRESET_DESC))
         fBlendTime = 0;
 
-    if (fBlendTime == 0 && !m_bShowLoadingShadersMessage)
+    // Load the first preset synchronously so startup never renders the default
+    // placeholder state before the configured startup preset is ready. The
+    // loading message is useful for later preset changes, where an existing
+    // preset remains visible while shaders are compiled in stages.
+    if (fBlendTime == 0 && (!m_bShowLoadingShadersMessage || !m_bInitialPresetSelected))
     {
         // do it all NOW!
 	    if (wcscmp(loadPresetFilename, m_szCurrentPresetFile) != 0) //[sic]
@@ -10060,11 +10064,10 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
 
         m_pState->Import(loadPresetFilename, GetTime(), m_pOldState, ApplyFlags);
 
-	    if (fBlendTime >= 0.001f)
-        {
-            RandomizeBlendPattern();
-		    m_pState->StartBlendFrom(m_pOldState, GetTime(), fBlendTime);
-        }
+        RandomizeBlendPattern();
+
+	    //if (fBlendTime >= 0.001f)
+		m_pState->StartBlendFrom(m_pOldState, GetTime(), fBlendTime);
 
 	    m_fPresetStartTime = GetTime();
 	    m_fNextPresetTime = -1.0f;		// flags UpdateTime() to recompute this
