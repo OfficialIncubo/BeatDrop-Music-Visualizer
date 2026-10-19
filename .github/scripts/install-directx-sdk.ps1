@@ -1,24 +1,28 @@
 $ErrorActionPreference = 'Stop'
 
 $dxSdkPath = 'C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)'
-$chocoOutput = & choco install directx-sdk -y --no-progress 2>&1
-$chocoExitCode = $LASTEXITCODE
-$chocoOutput | ForEach-Object { Write-Host $_ }
-$chocoOutputText = $chocoOutput -join "`n"
+$installerPath = Join-Path $env:RUNNER_TEMP 'DXSDK_Jun10.exe'
+$downloadUrl = 'https://download.microsoft.com/download/a/e/7/ae743f1f-632b-4809-87a9-aa1bb3458e31/DXSDK_Jun10.exe'
+$expectedSha256 = '705271DC83BFEE54D9B94E028426E288D5F070784B7446D164F48ECFBB2A02CB'
 
-# Chocolatey can print resolver errors while returning success. Treat resolver
-# failures and transient feed errors as install failures instead of allowing
-# the build to continue without the legacy SDK.
-if ($chocoOutputText -match '(?i)NuGetResolverInputException' -or
-    $chocoOutputText -match '(?i)Unable to find package.*directx-sdk' -or
-    $chocoOutputText -match '(?i)Response status code does not indicate success:\s*503') {
-    throw "Chocolatey could not resolve or download the DirectX SDK package. Check the Chocolatey Community feed and retry."
+if (-not (Test-Path -LiteralPath $dxSdkPath)) {
+    Write-Host 'Downloading the DirectX SDK installer from Microsoft...'
+    Invoke-WebRequest -Uri $downloadUrl -OutFile $installerPath
+
+    $actualSha256 = (Get-FileHash -LiteralPath $installerPath -Algorithm SHA256).Hash
+    if ($actualSha256 -ne $expectedSha256) {
+        throw "DirectX SDK installer SHA-256 mismatch. Expected $expectedSha256, got $actualSha256."
+    }
+
+    Write-Host 'Installing the DirectX SDK...'
+    $installer = Start-Process -FilePath $installerPath -ArgumentList '/U' -Wait -PassThru
+    if ($installer.ExitCode -notin @(0, 1023)) {
+        throw "DirectX SDK installer failed with exit code $($installer.ExitCode)."
+    }
 }
 
-if ($chocoExitCode -ne 0) {
-    throw "Chocolatey failed to install directx-sdk (exit code $chocoExitCode)."
-}
-
+# Do not let a successful download or installer exit code mask an incomplete
+# install: the build needs headers and libraries for both target architectures.
 $requiredFiles = @(
     (Join-Path $dxSdkPath 'Include\d3dx9.h'),
     (Join-Path $dxSdkPath 'Lib\x86\d3dx9.lib'),
@@ -26,7 +30,7 @@ $requiredFiles = @(
 )
 $missingFiles = @($requiredFiles | Where-Object { -not (Test-Path -LiteralPath $_) })
 if ($missingFiles.Count -gt 0) {
-    throw "Chocolatey reported success, but the DirectX SDK is incomplete. Missing: $($missingFiles -join ', ')"
+    throw "The DirectX SDK installation is incomplete. Missing: $($missingFiles -join ', ')"
 }
 
 "DXSDK_DIR=$dxSdkPath" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
