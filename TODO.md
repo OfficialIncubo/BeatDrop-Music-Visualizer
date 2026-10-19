@@ -21,7 +21,7 @@ v2:
 - More to come...
 
 v1.5.2:
-- Cockos/WDL EEL2 eval integration (probably replacing projectM-eval or having both) ([see doc](https://www.cockos.com/EEL2/))
+- [ ] [Cockos/WDL EEL2](https://github.com/justinfrankel/WDL/tree/main/WDL%2Feel2) evaluation library integration (probably replacing projectM-eval or having both) ([see doc](https://www.cockos.com/EEL2/))
 
 v1.5.1:
 - [ ] Window-Independent Spout Output (https://github.com/IkeC/Milkwave/commit/946698de0341e1cde4c61e4380116629282f39e0) (CAN'T DO)
