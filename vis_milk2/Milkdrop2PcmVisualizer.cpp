@@ -286,6 +286,16 @@ namespace
             g_cursorHiddenByAutoHide = true;
         }
     }
+
+    void UpdateDisplayExecutionState()
+    {
+        DWORD executionState = ES_CONTINUOUS;
+        if (fullscreen || stretch)
+            executionState |= ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED;
+
+        if (!SetThreadExecutionState(executionState))
+            OutputDebugStringW(L"BeatDrop: SetThreadExecutionState failed.\n");
+    }
 }
 
 // SPOUT
@@ -480,7 +490,6 @@ void ToggleStretch(HWND hwnd) {
         SetWindowLongW(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
         SetWindowLongW(hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
         SetWindowPos(hwnd, HWND_NOTOPMOST, left, top, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
-        SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
 		DragAcceptFiles(hwnd, TRUE);
 
         stretch = true;
@@ -499,7 +508,6 @@ void ToggleStretch(HWND hwnd) {
         g_plugin.PrepareForExternalDeviceReset();
         pD3DDevice->Reset(&d3dPp);
         g_plugin.RestoreAfterExternalDeviceReset();
-        SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
         stretch = false;
 
         SetWindowLongW(hwnd, GWL_STYLE, lastWindowStyle);
@@ -516,6 +524,7 @@ void ToggleStretch(HWND hwnd) {
         }
     }
     fullscreen = false;
+    UpdateDisplayExecutionState();
     RestoreRenderWindowIcon(hwnd);
 }
 
@@ -553,7 +562,6 @@ void ToggleFullScreen(HWND hwnd) {
         g_plugin.PrepareForExternalDeviceReset();
         pD3DDevice->Reset(&d3dPp);
         g_plugin.RestoreAfterExternalDeviceReset();
-        SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
 		DragAcceptFiles(hwnd, TRUE);
         fullscreen = true;
     }
@@ -571,7 +579,6 @@ void ToggleFullScreen(HWND hwnd) {
         g_plugin.PrepareForExternalDeviceReset();
         pD3DDevice->Reset(&d3dPp);
         g_plugin.RestoreAfterExternalDeviceReset();
-        SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
         fullscreen = false;
 
         SetWindowLongW(hwnd, GWL_STYLE, lastWindowStyle);
@@ -588,6 +595,7 @@ void ToggleFullScreen(HWND hwnd) {
         }
     }
     stretch = false;
+    UpdateDisplayExecutionState();
     RestoreRenderWindowIcon(hwnd);
 }
 
