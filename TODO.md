@@ -31,7 +31,7 @@ v1.5.1:
 - [ ] Webcam support: enable/disable with `W` hotkey and has three layers: deep (without burn), deep (with burn) and top (with 50% webcam renderer)
 - [ ] Offer free watermark and watermarkless downloads to GH releases and itch.io (not out yet). Watermark version should be on GH releases + itch.io and should offer the watermarkless version after paying from itch.io
 - [ ] A detailed crash log screen that lets you see what happened and send logs
-- [ ] Fix screen timeout or idle sleep on different modes; it keeps enabled when changing from monitor stretch mode to full-screen mode, for example
+- [x] Fix screen timeout or idle sleep on different modes; it keeps enabled when changing from monitor stretch mode to full-screen mode, for example
 
 # User-proposed features:
 * \[ ] _madmads_ on Discord: A hotkey to disable animated song title (or real-time song title feature)
