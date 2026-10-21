@@ -314,22 +314,110 @@ static size_t GetOffsetForLineColumn(const std::string& source, int lineNumber, 
 	return requested < source.size() ? requested : source.size();
 }
 
-static size_t GetOriginalOffsetForCompiledOffset(const char* originalCode, size_t compiledOffset)
+// MilkDrop removes line comments and internal row separators completely. In
+// particular, a comment-only row must not introduce spaces between identifiers
+// continued across numbered rows ("zm" + "nx" becomes "zmnx"). Keep the
+// original offsets alongside the exact compiler input for diagnostics.
+static void PrepareExpressionSource(const char* source, char* destination,
+	std::vector<size_t>* positions = NULL)
 {
-	if (!originalCode) return compiledOffset;
-	size_t sourceOffset = 0;
-	while (originalCode[sourceOffset])
+	size_t output = 0;
+	bool lineComment = false, blockComment = false, hasCode = false;
+	auto append = [&](char value, size_t originalOffset) {
+		if (destination) destination[output] = value;
+		if (positions) positions->push_back(originalOffset);
+		++output;
+	};
+	size_t i = 0;
+	for (; source && source[i]; ++i)
 	{
-		if (originalCode[sourceOffset] == LINEFEED_CONTROL_CHAR)
+		const char value = source[i];
+		if (lineComment)
 		{
-			++sourceOffset;
+			if (value == LINEFEED_CONTROL_CHAR || value == '\n') lineComment = false;
 			continue;
 		}
-		if (compiledOffset == 0) return sourceOffset;
-		--compiledOffset;
-		++sourceOffset;
+		if (blockComment)
+		{
+			if (value != LINEFEED_CONTROL_CHAR) append(' ', i);
+			if (value == '*' && source[i + 1] == '/')
+			{
+				append(' ', ++i);
+				blockComment = false;
+			}
+			continue;
+		}
+		if ((value == '/' && source[i + 1] == '/') || (value == '\\' && source[i + 1] == '\\'))
+		{
+			lineComment = true;
+			++i;
+			continue;
+		}
+		if (value == '/' && source[i + 1] == '*')
+		{
+			append(' ', i);
+			append(' ', ++i);
+			blockComment = true;
+			continue;
+		}
+		if (value == LINEFEED_CONTROL_CHAR) continue;
+		append(value, i);
+		if (!std::isspace((unsigned char)value)) hasCode = true;
 	}
-	return sourceOffset;
+	if (!hasCode)
+	{
+		output = 0;
+		if (positions) positions->clear();
+	}
+	if (destination) destination[output] = 0;
+	if (positions) positions->push_back(i); // Also map end-of-input errors.
+}
+
+static size_t GetOriginalOffsetForCompiledOffset(const char* originalCode, size_t compiledOffset)
+{
+	std::vector<size_t> positions;
+	PrepareExpressionSource(originalCode, NULL, &positions);
+	return positions[compiledOffset < positions.size() ? compiledOffset : positions.size() - 1];
+}
+
+static bool FindMissingSemicolon(const std::string& source, size_t errorOffset, size_t* statementStart)
+{
+	// Only classify a failed parse at a new top-level assignment. Existing
+	// whitespace may separate two statements; joined identifiers and omitted
+	// final semicolons remain entirely up to the evaluator.
+	int depth = 0;
+	for (size_t i = 0; i < source.size(); )
+	{
+		const char c = source[i];
+		if (c == '$' && i + 2 < source.size() && source[i + 1] == '\'')
+		{
+			i += 3;
+			if (i < source.size() && source[i] == '\'') ++i;
+			continue;
+		}
+		if (c == '(' || c == '[') ++depth;
+		else if (c == ')' || c == ']') --depth;
+		if (!IsIdentifierStart(c)) { ++i; continue; }
+		const size_t start = i++;
+		while (i < source.size() && IsIdentifierChar(source[i])) ++i;
+		if (depth != 0) continue;
+
+		size_t next = i;
+		while (next < source.size() && std::isspace((unsigned char)source[next])) ++next;
+		if (next >= source.size() || source[next] != '=' ||
+			(next + 1 < source.size() && source[next + 1] == '=')) continue;
+
+		size_t previous = start;
+		while (previous && std::isspace((unsigned char)source[previous - 1])) --previous;
+		if (!previous) continue;
+		const char last = source[previous - 1];
+		if (!IsIdentifierChar(last) && last != ')' && last != ']') continue;
+		// Bison can identify the start, end, or preceding whitespace of VAR.
+		if (errorOffset < previous || errorOffset > i) continue;
+		*statementStart = start;
+		return true;
+	}
+	return false;
 }
 
 static std::wstring BuildExpressionCompileError(const wchar_t* presetName, const char* section,
@@ -345,7 +433,17 @@ static std::wstring BuildExpressionCompileError(const wchar_t* presetName, const
 	std::string reason;
 	std::string functionName;
 	size_t functionStart = errorOffset;
-	if (FindFunctionUsedAsVariable(source, errorOffset, &functionName, &functionStart))
+	size_t statementStart = errorOffset;
+	if (compilerError && std::string(compilerError).find("unexpected VAR") != std::string::npos &&
+		FindMissingSemicolon(source, errorOffset, &statementStart))
+	{
+		reason = "missing semicolon";
+		line = 1;
+		for (size_t i = 0; i < statementStart; ++i) if (source[i] == '\n') ++line;
+		const size_t lineFeed = source.rfind('\n', statementStart);
+		column = (int)(statementStart - (lineFeed == std::string::npos ? 0 : lineFeed + 1)) + 1;
+	}
+	else if (FindFunctionUsedAsVariable(source, errorOffset, &functionName, &functionStart))
 	{
 		reason = "'" + functionName + "' is a function, not a variable";
 		line = 1;
@@ -1968,61 +2066,7 @@ void CState::FreeVarsAndCode(bool bFree)
 
 void CState::StripLinefeedCharsAndComments(char *src, char *dest)
 {
-	// Keep the legacy parser input: MilkDrop's internal line separators are
-	// removed, including when they split a token or numeric literal across
-	// numbered code rows. The diagnostic builder maps compiler offsets back to
-	// the original source text.
-	const int len = (int)strlen(src);
-	int destPos = 0;
-	bool lineComment = false;
-	bool blockComment = false;
-	bool hasCode = false;
-	for (int i = 0; i < len; ++i)
-	{
-		if (blockComment)
-		{
-			if (src[i] == '*' && i + 1 < len && src[i + 1] == '/')
-			{
-				dest[destPos++] = ' ';
-				dest[destPos++] = ' ';
-				++i;
-				blockComment = false;
-			}
-			else if (src[i] != LINEFEED_CONTROL_CHAR)
-				dest[destPos++] = ' ';
-		}
-		else if (lineComment)
-		{
-			if (src[i] == LINEFEED_CONTROL_CHAR)
-				lineComment = false;
-			else
-				dest[destPos++] = ' ';
-		}
-		else if (i + 1 < len && ((src[i] == '/' && src[i + 1] == '/') || (src[i] == '\\' && src[i + 1] == '\\')))
-		{
-			dest[destPos++] = ' ';
-			dest[destPos++] = ' ';
-			++i;
-			lineComment = true;
-		}
-		else if (i + 1 < len && src[i] == '/' && src[i + 1] == '*')
-		{
-			dest[destPos++] = ' ';
-			dest[destPos++] = ' ';
-			++i;
-			blockComment = true;
-		}
-		else
-		{
-			if (src[i] == LINEFEED_CONTROL_CHAR) continue;
-			dest[destPos++] = src[i];
-			if (src[i] != ' ' && src[i] != '\t' && src[i] != '\r' && src[i] != LINEFEED_CONTROL_CHAR)
-				hasCode = true;
-		}
-	}
-	dest[destPos] = 0;
-	if (!hasCode)
-		dest[0] = 0;
+	PrepareExpressionSource(src, dest);
 }
 
 void CState::RecompileExpressions(int flags, int bReInit)
