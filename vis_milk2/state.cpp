@@ -386,34 +386,66 @@ static bool FindMissingSemicolon(const std::string& source, size_t errorOffset, 
 	// whitespace may separate two statements; joined identifiers and omitted
 	// final semicolons remain entirely up to the evaluator.
 	int depth = 0;
+	size_t previousTokenStart = 0;
+	bool previousCanEndExpression = false;
 	for (size_t i = 0; i < source.size(); )
 	{
 		const char c = source[i];
+		if (std::isspace((unsigned char)c)) { ++i; continue; }
 		if (c == '$' && i + 2 < source.size() && source[i + 1] == '\'')
 		{
+			previousTokenStart = i;
 			i += 3;
 			if (i < source.size() && source[i] == '\'') ++i;
+			previousCanEndExpression = true;
+			continue;
+		}
+		if ((c >= '0' && c <= '9') || (c == '.' && i + 1 < source.size() &&
+			source[i + 1] >= '0' && source[i + 1] <= '9'))
+		{
+			previousTokenStart = i;
+			while (i < source.size() && source[i] >= '0' && source[i] <= '9') ++i;
+			if (i < source.size() && source[i] == '.')
+			{
+				++i;
+				while (i < source.size() && source[i] >= '0' && source[i] <= '9') ++i;
+			}
+			if (i < source.size() && (source[i] == 'e' || source[i] == 'E'))
+			{
+				size_t exponent = i + 1;
+				if (exponent < source.size() && (source[exponent] == '+' || source[exponent] == '-')) ++exponent;
+				const size_t digits = exponent;
+				while (exponent < source.size() && source[exponent] >= '0' && source[exponent] <= '9') ++exponent;
+				if (exponent > digits) i = exponent;
+			}
+			previousCanEndExpression = true;
 			continue;
 		}
 		if (c == '(' || c == '[') ++depth;
 		else if (c == ')' || c == ']') --depth;
-		if (!IsIdentifierStart(c)) { ++i; continue; }
+		if (!IsIdentifierStart(c))
+		{
+			previousTokenStart = i++;
+			previousCanEndExpression = c == ')' || c == ']';
+			continue;
+		}
 		const size_t start = i++;
 		while (i < source.size() && IsIdentifierChar(source[i])) ++i;
-		if (depth != 0) continue;
+		const size_t precedingToken = previousTokenStart;
+		const bool followsExpression = previousCanEndExpression;
+		previousTokenStart = start;
+		previousCanEndExpression = true;
+		if (depth != 0 || !followsExpression) continue;
 
 		size_t next = i;
 		while (next < source.size() && std::isspace((unsigned char)source[next])) ++next;
 		if (next >= source.size() || source[next] != '=' ||
 			(next + 1 < source.size() && source[next + 1] == '=')) continue;
 
-		size_t previous = start;
-		while (previous && std::isspace((unsigned char)source[previous - 1])) --previous;
-		if (!previous) continue;
-		const char last = source[previous - 1];
-		if (!IsIdentifierChar(last) && last != ')' && last != ']') continue;
-		// Bison can identify the start, end, or preceding whitespace of VAR.
-		if (errorOffset < previous || errorOffset > i) continue;
+		// Evaluator versions can locate an unexpected VAR at the preceding
+		// token, the gap, or VAR itself. Include the whole preceding token:
+		// integer/decimal literals may contain more than one character.
+		if (errorOffset < precedingToken || errorOffset > i) continue;
 		*statementStart = start;
 		return true;
 	}
@@ -434,14 +466,14 @@ static std::wstring BuildExpressionCompileError(const wchar_t* presetName, const
 	std::string functionName;
 	size_t functionStart = errorOffset;
 	size_t statementStart = errorOffset;
+	size_t missingSemicolonEnd = 0;
 	if (compilerError && std::string(compilerError).find("unexpected VAR") != std::string::npos &&
 		FindMissingSemicolon(source, errorOffset, &statementStart))
 	{
 		reason = "missing semicolon";
-		line = 1;
-		for (size_t i = 0; i < statementStart; ++i) if (source[i] == '\n') ++line;
-		const size_t lineFeed = source.rfind('\n', statementStart);
-		column = (int)(statementStart - (lineFeed == std::string::npos ? 0 : lineFeed + 1)) + 1;
+		missingSemicolonEnd = statementStart;
+		while (missingSemicolonEnd && std::isspace((unsigned char)source[missingSemicolonEnd - 1]))
+			--missingSemicolonEnd;
 	}
 	else if (FindFunctionUsedAsVariable(source, errorOffset, &functionName, &functionStart))
 	{
@@ -493,8 +525,12 @@ static std::wstring BuildExpressionCompileError(const wchar_t* presetName, const
 	// parsing behavior. Map the compiler's flattened position back to the source
 	// line for a useful diagnostic.
 	const char* diagnosticSource = originalCode ? originalCode : "";
-	const size_t originalOffset = GetOriginalOffsetForCompiledOffset(diagnosticSource,
-		GetOffsetForLineColumn(source, line, column));
+	// For a missing separator, map the final character of the preceding
+	// expression and advance once. Mapping its end directly would select the
+	// next row after removed line separators, comments and blank rows.
+	const size_t originalOffset = missingSemicolonEnd
+		? GetOriginalOffsetForCompiledOffset(diagnosticSource, missingSemicolonEnd - 1) + 1
+		: GetOriginalOffsetForCompiledOffset(diagnosticSource, GetOffsetForLineColumn(source, line, column));
 	line = 1;
 	size_t lineStart = 0;
 	for (size_t i = 0; i < originalOffset && diagnosticSource[i]; ++i)
