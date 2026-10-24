@@ -37,6 +37,9 @@
     <ClCompile Include="textmgr.cpp">
       <Filter>library\sources</Filter>
     </ClCompile>
+    <ClCompile Include="webcam.cpp">
+      <Filter>library\sources</Filter>
+    </ClCompile>
     <ClCompile Include="texmgr.cpp">
       <Filter>library\sources</Filter>
     </ClCompile>
@@ -177,6 +180,9 @@
       <Filter>library\headers</Filter>
     </ClInclude>
     <ClInclude Include="menu.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="webcam.h">
       <Filter>library\headers</Filter>
     </ClInclude>
     <ClInclude Include="MediaTexture.h">

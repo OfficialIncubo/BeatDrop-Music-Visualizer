@@ -95,7 +95,7 @@ BEGIN
             VALUE "FileDescription", "BeatDrop Music Visualizer"
             VALUE "FileVersion", "1.5.1"
             VALUE "InternalName", "BeatDrop"
-            VALUE "LegalCopyright", "Copyright Â© 2026 BeatDrop development team"
+            VALUE "LegalCopyright", "Copyright © 2026 BeatDrop development team"
             VALUE "OriginalFilename", "BeatDrop.exe"
             VALUE "ProductName", "BeatDrop"
             VALUE "ProductVersion", "1.5.1"
@@ -1113,3 +1113,24 @@ END
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 
+
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+IDD_WEBCAM_OPACITY DIALOGEX 0, 0, 224, 124
+STYLE DS_SETFONT | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Webcam mode opacities"
+FONT 9, "Segoe UI"
+BEGIN
+    LTEXT "Deep (no burn)", -1, 8, 7, 170, 12
+    PUSHBUTTON "Reset", IDC_WEBCAM_DEEP_RESET, 178, 5, 38, 14
+    CONTROL "", IDC_WEBCAM_DEEP_SLIDER, "msctls_trackbar32", TBS_HORZ | WS_TABSTOP, 6, 20, 176, 18
+    LTEXT "", IDC_WEBCAM_DEEP_VALUE, 187, 23, 32, 12
+    LTEXT "Deep (with burn)", -1, 8, 39, 170, 12
+    PUSHBUTTON "Reset", IDC_WEBCAM_BURN_RESET, 178, 37, 38, 14
+    CONTROL "", IDC_WEBCAM_BURN_SLIDER, "msctls_trackbar32", TBS_HORZ | WS_TABSTOP, 6, 52, 176, 18
+    LTEXT "", IDC_WEBCAM_BURN_VALUE, 187, 55, 32, 12
+    LTEXT "Top", -1, 8, 71, 170, 12
+    PUSHBUTTON "Reset", IDC_WEBCAM_TOP_RESET, 178, 69, 38, 14
+    CONTROL "", IDC_WEBCAM_TOP_SLIDER, "msctls_trackbar32", TBS_HORZ | WS_TABSTOP, 6, 84, 176, 18
+    LTEXT "", IDC_WEBCAM_TOP_VALUE, 187, 87, 32, 12
+    DEFPUSHBUTTON "Close", IDOK, 162, 104, 54, 15
+END

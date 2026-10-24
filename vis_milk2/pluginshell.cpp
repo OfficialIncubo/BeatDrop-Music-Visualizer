@@ -147,6 +147,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "plugin.h"
 #include "../audio/audiobuf.h"
 #include <shellapi.h>
+#include <commctrl.h>
 #pragma comment(lib,"winmm.lib")    // for timeGetTime
 
 extern CPlugin g_plugin;
@@ -306,7 +307,12 @@ enum TrayMenuCommand
 	TRAY_MENU_AUDIO_SENSITIVITY_BASE = 2100,
 	TRAY_MENU_FPS_BASE = 2200,
 	TRAY_MENU_TRANSITION_BASE = 2600,
-	TRAY_MENU_HARDCUT_BASE = 2700
+	TRAY_MENU_HARDCUT_BASE = 2700,
+    TRAY_MENU_WEBCAM_MODE_BASE = 2800,
+    TRAY_MENU_WEBCAM_OPACITIES = 2810,
+    TRAY_MENU_WEBCAM_SET_OPACITY_BASE = 2820,
+    TRAY_MENU_WEBCAM_SELECT = 2830,
+    TRAY_MENU_WEBCAM_DEVICE_BASE = 10000
 };
 
 static void ToggleTraySpout()
@@ -320,10 +326,116 @@ static void ToggleTraySpout()
 	}
 }
 
-static void ExecuteTrayMenuCommand(HWND hwnd, UINT command);
+static void ExecuteTrayMenuCommand(HWND hwnd, UINT command, LPARAM value = 0);
 
-static void ShowTrayContextMenu(HWND hwnd, bool visualWindowMenu)
+struct ContextMenuRequest
 {
+    HWND hwnd;
+    bool visualWindowMenu;
+    BeatDropWebcam::Mode webcamMode;
+    std::wstring selectedCamera;
+    unsigned long long cameraSelection;
+};
+
+static constexpr int WebcamOpacityResolution = 1000;
+// Owned and accessed only by the renderer/UI thread, independently of popup menus.
+static HWND webcamOpacityWindow = nullptr;
+
+static INT_PTR CALLBACK WebcamOpacityDialogProc(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    if (message == WM_INITDIALOG)
+    {
+        // CreateDialogParam sends WM_INITDIALOG synchronously; the initial
+        // values only need to remain alive until window creation returns.
+        const auto* opacity = reinterpret_cast<const float*>(lParam);
+        for (int i = 0; i < 3; ++i)
+        {
+            const HWND slider = GetDlgItem(dialog, IDC_WEBCAM_DEEP_SLIDER + i);
+            SendMessageW(slider, TBM_SETRANGE, TRUE, MAKELPARAM(0, WebcamOpacityResolution));
+            SendMessageW(slider, TBM_SETPOS, TRUE, static_cast<int>(opacity[i] * WebcamOpacityResolution + 0.5f));
+            SendMessageW(slider, TBM_SETPAGESIZE, 0, WebcamOpacityResolution / 20);
+            wchar_t label[32];
+            swprintf_s(label, L"%.3f", opacity[i]);
+            SetDlgItemTextW(dialog, IDC_WEBCAM_DEEP_VALUE + i, label);
+        }
+        const HICON icon = LoadIconW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDI_PLUGIN_ICON));
+        SendMessageW(dialog, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(icon));
+        SendMessageW(dialog, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(icon));
+        SetFocus(GetDlgItem(dialog, IDC_WEBCAM_DEEP_SLIDER));
+        return FALSE;
+    }
+    if (message == WM_COMMAND && HIWORD(wParam) == BN_CLICKED &&
+        LOWORD(wParam) >= IDC_WEBCAM_DEEP_RESET && LOWORD(wParam) <= IDC_WEBCAM_TOP_RESET)
+    {
+        const int index = LOWORD(wParam) - IDC_WEBCAM_DEEP_RESET;
+        const HWND slider = GetDlgItem(dialog, IDC_WEBCAM_DEEP_SLIDER + index);
+        SendMessageW(slider, TBM_SETPOS, TRUE, WebcamOpacityResolution / 2);
+        // Programmatic slider changes do not send WM_HSCROLL themselves.
+        // Reuse the live-preview handler to update the label and renderer.
+        SendMessageW(dialog, WM_HSCROLL, TB_THUMBPOSITION, reinterpret_cast<LPARAM>(slider));
+        return TRUE;
+    }
+    if (message == WM_HSCROLL)
+    {
+        const int index = GetDlgCtrlID(reinterpret_cast<HWND>(lParam)) - IDC_WEBCAM_DEEP_SLIDER;
+        if (index >= 0 && index < 3)
+        {
+            const int position = static_cast<int>(SendMessageW(reinterpret_cast<HWND>(lParam), TBM_GETPOS, 0, 0));
+            wchar_t label[32];
+            swprintf_s(label, L"%.3f", position / static_cast<float>(WebcamOpacityResolution));
+            SetDlgItemTextW(dialog, IDC_WEBCAM_DEEP_VALUE + index, label);
+            PostMessageW(g_hWnd, WM_TRAY_MENU_COMMAND, TRAY_MENU_WEBCAM_SET_OPACITY_BASE + index, position);
+        }
+        return TRUE;
+    }
+    if (message == WM_CLOSE || (message == WM_COMMAND && (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)))
+    {
+        DestroyWindow(dialog);
+        return TRUE;
+    }
+    if (message == WM_NCDESTROY && webcamOpacityWindow == dialog)
+        webcamOpacityWindow = nullptr;
+    return FALSE;
+}
+
+bool HandleWebcamOpacityDialogMessage(MSG* message)
+{
+    return webcamOpacityWindow && IsDialogMessageW(webcamOpacityWindow, message);
+}
+
+void CloseWebcamOpacityDialog()
+{
+    if (webcamOpacityWindow) DestroyWindow(webcamOpacityWindow);
+}
+
+static void ShowWebcamOpacityDialog()
+{
+    if (!webcamOpacityWindow)
+    {
+        INITCOMMONCONTROLSEX controls = { sizeof(controls), ICC_BAR_CLASSES };
+        if (!InitCommonControlsEx(&controls)) return;
+        const float opacity[] = { g_plugin.m_fWebcamDeepOpacity,
+            g_plugin.m_fWebcamBurnOpacity, g_plugin.m_fWebcamTopOpacity };
+        webcamOpacityWindow = CreateDialogParamW(GetModuleHandleW(nullptr),
+            MAKEINTRESOURCEW(IDD_WEBCAM_OPACITY), nullptr, WebcamOpacityDialogProc,
+            reinterpret_cast<LPARAM>(opacity));
+    }
+    if (webcamOpacityWindow)
+    {
+        ShowWindow(webcamOpacityWindow, SW_SHOWNORMAL);
+        // Raise within the normal window band; never enable WS_EX_TOPMOST.
+        SetWindowPos(webcamOpacityWindow, HWND_TOP, 0, 0, 0, 0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+        SetForegroundWindow(webcamOpacityWindow);
+        SetActiveWindow(webcamOpacityWindow);
+        SetFocus(GetDlgItem(webcamOpacityWindow, IDC_WEBCAM_DEEP_SLIDER));
+    }
+}
+
+static void ShowTrayContextMenu(const ContextMenuRequest& request)
+{
+    const HWND hwnd = request.hwnd;
+    const bool visualWindowMenu = request.visualWindowMenu;
 	HMENU menu = CreatePopupMenu();
 	HMENU sensitivityMenu = CreatePopupMenu();
 	HMENU fpsMenu = CreatePopupMenu();
@@ -369,6 +481,44 @@ static void ShowTrayContextMenu(HWND hwnd, bool visualWindowMenu)
 			TRAY_MENU_TRANSPARENCY, L"Transparency mode");
 	}
 	AppendMenuW(menu, MF_SEPARATOR, 0, NULL);
+    std::vector<BeatDropWebcam::Device> cameras;
+    const HRESULT cameraStatus = BeatDropWebcam::ListDevices(cameras);
+    HMENU cameraMenu = CreatePopupMenu();
+    HMENU webcamModeMenu = CreatePopupMenu();
+    if (!cameraMenu || !webcamModeMenu)
+    {
+        if (cameraMenu) DestroyMenu(cameraMenu);
+        if (webcamModeMenu) DestroyMenu(webcamModeMenu);
+        DestroyMenu(menu);
+        DestroyMenu(sensitivityMenu);
+        DestroyMenu(fpsMenu);
+        DestroyMenu(transitionMenu);
+        DestroyMenu(hardcutMenu);
+        return;
+    }
+    if (FAILED(cameraStatus) || cameras.empty())
+        AppendMenuW(cameraMenu, MF_STRING | MF_GRAYED, 0,
+            FAILED(cameraStatus) ? L"Unable to list cameras" : L"No cameras found");
+    for (size_t i = 0; i < cameras.size(); ++i)
+    {
+        const bool selected = request.selectedCamera.empty()
+            ? request.cameraSelection % cameras.size() == i : request.selectedCamera == cameras[i].id;
+        // Escape ampersands so the complete device name is shown literally.
+        std::wstring label;
+        for (wchar_t ch : cameras[i].name) { label += ch; if (ch == L'&') label += ch; }
+        AppendMenuW(cameraMenu, MF_STRING | (selected ? MF_CHECKED : 0),
+            TRAY_MENU_WEBCAM_DEVICE_BASE + i, label.c_str());
+    }
+    const wchar_t* webcamModes[] = { L"Disabled", L"Deep (no burn)", L"Deep (with burn)", L"Top" };
+    const int modeOrder[] = { BeatDropWebcam::Deep, BeatDropWebcam::DeepBurn, BeatDropWebcam::Top, BeatDropWebcam::Off };
+    for (int mode : modeOrder)
+        AppendMenuW(webcamModeMenu, MF_STRING | (request.webcamMode == mode ? MF_CHECKED : 0),
+            TRAY_MENU_WEBCAM_MODE_BASE + mode, webcamModes[mode]);
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(cameraMenu), L"Webcam/camera devices");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(webcamModeMenu), L"Webcam modes (layers)");
+    AppendMenuW(menu, MF_STRING, TRAY_MENU_WEBCAM_OPACITIES, L"Webcam mode opacities...");
+    AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
+
 	AppendMenuW(menu, MF_STRING | (g_plugin.m_bEnableLyrics ? MF_CHECKED : MF_UNCHECKED),
 		TRAY_MENU_ENABLE_LYRICS, L"Enable lyrics");
 	AppendMenuW(menu, MF_STRING, TRAY_MENU_OPEN_LYRICS_EDITOR,
@@ -467,11 +617,20 @@ static void ShowTrayContextMenu(HWND hwnd, bool visualWindowMenu)
 	const UINT command = TrackPopupMenu(menu,
 		TPM_RETURNCMD | TPM_NONOTIFY | TPM_RIGHTBUTTON,
 		point.x, point.y, 0, menuOwner, NULL);
-	if (menuOwner)
-		DestroyWindow(menuOwner);
 
-	if (command != 0)
-		PostMessage(hwnd, WM_TRAY_MENU_COMMAND, command, 0);
+    // Finish the popup owner's activation/teardown before dispatching an
+    // action that opens a window on the renderer thread.
+    if (menuOwner) DestroyWindow(menuOwner);
+
+    if (command >= TRAY_MENU_WEBCAM_DEVICE_BASE &&
+        command - TRAY_MENU_WEBCAM_DEVICE_BASE < cameras.size())
+    {
+        const auto& id = cameras[command - TRAY_MENU_WEBCAM_DEVICE_BASE].id;
+        // Synchronous dispatch keeps this borrowed string alive until it is copied.
+        SendMessageW(hwnd, WM_TRAY_MENU_COMMAND, TRAY_MENU_WEBCAM_SELECT, reinterpret_cast<LPARAM>(&id));
+    }
+    else if (command != 0)
+        PostMessageW(hwnd, WM_TRAY_MENU_COMMAND, command, 0);
 
 	DestroyMenu(fpsMenu);
 	DestroyMenu(sensitivityMenu);
@@ -480,16 +639,10 @@ static void ShowTrayContextMenu(HWND hwnd, bool visualWindowMenu)
 	DestroyMenu(menu);
 }
 
-struct ContextMenuRequest
-{
-	HWND hwnd;
-	bool visualWindowMenu;
-};
-
 static DWORD WINAPI TrayContextMenuThreadProc(void* parameter)
 {
 	ContextMenuRequest* request = static_cast<ContextMenuRequest*>(parameter);
-	ShowTrayContextMenu(request->hwnd, request->visualWindowMenu);
+	ShowTrayContextMenu(*request);
 	delete request;
 	InterlockedExchange(&trayMenuOpen, 0);
 	return 0;
@@ -500,7 +653,8 @@ static void BeginContextMenu(HWND hwnd, bool visualWindowMenu)
 	if (InterlockedCompareExchange(&trayMenuOpen, 1, 0) != 0)
 		return;
 
-	ContextMenuRequest* request = new ContextMenuRequest{ hwnd, visualWindowMenu };
+	ContextMenuRequest* request = new ContextMenuRequest{ hwnd, visualWindowMenu,
+        g_plugin.m_webcam.GetMode(), g_plugin.m_webcam.SelectedDevice(), g_plugin.m_webcam.CameraSelection() };
 	HANDLE thread = CreateThread(NULL, 0, TrayContextMenuThreadProc, request, 0, NULL);
 	if (thread)
 		CloseHandle(thread);
@@ -527,8 +681,31 @@ static void SendMediaKey(WORD key)
 	keybd_event(static_cast<BYTE>(key), 0, KEYEVENTF_KEYUP, 0);
 }
 
-static void ExecuteTrayMenuCommand(HWND hwnd, UINT command)
+static void ExecuteTrayMenuCommand(HWND hwnd, UINT command, LPARAM value)
 {
+    if (command == TRAY_MENU_WEBCAM_OPACITIES)
+    {
+        ShowWebcamOpacityDialog();
+        return;
+    }
+    if (command >= TRAY_MENU_WEBCAM_SET_OPACITY_BASE && command < TRAY_MENU_WEBCAM_SET_OPACITY_BASE + 3)
+    {
+        float* opacities[] = { &g_plugin.m_fWebcamDeepOpacity, &g_plugin.m_fWebcamBurnOpacity, &g_plugin.m_fWebcamTopOpacity };
+        if (value >= 0 && value <= WebcamOpacityResolution)
+            *opacities[command - TRAY_MENU_WEBCAM_SET_OPACITY_BASE] = value / static_cast<float>(WebcamOpacityResolution);
+        return; // Keep keyboard focus in the slider dialog during live preview.
+    }
+    if (command == TRAY_MENU_WEBCAM_SELECT && value)
+    {
+        const auto* id = reinterpret_cast<const std::wstring*>(value);
+        g_plugin.m_webcam.SelectCamera(*id, false);
+        return;
+    }
+    if (command >= TRAY_MENU_WEBCAM_MODE_BASE && command <= TRAY_MENU_WEBCAM_MODE_BASE + BeatDropWebcam::Top)
+    {
+        g_plugin.SetWebcamMode(static_cast<BeatDropWebcam::Mode>(command - TRAY_MENU_WEBCAM_MODE_BASE), false);
+        return;
+    }
 	HWND rendererWindow = hwnd;
 
 	if (command == TRAY_MENU_SHOW_WINDOW)
@@ -2995,7 +3172,7 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 	break;
 
 	case WM_TRAY_MENU_COMMAND:
-		ExecuteTrayMenuCommand(hWnd, static_cast<UINT>(wParam));
+		ExecuteTrayMenuCommand(hWnd, static_cast<UINT>(wParam), lParam);
 	break;
 
 	// benski> a little hack to get the window size correct. it seems to work

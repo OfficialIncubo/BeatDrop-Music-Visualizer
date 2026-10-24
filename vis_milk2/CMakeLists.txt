@@ -24,6 +24,7 @@ if(ENABLE_PROJECTM_NSEEL)
             fft.cpp
             milkdropfs.cpp
             MediaTexture.cpp
+            webcam.cpp
             plugin.cpp
             pluginshell.cpp
             state.cpp
@@ -32,6 +33,7 @@ if(ENABLE_PROJECTM_NSEEL)
             utility.cpp
             plugin.h
             MediaTexture.h
+            webcam.h
             state.h
             texmgr.h
             )
@@ -52,7 +54,7 @@ target_include_directories(vis_milk2
     ${FFMPEG_INCLUDE_DIR}
     )
 
-target_link_libraries(vis_milk2 PUBLIC projectM::ns-eel2 windowscodecs ole32 ${AVFORMAT_LIBRARY} ${AVCODEC_LIBRARY} ${AVUTIL_LIBRARY} ${SWSCALE_LIBRARY})
+target_link_libraries(vis_milk2 PUBLIC projectM::ns-eel2 windowscodecs ole32 oleaut32 strmiids ${AVFORMAT_LIBRARY} ${AVCODEC_LIBRARY} ${AVUTIL_LIBRARY} ${SWSCALE_LIBRARY})
 
 #    set_target_properties(vis_milk2 PROPERTIES
 #                      EXPORT_NAME ns-eel2

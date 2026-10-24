@@ -38,6 +38,7 @@ Highlights:
 - 32-bit and 64-bit architecture support
 - 100% portable: no DirectX runtime installation needed. Required DirectX and FFmpeg DLLs stay in `BeatDrop Resources\dlls`, not beside the executable.
 - [Spout](https://spout.zeal.co) integration
+- Webcam support
 - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library integration
 - Toggleable Speaker and Microphone Audio Source Modes
 - Synchronized LRC lyrics with a built-in timestamp editor, local cache and smooth line transitions
@@ -218,6 +219,30 @@ The lyric overlay is font-only: its default is `Times New Roman`, Italic in `RGB
 
 The `Release_OldOS` builds remain compatible with Windows Vista through Windows 11: the editor, local LRC cache, and independent Direct3D 9 renderer are retained without WinRT. The post-install launcher uses the standard executable on Windows 10 and later, and prefers it on Windows 8.1 when that executable is included in the package; otherwise, it uses the OldOS build. BeatDrop currently uses `GlobalSystemMediaTransportControlsSessionManager` for system now-playing metadata, playback position and seeking; Microsoft lists that global-session API as Windows 10, version 1809 or later. Windows 8.1 has the earlier system media controls API, but it is not the global-session API BeatDrop uses.
 For Windows Vista, 7 and 8, use the matching `BeatDrop_OldOS_x86.exe` or `BeatDrop_OldOS_x64.exe` build. Automatic global SMTC metadata, timeline and seek support requires Windows 10 version 1809 or later.
+
+## WEBCAM
+
+*[webcam feature screenshot coming soon...]*
+
+Press `W` in the visualizer to cycle through **Deep (without burn)**, **Deep (with burn)**, **Top**, and **Off**. Press `Shift + W` to select the next camera in Windows' list, wrapping back to the first after the last. Switching an active camera keeps the selected rendering mode; when capture is off, the shortcut selects the camera to use next without opening it. The camera image fills the visualizer while keeping its aspect ratio; edges are cropped to fit.
+
+After selecting a camera, the notification reads `Changed webcam: {device_name}`. Capture control responds to Windows events without a polling timer. Supported frame sizes are checked against the camera's reported format, the current graphics device's texture capabilities, and the sample/container size limits; there is no fixed camera resolution or application memory cap.
+
+Both deep modes reveal the camera through the preset's black background while retaining bright visual details. Deep without burn sends the live camera through a separate warp pass and then the preset's composite shader, keeping it out of persistent feedback. This uses two extra textures at the preset's render resolution, allocated when needed and released on mode changes or device reset. Deep with burn adds the camera before warp into persistent feedback, so its imagery can leave trails. Top blends the camera over the finished preset, before sprites are drawn. Sprites, song titles, lyrics and on-screen controls remain above the camera, and Spout receives the combined visual.
+
+The visual-window and tray context menus include **Webcam/camera devices**, **Webcam modes (layers)**, and **Webcam mode opacities** after the first separator. Select a camera by name, choose Deep (no burn), Deep (with burn), Top, or Disabled, and open all three opacity controls with one click on **Webcam mode opacities...**. Menu selections do not show success notifications over the visualizer; keyboard shortcuts retain their notifications. The opacity window stays open independently, so both visualizer and tray context menus remain available. Selecting the opacity entry again brings the existing window forward. Each layer has a **Reset** button that sets its opacity to 0.5. The three sliders preview changes live from 0 to 1 (0.001 increments); their values are saved to the existing INI settings on exit. Selecting a device while Disabled keeps capture off.
+
+Each mode has its own opacity setting. Close BeatDrop, edit these keys under `[settings]` in `beatdrop.ini`, then restart:
+
+```ini
+fWebcamDeepOpacity=0.500000
+fWebcamBurnOpacity=0.500000
+fWebcamTopOpacity=0.500000
+```
+
+Values range from `0` (no camera contribution) to `1` (full strength), with defaults of 100% for deep without burn, 5% for deep with burn, and 50% for top. Deep opacity scales the camera before its warp pass; top opacity controls alpha blending. Burn mode blends continuously on every render frame, including between camera deliveries, with its contribution weighted by render time and the camera's measured cadence. It does not alternate between injection and skipped frames. Try burn opacity `0.02` for softer trails or `0.10` for a stronger camera contribution. Preset shaders and decay can still amplify feedback, so an exact MilkDrop 3 match is not guaranteed.
+
+Resizing, changing presets, switching fullscreen or monitor stretch, and entering Desktop Mode keep capture active. Cycling to Off or exiting BeatDrop releases the camera. Webcam capture starts disabled each time BeatDrop opens. If the camera cannot be opened or is disconnected, a message appears and capture turns off; press `W` to retry after checking the device and Windows camera permissions.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## INTEGRATED WITH [PROJECTM-EVAL](https://github.com/projectM-visualizer/projectm-eval) FOR OPTIMIZATION

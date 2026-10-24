@@ -1198,8 +1198,10 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
         }
 
         if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE) != 0) {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+            if (!HandleWebcamOpacityDialogMessage(&msg)) {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
         }
         else {
             GetAudioBuf(pcmLeftIn, pcmRightIn, SAMPLE_SIZE);
@@ -1212,6 +1214,7 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 
     // The precache worker calls into the plugin and must finish before plugin
     // state and Direct3D resources are torn down.
+    CloseWebcamOpacityDialog();
     StopShaderPrecacheThread();
     g_plugin.MyWriteConfig();
     g_plugin.PluginQuit();

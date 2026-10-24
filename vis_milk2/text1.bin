@@ -17,6 +17,8 @@
    UP                   increase audio sensitivity
    DOWN                 decrease audio sensitivity
    U                    freeze/unfreeze beat detection
+   W                    toggle webcam; deep/deep (with burn)/top/off
+   SHIFT + W            next webcam (wraps to the first camera)
 
  PRESETS:
 

@@ -356,5 +356,7 @@ protected:
 
 // Opens the same non-blocking command menu used by the notification icon.
 void BeginVisualContextMenu(HWND hwnd);
+bool HandleWebcamOpacityDialogMessage(MSG* message);
+void CloseWebcamOpacityDialog();
 
 #endif

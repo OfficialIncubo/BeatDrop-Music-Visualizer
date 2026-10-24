@@ -1067,6 +1067,13 @@ void CPlugin::RenderFrame(int bRedraw)
 
     UpdateLiveTextures();
 
+    std::wstring webcamError, webcamNotice;
+    m_webcam.Update(lpDevice, webcamError, &webcamNotice);
+    if (!webcamError.empty())
+        AddErrorNotif(webcamError.data());
+    else if (!webcamNotice.empty())
+        AddNotif(webcamNotice.data());
+
     // Remember the original backbuffer and zbuffer
     LPDIRECT3DSURFACE9 pBackBuffer=NULL;//, pZBuffer=NULL;
     lpDevice->GetRenderTarget( 0, &pBackBuffer );
@@ -1168,6 +1175,11 @@ void CPlugin::RenderFrame(int bRedraw)
         lpDevice->Clear(0, NULL, D3DCLEAR_TARGET, 0x00000000, 1.0f, 0);
     }
 
+    // Feed the camera into the old frame before warping it. The next frame
+    // retains this image, so preset distortion and feedback affect the feed.
+    if (m_webcam.GetMode() == BeatDropWebcam::DeepBurn)
+        m_webcam.DrawBurn(lpDevice, m_nTexSizeX, m_nTexSizeY, m_fWebcamBurnOpacity, fDeltaT);
+
     // set up to render [from VS0] to VS1.
     {
         IDirect3DSurface9* pNewTarget = NULL;
@@ -1194,6 +1206,10 @@ void CPlugin::RenderFrame(int bRedraw)
     ComputeGridAlphaValues();
 
 	// do the warping for this frame [warp shader]
+    // The optional no-burn camera pass reuses this geometry and these shader
+    // settings, without executing preset equations a second time.
+    auto renderWarp = [&]()
+    {
     if (!m_pState->m_bBlending)
     {
         // no blend
@@ -1235,6 +1251,9 @@ void CPlugin::RenderFrame(int bRedraw)
         }
     }
 
+    };
+    renderWarp();
+
     if (m_nMaxPSVersion > 0)
 	    BlurPasses();
 
@@ -1253,6 +1272,75 @@ void CPlugin::RenderFrame(int bRedraw)
 	{
 		ShowSongTitleAnim(m_nTexSizeX, m_nTexSizeY, 1.0f);
 	}
+
+    IDirect3DTexture9* cleanFeedback = m_lpVS[1];
+    IDirect3DTexture9* cleanInput = m_lpVS[0];
+    bool webcamDisplayPass = false;
+    // Compiled sampler bindings tell us whether changing the warp input can
+    // affect its output. Procedural warps need no camera or baseline replay:
+    // both would produce identical pixels and cancel out in BlendDeepScene.
+    const auto warpSamplesFeedback = [](const PShaderInfo& shader)
+    {
+        for (const auto code : shader.params.m_texcode)
+            if (code == TEX_VS) return true;
+        return false;
+    };
+    const bool cameraAffectsWarp =
+        !bNewPresetUsesWarpShader || warpSamplesFeedback(m_shaders.warp) ||
+        (m_pState->m_bBlending &&
+            (!bOldPresetUsesWarpShader || warpSamplesFeedback(m_OldShaders.warp)));
+    if (m_webcam.GetMode() == BeatDropWebcam::Deep && cameraAffectsWarp &&
+        m_webcam.PrepareDeepInput(lpDevice, cleanFeedback, m_fWebcamDeepOpacity))
+    {
+        IDirect3DSurface9* cameraTarget = nullptr;
+        if (SUCCEEDED(m_webcam.GetDeepOutput()->GetSurfaceLevel(0, &cameraTarget)))
+        {
+            for (DWORD stage = 0; stage < 16; ++stage) lpDevice->SetTexture(stage, nullptr);
+            if (SUCCEEDED(lpDevice->SetRenderTarget(0, cameraTarget)))
+            {
+                lpDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+                lpDevice->Clear(0, nullptr, D3DCLEAR_TARGET, 0, 1, 0);
+                m_lpVS[0] = m_webcam.GetDeepInput();
+                renderWarp();
+                // Measure the warp shader's output with black input as well.
+                // Procedural shader color must not be added a second time with
+                // the camera pass (even shaders that never sample sampler_main).
+                IDirect3DSurface9* blackInput = nullptr;
+                IDirect3DSurface9* baselineTarget = nullptr;
+                bool baselineReady = false;
+                for (DWORD stage = 0; stage < 16; ++stage) lpDevice->SetTexture(stage, nullptr);
+                if (SUCCEEDED(m_webcam.GetDeepInput()->GetSurfaceLevel(0, &blackInput)) &&
+                    SUCCEEDED(m_webcam.GetDeepBaseline()->GetSurfaceLevel(0, &baselineTarget)) &&
+                    SUCCEEDED(lpDevice->SetRenderTarget(0, blackInput)))
+                {
+                    lpDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+                    if (SUCCEEDED(lpDevice->Clear(0, nullptr, D3DCLEAR_TARGET, 0, 1, 0)) &&
+                        SUCCEEDED(lpDevice->SetRenderTarget(0, baselineTarget)))
+                    {
+                        lpDevice->Clear(0, nullptr, D3DCLEAR_TARGET, 0, 1, 0);
+                        renderWarp();
+                        baselineReady = true;
+                    }
+                }
+                SafeRelease(blackInput);
+                SafeRelease(baselineTarget);
+                for (DWORD stage = 0; stage < 16; ++stage) lpDevice->SetTexture(stage, nullptr);
+                m_lpVS[0] = cleanInput;
+                baselineReady = baselineReady && SUCCEEDED(lpDevice->SetRenderTarget(0, cameraTarget));
+                if (baselineReady)
+                    m_webcam.BlendDeepScene(lpDevice, cleanFeedback);
+
+                // Both fixed-function and shader composites sample this
+                // temporary scene. Neither persistent feedback pointer owns it.
+                if (baselineReady)
+                {
+                    m_lpVS[0] = m_lpVS[1] = m_webcam.GetDeepOutput();
+                    webcamDisplayPass = true;
+                }
+            }
+            cameraTarget->Release();
+        }
+    }
 
     // Change the rendertarget back to the original setup
     lpDevice->SetTexture(0, NULL);
@@ -1307,9 +1395,17 @@ void CPlugin::RenderFrame(int bRedraw)
         }
     }
 
-	// User sprites belong to the preset scene.  Draw them before the final
-	// title and lyrics overlays so both remain readable above preset artwork,
-	// messages and invoked sprites.
+    if (webcamDisplayPass)
+    {
+        // Restore clean history before sprites can burn in or buffers flip.
+        m_lpVS[0] = cleanInput;
+        m_lpVS[1] = cleanFeedback;
+    }
+
+    if (m_webcam.GetMode() == BeatDropWebcam::Top)
+        m_webcam.Draw(lpDevice, GetWidth(), GetHeight(), false, m_fWebcamTopOpacity);
+
+	// Sprites stay above the webcam, followed by title and lyrics overlays.
 	DrawUserSprites();
 
 	// finally, render song title animation to back buffer

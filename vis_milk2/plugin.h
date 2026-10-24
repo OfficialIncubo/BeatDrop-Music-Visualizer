@@ -45,6 +45,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "lyrics_editor.h"
 #include "lyrics_manager.h"
 #include "lyrics_renderer.h"
+#include "webcam.h"
 #include <vector>
 #include <random>
 #include <mutex>
@@ -299,6 +300,16 @@ typedef std::vector<PresetInfo> PresetList;
 class CPlugin : public CPluginShell
 {
 public:
+
+    BeatDropWebcam m_webcam;
+    void SetWebcamMode(BeatDropWebcam::Mode mode, bool notify = true)
+    {
+        std::wstring status = m_webcam.SetMode(mode, GetDevice());
+        if (notify && !status.empty()) AddNotif(status.data());
+    }
+    float m_fWebcamBurnOpacity = BeatDropWebcam::DefaultBurnOpacity;
+    float m_fWebcamDeepOpacity = BeatDropWebcam::DefaultDeepOpacity;
+    float m_fWebcamTopOpacity = BeatDropWebcam::DefaultTopOpacity;
 
     //====[ 1. members added to create this specific example plugin: ]================================================
 

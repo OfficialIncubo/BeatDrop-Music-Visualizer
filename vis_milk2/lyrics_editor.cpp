@@ -1,4 +1,5 @@
 #include "lyrics_editor.h"
+#include "resource.h"
 
 #include "lyrics_lrc.h"
 #include "lyrics_manager.h"
@@ -943,18 +944,35 @@ void BeatDropLyricsEditor::Open(HWND owner, BeatDropLyricsManager* manager,
     m_manager = manager;
     m_artist = artist;
     m_title = title;
+    const auto activateEditor = [&]()
+    {
+        if (!m_hwnd) return;
+        const HWND previousFocus = GetFocus();
+        ShowWindow(m_hwnd, SW_SHOWNORMAL);
+        SetWindowPos(m_hwnd, HWND_TOP, 0, 0, 0, 0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+        SetForegroundWindow(m_hwnd);
+        SetActiveWindow(m_hwnd);
+        SetFocus(IsChild(m_hwnd, previousFocus) ? previousFocus : m_input);
+    };
     if (!m_hwnd)
     {
-        WNDCLASSW windowClass = {};
+        WNDCLASSEXW windowClass = {};
+        windowClass.cbSize = sizeof(windowClass);
         windowClass.lpfnWndProc = WindowProc;
         windowClass.hInstance = GetModuleHandleW(nullptr);
+        windowClass.hIcon = LoadIconW(windowClass.hInstance, MAKEINTRESOURCEW(IDI_LYRICS_EDITOR_ICON));
+        windowClass.hIconSm = static_cast<HICON>(LoadImageW(windowClass.hInstance,
+            MAKEINTRESOURCEW(IDI_LYRICS_EDITOR_ICON), IMAGE_ICON,
+            GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), LR_SHARED));
         windowClass.hCursor = LoadCursorW(nullptr, MAKEINTRESOURCEW(32512));
         windowClass.hbrBackground = WindowBrush();
         windowClass.lpszClassName = kClassName;
-        RegisterClassW(&windowClass);
+        RegisterClassExW(&windowClass);
         CreateWindowExW(WS_EX_APPWINDOW, kClassName, L"BeatDrop Lyrics Editor",
             WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT,
             1160, 720, owner, nullptr, windowClass.hInstance, this);
+        activateEditor();
         return;
     }
 
@@ -975,8 +993,7 @@ void BeatDropLyricsEditor::Open(HWND owner, BeatDropLyricsManager* manager,
         L"Write, paste or import lyrics, then select each line and capture timestamps." :
         (parsedLyrics.empty() ? TrackLookupStatus(m_manager) :
             LyricsReadyStatus(parsedLyrics)));
-    ShowWindow(m_hwnd, SW_SHOWNORMAL);
-    SetForegroundWindow(m_hwnd);
+    activateEditor();
 }
 
 LRESULT CALLBACK BeatDropLyricsEditor::WindowProc(HWND hwnd, UINT message,

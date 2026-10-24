@@ -625,6 +625,7 @@ SPOUT :
 #include "wasabi.h"
 #include <assert.h>
 #include <algorithm>
+#include <cmath>
 #include <cctype>
 #include <process.h>  // for beginthread, etc.
 #include <shellapi.h>
@@ -1386,6 +1387,14 @@ void CPlugin::MyReadConfig()
 	// ======================================
 	// SPOUT - save whether in DirectX11 (true) or DirectX 9 (false) mode, default true
 	bSpoutOut = GetPrivateProfileBoolW(L"settings", L"bSpoutOut", bSpoutOut, pIni);
+    auto readWebcamOpacity = [&](std::wstring key, float fallback) {
+        float value = GetPrivateProfileFloatW(L"settings", key.data(), fallback, pIni);
+        if (!std::isfinite(value)) value = fallback;
+        return (std::max)(0.0f, (std::min)(1.0f, value));
+    };
+    m_fWebcamBurnOpacity = readWebcamOpacity(L"fWebcamBurnOpacity", BeatDropWebcam::DefaultBurnOpacity);
+    m_fWebcamDeepOpacity = readWebcamOpacity(L"fWebcamDeepOpacity", BeatDropWebcam::DefaultDeepOpacity);
+    m_fWebcamTopOpacity = readWebcamOpacity(L"fWebcamTopOpacity", BeatDropWebcam::DefaultTopOpacity);
 	// ======================================
 
 	m_bFirstRun		= !GetPrivateProfileBoolW(L"settings",L"bConfigured" ,false,pIni);
@@ -1564,6 +1573,9 @@ void CPlugin::MyWriteConfig()
 	// ================================
 	// SPOUT
 	WritePrivateProfileIntW(bSpoutOut, L"bSpoutOut", pIni, L"settings");
+    WritePrivateProfileFloatW(m_fWebcamBurnOpacity, L"fWebcamBurnOpacity", pIni, L"settings");
+    WritePrivateProfileFloatW(m_fWebcamDeepOpacity, L"fWebcamDeepOpacity", pIni, L"settings");
+    WritePrivateProfileFloatW(m_fWebcamTopOpacity, L"fWebcamTopOpacity", pIni, L"settings");
 	// ================================
 
 	WritePrivateProfileIntW(m_bSongTitleAnims,		L"bSongTitleAnims",		pIni, L"settings");
@@ -1818,6 +1830,7 @@ void CancelThread(int max_wait_time_ms)
 
 void CPlugin::CleanUpMyNonDx9Stuff()
 {
+    m_webcam.Stop();
     // This gets called only once, when your plugin exits.
     // Be sure to clean up any objects here that were
     //   created/initialized in AllocateMyNonDx9Stuff.
@@ -4318,6 +4331,11 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
 
 void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
 {
+    if (final_cleanup)
+        m_webcam.Stop();
+    else
+        m_webcam.ReleaseDeviceResources();
+
     // Clean up all your DX9 and D3DX textures, fonts, buffers, etc. here.
     // EVERYTHING CREATED IN ALLOCATEMYDX9STUFF() SHOULD BE CLEANED UP HERE.
     // The input parameter, 'final_cleanup', will be 0 if this is
@@ -6481,6 +6499,11 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 		}
 		else	// normal handling of a simple key (all non-virtual-key hotkeys end up here)
 		{
+            // One webcam mode per physical press, even if W is held down.
+            // Text editing and preset-list searches retain their key repeats.
+            if (m_UI_mode != UI_LOAD && (wParam == 'w' || wParam == 'W') &&
+                (lParam & (static_cast<LPARAM>(1) << 30)))
+                return 0;
 			if (HandleRegularKey(wParam)==0)
                 return 0;
 		}
@@ -7990,14 +8013,17 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
 	case 'w':
 		//m_pState->m_nWaveMode++;
 		//if (m_pState->m_nWaveMode >= NUM_WAVES) m_pState->m_nWaveMode = 0;
-		if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_SHIFT) & 0x8000))
-			return 1; // Let the shell handle Ctrl+W / Ctrl+Shift+W shortcuts.
-		return 0; // we processed (or absorbed) the key
+		//return 0; // we processed (or absorbed) the key
 	case 'W':
 		//m_pState->m_nWaveMode--;
 		//if (m_pState->m_nWaveMode < 0) m_pState->m_nWaveMode = NUM_WAVES - 1;
-		if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_SHIFT) & 0x8000))
+		if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000))
 			return 1; // Let the shell handle Ctrl+W / Ctrl+Shift+W shortcuts.
+        {
+            std::wstring webcamStatus = (GetKeyState(VK_SHIFT) & 0x8000)
+                ? m_webcam.NextCamera() : m_webcam.Cycle(GetDevice());
+            if (!webcamStatus.empty()) AddNotif(webcamStatus.data());
+        }
 		return 0; // we processed (or absorbed) the key
 	case 'e':
 		//m_pState->m_fWaveAlpha -= 0.1f;
