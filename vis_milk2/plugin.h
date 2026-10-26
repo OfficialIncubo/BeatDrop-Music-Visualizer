@@ -96,11 +96,11 @@ typedef struct
 	int		nCursorPos;
 	int		nSelAnchorPos;		// -1 if no selection made
 	int 	bOvertypeMode;
-	wchar_t	szText[48000];
+	wchar_t	szText[MAX_SHADER_TEXT_LEN];
 	wchar_t	szPrompt[512];
 	wchar_t	szToolTip[512];
-	char	szClipboard[48000];
-	wchar_t	szClipboardW[48000];
+	char	szClipboard[MAX_SHADER_EDIT_SCRATCH_LEN];
+	wchar_t	szClipboardW[MAX_SHADER_EDIT_SCRATCH_LEN];
 } td_waitstr;
 
 typedef struct
@@ -703,7 +703,7 @@ public:
 
         int         m_nFramesSinceResize;
 
-        char        m_szShaderIncludeText[32768];     // note: this still has char 13's and 10's in it - it's never edited on screen or loaded/saved with a preset.
+        char        m_szShaderIncludeText[MAX_SHADER_INCLUDE_LEN];     // note: this still has char 13's and 10's in it - it's never edited on screen or loaded/saved with a preset.
         int         m_nShaderIncludeTextLen;          //  # of chars, not including the final NULL.
         char        m_szDefaultWarpVShaderText[32768]; // THIS HAS CHAR 13/10 CONVERTED TO LINEFEED_CONTROL_CHAR
         char        m_szDefaultWarpPShaderText[32768]; // THIS HAS CHAR 13/10 CONVERTED TO LINEFEED_CONTROL_CHAR

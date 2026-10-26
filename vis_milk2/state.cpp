@@ -28,6 +28,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "state.h"
+#include "preset_code_reader.h"
 #include "support.h"
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 #include "plugin.h"
@@ -1627,113 +1628,19 @@ int  CShape::Export(FILE* fOut, const wchar_t *szFile, int i)
     return 1;
 }
 
-void ReadCode(FILE* f, char* pStr, char* prefix)
+template <size_t Capacity>
+bool ReadCode(FILE* f, char (&text)[Capacity], const char* prefix)
 {
-    if (!pStr)
-        return;
-    pStr[0] = 0;
-
-	// read in & compile arbitrary expressions
-	char szLineName[32];
-	char szLine[MAX_BIGSTRING_LEN];
-	int len;
-
-	int line = 1;
-	int char_pos = 0;
-	bool bDone = false;
-
-	while (!bDone)
-	{
-		sprintf(szLineName, "%s%d", prefix, line);
-
-		GetFastString(szLineName, "~!@#$", szLine, MAX_BIGSTRING_LEN, f);	// fixme
-		len = strlen(szLine);
-
-		if ((strcmp(szLine, "~!@#$")==0) ||		// if the key was missing,
-			(len >= MAX_BIGSTRING_LEN-1-char_pos-1))			// or if we're out of space
-		{
-			bDone = true;
-		}
-		else
-		{
-            sprintf(&pStr[char_pos], "%s%c", (szLine[0]=='`') ? &szLine[1] : szLine, LINEFEED_CONTROL_CHAR);
-            if (szLine[0] == '`')
-                len--;
-		}
-
-		char_pos += len + 1;
-		line++;
-	}
-	pStr[char_pos++] = 0;	// null-terminate
-
-	// read in & compile arbitrary expressions
-    /*
-    int n2 = 3 + MAX_CUSTOM_WAVES*3 + MAX_CUSTOM_SHAPES*2;
-	for (int n=0; n<n2; n++)
-	{
-		char *pStr;
-        char prefix[64];
-		char szLineName[32];
-		char szLine[MAX_BIGSTRING_LEN];
-		int len;
-
-		int line = 1;
-		int char_pos = 0;
-		bool bDone = false;
-
-		switch(n)
-		{
-		case 0: pStr = m_szPerFrameExpr; strcpy(prefix, "per_frame_"); break;
-		case 1: pStr = m_szPerPixelExpr; strcpy(prefix, "per_pixel_"); break;
-		case 2: pStr = m_szPerFrameInit; strcpy(prefix, "per_frame_init_"); break;
-        default:
-            if (n < 3 + 3*MAX_CUSTOM_WAVES)
-            {
-                int i = (n-3) / 3;
-                int j = (n-3) % 3;
-                switch(j)
-                {
-                case 0: pStr = m_wave[i].m_szInit;     sprintf(prefix, "wave_%d_init",      i); break;
-                case 1: pStr = m_wave[i].m_szPerFrame; sprintf(prefix, "wave_%d_per_frame", i); break;
-                case 2: pStr = m_wave[i].m_szPerPoint; sprintf(prefix, "wave_%d_per_point", i); break;
-                }
-            }
-            else
-            {
-                int i = (n-3-3*MAX_CUSTOM_WAVES) / 2;
-                int j = (n-3-3*MAX_CUSTOM_WAVES) % 2;
-                switch(j)
-                {
-                case 0: pStr = m_shape[i].m_szInit;     sprintf(prefix, "shape_%d_init",      i); break;
-                case 1: pStr = m_shape[i].m_szPerFrame; sprintf(prefix, "shape_%d_per_frame", i); break;
-                }
-            }
-		}
-
-		while (!bDone)
-		{
-			sprintf(szLineName, "%s%d", prefix, line);
-
-			GetPrivateProfileString(szSectionName, szLineName, "~!@#$", szLine, MAX_BIGSTRING_LEN, szIniFile);	// fixme
-			len = strlen(szLine);
-
-			if ((strcmp(szLine, "~!@#$")==0) ||		// if the key was missing,
-				(len >= MAX_BIGSTRING_LEN-1-char_pos-1))			// or if we're out of space
-			{
-				bDone = true;
-			}
-			else
-			{
-				sprintf(&pStr[char_pos], "%s%c", szLine, LINEFEED_CONTROL_CHAR);
-			}
-
-			char_pos += len + 1;
-			line++;
-		}
-		pStr[char_pos++] = 0;	// null-terminate
-	}
-    */
+    const bool complete = ReadPresetCode(text, prefix, LINEFEED_CONTROL_CHAR,
+        [f](const char* key, char* line, int capacity) {
+            GetFastString(key, "~!@#$", line, capacity, f);
+        });
+    if (!complete)
+        g_plugin.AddError(L"Preset code exceeds its import buffer; the code was not loaded.",
+                          6.0f, ERR_PRESET, true);
+    return complete;
 }
+
 
 int CWave::Import(FILE* f, const wchar_t* szFile, int i)
 {
@@ -2007,7 +1914,10 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
     if (ApplyFlags & STATE_WARP)
     {
         //m_szWarpShadersText[0] = 0;
-        ReadCode(f, m_szWarpShadersText, "warp_");
+        if (!ReadCode(f, m_szWarpShadersText, "warp_")) {
+            fclose(f);
+            return false;
+        }
         if (!m_szWarpShadersText[0])
             g_plugin.GenWarpPShaderText(m_szWarpShadersText, m_fDecay.eval(-1), m_bTexWrap);
         m_nWarpPSVersion = nWarpPSVersionInFile;
@@ -2017,7 +1927,10 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
     if (ApplyFlags & STATE_COMP)
     {
         //m_szCompShadersText[0] = 0;
-        ReadCode(f, m_szCompShadersText, "comp_");
+        if (!ReadCode(f, m_szCompShadersText, "comp_")) {
+            fclose(f);
+            return false;
+        }
         if (!m_szCompShadersText[0])
             g_plugin.GenCompPShaderText(m_szCompShadersText, m_fGammaAdj.eval(-1), m_fVideoEchoAlpha.eval(-1), m_fVideoEchoZoom.eval(-1), m_nVideoEchoOrientation, m_fShader.eval(-1), m_bBrighten, m_bDarken, m_bSolarize, m_bInvert);
         m_nCompPSVersion = nCompPSVersionInFile;

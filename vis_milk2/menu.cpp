@@ -406,7 +406,10 @@ void CMilkMenu::OnWaitStringAccept(wchar_t *szNewString)
 	assert(pItem->m_type == MENUITEMTYPE_STRING);
 
 	// apply the edited string
-	lstrcpyW((wchar_t *)(addr), szNewString);
+	// MENUITEMTYPE_STRING edits ASCII code stored inside the wide editor
+    // buffer. A wide copy can write an extra byte beyond a full char array.
+    const int capacity = static_cast<int>(pItem->m_wParam ? pItem->m_wParam : 8190);
+    lstrcpynA(reinterpret_cast<char*>(addr), reinterpret_cast<const char*>(szNewString), capacity);
 
 	// if user gave us a callback function pointer, call it now
 	if (pItem->m_pCallbackFn)
@@ -560,7 +563,7 @@ LRESULT CMilkMenu::HandleKeydown(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                     g_plugin.m_waitstring.nMaxLen = pItem->m_wParam ? pItem->m_wParam : 8190;
                     g_plugin.m_waitstring.nMaxLen = min(g_plugin.m_waitstring.nMaxLen, sizeof(g_plugin.m_waitstring.szText)-16);
 					//lstrcpyW(g_plugin.m_waitstring.szText, (wchar_t *)addr);
-					lstrcpyA((char*)g_plugin.m_waitstring.szText, (char*)addr);
+					lstrcpynA((char*)g_plugin.m_waitstring.szText, (char*)addr, g_plugin.m_waitstring.nMaxLen);
 					swprintf(g_plugin.m_waitstring.szPrompt, wasabiApiLangString(IDS_ENTER_THE_NEW_STRING), pItem->m_szName);
 					lstrcpyW(g_plugin.m_waitstring.szToolTip, pItem->m_szToolTip);
 					g_plugin.m_waitstring.nCursorPos = strlen/*wcslen*/((char*)g_plugin.m_waitstring.szText);

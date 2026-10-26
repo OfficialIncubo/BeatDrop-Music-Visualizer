@@ -4067,8 +4067,17 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
     *ppShader = NULL;
     *ppConstTable = NULL;
 
-    char szShaderText[128000];
-    char temp[128000];
+    // Internal LCC separators can expand to two CR/LF bytes each. Include
+    // the shared header, defines and generated entry-point wrapper as well.
+    const size_t inputLength = strlen(szOrigShaderText);
+    if (inputLength >= MAX_SHADER_TEXT_LEN || static_cast<size_t>(m_nShaderIncludeTextLen) + 2 * inputLength + 2048 >= MAX_SHADER_COMPILER_TEXT_LEN) {
+        AddError(L"Shader source exceeds the compiler text buffer.", 6.0f, ERR_PRESET, true);
+        return false;
+    }
+    std::vector<char> shaderStorage(MAX_SHADER_COMPILER_TEXT_LEN, 0);
+    std::vector<char> tempStorage(MAX_SHADER_COMPILER_TEXT_LEN, 0);
+    char* szShaderText = shaderStorage.data();
+    char* temp = tempStorage.data();
     int writePos = 0;
 
     // paste the universal #include
@@ -4257,7 +4266,7 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
         {
             wchar_t temp[1024];
             swprintf(temp, wasabiApiLangString(IDS_ERROR_COMPILING_X_X_SHADER), szProfile, szWhichShader);
-            if (m_pShaderCompileErrors && m_pShaderCompileErrors->GetBufferSize() < sizeof(temp) - 256)
+            if (m_pShaderCompileErrors && m_pShaderCompileErrors->GetBufferSize() < MAX_SHADER_COMPILER_TEXT_LEN - 256)
             {
                 lstrcatW(temp, L"\n\n");
                 lstrcatW(temp, AutoWide((char*)m_pShaderCompileErrors->GetBufferPointer()));
@@ -4310,7 +4319,7 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
         if (hr != D3D_OK)
         {
             wchar_t temp[512];
-            wasabiApiLangString(IDS_ERROR_CREATING_SHADER, temp, sizeof(temp));
+            wasabiApiLangString(IDS_ERROR_CREATING_SHADER, temp, MAX_SHADER_COMPILER_TEXT_LEN);
             //dumpmsg(temp);
             if (bHardErrors)
                 MessageBoxW(GetPluginWindow(), temp, wasabiApiLangString(IDS_MILKDROP_ERROR, title, 64), MB_OK | MB_SETFOREGROUND | MB_TOPMOST);
@@ -5180,9 +5189,12 @@ void CPlugin::MyRenderUI(
 
     // 4. render text in upper-left corner
     {
-		wchar_t buf[64000] = {0};  // must fit the longest strings (code strings are 32768 chars)
-								   // AND leave extra space for &->&&, and [,[,& insertion
-		char bufA[64000] = {0};
+		// Escape expansion and cursor markers need more than the raw code size.
+        // Keep these large display buffers off the render thread's stack.
+        std::vector<wchar_t> displayWide(MAX_SHADER_EDIT_SCRATCH_LEN, 0);
+        std::vector<char> displayNarrow(MAX_SHADER_EDIT_SCRATCH_LEN, 0);
+        wchar_t* buf = displayWide.data();
+        char* bufA = displayNarrow.data();
 
         SelectFont(SIMPLE_FONT);
 
@@ -10775,7 +10787,8 @@ void CPlugin::WaitString_Copy()
 				m_waitstring.szClipboard[i] = *(ptr + start + i);
 			m_waitstring.szClipboard[chars_to_copy] = 0;
 
-			char tmp[64000];
+			std::vector<char> tmpStorage(MAX_SHADER_EDIT_SCRATCH_LEN, 0);
+            char* tmp = tmpStorage.data();
 			ConvertLFCToCRsA(m_waitstring.szClipboard, tmp);
 			copyStringToClipboardA(tmp);
 		}
@@ -10785,7 +10798,8 @@ void CPlugin::WaitString_Copy()
 				m_waitstring.szClipboardW[i] = m_waitstring.szText[start + i];
 			m_waitstring.szClipboardW[chars_to_copy] = 0;
 
-			wchar_t tmp[64000];
+			std::vector<wchar_t> tmpStorage(MAX_SHADER_EDIT_SCRATCH_LEN, 0);
+            wchar_t* tmp = tmpStorage.data();
 			ConvertLFCToCRsW(m_waitstring.szClipboardW, tmp);
 			copyStringToClipboardW(tmp);
 		}
@@ -10802,14 +10816,16 @@ void CPlugin::WaitString_Paste()
 
 		if (m_waitstring.bDisplayAsCode)
 		{
-	        char tmp[64000];
-		    lstrcpyA(tmp, getStringFromClipboardA());
+	        std::vector<char> tmpStorage(MAX_SHADER_EDIT_SCRATCH_LEN, 0);
+            char* tmp = tmpStorage.data();
+		    lstrcpynA(tmp, getStringFromClipboardA(), MAX_SHADER_EDIT_SCRATCH_LEN);
 			ConvertCRsToLFCA(tmp, m_waitstring.szClipboard);
 		}
 		else
 		{
-	        wchar_t tmp[64000];
-		    lstrcpyW(tmp, getStringFromClipboardW());
+	        std::vector<wchar_t> tmpStorage(MAX_SHADER_EDIT_SCRATCH_LEN, 0);
+            wchar_t* tmp = tmpStorage.data();
+		    lstrcpynW(tmp, getStringFromClipboardW(), MAX_SHADER_EDIT_SCRATCH_LEN);
 			ConvertCRsToLFCW(tmp, m_waitstring.szClipboardW);
 		}
 

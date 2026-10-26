@@ -40,6 +40,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#include "evallib/eval.h"
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 #include "md_defines.h"
+#include "shader_text_limits.h"
 
 // flags for CState::RecompileExpressions():
 #define RECOMPILE_PRESET_CODE  1
@@ -377,8 +378,8 @@ public:
     char			m_szPerFrameInit[MAX_BIGSTRING_LEN];
     char			m_szPerFrameExpr[MAX_BIGSTRING_LEN];
     char			m_szPerPixelExpr[MAX_BIGSTRING_LEN];
-    char            m_szWarpShadersText[MAX_BIGSTRING_LEN]; // pixel shader code
-    char            m_szCompShadersText[MAX_BIGSTRING_LEN]; // pixel shader code
+    char            m_szWarpShadersText[MAX_SHADER_TEXT_LEN]; // pixel shader code
+    char            m_szCompShadersText[MAX_SHADER_TEXT_LEN]; // pixel shader code
 	void			FreeVarsAndCode(bool bFree = true);
 	void			RegisterBuiltInVariables(int flags);
 	void			StripLinefeedCharsAndComments(char *src, char *dest);
