@@ -1,0 +1,175 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+wavecode_0_enabled=1
+wavecode_0_samples=300
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1
+wavecode_0_smoothing=0.6
+wavecode_0_r=1
+wavecode_0_g=1
+wavecode_0_b=1
+wavecode_0_a=0.6
+wave_0_per_frame1=a = 0.6*min(1, q30);
+wave_0_per_frame2=t1 = q5;
+wave_0_per_frame3=r = 0.5 + 0.5*cos(6.28318*q4);
+wave_0_per_frame4=g = 0.5 + 0.5*cos(6.28318*(q4 + 0.33));
+wave_0_per_frame5=b = 0.5 + 0.5*cos(6.28318*(q4 + 0.67));
+wave_0_per_point1=an = sample*6.28318;
+wave_0_per_point2=rr = 0.08 + 0.05*sin(an*5 + t1*3) + value1*0.05;
+wave_0_per_point3=x = 0.5 + rr*cos(an + t1);
+wave_0_per_point4=y = 0.5 + rr*sin(an + t1);
+wavecode_1_enabled=1
+wavecode_1_samples=256
+wavecode_1_sep=0
+wavecode_1_bSpectrum=1
+wavecode_1_bUseDots=1
+wavecode_1_bDrawThick=1
+wavecode_1_bAdditive=1
+wavecode_1_scaling=1
+wavecode_1_smoothing=0.3
+wavecode_1_r=1
+wavecode_1_g=1
+wavecode_1_b=1
+wavecode_1_a=0.8
+wave_1_per_frame1=a = 0.8*min(1, q30);
+wave_1_per_frame2=t1 = q5;
+wave_1_per_frame3=r = 0.5 + 0.5*cos(6.28318*(q4 + 0.5));
+wave_1_per_frame4=g = 0.5 + 0.5*cos(6.28318*(q4 + 0.83));
+wave_1_per_frame5=b = 0.5 + 0.5*cos(6.28318*(q4 + 0.17));
+wave_1_per_point1=an = sample*6.28318;
+wave_1_per_point2=rr = 0.16 + min(value1, 1)*0.05*(1 + sample*3);
+wave_1_per_point3=x = 0.5 + rr*cos(an - t1*0.7);
+wave_1_per_point4=y = 0.5 + rr*sin(an - t1*0.7);
+per_frame_init_1=fl = 0;
+per_frame_init_2=last = 0;
+per_frame_init_3=nf = 8;
+per_frame_init_4=turn = 0;
+per_frame_init_5=hue = 0;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=beat = (bass > 1.45)*((time - last) > 9);
+per_frame_5=last = if(beat, time, last);
+per_frame_6=nf = if(beat, 6 + 2*floor(rand(4)), nf);
+per_frame_7=turn = turn + (0.06 + 0.18*mid_att)/fps;
+per_frame_8=hue = hue + 0.03/fps;
+per_frame_9=q1 = nf;
+per_frame_10=q2 = (0.005 + 0.008*min(bass_att, 2))*q30;
+per_frame_11=q3 = 0.004*q30*(1 + mid_att);
+per_frame_12=q4 = hue;
+per_frame_13=q5 = turn;
+per_frame_14=q6 = min(treb_att, 2);
+per_frame_15=fl = fl + 60/fps;
+per_frame_16=nt = floor(fl);
+per_frame_17=fl = fl - nt;
+per_frame_18=q7 = nt*0.003;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  float2 p = (uv - 0.5) * aspect.xy;
+warp_4=`  float r = length(p);
+warp_5=`  float a = atan2(p.y, p.x) + q3;
+warp_6=`  float seg = 6.28318 / q1;
+warp_7=`  float w = a - seg * floor(a / seg + 0.5);
+warp_8=`  w = abs(w);
+warp_9=`  float r2 = r * (1.0 - q2);
+warp_10=`  float2 p2 = r2 * float2(cos(w), sin(w));
+warp_11=`  float3 c = tex2D(sampler_main, 0.5 + p2 / aspect.xy).xyz;
+warp_12=`  float3 h = c.gbr;
+warp_13=`  c = lerp(c, h, 0.012 * q30);
+warp_14=`  c *= pow(0.968, q30);
+warp_15=`  // the 8-bit floor steps on a time tick from frame code (q7): one step per 1/60 s at any frame rate
+warp_16=`  ret = max(c - q7, 0.0);
+warp_17=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`  float2 p = (uv - 0.5) * aspect.xy;
+comp_4=`  float r = length(p);
+comp_5=`  float a = atan2(p.y, p.x) - q5 * 0.3;
+comp_6=`  float seg = 6.28318 / (q1 * 2.0);
+comp_7=`  float w = abs(a - seg * floor(a / seg + 0.5));
+comp_8=`  float2 p2 = r * float2(cos(w + q5 * 0.3), sin(w + q5 * 0.3));
+comp_9=`  float2 u2 = 0.5 + p2 / aspect.xy;
+comp_10=`  float3 m = tex2D(sampler_main, u2).xyz;
+comp_11=`  float3 g1 = GetBlur1(u2);
+comp_12=`  float3 g2 = GetBlur2(uv);
+comp_13=`  float3 col = m * 1.1 + g1 * 0.7 + g2 * 0.5;
+comp_14=`  col += float3(1.0, 0.95, 0.85) * exp(-r * 40.0) * 0.25 * (0.5 + q6);
+comp_15=`  col *= 1.0 - smoothstep(0.25, 0.75, length(uv - 0.5));
+comp_16=`  ret = 1.0 - exp(-col * 1.5);
+comp_17=`}

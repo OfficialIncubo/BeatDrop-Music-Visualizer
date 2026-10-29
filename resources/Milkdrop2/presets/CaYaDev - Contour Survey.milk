@@ -1,0 +1,178 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+wavecode_0_enabled=1
+wavecode_0_samples=256
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1
+wavecode_0_smoothing=0.5
+wavecode_0_r=1
+wavecode_0_g=1
+wavecode_0_b=1
+wavecode_0_a=1
+wave_0_per_frame1=t1 = q5;
+wave_0_per_frame2=t2 = q6;
+wave_0_per_frame3=t3 = q7*0.32;
+wave_0_per_frame4=a = max(0, 1 - q7/3.2)*min(1, q30);
+wave_0_per_point1=an = sample*6.28318;
+wave_0_per_point2=rr = t3 + value1*0.006;
+wave_0_per_point3=x = t1 + rr*cos(an);
+wave_0_per_point4=y = t2 + rr*sin(an);
+wave_0_per_point5=r = 1;
+wave_0_per_point6=g = 1;
+wave_0_per_point7=b = 1;
+per_frame_init_1=last = -10;
+per_frame_init_2=px = 0.5;
+per_frame_init_3=py = 0.5;
+per_frame_init_4=pan = 0;
+per_frame_init_5=amp = 1;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=beat = (bass > 1.3)*((time - last) > 1.2);
+per_frame_5=go = ((beat + ((time - last) > 4)) > 0);
+per_frame_6=last = if(go, time, last);
+per_frame_7=px = if(go, 0.2 + 0.6*(rand(1000)*0.001), px);
+per_frame_8=py = if(go, 0.25 + 0.5*(rand(1000)*0.001), py);
+per_frame_9=pan = pan + (0.012 + 0.02*mid_att)/fps;
+per_frame_10=amp = amp + (1 + 0.6*min(bass_att, 2) - amp)*min(1, 2/fps);
+per_frame_11=q1 = pan;
+per_frame_12=q2 = pan*0.37;
+per_frame_13=q3 = time*0.006;
+per_frame_14=q4 = amp;
+per_frame_15=q5 = px;
+per_frame_16=q6 = py;
+per_frame_17=q7 = time - last;
+per_frame_18=q8 = min(treb_att, 2);
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  ret = max(tex2D(sampler_main, uv).xyz * pow(0.72, q30) - 0.002 * max(q30, 1.0), 0.0);
+warp_4=`}
+comp_1=`float hgt(float2 m)
+comp_2=`{
+comp_3=`  float h = tex3D(sampler_noisevol_hq, float3(m * 0.42, q3)).x * 0.58;
+comp_4=`  h += tex3D(sampler_noisevol_hq, float3(m * 0.95 + 0.31, q3 * 1.4 + 0.5)).x * 0.28;
+comp_5=`  h += tex3D(sampler_noisevol_hq, float3(m * 2.1 + 0.67, q3 * 1.9 + 0.2)).x * 0.14;
+comp_6=`  return (h - 0.5) * q4 * 1.25 + 0.52;
+comp_7=`}
+comp_8=`shader_body
+comp_9=`{
+comp_10=`  float2 p = (uv - 0.5) * aspect.xy;
+comp_11=`  float2 m = p * 2.2 + float2(q1, q2);
+comp_12=`  float e = 10.0 * 2.2 / texsize.x;
+comp_13=`  float h = hgt(m);
+comp_14=`  float hx = hgt(m + float2(e, 0.0));
+comp_15=`  float hy = hgt(m + float2(0.0, e));
+comp_16=`  float2 gr = float2(hx - h, hy - h) * 0.1;
+comp_17=`  float gpx = length(gr) + 1e-5;
+comp_18=`  float N = 16.0;
+comp_19=`  float c = h * N;
+comp_20=`  float dl = abs(frac(c + 0.5) - 0.5) / (N * gpx);
+comp_21=`  float lvl = floor(c + 0.5);
+comp_22=`  float major = step(frac(lvl / 5.0 + 0.01), 0.04);
+comp_23=`  float ln = 1.0 - smoothstep(0.5 + major * 0.6, 1.4 + major * 0.9, dl);
+comp_24=`  float sea = 0.37;
+comp_25=`  float land = saturate((h - sea) / (1.0 - sea));
+comp_26=`  float3 col = lerp(float3(0.16, 0.42, 0.24), float3(0.55, 0.62, 0.32), saturate(land * 3.0));
+comp_27=`  col = lerp(col, float3(0.62, 0.48, 0.3), saturate(land * 3.0 - 1.0));
+comp_28=`  col = lerp(col, float3(0.45, 0.33, 0.25), saturate(land * 3.0 - 1.8));
+comp_29=`  col = lerp(col, float3(0.95, 0.95, 0.97), saturate(land * 5.0 - 4.3));
+comp_30=`  float3 nrm = normalize(float3(-gr * 350.0, 1.0));
+comp_31=`  float shade = saturate(dot(nrm, normalize(float3(-0.6, -0.6, 0.55))));
+comp_32=`  col *= 0.6 + 0.55 * shade;
+comp_33=`  float depth = saturate((sea - h) / sea);
+comp_34=`  float3 water = lerp(float3(0.25, 0.55, 0.7), float3(0.03, 0.12, 0.3), saturate(depth * 2.2));
+comp_35=`  float wet = step(h, sea);
+comp_36=`  col = lerp(col, water, wet);
+comp_37=`  float3 ink = lerp(float3(0.3, 0.18, 0.1), float3(0.7, 0.85, 1.0), wet);
+comp_38=`  col = lerp(col, ink * (0.7 + 0.3 * major), ln * (0.5 + 0.35 * major));
+comp_39=`  float coast = 1.0 - smoothstep(0.6, 1.6, abs(h - sea) / gpx);
+comp_40=`  col = lerp(col, float3(0.05, 0.08, 0.12), coast * 0.8);
+comp_41=`  float2 gq = abs(frac(m * 2.5) - 0.5) / (2.5 * 2.2 / texsize.x);
+comp_42=`  float grid = 1.0 - smoothstep(0.5, 1.2, min(gq.x, gq.y));
+comp_43=`  col = lerp(col, float3(0.9, 0.95, 1.0), grid * (0.08 + 0.06 * q8));
+comp_44=`  float sonar = tex2D(sampler_main, uv).x;
+comp_45=`  float halo = GetBlur1(uv).x;
+comp_46=`  col += float3(0.3, 0.95, 1.0) * (ln * 2.0 + 0.1) * saturate(sonar * 1.5 + halo * 0.6);
+comp_47=`  float2 d = (uv - float2(q5, 1.0 - q6)) * aspect.xy;
+comp_48=`  float mk = saturate(1.0 - q7 * 0.5) * (1.0 - smoothstep(0.0015, 0.003, min(abs(d.x), abs(d.y)))) * step(length(d), 0.03);
+comp_49=`  col = lerp(col, float3(1.0, 0.35, 0.2), mk);
+comp_50=`  float2 v = uv - 0.5;
+comp_51=`  col *= 1.0 - dot(v, v) * 0.6;
+comp_52=`  ret = col;
+comp_53=`}

@@ -1,0 +1,118 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+per_frame_init_1=brz = 0;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=brz = brz + (0.05 + 0.08*min(bass_att, 2))/fps;
+per_frame_5=q1 = brz;
+per_frame_6=q2 = 1.15 + 0.08*sin(brz*0.7) + 0.04*min(bass_att, 2);
+per_frame_7=q3 = time*0.015 + mid_att*0.02;
+per_frame_8=q4 = min(treb_att, 2);
+per_frame_9=q5 = time*0.02;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  float2 p = (uv - 0.5) * aspect.xy * 2.6;
+warp_4=`  float cs = cos(q5);
+warp_5=`  float sn = sin(q5);
+warp_6=`  p = float2(p.x * cs - p.y * sn, p.x * sn + p.y * cs);
+warp_7=`  float scale = 1.0;
+warp_8=`  float k = q2;
+warp_9=`  float trap = 1e9;
+warp_10=`  float depth = 0.0;
+warp_11=`  for (int i = 0; i < 9; i++) {
+warp_12=`    p = -1.0 + 2.0 * frac(0.5 * p + 0.5);
+warp_13=`    float r2 = dot(p, p);
+warp_14=`    float f = k / max(r2, 1e-4);
+warp_15=`    p *= f;
+warp_16=`    scale *= f;
+warp_17=`    trap = min(trap, abs(r2 - 0.25));
+warp_18=`    depth += step(1.0, f);
+warp_19=`  }
+warp_20=`  float d = 0.25 * abs(p.y) / scale;
+warp_21=`  float px = 2.6 / texsize.x;
+warp_22=`  float lace = exp(-d / (px * 1.2));
+warp_23=`  float3 pal = 0.5 + 0.5 * cos(6.28318 * (float3(0.0, 0.2, 0.4) + log2(max(scale, 1.0)) * 0.035 + trap * 1.5 + q3));
+warp_24=`  float3 c = pal * lace * (0.6 + 0.6 * saturate(1.0 - trap * 3.0)) + float3(1.0, 1.0, 1.0) * lace * lace * 0.25 * q4;
+warp_25=`  float3 old = tex2D(sampler_main, uv).xyz;
+warp_26=`  ret = lerp(old, c, 1.0 - pow(0.4, q30));
+warp_27=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`  float3 m = tex2D(sampler_main, uv).xyz;
+comp_4=`  float3 col = float3(0.01, 0.008, 0.02) + m * 1.2 + GetBlur1(uv) * 0.6 + GetBlur2(uv) * 0.35;
+comp_5=`  col *= 1.0 - dot(uv - 0.5, uv - 0.5) * 0.6;
+comp_6=`  ret = 1.0 - exp(-col * 1.5);
+comp_7=`}

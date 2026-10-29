@@ -1,0 +1,156 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+per_frame_init_1=mode = 0;
+per_frame_init_2=blend = 1;
+per_frame_init_3=lastm = 0;
+per_frame_init_4=n1 = 2;
+per_frame_init_5=m1 = 5;
+per_frame_init_6=n2 = 2;
+per_frame_init_7=m2 = 5;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=change = ((time - lastm) > 7.7)*(bass > 1.1);
+per_frame_5=lastm = if(change, time, lastm);
+per_frame_6=n1 = if(change, n2, n1);
+per_frame_7=m1 = if(change, m2, m1);
+per_frame_8=mode = if(change, (mode + 1)%6, mode);
+per_frame_9=n2 = if(change, 1 + (mode*3)%5 + 1, n2);
+per_frame_10=m2 = if(change, n2 + 2 + (mode*7)%4, m2);
+per_frame_11=blend = if(change, 0, min(1, blend + 0.6/fps));
+per_frame_12=q1 = n1;
+per_frame_13=q2 = m1;
+per_frame_14=q3 = n2;
+per_frame_15=q4 = m2;
+per_frame_16=q5 = blend*blend*(3 - 2*blend);
+per_frame_17=q6 = max(bass - 0.9, 0);
+per_frame_18=q7 = treb_att;
+per_frame_19=q8 = time*0.02;
+warp_1=`sampler sampler_pw_noise_lq;
+warp_2=`float chl(float2 p, float n, float m)
+warp_3=`{
+warp_4=`  return cos(n * 3.14159 * p.x) * cos(m * 3.14159 * p.y) - cos(m * 3.14159 * p.x) * cos(n * 3.14159 * p.y);
+warp_5=`}
+warp_6=`float field(float2 p)
+warp_7=`{
+warp_8=`  float f = lerp(chl(p, q1, q2), chl(p, q3, q4), q5);
+warp_9=`  return f * f;
+warp_10=`}
+warp_11=`shader_body
+warp_12=`{
+warp_13=`  float2 p = (uv - 0.5) * aspect.xy * 2.2;
+warp_14=`  float e = 0.004;
+warp_15=`  float gx = field(p + float2(e, 0)) - field(p - float2(e, 0));
+warp_16=`  float gy = field(p + float2(0, e)) - field(p - float2(0, e));
+warp_17=`  float2 grad = float2(gx, gy) / (2.0 * e);
+warp_18=`  grad = grad / (1.0 + length(grad));
+warp_19=`  float2 jit = (tex2D(sampler_noise_lq, uv * 4.0 + rand_frame.xy).xy - 0.5) * 0.004 * q6;
+warp_20=`  float2 move = (grad * 0.0008 + jit) * aspect.zw * q30;
+warp_21=`  float s = tex2D(sampler_main, uv + move).x;
+warp_22=`  float2 sp = uv * texsize.xy / 256.0 + rand_frame.zw * 7.0;
+warp_23=`  float4 st = tex2D(sampler_pw_noise_lq, sp);
+warp_24=`  float grain = saturate((st.x * st.y - (0.97 - 0.006 * q7)) * 200.0);
+warp_25=`  float f2 = field(p);
+warp_26=`  float bed = tex2D(sampler_pw_noise_lq, uv * texsize.xy / 256.0).x;
+warp_27=`  float band = saturate(1.0 - sqrt(f2) * 4.0);
+warp_28=`  float target = band * band * (0.4 + 0.8 * bed);
+warp_29=`  s = lerp(s * pow(0.998, q30), target, 0.05 * min(1.0, q30)) + grain * 0.25;
+warp_30=`  s = min(s, 0.9);
+warp_31=`  ret = float3(saturate(s), 0, 0);
+warp_32=`}
+comp_1=`float chl(float2 p, float n, float m)
+comp_2=`{
+comp_3=`  return cos(n * 3.14159 * p.x) * cos(m * 3.14159 * p.y) - cos(m * 3.14159 * p.x) * cos(n * 3.14159 * p.y);
+comp_4=`}
+comp_5=`shader_body
+comp_6=`{
+comp_7=`  float2 p = (uv - 0.5) * aspect.xy * 2.2;
+comp_8=`  float s = tex2D(sampler_main, uv).x;
+comp_9=`  float sb = GetBlur1(uv).x;
+comp_10=`  float sb2 = GetBlur2(uv).x;
+comp_11=`  float f = lerp(chl(p, q1, q2), chl(p, q3, q4), q5);
+comp_12=`  float brushed = tex2D(sampler_noise_hq, float2(uv.x * 0.5, uv.y * 40.0)).x;
+comp_13=`  float3 plate = float3(0.07, 0.075, 0.085) * (0.8 + 0.4 * brushed);
+comp_14=`  plate += float3(0.05, 0.06, 0.08) * saturate(1.0 - abs(f) * 3.0) * (0.3 + 0.7 * q6);
+comp_15=`  float2 lp = uv - float2(0.3, 0.25);
+comp_16=`  plate += float3(0.12, 0.11, 0.1) * exp(-dot(lp, lp) * 4.0);
+comp_17=`  float3 sand = float3(1.0, 0.88, 0.68);
+comp_18=`  float lit = 0.75 + 0.5 * saturate((sb - GetBlur1(uv + texsize.zw * 2.0).x) * 20.0 + 0.5);
+comp_19=`  float3 col = lerp(plate, sand * lit, smoothstep(0.08, 0.5, s));
+comp_20=`  col += sand * saturate(sb2 - 0.08) * 0.6 + float3(1.0, 0.6, 0.3) * saturate(GetBlur3(uv).x - 0.05) * 0.4;
+comp_21=`  float2 c = uv - 0.5;
+comp_22=`  col *= 1.0 - dot(c, c) * 0.9;
+comp_23=`  ret = 1.0 - exp(-col * 1.4);
+comp_24=`}

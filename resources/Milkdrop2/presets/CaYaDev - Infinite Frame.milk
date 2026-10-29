@@ -1,0 +1,132 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1
+wavecode_0_smoothing=0.5
+wavecode_0_r=1
+wavecode_0_g=1
+wavecode_0_b=1
+wavecode_0_a=1
+wave_0_per_frame1=a = q1;
+wave_0_per_frame2=r = 0.6 + 0.4*cos(6.28318*q3);
+wave_0_per_frame3=g = 0.6 + 0.4*cos(6.28318*(q3 + 0.33));
+wave_0_per_frame4=b = 0.6 + 0.4*cos(6.28318*(q3 + 0.67));
+wave_0_per_point1=s4 = sample*4;
+wave_0_per_point2=side = min(floor(s4), 3);
+wave_0_per_point3=t = s4 - side;
+wave_0_per_point4=off = value1*0.05*sin(t*3.14159);
+wave_0_per_point5=xx = if(equal(side, 0), -0.45 + t*0.9, if(equal(side, 1), 0.45 + off, if(equal(side, 2), 0.45 - t*0.9, -0.45 - off)));
+wave_0_per_point6=yy = if(equal(side, 0), -0.43 - off, if(equal(side, 1), -0.43 + t*0.86, if(equal(side, 2), 0.43 + off, 0.43 - t*0.86)));
+wave_0_per_point7=x = 0.5 + xx/q31;
+wave_0_per_point8=y = 0.5 + yy/q32;
+per_frame_init_1=last = 0;
+per_frame_init_2=hue = 0;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=zoom = 1 - (0.3 + 0.35*bass_att)/fps;
+per_frame_5=rot = (0.1 + 0.16*mid_att)/fps;
+per_frame_6=beat = (bass > 1.25)*((time - last) > 0.25);
+per_frame_7=st = (beat + ((time - last) > 0.45)) > 0;
+per_frame_8=last = if(st, time, last);
+per_frame_9=hue = if(st, hue + 0.09 + 0.05*mid_att, hue);
+per_frame_10=q1 = st;
+per_frame_11=q2 = treb_att;
+per_frame_12=q3 = hue;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  float2 e = saturate((0.5 - abs(uv - 0.5)) * 300.0);
+warp_4=`  ret = tex2D(sampler_main, uv).xyz * pow(0.993, q30) * e.x * e.y;
+warp_5=`}
+comp_1=`sampler sampler_pw_noise_lq;
+comp_2=`shader_body
+comp_3=`{
+comp_4=`  float3 m = tex2D(sampler_main, uv).xyz;
+comp_5=`  float2 p = (uv - 0.5) * aspect.xy;
+comp_6=`  float r = max(abs(p.x), abs(p.y) * 1.25);
+comp_7=`  float depth = saturate(r * 2.2);
+comp_8=`  float3 col = m * 1.2 + GetBlur1(uv) * 0.9 + GetBlur2(uv) * 0.5;
+comp_9=`  float sp = tex2D(sampler_pw_noise_lq, uv * texsize.xy / 256.0 + rand_frame.xy).x;
+comp_10=`  col += step(0.985 - 0.01 * q2, sp) * lum(m) * depth * 1.5;
+comp_11=`  col *= 0.45 + 0.55 * depth;
+comp_12=`  col += float3(0.01, 0.012, 0.02) * (1.0 - depth);
+comp_13=`  ret = 1.0 - exp(-col * 1.5);
+comp_14=`}

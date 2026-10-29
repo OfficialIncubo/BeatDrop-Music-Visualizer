@@ -1,0 +1,197 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+wavecode_0_enabled=1
+wavecode_0_samples=300
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1
+wavecode_0_smoothing=0.5
+wavecode_0_r=1
+wavecode_0_g=1
+wavecode_0_b=1
+wavecode_0_a=0.8
+wave_0_per_frame1=t1 = time*0.9;
+wave_0_per_frame2=a = 0.8*min(1, q30);
+wave_0_per_point1=an = sample*6.28318;
+wave_0_per_point2=rr = 0.07 + value1*0.1;
+wave_0_per_point3=x = 0.5 + 0.2*cos(t1) + rr*cos(an);
+wave_0_per_point4=y = 0.5 + 0.2*sin(t1) + rr*sin(an);
+wave_0_per_point5=r = 0;
+wave_0_per_point6=g = 1;
+wave_0_per_point7=b = 0;
+shapecode_0_enabled=1
+shapecode_0_sides=6
+shapecode_0_additive=1
+shapecode_0_thickOutline=1
+shapecode_0_textured=0
+shapecode_0_num_inst=3
+shapecode_0_x=0.5
+shapecode_0_y=0.5
+shapecode_0_rad=0.2
+shapecode_0_ang=0
+shapecode_0_tex_ang=0
+shapecode_0_tex_zoom=1
+shapecode_0_r=0
+shapecode_0_g=0
+shapecode_0_b=0
+shapecode_0_a=0
+shapecode_0_r2=0
+shapecode_0_g2=1
+shapecode_0_b2=0
+shapecode_0_a2=0
+shapecode_0_border_r=1
+shapecode_0_border_g=0
+shapecode_0_border_b=0
+shapecode_0_border_a=1
+shape_0_per_frame1=rad = 0.08 + instance*0.09 + 0.05*bass_att*(1 - instance*0.3);
+shape_0_per_frame2=ang = q2*(1 + instance*0.4)*if(equal(instance, 1), -1, 1);
+shape_0_per_frame3=border_a = (0.3 + 0.6*min(1, max(bass - 0.9, 0)))*min(1, q30);
+shapecode_1_enabled=1
+shapecode_1_sides=3
+shapecode_1_additive=1
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_num_inst=3
+shapecode_1_x=0.5
+shapecode_1_y=0.5
+shapecode_1_rad=0.04
+shapecode_1_ang=0
+shapecode_1_tex_ang=0
+shapecode_1_tex_zoom=1
+shapecode_1_r=0
+shapecode_1_g=0
+shapecode_1_b=1
+shapecode_1_a=0.9
+shapecode_1_r2=0
+shapecode_1_g2=0
+shapecode_1_b2=1
+shapecode_1_a2=0
+shapecode_1_border_r=1
+shapecode_1_border_g=1
+shapecode_1_border_b=1
+shapecode_1_border_a=0
+shape_1_per_frame1=an = time*0.6 + instance*2.0944;
+shape_1_per_frame2=x = 0.5 + 0.21*cos(an)*q31;
+shape_1_per_frame3=y = 0.5 + 0.21*sin(an)*q32;
+shape_1_per_frame4=ang = -an;
+shape_1_per_frame5=rad = 0.02 + 0.03*treb_att;
+shape_1_per_frame6=a = (0.3 + 0.6*min(1, treb_att))*min(1, q30);
+per_frame_init_1=spin = 0;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=spin = spin + (0.15 + 0.5*max(bass_att - 0.9, 0))/fps;
+per_frame_5=zoom = 1.0 + (0.35 + 0.35*bass_att)/fps;
+per_frame_6=rot = (0.10 + 0.08*sin(time*0.2))/fps;
+per_frame_7=q1 = 6;
+per_frame_8=q2 = spin;
+per_frame_9=q3 = time*0.03;
+per_frame_10=q4 = treb_att;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  ret = tex2D(sampler_main, uv).xyz;
+warp_4=`  // each resample of the feedback softens the thin rings, and more frames per second soften them more
+warp_5=`  // than the per-second blur alone would; sharpening by pow(q30, 0.4) per frame keeps 30/60/144 Hz alike
+warp_6=`  // (measured: 50/44/43 mean brightness, was 75/44/28 with a linear q30)
+warp_7=`  ret += (ret - GetBlur1(uv)) * 0.1 * pow(q30, 0.4);
+warp_8=`  ret = ret * pow(0.968, q30) - 0.003 * q30;
+warp_9=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`  float2 p = (uv - 0.5) * aspect.xy;
+comp_4=`  float r = length(p);
+comp_5=`  float a = atan2(p.y, p.x) + q2 * 0.3;
+comp_6=`  float seg = 6.28318 / q1;
+comp_7=`  float k = frac(a / seg);
+comp_8=`  a = abs(k - 0.5) * seg;
+comp_9=`  float2 m = float2(cos(a), sin(a)) * r;
+comp_10=`  float2 uvk = 0.5 + m * aspect.zw;
+comp_11=`  float3 s = tex2D(sampler_fc_main, uvk).xyz;
+comp_12=`  float3 sb = GetBlur1(uvk);
+comp_13=`  float3 sb2 = GetBlur2(uvk);
+comp_14=`  float3 c1 = 0.55 + 0.45 * cos(6.28318 * (float3(0.0, 0.1, 0.2) + q3));
+comp_15=`  float3 c2 = 0.55 + 0.45 * cos(6.28318 * (float3(0.5, 0.6, 0.7) + q3 + r * 0.6));
+comp_16=`  float3 c3 = float3(0.95, 0.97, 1.0);
+comp_17=`  float fr = s.x * 1.2 + saturate(s.x - sb.x) * 2.0;
+comp_18=`  float scope = s.y * 1.1 + saturate(s.y - sb.y) * 2.0;
+comp_19=`  float tri = s.z;
+comp_20=`  ret = c1 * fr + c2 * scope + c3 * tri * 0.8;
+comp_21=`  ret += (c1 * sb2.x + c2 * sb2.y + c3 * sb2.z) * (0.5 + 0.3 * q4);
+comp_22=`  ret = 1.0 - exp(-ret * 1.4);
+comp_23=`  ret *= saturate(1.3 - r * 1.2);
+comp_24=`}
