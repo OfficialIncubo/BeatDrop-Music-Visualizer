@@ -40,6 +40,7 @@ Highlights:
 - [Spout](https://spout.zeal.co) integration
 - Webcam support
 - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library integration
+- 64 shared q variables (`q1`-`q64`) for preset, wave, shape and shader code; shader banks `_qa`-`_qp`.
 - Toggleable Speaker and Microphone Audio Source Modes
 - Synchronized LRC lyrics with a built-in timestamp editor, local cache and smooth line transitions
 - [BeatDrop-loopback](https://matthewvaneerde.wordpress.com/2008/12/16/sample-wasapi-loopback-capture-record-what-you-hear/), our enhanced loopback-capture implementation, supports Hi-Res sample rates above 92 kHz, intelligently follows default audio-device changes, recovers safely from endpoint or format changes (including DAWs), and prevents stale or stuttering audio reactions.
