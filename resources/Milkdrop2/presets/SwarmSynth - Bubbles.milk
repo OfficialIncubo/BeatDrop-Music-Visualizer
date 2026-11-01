@@ -1,0 +1,174 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+[preset00]
+fRating=4.00000
+fGammaAdj=1.00000
+fDecay=1.00000
+fVideoEchoZoom=1.00000
+fVideoEchoAlpha=0.00000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.00000
+fWaveScale=1.00000
+fWaveSmoothing=0.00000
+fWaveParam=0.00000
+fModWaveAlphaStart=0.75000
+fModWaveAlphaEnd=0.95000
+fWarpAnimSpeed=1.00000
+fWarpScale=1.00000
+fZoomExponent=1.00000
+fShader=0.00000
+zoom=1.00000
+rot=0.00000
+cx=0.50000
+cy=0.50000
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=1.00000
+wave_g=1.00000
+wave_b=1.00000
+wave_x=0.50000
+wave_y=0.50000
+ob_size=0.00000
+ob_r=0.00000
+ob_g=0.00000
+ob_b=0.00000
+ob_a=0.00000
+ib_size=0.00000
+ib_r=0.00000
+ib_g=0.00000
+ib_b=0.00000
+ib_a=0.00000
+nMotionVectorsX=0.00000
+nMotionVectorsY=0.00000
+mv_dx=0.00000
+mv_dy=0.00000
+mv_l=0.00000
+mv_r=0.00000
+mv_g=0.00000
+mv_b=0.00000
+mv_a=0.00000
+wavecode_0_enabled=1
+wavecode_0_samples=480
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.00000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=0.000
+wave_0_per_point1=i = int(sample*479 + 0.5);
+wave_0_per_point2=v = (value1 + value2)*0.5;
+wave_0_per_point3=gmegabuf(i) = v;
+wave_0_per_point4=pk = if(equal(i,0), 0, pk);
+wave_0_per_point5=pk = max(pk, abs(v));
+wave_0_per_point6=gmegabuf(1001) = if(equal(i,479), max(max(pk, gmegabuf(1001)*0.985), 0.004), gmegabuf(1001));
+wavecode_1_enabled=1
+wavecode_1_samples=480
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=1
+wavecode_1_scaling=1.00000
+wavecode_1_smoothing=0.00000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=1.000
+wave_1_per_point1=gn = 0.42/gmegabuf(1001);
+wave_1_per_point2=j = int(sample*479);
+wave_1_per_point3=an = sample*6.2831853;
+wave_1_per_point4=rr = 0.05 + 0.03*gmegabuf((int(j) + 4800) % 480)*gn/0.42 + bass_att*0.01;
+wave_1_per_point5=x = 0.5 + rr*cos(an);
+wave_1_per_point6=y = 0.5 + rr*sin(an);
+wave_1_per_point7=a = 0.5;
+wave_1_per_point8=x = 0.5 + (x - 0.5)*q32;
+wave_1_per_point9=y = 0.5 + (y - 0.5)*q29;
+shapecode_0_enabled=1
+shapecode_0_sides=36
+shapecode_0_additive=1
+shapecode_0_thickOutline=1
+shapecode_0_textured=0
+shapecode_0_num_inst=40
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.00000
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=1.00000
+shapecode_0_r=1.000
+shapecode_0_g=1.000
+shapecode_0_b=1.000
+shapecode_0_a=0.000
+shapecode_0_r2=1.000
+shapecode_0_g2=1.000
+shapecode_0_b2=1.000
+shapecode_0_a2=0.000
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=1.000
+shape_0_per_frame1=x = 0.5 + gmegabuf(2000 + instance*4)*q32;
+shape_0_per_frame2=y = 0.5 + gmegabuf(2001 + instance*4)*q29;
+shape_0_per_frame3=rad = gmegabuf(2002 + instance*4);
+shape_0_per_frame4=border_a = if(above(rad, 0.004), 0.9, 0);
+shape_0_per_frame5=a = 0;
+shape_0_per_frame6=a2 = 0;
+per_frame_init_1=slot = 0;
+per_frame_init_2=spawn = 0;
+per_frame_init_3=lasthit = 0;
+per_frame_init_4=lastt = 0;
+per_frame_init_5=i = 0;
+per_frame_init_6=loop(160, gmegabuf(2000 + i) = 0; i = i + 1;);
+per_frame_1=q30 = 0.6;
+per_frame_2=q26 = time*0.03 + bass_att*0.05;
+per_frame_3=q32 = min(1, pixelsy/pixelsx);
+per_frame_4=q29 = min(1, pixelsx/pixelsy);
+per_frame_5=dt = min(0.25, max(0, time - lastt));
+per_frame_6=lastt = time;
+per_frame_7=hit = above(bass, 1.4)*above(bass, bass_att*1.25)*above(time - lasthit, 0.25);
+per_frame_8=lasthit = if(hit, time, lasthit);
+per_frame_9=lvl = min(1, (bass_att + mid_att + treb_att)*0.25);
+per_frame_10=spawn = spawn + if(above(lvl, 0.08), 27*dt, 0);
+per_frame_11=nb = 0;
+per_frame_12=blow = hit;
+per_frame_13=bd = 0.2*rand(1000)/1000;
+per_frame_14=br = 0.12 + 0.38*lvl;
+per_frame_15=loop(2, if(blow, slot = slot % 40; ba = rand(1000)/1000*6.2831853; gmegabuf(2000 + slot*4) = bd*cos(ba); gmegabuf(2001 + slot*4) = bd*sin(ba); gmegabuf(2002 + slot*4) = br*0.5; slot = slot + 1; blow = 0, 0); blow = above(spawn, 1); spawn = spawn - blow; bd = 0.17 + 0.5*rand(1000)/1000; br = 0.02 + 0.08*lvl*rand(1000)/1000;);
+per_frame_16=i = 0;
+per_frame_17=loop(40, bx = gmegabuf(2000 + i*4); by = gmegabuf(2001 + i*4); r_ = gmegabuf(2002 + i*4); dd = sqrt(bx*bx + by*by) + 0.0001; bx = bx + bx*0.05*dt/dd; by = by + by*0.05*dt/dd; r_ = r_ - r_*0.6*dt; r_ = if(below(r_, 0.006) || above(abs(bx), 0.9) || above(abs(by), 0.9), 0, r_); gmegabuf(2000 + i*4) = bx; gmegabuf(2001 + i*4) = by; gmegabuf(2002 + i*4) = r_; i = i + 1;);
+per_frame_18=i = 0;
+per_frame_19=loop(40, j = i + 1; loop(39 - i, xi_ = gmegabuf(2000 + i*4); yi_ = gmegabuf(2001 + i*4); ri_ = gmegabuf(2002 + i*4); xj_ = gmegabuf(2000 + j*4); yj_ = gmegabuf(2001 + j*4); rj_ = gmegabuf(2002 + j*4); ddx = xj_ - xi_; ddy = yj_ - yi_; dd = sqrt(ddx*ddx + ddy*ddy) + 0.00001; ov = ri_ + rj_ + 0.008 - dd; ov = if(above(ov, 0)*above(ri_, 0)*above(rj_, 0), ov/(4*dd), 0); gmegabuf(2000 + i*4) = xi_ - ddx*ov; gmegabuf(2001 + i*4) = yi_ - ddy*ov; gmegabuf(2000 + j*4) = xj_ + ddx*ov; gmegabuf(2001 + j*4) = yj_ + ddy*ov; j = j + 1;); i = i + 1;);
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    ret = tex2D(sampler_main, uv).xyz;
+warp_4=`    ret = ret*q30 - 0.003;
+warp_5=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float2 p = uv;
+comp_4=`    ret = tex2D(sampler_main, p).xyz;
+comp_5=`    ret = 1 - exp(-ret*1.8);
+comp_6=`}

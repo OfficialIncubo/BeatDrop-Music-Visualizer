@@ -4029,6 +4029,30 @@ bool CPlugin::LoadShaderFromFile( char* szFile, char* szFn, char* szProfile,
 }
 */
 
+// A shader crash guard, modified as a drop-in replacement of D3DXCompileShader - made by seethrew (seethrew777)
+// Original desc:
+// Microsoft's shader compiler can crash outright on some shaders (an access violation
+// inside D3DXCompileShader, in the legacy d3dx9_31 compiler: a Pixel Life preset with an exact
+// 0.000 colour did it every time, 2026-10-30). In a plugin that takes the DAW down with it. Caught
+// here (SEH, so no C++ objects in this function) and reported as a failed compile instead.
+static HRESULT D3DXCompileShaderNoCrash(LPCSTR text, UINT len, CONST D3DXMACRO* defines, LPD3DXINCLUDE include, LPCSTR fn, LPCSTR profile, DWORD flags,
+    LPD3DXBUFFER* code, LPD3DXBUFFER* errors,
+    LPD3DXCONSTANTTABLE* table, bool* crashed)
+{
+    *crashed = false;
+    __try
+    {
+        return D3DXCompileShader(text, len, defines, include, fn, profile, flags, code, errors, table);
+    }
+    __except (GetExceptionCode() == EXCEPTION_ACCESS_VIOLATION || GetExceptionCode() == EXCEPTION_STACK_OVERFLOW
+        || GetExceptionCode() == EXCEPTION_INT_DIVIDE_BY_ZERO ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+    {
+        *crashed = true;
+        *code = NULL; *errors = NULL; *table = NULL; // whatever it had half-made is abandoned 
+        return E_FAIL;
+    }
+}
+
 bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, char* szProfile,
                                     LPD3DXCONSTANTTABLE* ppConstTable, void** ppShader, int shaderType, bool bHardErrors, bool bCompileOnly)
 {
@@ -4235,7 +4259,9 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
 
     if (!bLoadedFromCache)
     {
-        HRESULT hresult = D3DXCompileShader(
+        // guarded (D3DXCompileShaderNoCrash): a compiler crash is a failed compile.
+        bool crashed = false;
+        HRESULT hresult = D3DXCompileShaderNoCrash(
             szShaderText,
             len,
             NULL,//CONST D3DXMACRO* pDefines,
@@ -4245,18 +4271,34 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
             m_dwShaderFlags,
             &pShaderByteCode,
             &m_pShaderCompileErrors,
-            ppConstTable);
+            ppConstTable,
+            &crashed);
 
+        // if the legacy (d3dx9_31) compiler crashed, try once with the newer d3dx9_43 one.
+        if (crashed && (m_dwShaderFlags & D3DXSHADER_USE_LEGACY_D3DX9_31_DLL))
+        {
+            hresult = D3DXCompileShaderNoCrash(szShaderText, len, NULL, NULL, szFn, szProfile,
+                m_dwShaderFlags & ~D3DXSHADER_USE_LEGACY_D3DX9_31_DLL,
+                &pShaderByteCode, &m_pShaderCompileErrors, ppConstTable, &crashed);
+            dumpmsg(crashed ? L"Shader compiler crashed twice; the shader is skipped."
+                : L"Shader compiler crashed; compiled with d3dx9_43 instead");
+            // said on screen too, the crashed-twice case gets the usual compile error below.
+            if (!crashed && SUCCEEDED(hresult))
+            {
+                wchar_t note[] = L"Shader compiler crashed; compiled with the newer one instead";
+                AddErrorNotif(note);
+            }
+        }
         if (D3D_OK != hresult)
         {
             failed = true;
         }
         // before we totally fail, let's try using ps_2_b instead of ps_2_a
-        if (failed && !strcmp(szProfile, "ps_2_a"))
+        if (failed && !crashed && !strcmp(szProfile, "ps_2_a"))
         {
             SafeRelease(m_pShaderCompileErrors);
-            if (D3D_OK == D3DXCompileShader(szShaderText, len, NULL, NULL, szFn,
-                "ps_2_b", m_dwShaderFlags, &pShaderByteCode, &m_pShaderCompileErrors, ppConstTable))
+            if (D3D_OK == D3DXCompileShaderNoCrash(szShaderText, len, NULL, NULL, szFn,
+                "ps_2_b", m_dwShaderFlags, &pShaderByteCode, &m_pShaderCompileErrors, ppConstTable, &crashed))
             {
                 failed = false;
             }
@@ -4303,8 +4345,14 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
             SafeRelease(pShaderByteCode);
             if (*ppConstTable) { (*ppConstTable)->Release(); *ppConstTable = NULL; }
             *ppShader = nullptr;
-            HRESULT compileResult = D3DXCompileShader(szShaderText, len, NULL, NULL, szFn, szProfile,
-                m_dwShaderFlags, &pShaderByteCode, &m_pShaderCompileErrors, ppConstTable);
+            // guarded here too, with the same d3dx9_43 retry as the first compile.
+            bool recompileCrashed = false;
+            HRESULT compileResult = D3DXCompileShaderNoCrash(szShaderText, len, NULL, NULL, szFn, szProfile,
+                m_dwShaderFlags, &pShaderByteCode, &m_pShaderCompileErrors, ppConstTable, &recompileCrashed);
+            if (recompileCrashed && (m_dwShaderFlags & D3DXSHADER_USE_LEGACY_D3DX9_31_DLL))
+                compileResult = D3DXCompileShaderNoCrash(szShaderText, len, NULL, NULL, szFn, szProfile,
+                    m_dwShaderFlags & ~D3DXSHADER_USE_LEGACY_D3DX9_31_DLL,
+                    &pShaderByteCode, &m_pShaderCompileErrors, ppConstTable, &recompileCrashed);
             if (D3D_OK == compileResult) {
                 hr = 1;
                 if (szProfile[0] == 'v')

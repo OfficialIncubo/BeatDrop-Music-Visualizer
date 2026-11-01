@@ -196,7 +196,7 @@ wave_3_per_frame1=t8 = 1;
 wave_3_per_point1=t8 = -t8;
 wave_3_per_point2=y = (1+t8)*0.01;
 wave_3_per_point3=x = sample;
-shapecode_0_enabled=0
+shapecode_0_enabled=1
 shapecode_0_sides=4
 shapecode_0_additive=0
 shapecode_0_thickOutline=0

@@ -1,0 +1,170 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=1
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1
+wavecode_0_smoothing=0.3
+wavecode_0_r=1
+wavecode_0_g=1
+wavecode_0_b=1
+wavecode_0_a=1
+wave_0_per_frame1=a = 1;
+wave_0_per_point1=x = 0.5 + (sample - 0.5)*0.9/q31;
+wave_0_per_point2=y = 0.5 + 0.488/q32;
+wave_0_per_point3=h = min(1, sqrt(max(0, value1 - 0.012)*2.2*(1 + sample*6)));
+wave_0_per_point4=r = h;
+wave_0_per_point5=g = h;
+wave_0_per_point6=b = h;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=q1 = min(bass_att, 2);
+per_frame_5=q2 = time*0.01 + mid_att*0.02;
+per_frame_6=q3 = min(treb_att, 2);
+per_frame_7=q4 = time;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  float dy = 1.0 / texsize.y;
+warp_4=`  float cur = max(tex2D(sampler_main, float2(uv.x, 0.012)).x, max(tex2D(sampler_main, float2(uv.x, 0.012 + dy)).x, tex2D(sampler_main, float2(uv.x, 0.012 - dy)).x));
+warp_5=`  float hold = max(tex2D(sampler_main, uv).x - 0.006 * q30, cur);
+warp_6=`  ret = step(abs(uv.y - 0.028), 0.006) * hold;
+warp_7=`}
+comp_1=`float band(float t)
+comp_2=`{
+comp_3=`  return tex2D(sampler_main, float2(0.05 + 0.9 * pow(saturate(t), 1.5), 0.028)).x;
+comp_4=`}
+comp_5=`float3 city(float2 u)
+comp_6=`{
+comp_7=`  float yb = 0.66;
+comp_8=`  float nb = 40.0;
+comp_9=`  float k = floor(u.x * nb);
+comp_10=`  float fx = frac(u.x * nb);
+comp_11=`  float4 rnd = tex2D(sampler_noise_lq, (floor((float2((k + 0.5) / 256.0, 0.37)) * 256.0) + 0.5) / 256.0);
+comp_12=`  float lvl = band((k + 0.5) / nb);
+comp_13=`  float hgt = 0.06 + 0.13 * rnd.x + 0.26 * lvl;
+comp_14=`  float w0 = 0.08 + 0.12 * rnd.y;
+comp_15=`  float inside = step(w0, fx) * step(fx, 1.0 - w0 * 0.6) * step(yb - hgt, u.y) * step(u.y, yb);
+comp_16=`  float3 palA = 0.5 + 0.5 * cos(6.28318 * (float3(0.6, 0.7, 0.85) + q2));
+comp_17=`  float3 palB = 0.5 + 0.5 * cos(6.28318 * (float3(0.95, 0.05, 0.15) + q2));
+comp_18=`  float3 tower = lerp(float3(0.03, 0.035, 0.07), float3(0.06, 0.05, 0.1), rnd.z) * (0.8 + 0.4 * (u.y - yb + hgt) / hgt);
+comp_19=`  float2 wc = float2((fx - w0) / (1.0 - 1.6 * w0) * 6.0, (yb - u.y) * 110.0);
+comp_20=`  float2 wf = frac(wc);
+comp_21=`  float win = step(0.22, wf.x) * step(wf.x, 0.78) * step(0.3, wf.y) * step(wf.y, 0.8);
+comp_22=`  float wr = tex2D(sampler_noise_lq, (floor(((floor(wc) + float2(k * 7.0, 3.0)) / 256.0) * 256.0) + 0.5) / 256.0).x;
+comp_23=`  float lit = step(wr, 0.25 + 0.7 * lvl) * step(0.02, (yb - u.y));
+comp_24=`  float3 wcol = lerp(float3(1.0, 0.78, 0.45), lerp(palA, float3(1.0, 1.0, 1.0), 0.4), step(0.7, wr));
+comp_25=`  float3 col = tower + win * lit * wcol * (0.6 + 0.6 * lvl);
+comp_26=`  float top = exp(-abs(u.y - (yb - hgt)) * 900.0) * step(w0, fx) * step(fx, 1.0 - w0 * 0.6);
+comp_27=`  col += top * lerp(palA, palB, rnd.w) * (0.5 + 1.2 * lvl);
+comp_28=`  float tall = step(0.62, rnd.x + lvl);
+comp_29=`  float blink = step(0.5, frac(q4 * 0.7 + rnd.w));
+comp_30=`  float2 ad = (u - float2((k + 0.5) / nb, yb - hgt - 0.008)) * float2(1.0, 0.5625);
+comp_31=`  col += float3(1.0, 0.15, 0.1) * exp(-dot(ad, ad) * 2.0e6) * blink * 2.0;
+comp_32=`  return col * saturate(inside + top * 0.5);
+comp_33=`}
+comp_34=`float3 skyAt(float2 u)
+comp_35=`{
+comp_36=`  float3 s = lerp(float3(0.16, 0.05, 0.22), float3(0.01, 0.01, 0.05), saturate(1.0 - u.y * 1.6));
+comp_37=`  float2 sp = u * texsize.xy / 512.0;
+comp_38=`  float4 st = tex2D(sampler_noise_lq, (floor((sp) * 256.0) + 0.5) / 256.0);
+comp_39=`  s += saturate((st.x * st.y - 0.975) * 40.0) * (0.6 + 0.4 * sin(q4 * 2.0 + st.z * 30.0)) * (0.6 + 0.3 * q3) * step(u.y, 0.6);
+comp_40=`  float2 m = (u - float2(0.78, 0.18)) * float2(1.0, 0.5625);
+comp_41=`  float md = length(m);
+comp_42=`  s += float3(1.0, 0.95, 0.85) * (1.0 - smoothstep(0.038, 0.04, md)) * 0.9;
+comp_43=`  s += float3(0.5, 0.45, 0.6) * exp(-md * 18.0) * 0.35;
+comp_44=`  return s;
+comp_45=`}
+comp_46=`shader_body
+comp_47=`{
+comp_48=`  float yb = 0.66;
+comp_49=`  float2 u = uv;
+comp_50=`  // Tek dal: gok ve sehir bir kez hesaplaniyor
+comp_51=`  float refl = step(yb, u.y);
+comp_52=`  float d = max(u.y - yb, 0.0);
+comp_53=`  float rip = sin(u.y * 260.0 + q4 * 2.5) * 0.004 * d * 6.0 + (tex2D(sampler_noise_lq, float2(u.x * 3.0, u.y * 40.0 - q4 * 0.2)).x - 0.5) * 0.01;
+comp_54=`  float2 p = lerp(u, float2(u.x + rip, yb - d * 1.15), refl);
+comp_55=`  float3 s = skyAt(p);
+comp_56=`  float3 c = city(p);
+comp_57=`  float isCity = step(0.001, dot(c, float3(1.0, 1.0, 1.0)));
+comp_58=`  float3 col = lerp(s, c, isCity);
+comp_59=`  col = lerp(col + float3(0.25, 0.1, 0.3) * exp(-abs(u.y - yb) * 14.0) * (0.25 + 0.3 * q1), col * (0.42 - d * 0.6) + float3(0.02, 0.03, 0.06), refl);
+comp_60=`  col *= 1.0 - dot(uv - 0.5, uv - 0.5) * 0.5;
+comp_61=`  ret = 1.0 - exp(-col * 1.6);
+comp_62=`}

@@ -1,0 +1,157 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=2
+PSVERSION_COMP=3
+[preset00]
+fRating=4.00000
+fGammaAdj=1.00000
+fDecay=1.00000
+fVideoEchoZoom=1.00000
+fVideoEchoAlpha=0.00000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.00000
+fWaveScale=1.00000
+fWaveSmoothing=0.00000
+fWaveParam=0.00000
+fModWaveAlphaStart=0.75000
+fModWaveAlphaEnd=0.95000
+fWarpAnimSpeed=1.00000
+fWarpScale=1.00000
+fZoomExponent=1.00000
+fShader=0.00000
+zoom=1.00000
+rot=0.00000
+cx=0.50000
+cy=0.50000
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=1.00000
+wave_g=1.00000
+wave_b=1.00000
+wave_x=0.50000
+wave_y=0.50000
+ob_size=0.00000
+ob_r=0.00000
+ob_g=0.00000
+ob_b=0.00000
+ob_a=0.00000
+ib_size=0.00000
+ib_r=0.00000
+ib_g=0.00000
+ib_b=0.00000
+ib_a=0.00000
+nMotionVectorsX=0.00000
+nMotionVectorsY=0.00000
+mv_dx=0.00000
+mv_dy=0.00000
+mv_l=0.00000
+mv_r=0.00000
+mv_g=0.00000
+mv_b=0.00000
+mv_a=0.00000
+wavecode_0_enabled=1
+wavecode_0_samples=480
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.00000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=0.000
+wave_0_per_point1=i = int(sample*479 + 0.5);
+wave_0_per_point2=v = (value1 + value2)*0.5;
+wave_0_per_point3=gmegabuf(i) = v;
+wave_0_per_point4=pk = if(equal(i,0), 0, pk);
+wave_0_per_point5=pk = max(pk, abs(v));
+wave_0_per_point6=gmegabuf(1001) = if(equal(i,479), max(max(pk, gmegabuf(1001)*0.985), 0.004), gmegabuf(1001));
+wavecode_1_enabled=1
+wavecode_1_samples=480
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=1
+wavecode_1_scaling=1.00000
+wavecode_1_smoothing=0.00000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=1.000
+wave_1_per_point1=gn = 0.42/gmegabuf(1001);
+wave_1_per_point2=k = int(sample*479);
+wave_1_per_point3=x = 0.5 + gmegabuf((int(k) + 4800) % 480)*gn;
+wave_1_per_point4=y = 0.5 + gmegabuf((int(k - 90) + 4800) % 480)*gn;
+wave_1_per_point5=a = 0.35;
+wave_1_per_point6=x = 0.5 + (x - 0.5)*q32;
+wave_1_per_point7=y = 0.5 + (y - 0.5)*q29;
+wavecode_2_enabled=1
+wavecode_2_samples=480
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=1
+wavecode_2_scaling=1.00000
+wavecode_2_smoothing=0.00000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=1.000
+wavecode_2_a=1.000
+wave_2_per_point1=gn = 0.42/gmegabuf(1001);
+wave_2_per_point2=j = int(sample*479);
+wave_2_per_point3=k = (j*(29 + int(treb_att*6))) % 480;
+wave_2_per_point4=x = 0.5 + gmegabuf((int(k) + 4800) % 480)*gn;
+wave_2_per_point5=y = 0.5 + gmegabuf((int(k - 90) + 4800) % 480)*gn;
+wave_2_per_point6=a = 0.55;
+wave_2_per_point7=x = 0.5 + (x - 0.5)*q32;
+wave_2_per_point8=y = 0.5 + (y - 0.5)*q29;
+per_frame_1=q30 = 0.9;
+per_frame_2=q26 = time*0.03 + bass_att*0.05;
+per_frame_3=q32 = min(1, pixelsy/pixelsx);
+per_frame_4=q29 = min(1, pixelsx/pixelsy);
+per_frame_5=q27 = 6;
+per_frame_6=q28 = time*0.07;
+per_frame_7=zoom = 0.995;
+per_frame_8=rot = 0.002*sin(time*0.3);
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    ret = tex2D(sampler_main, uv).xyz;
+warp_4=`    ret = ret*q30 - 0.003;
+warp_5=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float2 p = uv;
+comp_4=`    float2 sc = float2(q32, q29);
+comp_5=`    float2 d = (uv - 0.5)/sc;
+comp_6=`    float r = length(d);
+comp_7=`    float w = 6.2831853/q27;
+comp_8=`    float a = atan2(d.y, d.x) + q28;
+comp_9=`    a = a - 2*w*floor(a/(2*w));
+comp_10=`    a = min(a, 2*w - a);
+comp_11=`    p = 0.5 + float2(cos(a), sin(a))*r*sc;
+comp_12=`    ret = tex2D(sampler_main, p).xyz;
+comp_13=`    float l = dot(ret, float3(0.333, 0.333, 0.333));
+comp_14=`    float3 hue = 0.5 + 0.5*cos(6.2831853*(q26 + float3(0, 0.33, 0.67)));
+comp_15=`    ret = lerp(float3(l, l, l), l*hue*1.6, 0.75);
+comp_16=`    ret = 1 - exp(-ret*1.8);
+comp_17=`}
