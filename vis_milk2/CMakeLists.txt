@@ -25,6 +25,7 @@ if(ENABLE_PROJECTM_NSEEL)
             milkdropfs.cpp
             MediaTexture.cpp
             hdr.cpp
+            portable_dll_loader.cpp
             webcam.cpp
             plugin.cpp
             pluginshell.cpp
@@ -35,6 +36,7 @@ if(ENABLE_PROJECTM_NSEEL)
             plugin.h
             MediaTexture.h
             hdr.h
+            portable_dll_loader.h
             webcam.h
             state.h
             texmgr.h

@@ -210,7 +210,8 @@ for %%F in (avutil-61.dll swresample-7.dll avcodec-63.dll avformat-63.dll swscal
 if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" (echo Required portable DirectX compatibility DLL is missing. &amp; exit /b 1)
 if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" (echo Required portable DirectX DLL is missing. &amp; exit /b 1)
 copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_31.dll"
-copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_43.dll"</Command>
+copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_43.dll"
+if exist "$(WindowsSdkDir)Redist\D3D\$(BeatDropDllArchitecture)\d3dcompiler_47.dll" (copy /y /v "$(WindowsSdkDir)Redist\D3D\$(BeatDropDllArchitecture)\d3dcompiler_47.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dcompiler_47.dll" || exit /b 1) else (echo Optional SDK shader compiler redistributable not found; HDR will use the Windows system compiler.)</Command>
     </PostBuildEvent>
     <Manifest />
     <Manifest>
@@ -289,7 +290,8 @@ for %%F in (avutil-61.dll swresample-7.dll avcodec-63.dll avformat-63.dll swscal
 if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" (echo Required portable DirectX compatibility DLL is missing. &amp; exit /b 1)
 if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" (echo Required portable DirectX DLL is missing. &amp; exit /b 1)
 copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_31.dll"
-copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_43.dll"</Command>
+copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_43.dll"
+if exist "$(WindowsSdkDir)Redist\D3D\$(BeatDropDllArchitecture)\d3dcompiler_47.dll" (copy /y /v "$(WindowsSdkDir)Redist\D3D\$(BeatDropDllArchitecture)\d3dcompiler_47.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dcompiler_47.dll" || exit /b 1) else (echo Optional SDK shader compiler redistributable not found; HDR will use the Windows system compiler.)</Command>
     </PostBuildEvent>
     <Manifest />
     <Manifest>

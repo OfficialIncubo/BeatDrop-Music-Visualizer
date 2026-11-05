@@ -1,4 +1,5 @@
 #include "hdr.h"
+#include "portable_dll_loader.h"
 #include <d3d11.h>
 #include <dxgi1_6.h>
 #include <d3dcompiler.h>
@@ -14,10 +15,8 @@ struct Module {
     HMODULE handle = nullptr;
     ~Module() { if (handle) FreeLibrary(handle); }
     bool Load(const wchar_t* name) {
-        wchar_t dir[MAX_PATH];
-        if (!GetSystemDirectoryW(dir, MAX_PATH)) return false;
-        std::wstring path = std::wstring(dir) + L"\\" + name;
-        handle = LoadLibraryW(path.c_str()); return handle != nullptr;
+        handle = BeatDropPortableDll::LoadGraphicsLibrary(name);
+        return handle != nullptr;
     }
 };
 const char* shader = R"(

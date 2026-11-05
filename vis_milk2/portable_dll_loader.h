@@ -7,6 +7,8 @@
 namespace BeatDropPortableDll
 {
     HMODULE LoadLibrary(const wchar_t* name);
+    // Core graphics runtimes are OS-only; the compiler may use the SDK redist.
+    HMODULE LoadGraphicsLibrary(const wchar_t* name);
     HMODULE LoadD3DX9();
     bool PreloadD3DX9();
     bool IsD3DX9Available();
