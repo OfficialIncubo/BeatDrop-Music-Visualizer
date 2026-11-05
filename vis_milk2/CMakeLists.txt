@@ -24,6 +24,7 @@ if(ENABLE_PROJECTM_NSEEL)
             fft.cpp
             milkdropfs.cpp
             MediaTexture.cpp
+            hdr.cpp
             webcam.cpp
             plugin.cpp
             pluginshell.cpp
@@ -33,6 +34,7 @@ if(ENABLE_PROJECTM_NSEEL)
             utility.cpp
             plugin.h
             MediaTexture.h
+            hdr.h
             webcam.h
             state.h
             texmgr.h

@@ -373,6 +373,9 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClCompile Include="fft.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="MediaTexture.cpp" />
+    <ClCompile Include="hdr.cpp">
+      <AdditionalIncludeDirectories>$(WindowsSDK_IncludePath);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
     <ClCompile Include="webcam.cpp" />
     <ClCompile Include="Milkdrop2PcmVisualizer.cpp" />
     <ClCompile Include="milkdropfs.cpp" />
@@ -392,7 +395,6 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
   </ItemGroup>
   <ItemGroup>
     <Image Include="beatdrop_icon.ico" />
-    <Image Include="beatdrop_lyrics_editor_icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\audio\cleanup.h" />
@@ -419,6 +421,7 @@ xcopy $(SolutionDir)resources\Milkdrop2\* $(SolutionDir)..\musikcube\bin\debug\p
     <ClInclude Include="md_defines.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="MediaTexture.h" />
+    <ClInclude Include="hdr.h" />
     <ClInclude Include="webcam.h" />
     <ClInclude Include="Milkdrop2PcmVisualizer.h" />
     <ClInclude Include="plugin.h" />
