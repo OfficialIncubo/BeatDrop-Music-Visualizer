@@ -1,0 +1,3 @@
+# Preserve executable bytes; disable Git text conversion and text diffs.
+*.exe binary
+*.dll binary
