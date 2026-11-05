@@ -207,10 +207,12 @@ if exist "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)" rmdir 
 mkdir "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)"
 copy /y /v "$(TargetPath)" "..\BeatDrop\$(TargetName).exe"
 for %%F in (avutil-61.dll swresample-7.dll avcodec-63.dll avformat-63.dll swscale-10.dll) do if exist "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\bin\%%F" (copy /y /v "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\bin\%%F" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\%%F") else if exist "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\$(BeatDropVcpkgTriplet)\bin\%%F" (copy /y /v "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\$(BeatDropVcpkgTriplet)\bin\%%F" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\%%F") else if exist "$(VcpkgInstalledDir)\$(BeatDropVcpkgTriplet)\bin\%%F" (copy /y /v "$(VcpkgInstalledDir)\$(BeatDropVcpkgTriplet)\bin\%%F" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\%%F") else (echo Required FFmpeg runtime DLL %%F is missing. &amp; exit /b 1)
-if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" (echo Required portable DirectX compatibility DLL is missing. &amp; exit /b 1)
-if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" (echo Required portable DirectX DLL is missing. &amp; exit /b 1)
-copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_31.dll"
-copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_43.dll"
+if not exist "$(DXSDK_DIR)\Redist\*_d3dx9_31_$(BeatDropDllArchitecture).cab" (echo Required DirectX SDK redistributable for d3dx9_31.dll is missing. &amp; exit /b 1)
+for %%F in ("$(DXSDK_DIR)\Redist\*_d3dx9_31_$(BeatDropDllArchitecture).cab") do ("$(SystemRoot)\System32\expand.exe" -F:d3dx9_31.dll "%%~fF" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)" || exit /b 1)
+if not exist "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_31.dll" (echo Required portable d3dx9_31.dll was not extracted. &amp; exit /b 1)
+if not exist "$(DXSDK_DIR)\Redist\*_d3dx9_43_$(BeatDropDllArchitecture).cab" (echo Required DirectX SDK redistributable for d3dx9_43.dll is missing. &amp; exit /b 1)
+for %%F in ("$(DXSDK_DIR)\Redist\*_d3dx9_43_$(BeatDropDllArchitecture).cab") do ("$(SystemRoot)\System32\expand.exe" -F:d3dx9_43.dll "%%~fF" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)" || exit /b 1)
+if not exist "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_43.dll" (echo Required portable d3dx9_43.dll was not extracted. &amp; exit /b 1)
 if exist "$(WindowsSdkDir)Redist\D3D\$(BeatDropDllArchitecture)\d3dcompiler_47.dll" (copy /y /v "$(WindowsSdkDir)Redist\D3D\$(BeatDropDllArchitecture)\d3dcompiler_47.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dcompiler_47.dll" || exit /b 1) else (echo Optional SDK shader compiler redistributable not found; HDR will use the Windows system compiler.)</Command>
     </PostBuildEvent>
     <Manifest />
@@ -287,10 +289,12 @@ if exist "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)" rmdir 
 mkdir "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)"
 copy /y /v "$(TargetPath)" "..\BeatDrop\$(TargetName).exe"
 for %%F in (avutil-61.dll swresample-7.dll avcodec-63.dll avformat-63.dll swscale-10.dll) do if exist "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\bin\%%F" (copy /y /v "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\bin\%%F" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\%%F") else if exist "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\$(BeatDropVcpkgTriplet)\bin\%%F" (copy /y /v "$(MSBuildProjectDirectory)\..\vcpkg_installed\$(BeatDropVcpkgTriplet)\$(BeatDropVcpkgTriplet)\bin\%%F" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\%%F") else if exist "$(VcpkgInstalledDir)\$(BeatDropVcpkgTriplet)\bin\%%F" (copy /y /v "$(VcpkgInstalledDir)\$(BeatDropVcpkgTriplet)\bin\%%F" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\%%F") else (echo Required FFmpeg runtime DLL %%F is missing. &amp; exit /b 1)
-if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" (echo Required portable DirectX compatibility DLL is missing. &amp; exit /b 1)
-if not exist "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" (echo Required portable DirectX DLL is missing. &amp; exit /b 1)
-copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_31.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_31.dll"
-copy /y /v "..\BeatDrop\Redist\DirectX\Portable\$(BeatDropDllArchitecture)\d3dx9_43.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_43.dll"
+if not exist "$(DXSDK_DIR)\Redist\*_d3dx9_31_$(BeatDropDllArchitecture).cab" (echo Required DirectX SDK redistributable for d3dx9_31.dll is missing. &amp; exit /b 1)
+for %%F in ("$(DXSDK_DIR)\Redist\*_d3dx9_31_$(BeatDropDllArchitecture).cab") do ("$(SystemRoot)\System32\expand.exe" -F:d3dx9_31.dll "%%~fF" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)" || exit /b 1)
+if not exist "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_31.dll" (echo Required portable d3dx9_31.dll was not extracted. &amp; exit /b 1)
+if not exist "$(DXSDK_DIR)\Redist\*_d3dx9_43_$(BeatDropDllArchitecture).cab" (echo Required DirectX SDK redistributable for d3dx9_43.dll is missing. &amp; exit /b 1)
+for %%F in ("$(DXSDK_DIR)\Redist\*_d3dx9_43_$(BeatDropDllArchitecture).cab") do ("$(SystemRoot)\System32\expand.exe" -F:d3dx9_43.dll "%%~fF" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)" || exit /b 1)
+if not exist "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dx9_43.dll" (echo Required portable d3dx9_43.dll was not extracted. &amp; exit /b 1)
 if exist "$(WindowsSdkDir)Redist\D3D\$(BeatDropDllArchitecture)\d3dcompiler_47.dll" (copy /y /v "$(WindowsSdkDir)Redist\D3D\$(BeatDropDllArchitecture)\d3dcompiler_47.dll" "..\BeatDrop\BeatDrop Resources\dlls\$(BeatDropDllArchitecture)\d3dcompiler_47.dll" || exit /b 1) else (echo Optional SDK shader compiler redistributable not found; HDR will use the Windows system compiler.)</Command>
     </PostBuildEvent>
     <Manifest />
