@@ -1399,7 +1399,7 @@ void CPlugin::MyReadConfig()
     { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrPeakNits"), 0.0f, pIni); m_hdr.settings.peak=std::isfinite(v)?(std::max)(0.0f,(std::min)(10000.0f,v)):0.0f; }
     { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrHighlightStrength"), 1.0f, pIni); m_hdr.settings.highlights=std::isfinite(v)?(std::max)(0.0f,(std::min)(4.0f,v)):1.0f; }
     { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrCompression"), 1.0f, pIni); m_hdr.settings.compression=std::isfinite(v)?(std::max)(0.25f,(std::min)(4.0f,v)):1.0f; }
-    { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrTitleBrightness"), 1.5f, pIni); m_hdr.settings.titleBrightness=std::isfinite(v)?(std::max)(0.1f,(std::min)(4.0f,v)):1.5f; }
+    { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrTextBrightness"), 1.5f, pIni); m_hdr.settings.titleBrightness=std::isfinite(v)?(std::max)(0.1f,(std::min)(4.0f,v)):1.5f; }
     { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrLyricsBrightness"), 1.5f, pIni); m_hdr.settings.lyricsBrightness=std::isfinite(v)?(std::max)(0.1f,(std::min)(4.0f,v)):1.5f; }
 	// ======================================
 
@@ -1557,7 +1557,7 @@ void CPlugin::SaveHdrSettings()
     WritePrivateProfileFloatW(m_hdr.settings.peak, L"fHdrPeakNits", pIni, L"settings");
     WritePrivateProfileFloatW(m_hdr.settings.highlights, L"fHdrHighlightStrength", pIni, L"settings");
     WritePrivateProfileFloatW(m_hdr.settings.compression, L"fHdrCompression", pIni, L"settings");
-    WritePrivateProfileFloatW(m_hdr.settings.titleBrightness, L"fHdrTitleBrightness", pIni, L"settings");
+    WritePrivateProfileFloatW(m_hdr.settings.titleBrightness, L"fHdrTextBrightness", pIni, L"settings");
     WritePrivateProfileFloatW(m_hdr.settings.lyricsBrightness, L"fHdrLyricsBrightness", pIni, L"settings");
 }
 

@@ -1152,7 +1152,7 @@ BEGIN
     LTEXT "Highlight compression (0.25 to 4)", -1, 8, 116, 284, 12
     CONTROL "", 6123, "msctls_trackbar32", TBS_HORZ | WS_TABSTOP, 6, 128, 222, 18
     EDITTEXT 6104, 236, 129, 56, 14, ES_AUTOHSCROLL
-    LTEXT "Title brightness (0.1 to 4)", -1, 8, 152, 284, 12
+    LTEXT "Title/Custom message/Text brightness (0.1 to 4)", -1, 8, 152, 284, 12
     CONTROL "", 6124, "msctls_trackbar32", TBS_HORZ | WS_TABSTOP, 6, 164, 222, 18
     EDITTEXT 6105, 236, 165, 56, 14, ES_AUTOHSCROLL
     LTEXT "Lyrics brightness (0.1 to 4)", -1, 8, 188, 284, 12
