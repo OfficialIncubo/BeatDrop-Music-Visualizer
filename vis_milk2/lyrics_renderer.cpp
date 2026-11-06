@@ -1,4 +1,5 @@
 #include "lyrics_renderer.h"
+#include "hdr.h"
 #include "unicode_text.h"
 
 #include <algorithm>
@@ -84,7 +85,7 @@ void BeatDropLyricsRenderer::SetLine(const std::wstring& line, float now)
 }
 
 void BeatDropLyricsRenderer::Render(LPDIRECT3DDEVICE9 device, int width,
-    int height, float now)
+    int height, float now, HdrPresenter* hdr)
 {
     if (!device || width <= 0 || height <= 0 ||
         (m_currentLine.empty() && m_outgoingLine.empty()))
@@ -136,13 +137,13 @@ void BeatDropLyricsRenderer::Render(LPDIRECT3DDEVICE9 device, int width,
     {
         // First, the prior line fades out while shrinking about its own centre.
         DrawTexture(device, m_outgoingTexture, width, height,
-            1.0f - outgoingProgress, 1.0f - 0.10f * outgoingProgress);
+            1.0f - outgoingProgress, 1.0f - 0.10f * outgoingProgress, hdr);
     }
     if (!m_currentLine.empty())
     {
         // Then the next line fades and zooms in from the same centre point.
         DrawTexture(device, m_currentTexture, width, height,
-            incomingProgress, 0.90f + 0.10f * incomingProgress);
+            incomingProgress, 0.90f + 0.10f * incomingProgress, hdr);
     }
 
     state->Apply();
@@ -261,7 +262,7 @@ bool BeatDropLyricsRenderer::RenderTextToTexture(LPDIRECT3DDEVICE9 device,
 }
 
 void BeatDropLyricsRenderer::DrawTexture(LPDIRECT3DDEVICE9 device,
-    IDirect3DTexture9* texture, int width, int height, float alpha, float scale) const
+    IDirect3DTexture9* texture, int width, int height, float alpha, float scale, HdrPresenter* hdr) const
 {
     if (!texture || alpha <= 0.0f || scale <= 0.0f)
         return;
@@ -305,6 +306,7 @@ void BeatDropLyricsRenderer::DrawTexture(LPDIRECT3DDEVICE9 device,
     device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
     device->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
     device->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+    if (hdr) hdr->BindTextShader(device);
     device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, vertices, sizeof(LyricsVertex));
 }
 

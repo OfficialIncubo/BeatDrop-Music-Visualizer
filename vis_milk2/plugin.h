@@ -46,6 +46,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "lyrics_manager.h"
 #include "lyrics_renderer.h"
 #include "webcam.h"
+#include "hdr.h"
 #include <vector>
 #include <random>
 #include <mutex>
@@ -217,6 +218,7 @@ typedef struct
 } ErrorMsg;
 
 typedef std::vector<ErrorMsg> ErrorMsgList;
+class CShaderParams;
 typedef std::vector<CShaderParams*> CShaderParamsList;
 
 class CShaderParams
@@ -301,6 +303,19 @@ class CPlugin : public CPluginShell
 {
 public:
 
+    HdrPresenter m_hdr;
+    void SaveHdrSettings();
+    void SendSpoutFrame();
+    bool m_bHdr = false; // intentionally session-only until validated
+    void ToggleHdr(bool notify = true)
+    {
+        m_bHdr = !m_bHdr;
+        if (!m_bHdr) m_hdr.Reset();
+        if (notify) {
+            std::wstring status = m_bHdr ? L"HDR enabled" : L"HDR disabled";
+            AddNotif(status.data());
+        }
+    }
     BeatDropWebcam m_webcam;
     void SetWebcamMode(BeatDropWebcam::Mode mode, bool notify = true)
     {
