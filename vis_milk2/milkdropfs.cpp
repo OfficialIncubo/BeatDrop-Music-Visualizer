@@ -1349,18 +1349,39 @@ void CPlugin::RenderFrame(int bRedraw)
     SafeRelease(pBackBuffer);
     //SafeRelease(pZBuffer);
 
-    // Legacy gamma, brighten/darken, solarize and invert are multipass blend
-    // operations authored for a normalized target. Preserve that target for
-    // the entire composite (including a transition with a shader preset).
-    const bool needsLegacyComposite = !bNewPresetUsesCompShader ||
-        (m_pState->m_bBlending && !bOldPresetUsesCompShader);
-    const bool legacyComposite = needsLegacyComposite && m_hdr.Active() &&
-        m_hdr.BeginLegacyComposite(lpDevice);
-    if (needsLegacyComposite && m_hdr.Active() && !legacyComposite) {
-        m_bHdr=false;m_hdr.Reset();
-        std::wstring error=L"HDR legacy composite unavailable; SDR output restored.";
-        AddErrorNotif(error.data());
-    }
+    const bool webcamTop = m_webcam.GetMode() == BeatDropWebcam::Top;
+    bool hasSprites = false;
+    for (int slot = 0; slot < NUM_TEX; ++slot)
+        if (m_texmgr.m_tex[slot].pSurface || m_texmgr.m_tex[slot].pMedia) {
+            hasSprites = true;
+            break;
+        }
+    const bool deferHighlights = webcamTop || hasSprites;
+    const bool hasShaderComposite = bNewPresetUsesCompShader ||
+        (m_pState->m_bBlending && bOldPresetUsesCompShader);
+    bool highlightsExpanded = false;
+    auto showLegacyComposite = [&]() {
+        // Only the classic pass needs UNORM gamma/filter semantics. Restore
+        // FP16 before a shader pass blends into it, so its HDR values survive
+        // from the first transition frame through the last, in either direction.
+        const bool legacy = m_hdr.Active() && m_hdr.BeginLegacyComposite(lpDevice);
+        if (m_hdr.Active() && !legacy) {
+            m_bHdr=false;m_hdr.Reset();
+            std::wstring error=L"HDR legacy composite unavailable; SDR output restored.";
+            AddErrorNotif(error.data());
+        }
+        ShowToUser_NoShaders();
+        if (legacy) {
+            const bool expand = !hasShaderComposite && !deferHighlights;
+            if (!m_hdr.EndLegacyComposite(lpDevice, expand)) {
+                m_bHdr=false;m_hdr.Reset();
+                std::wstring error=L"HDR legacy composite transfer failed; SDR output restored.";
+                AddErrorNotif(error.data());
+            } else {
+                highlightsExpanded = expand;
+            }
+        }
+    };
 
     // show it to the user [composite shader]
     if (!m_pState->m_bBlending)
@@ -1369,7 +1390,7 @@ void CPlugin::RenderFrame(int bRedraw)
         if (bNewPresetUsesCompShader)
 	        ShowToUser_Shaders(1, false, false, false, false);
         else
-	        ShowToUser_NoShaders();//1, false, false, false, false);
+	        showLegacyComposite();//1, false, false, false, false);
     }
     else
     {
@@ -1390,7 +1411,7 @@ void CPlugin::RenderFrame(int bRedraw)
         }
         else if (!bOldPresetUsesCompShader && bNewPresetUsesCompShader)
         {
-	        ShowToUser_NoShaders();
+	        showLegacyComposite();
 	        ShowToUser_Shaders  (1, true,  false, true, false);
         }
         else if (bOldPresetUsesCompShader && !bNewPresetUsesCompShader)
@@ -1398,30 +1419,14 @@ void CPlugin::RenderFrame(int bRedraw)
             // THA FUNKY REVERSAL
 	        //ShowToUser_Shaders  (0);
 	        //ShowToUser_NoShaders(1);
-	        ShowToUser_NoShaders();
+	        showLegacyComposite();
 	        ShowToUser_Shaders  (0, true, true, true, true);
         }
         else if (!bOldPresetUsesCompShader && !bNewPresetUsesCompShader)
         {
             // special case - all the blending just happens in the blended state vars, so just pretend there's no blend.
-	        ShowToUser_NoShaders();//1, false, false, false, false);
+	        showLegacyComposite();//1, false, false, false, false);
         }
-    }
-
-    const bool webcamTop = m_webcam.GetMode() == BeatDropWebcam::Top;
-    bool hasSprites = false;
-    for (int slot = 0; slot < NUM_TEX; ++slot)
-        if (m_texmgr.m_tex[slot].pSurface || m_texmgr.m_tex[slot].pMedia) {
-            hasSprites = true;
-            break;
-        }
-    const bool deferHighlights = webcamTop || hasSprites;
-    // Camera, sprites and preset share one display expansion before text.
-    // Sprite burn-in still writes only to the original feedback target.
-    if (legacyComposite && !m_hdr.EndLegacyComposite(lpDevice, !deferHighlights)) {
-        m_bHdr=false;m_hdr.Reset();
-        std::wstring error=L"HDR legacy composite transfer failed; SDR output restored.";
-        AddErrorNotif(error.data());
     }
 
     if (webcamDisplayPass)
@@ -1437,7 +1442,7 @@ void CPlugin::RenderFrame(int bRedraw)
     // Sprites stay above the webcam, followed by title and lyrics overlays.
     DrawUserSprites();
 
-    if ((!legacyComposite || deferHighlights) && m_hdr.Active() && !m_hdr.ExpandPresetHighlights(lpDevice)) {
+    if (!highlightsExpanded && m_hdr.Active() && !m_hdr.ExpandPresetHighlights(lpDevice)) {
         m_bHdr=false;m_hdr.Reset();
         std::wstring error=L"HDR preset highlight transfer failed; SDR output restored.";
         AddErrorNotif(error.data());
