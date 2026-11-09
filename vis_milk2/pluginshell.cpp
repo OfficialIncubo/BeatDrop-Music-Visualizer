@@ -1,3 +1,4 @@
+#include <cmath>
 /*
   LICENSE
   -------
@@ -312,6 +313,8 @@ enum TrayMenuCommand
     TRAY_MENU_WEBCAM_OPACITIES = 2810,
     TRAY_MENU_WEBCAM_SET_OPACITY_BASE = 2820,
     TRAY_MENU_WEBCAM_SELECT = 2830,
+    TRAY_MENU_HDR = 2840,
+    TRAY_MENU_HDR_CALIBRATION = 2841,
     TRAY_MENU_WEBCAM_DEVICE_BASE = 10000
 };
 
@@ -333,6 +336,7 @@ struct ContextMenuRequest
     HWND hwnd;
     bool visualWindowMenu;
     BeatDropWebcam::Mode webcamMode;
+    bool hdrActive;
     std::wstring selectedCamera;
     unsigned long long cameraSelection;
 };
@@ -340,6 +344,7 @@ struct ContextMenuRequest
 static constexpr int WebcamOpacityResolution = 1000;
 // Owned and accessed only by the renderer/UI thread, independently of popup menus.
 static HWND webcamOpacityWindow = nullptr;
+static bool updatingWebcamOpacityControls = false;
 
 static INT_PTR CALLBACK WebcamOpacityDialogProc(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -348,6 +353,7 @@ static INT_PTR CALLBACK WebcamOpacityDialogProc(HWND dialog, UINT message, WPARA
         // CreateDialogParam sends WM_INITDIALOG synchronously; the initial
         // values only need to remain alive until window creation returns.
         const auto* opacity = reinterpret_cast<const float*>(lParam);
+        updatingWebcamOpacityControls = true;
         for (int i = 0; i < 3; ++i)
         {
             const HWND slider = GetDlgItem(dialog, IDC_WEBCAM_DEEP_SLIDER + i);
@@ -361,8 +367,31 @@ static INT_PTR CALLBACK WebcamOpacityDialogProc(HWND dialog, UINT message, WPARA
         const HICON icon = LoadIconW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDI_PLUGIN_ICON));
         SendMessageW(dialog, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(icon));
         SendMessageW(dialog, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(icon));
+        updatingWebcamOpacityControls = false;
         SetFocus(GetDlgItem(dialog, IDC_WEBCAM_DEEP_SLIDER));
         return FALSE;
+    }
+    if (message == WM_COMMAND && !updatingWebcamOpacityControls &&
+        LOWORD(wParam) >= IDC_WEBCAM_DEEP_VALUE && LOWORD(wParam) <= IDC_WEBCAM_TOP_VALUE)
+    {
+        int index=LOWORD(wParam)-IDC_WEBCAM_DEEP_VALUE;
+        HWND slider=GetDlgItem(dialog,IDC_WEBCAM_DEEP_SLIDER+index);
+        wchar_t text[64],*end=nullptr;GetDlgItemTextW(dialog,LOWORD(wParam),text,64);
+        float value=wcstof(text,&end);while(end && (*end==L' '||*end==L'\t'))++end;
+        bool valid=end!=text && end && !*end && std::isfinite(value) && value>=0 && value<=1;
+        if(HIWORD(wParam)==EN_CHANGE && valid) {
+            int position=static_cast<int>(value*WebcamOpacityResolution+.5f);
+            SendMessageW(slider,TBM_SETPOS,TRUE,position);
+            PostMessageW(g_hWnd,WM_TRAY_MENU_COMMAND,TRAY_MENU_WEBCAM_SET_OPACITY_BASE+index,position);
+        }
+        if(HIWORD(wParam)==EN_KILLFOCUS) {
+            // Keep incomplete/invalid typing harmless and restore the last
+            // accepted value when leaving the box. Match slider precision.
+            int position=static_cast<int>(SendMessageW(slider,TBM_GETPOS,0,0));
+            swprintf_s(text,L"%.3f",position/static_cast<float>(WebcamOpacityResolution));
+            updatingWebcamOpacityControls=true;SetDlgItemTextW(dialog,LOWORD(wParam),text);updatingWebcamOpacityControls=false;
+        }
+        return TRUE;
     }
     if (message == WM_COMMAND && HIWORD(wParam) == BN_CLICKED &&
         LOWORD(wParam) >= IDC_WEBCAM_DEEP_RESET && LOWORD(wParam) <= IDC_WEBCAM_TOP_RESET)
@@ -383,7 +412,9 @@ static INT_PTR CALLBACK WebcamOpacityDialogProc(HWND dialog, UINT message, WPARA
             const int position = static_cast<int>(SendMessageW(reinterpret_cast<HWND>(lParam), TBM_GETPOS, 0, 0));
             wchar_t label[32];
             swprintf_s(label, L"%.3f", position / static_cast<float>(WebcamOpacityResolution));
+            updatingWebcamOpacityControls = true;
             SetDlgItemTextW(dialog, IDC_WEBCAM_DEEP_VALUE + index, label);
+            updatingWebcamOpacityControls = false;
             PostMessageW(g_hWnd, WM_TRAY_MENU_COMMAND, TRAY_MENU_WEBCAM_SET_OPACITY_BASE + index, position);
         }
         return TRUE;
@@ -398,14 +429,110 @@ static INT_PTR CALLBACK WebcamOpacityDialogProc(HWND dialog, UINT message, WPARA
     return FALSE;
 }
 
+static HWND hdrCalibrationWindow = nullptr;
+struct HdrControlRange { float minimum, maximum, scale; };
+static const HdrControlRange hdrControlRanges[] = {
+    {0,1000,1}, {0,10000,1}, {0,4,1000}, {.25f,4,1000}, {.1f,4,1000}, {.1f,4,1000}
+};
+static bool ReadHdrControl(HWND dialog,int index,float& value) {
+    wchar_t text[64],*end=nullptr;GetDlgItemTextW(dialog,IDC_HDR_VALUE_BASE+index,text,64);
+    value=wcstof(text,&end);while(end && (*end==L' '||*end==L'\t'))++end;
+    const auto& range=hdrControlRanges[index];
+    return end!=text && end && !*end && std::isfinite(value) && value>=range.minimum && value<=range.maximum;
+}
+
+static bool populatingHdrControls=false;
+static void PreviewHdrControl(HWND dialog,int index,float value) {
+    HdrSettings next=g_plugin.m_hdr.settings;
+    float* fields[]={&next.paperWhite,&next.peak,&next.highlights,&next.compression,&next.titleBrightness,&next.lyricsBrightness};
+    *fields[index]=value;
+    if(index<2) {
+        float paired;
+        if(ReadHdrControl(dialog,1-index,paired))*fields[1-index]=paired;
+        if(next.paperWhite>0 && next.peak>0 && next.peak<next.paperWhite)return;
+    }
+    g_plugin.m_hdr.settings=next;
+}
+static void PopulateHdrCalibration(HWND dialog, const HdrSettings& values) {
+    populatingHdrControls=true;
+    const float numbers[]={values.paperWhite,values.peak,values.highlights,values.compression,values.titleBrightness,values.lyricsBrightness};
+    for (int i=0;i<6;++i) { wchar_t text[32];swprintf_s(text,L"%.3f",numbers[i]);SetDlgItemTextW(dialog,IDC_HDR_VALUE_BASE+i,text); }
+    populatingHdrControls=false;
+}
+static INT_PTR CALLBACK HdrCalibrationProc(HWND dialog,UINT message,WPARAM wParam,LPARAM lParam) {
+    if(message==WM_INITDIALOG) {
+        for(int i=0;i<6;++i) {
+            const auto& range=hdrControlRanges[i];HWND slider=GetDlgItem(dialog,IDC_HDR_SLIDER_BASE+i);
+            SendMessageW(slider,TBM_SETRANGEMIN,FALSE,static_cast<int>(range.minimum*range.scale));
+            SendMessageW(slider,TBM_SETRANGEMAX,TRUE,static_cast<int>(range.maximum*range.scale));
+            SendMessageW(slider,TBM_SETPAGESIZE,0,static_cast<int>((range.maximum-range.minimum)*range.scale/20));
+        }
+        PopulateHdrCalibration(dialog,g_plugin.m_hdr.settings);
+        HICON icon=LoadIconW(GetModuleHandleW(nullptr),MAKEINTRESOURCEW(IDI_PLUGIN_ICON));
+        SendMessageW(dialog,WM_SETICON,ICON_SMALL,reinterpret_cast<LPARAM>(icon));
+        SendMessageW(dialog,WM_SETICON,ICON_BIG,reinterpret_cast<LPARAM>(icon));
+        return TRUE;
+    }
+    if(message==WM_COMMAND && HIWORD(wParam)==EN_CHANGE) {
+        int index=LOWORD(wParam)-IDC_HDR_VALUE_BASE;float value;
+        if(index>=0 && index<6 && ReadHdrControl(dialog,index,value)) {
+            SendDlgItemMessageW(dialog,IDC_HDR_SLIDER_BASE+index,TBM_SETPOS,TRUE,static_cast<int>(value*hdrControlRanges[index].scale+.5f));
+            if(!populatingHdrControls)PreviewHdrControl(dialog,index,value);
+        }
+        return TRUE;
+    }
+    if(message==WM_HSCROLL && lParam) {
+        int index=GetDlgCtrlID(reinterpret_cast<HWND>(lParam))-IDC_HDR_SLIDER_BASE;
+        if(index>=0 && index<6) {
+            float value=static_cast<float>(SendMessageW(reinterpret_cast<HWND>(lParam),TBM_GETPOS,0,0))/hdrControlRanges[index].scale;
+            wchar_t text[32];swprintf_s(text,L"%.3f",value);SetDlgItemTextW(dialog,IDC_HDR_VALUE_BASE+index,text);
+        }
+        return TRUE;
+    }
+    if(message==WM_COMMAND && LOWORD(wParam)==IDC_HDR_RESET) {
+        g_plugin.m_hdr.settings=HdrSettings{};PopulateHdrCalibration(dialog,g_plugin.m_hdr.settings);
+        g_plugin.SaveHdrSettings();return TRUE;
+    }
+    if(message==WM_COMMAND && LOWORD(wParam)==IDC_HDR_APPLY) {
+        float values[6];
+        for(int i=0;i<6;++i) {
+            if(!ReadHdrControl(dialog,i,values[i])) {
+                MessageBoxW(dialog,L"Enter a finite number within the indicated range. Reference white accepts 0 to 1000 nits; display peak accepts 0 to 10000 nits.",L"HDR calibration",MB_OK|MB_ICONINFORMATION);
+                SetFocus(GetDlgItem(dialog,IDC_HDR_VALUE_BASE+i));return TRUE;
+            }
+        }
+        if(values[0]>0 && values[1]>0 && values[1]<values[0]) {
+            MessageBoxW(dialog,L"Display peak must be at least the reference-white brightness.",L"HDR calibration",MB_OK|MB_ICONINFORMATION);return TRUE;
+        }
+        HdrSettings next;next.paperWhite=values[0];next.peak=values[1];next.highlights=values[2];next.compression=values[3];next.titleBrightness=values[4];next.lyricsBrightness=values[5];
+        g_plugin.m_hdr.settings=next;g_plugin.SaveHdrSettings();return TRUE;
+    }
+    if(message==WM_CLOSE || (message==WM_COMMAND && LOWORD(wParam)==IDCANCEL)) {g_plugin.SaveHdrSettings();DestroyWindow(dialog);return TRUE;}
+    if(message==WM_NCDESTROY && hdrCalibrationWindow==dialog)hdrCalibrationWindow=nullptr;
+    return FALSE;
+}
+static void ShowHdrCalibration() {
+    INITCOMMONCONTROLSEX controls={sizeof(controls),ICC_BAR_CLASSES};
+    if(!InitCommonControlsEx(&controls))return;
+    if(!hdrCalibrationWindow)hdrCalibrationWindow=CreateDialogParamW(GetModuleHandleW(nullptr),MAKEINTRESOURCEW(IDD_HDR_CALIBRATION),nullptr,HdrCalibrationProc,0);
+    if(hdrCalibrationWindow) {
+        ShowWindow(hdrCalibrationWindow,SW_SHOWNORMAL);
+        SetWindowPos(hdrCalibrationWindow,HWND_TOP,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
+        SetForegroundWindow(hdrCalibrationWindow);SetActiveWindow(hdrCalibrationWindow);
+        SetFocus(GetDlgItem(hdrCalibrationWindow,IDC_HDR_VALUE_BASE));
+    }
+}
+
 bool HandleWebcamOpacityDialogMessage(MSG* message)
 {
-    return webcamOpacityWindow && IsDialogMessageW(webcamOpacityWindow, message);
+    return (hdrCalibrationWindow && IsDialogMessageW(hdrCalibrationWindow,message)) ||
+        (webcamOpacityWindow && IsDialogMessageW(webcamOpacityWindow, message));
 }
 
 void CloseWebcamOpacityDialog()
 {
     if (webcamOpacityWindow) DestroyWindow(webcamOpacityWindow);
+    if (hdrCalibrationWindow) DestroyWindow(hdrCalibrationWindow);
 }
 
 static void ShowWebcamOpacityDialog()
@@ -523,6 +650,9 @@ static void ShowTrayContextMenu(const ContextMenuRequest& request)
 		TRAY_MENU_ENABLE_LYRICS, L"Enable lyrics");
 	AppendMenuW(menu, MF_STRING, TRAY_MENU_OPEN_LYRICS_EDITOR,
 		L"Open lyrics editor");
+    AppendMenuW(menu, MF_STRING | (request.hdrActive ? MF_CHECKED : MF_UNCHECKED),
+        TRAY_MENU_HDR, L"HDR output");
+    AppendMenuW(menu, MF_STRING, TRAY_MENU_HDR_CALIBRATION, L"HDR calibration...");
 	AppendMenuW(menu, MF_STRING | (g_plugin.bSpoutOut ? MF_CHECKED : MF_UNCHECKED),
 		TRAY_MENU_SPOUT, L"Spout output");
 
@@ -654,7 +784,7 @@ static void BeginContextMenu(HWND hwnd, bool visualWindowMenu)
 		return;
 
 	ContextMenuRequest* request = new ContextMenuRequest{ hwnd, visualWindowMenu,
-        g_plugin.m_webcam.GetMode(), g_plugin.m_webcam.SelectedDevice(), g_plugin.m_webcam.CameraSelection() };
+        g_plugin.m_webcam.GetMode(), g_plugin.m_hdr.Active(), g_plugin.m_webcam.SelectedDevice(), g_plugin.m_webcam.CameraSelection() };
 	HANDLE thread = CreateThread(NULL, 0, TrayContextMenuThreadProc, request, 0, NULL);
 	if (thread)
 		CloseHandle(thread);
@@ -683,6 +813,13 @@ static void SendMediaKey(WORD key)
 
 static void ExecuteTrayMenuCommand(HWND hwnd, UINT command, LPARAM value)
 {
+    if (command == TRAY_MENU_HDR_CALIBRATION) { ShowHdrCalibration(); return; }
+    if (command == TRAY_MENU_HDR)
+    {
+        g_plugin.ToggleHdr(false);
+        return;
+    }
+
     if (command == TRAY_MENU_WEBCAM_OPACITIES)
     {
         ShowWebcamOpacityDialog();
@@ -2310,7 +2447,33 @@ void CPluginShell::DrawAndDisplay(int redraw)
 	    }
 	}*/
 
-	if (D3D_OK==m_lpDX->m_lpDevice->BeginScene())
+    if (g_plugin.m_bHdr)
+    {
+        std::wstring reason;
+        const bool compatibleMode = !m_vjd3d9_device &&
+            m_lpDX->m_client_width == m_lpDX->m_REAL_client_width &&
+            m_lpDX->m_client_height == m_lpDX->m_REAL_client_height &&
+            !g_plugin.TranspaMode;
+        if (!compatibleMode || !g_plugin.m_hdr.Prepare(GetDevice(), GetPluginWindow(), reason))
+        {
+            g_plugin.m_bHdr = false;
+            g_plugin.m_hdr.Reset();
+            if (reason.empty()) reason = L"HDR is unavailable in this window mode. SDR output retained.";
+            g_plugin.AddErrorNotif(reason.data());
+        }
+    }
+
+    // HDR changes only the display target. Warp feedback and blur keep their
+    // original formats: changing their clipping changes preset dynamics.
+    bool hdrFrame = g_plugin.m_hdr.Active() && g_plugin.m_hdr.BeginFrame(GetDevice());
+    if (g_plugin.m_hdr.Active() && !hdrFrame)
+    {
+        g_plugin.m_bHdr = false;
+        g_plugin.m_hdr.Reset();
+    }
+
+	const bool sceneStarted = D3D_OK == m_lpDX->m_lpDevice->BeginScene();
+	if (sceneStarted)
 	{
 		MyRenderFn(redraw);
 
@@ -2327,6 +2490,13 @@ void CPluginShell::DrawAndDisplay(int redraw)
 
 		m_lpDX->m_lpDevice->EndScene();
 	}
+
+    if (hdrFrame && (!sceneStarted || !g_plugin.m_hdr.EndFrame(GetDevice())))
+    {
+        g_plugin.m_bHdr = false;
+        g_plugin.m_hdr.Reset();
+    }
+    g_plugin.SendSpoutFrame();
 
 	// VJ Mode:
 	if (m_vj_mode && m_vjd3d9_device && !m_hidden_textwnd && D3D_OK==m_vjd3d9_device->BeginScene())
@@ -2346,6 +2516,20 @@ void CPluginShell::DrawAndDisplay(int redraw)
 		m_vjd3d9_device->EndScene();
 	}
 
+    bool hdrPresented = false;
+    if (g_plugin.m_hdr.Active())
+    {
+        std::wstring reason;
+        hdrPresented = g_plugin.m_hdr.Present(GetDevice(), reason);
+        if (!hdrPresented)
+        {
+            g_plugin.m_bHdr = false;
+            if (!reason.empty()) g_plugin.AddErrorNotif(reason.data());
+        }
+    }
+
+    if (!hdrPresented)
+    {
 	if (m_lpDX->m_client_width != m_lpDX->m_REAL_client_width || m_lpDX->m_client_height != m_lpDX->m_REAL_client_height)
 	{
 		int real_w = m_lpDX->m_REAL_client_width;   // real client size, in pixels
@@ -2361,6 +2545,8 @@ void CPluginShell::DrawAndDisplay(int redraw)
 	}
 	else
 		m_lpDX->m_lpDevice->Present(NULL,NULL,NULL,NULL);
+
+    }
 
 	if (m_vjd3d9_device && !m_hidden_textwnd)
 		m_vjd3d9_device->Present(NULL,NULL,NULL,NULL);

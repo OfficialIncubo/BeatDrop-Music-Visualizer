@@ -1349,6 +1349,40 @@ void CPlugin::RenderFrame(int bRedraw)
     SafeRelease(pBackBuffer);
     //SafeRelease(pZBuffer);
 
+    const bool webcamTop = m_webcam.GetMode() == BeatDropWebcam::Top;
+    bool hasSprites = false;
+    for (int slot = 0; slot < NUM_TEX; ++slot)
+        if (m_texmgr.m_tex[slot].pSurface || m_texmgr.m_tex[slot].pMedia) {
+            hasSprites = true;
+            break;
+        }
+    const bool deferHighlights = webcamTop || hasSprites;
+    const bool hasShaderComposite = bNewPresetUsesCompShader ||
+        (m_pState->m_bBlending && bOldPresetUsesCompShader);
+    bool highlightsExpanded = false;
+    auto showLegacyComposite = [&]() {
+        // Only the classic pass needs UNORM gamma/filter semantics. Restore
+        // FP16 before a shader pass blends into it, so its HDR values survive
+        // from the first transition frame through the last, in either direction.
+        const bool legacy = m_hdr.Active() && m_hdr.BeginLegacyComposite(lpDevice);
+        if (m_hdr.Active() && !legacy) {
+            m_bHdr=false;m_hdr.Reset();
+            std::wstring error=L"HDR legacy composite unavailable; SDR output restored.";
+            AddErrorNotif(error.data());
+        }
+        ShowToUser_NoShaders();
+        if (legacy) {
+            const bool expand = !hasShaderComposite && !deferHighlights;
+            if (!m_hdr.EndLegacyComposite(lpDevice, expand)) {
+                m_bHdr=false;m_hdr.Reset();
+                std::wstring error=L"HDR legacy composite transfer failed; SDR output restored.";
+                AddErrorNotif(error.data());
+            } else {
+                highlightsExpanded = expand;
+            }
+        }
+    };
+
     // show it to the user [composite shader]
     if (!m_pState->m_bBlending)
     {
@@ -1356,7 +1390,7 @@ void CPlugin::RenderFrame(int bRedraw)
         if (bNewPresetUsesCompShader)
 	        ShowToUser_Shaders(1, false, false, false, false);
         else
-	        ShowToUser_NoShaders();//1, false, false, false, false);
+	        showLegacyComposite();//1, false, false, false, false);
     }
     else
     {
@@ -1377,7 +1411,7 @@ void CPlugin::RenderFrame(int bRedraw)
         }
         else if (!bOldPresetUsesCompShader && bNewPresetUsesCompShader)
         {
-	        ShowToUser_NoShaders();
+	        showLegacyComposite();
 	        ShowToUser_Shaders  (1, true,  false, true, false);
         }
         else if (bOldPresetUsesCompShader && !bNewPresetUsesCompShader)
@@ -1385,13 +1419,13 @@ void CPlugin::RenderFrame(int bRedraw)
             // THA FUNKY REVERSAL
 	        //ShowToUser_Shaders  (0);
 	        //ShowToUser_NoShaders(1);
-	        ShowToUser_NoShaders();
+	        showLegacyComposite();
 	        ShowToUser_Shaders  (0, true, true, true, true);
         }
         else if (!bOldPresetUsesCompShader && !bNewPresetUsesCompShader)
         {
             // special case - all the blending just happens in the blended state vars, so just pretend there's no blend.
-	        ShowToUser_NoShaders();//1, false, false, false, false);
+	        showLegacyComposite();//1, false, false, false, false);
         }
     }
 
@@ -1402,13 +1436,22 @@ void CPlugin::RenderFrame(int bRedraw)
         m_lpVS[1] = cleanFeedback;
     }
 
-    if (m_webcam.GetMode() == BeatDropWebcam::Top)
+    if (webcamTop)
         m_webcam.Draw(lpDevice, GetWidth(), GetHeight(), false, m_fWebcamTopOpacity);
 
-	// Sprites stay above the webcam, followed by title and lyrics overlays.
-	DrawUserSprites();
+    // Sprites stay above the webcam, followed by title and lyrics overlays.
+    DrawUserSprites();
 
-	// finally, render song title animation to back buffer
+    if (!highlightsExpanded && m_hdr.Active() && !m_hdr.ExpandPresetHighlights(lpDevice)) {
+        m_bHdr=false;m_hdr.Reset();
+        std::wstring error=L"HDR preset highlight transfer failed; SDR output restored.";
+        AddErrorNotif(error.data());
+    }
+
+	// The current display target is FP16 while HDR is active, otherwise the
+	// SDR backbuffer. Title and lyrics share that target and the output mapping.
+	// The separate title burn-in above deliberately retains legacy feedback.
+	// Finally, render the song title animation to the display target.
 	if (m_supertext.fStartTime >= 0 &&
 		!m_supertext.bRedrawSuperText)
 	{
@@ -1422,7 +1465,9 @@ void CPlugin::RenderFrame(int bRedraw)
     // The dedicated renderer restores every D3D state it touches, so it cannot
     // alter the shared title texture or regress a preset's next frame.
     if (m_bEnableLyrics)
-        m_lyricsRenderer.Render(lpDevice, GetWidth(), GetHeight(), GetTime());
+        m_lyricsRenderer.Render(lpDevice, GetWidth(), GetHeight(), GetTime(), &m_hdr);
+
+    if (m_hdr.Active()) m_hdr.CaptureSdrExport(lpDevice);
 
 	// flip buffers
 	IDirect3DTexture9* pTemp = m_lpVS[0];
@@ -1447,6 +1492,10 @@ void CPlugin::RenderFrame(int bRedraw)
     */
 
 
+} // end RenderFrame
+
+void CPlugin::SendSpoutFrame()
+{
 	// =========================================================
 	//
 	// SPOUT output
@@ -1474,7 +1523,7 @@ void CPlugin::RenderFrame(int bRedraw)
 
 		// Grab the backbuffer from the Direct3D device
 		LPDIRECT3DSURFACE9 back_buffer = NULL;
-		HRESULT hr = GetDevice()->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &back_buffer);
+		HRESULT hr = m_hdr.GetSdrExport(&back_buffer) ? S_OK : GetDevice()->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &back_buffer);
 		// HRESULT hr = GetDevice()->GetRenderTarget(0, &back_buffer); // Faster ?
 		if (SUCCEEDED(hr)) {
 			// Create a sender at the size of the backbuffer
@@ -1538,7 +1587,7 @@ void CPlugin::RenderFrame(int bRedraw)
 	} // end Spout output
 	// ======================================================================
 
-} // end RenderFrame
+} // end SendSpoutFrame
 
 void CPlugin::DrawMotionVectors()
 {
@@ -5991,6 +6040,10 @@ void CPlugin::ShowSongTitleAnim(int w, int h, float fProgress)
     if (!lpDevice)
         return;
 
+	IDirect3DStateBlock9* hdrTitleState = nullptr;
+    if (m_hdr.Active() && SUCCEEDED(lpDevice->CreateStateBlock(D3DSBT_ALL, &hdrTitleState)))
+        if (FAILED(hdrTitleState->Capture())) SafeRelease(hdrTitleState);
+
 	lpDevice->SetTexture(0, m_lpDDSTitle);
     lpDevice->SetVertexShader( NULL );
     lpDevice->SetFVF( SPRITEVERTEX_FORMAT );
@@ -6212,8 +6265,13 @@ void CPlugin::ShowSongTitleAnim(int w, int h, float fProgress)
 			lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 		}
 
+		// The shadow remains a darkening pass. Only visible glyph RGB uses HDR
+		// headroom, and BindTextShader rejects the preset burn-in target.
+		const bool hdrText = hdrTitleState && m_hdr.BindTextShader(lpDevice, it == 1, false);
 		lpDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, 128, 15*7*6/3, indices, D3DFMT_INDEX16, v3, sizeof(SPRITEVERTEX));
+        if (hdrText) lpDevice->SetPixelShader(nullptr);
 	}
 
 	lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+    if (hdrTitleState) { hdrTitleState->Apply(); hdrTitleState->Release(); }
 }

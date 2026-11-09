@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="library">
@@ -128,6 +128,12 @@
       <Filter>library\sources</Filter>
     </ClCompile>
     <ClCompile Include="lyrics_renderer.cpp">
+      <Filter>library\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="portable_dll_loader.cpp">
+      <Filter>library\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="hdr.cpp">
       <Filter>library\sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -262,6 +268,12 @@
     </ClInclude>
     <ClInclude Include="..\audio\audiodevicehandler.h">
       <Filter>library\audio-headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hdr.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="portable_dll_loader.h">
+      <Filter>library\headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

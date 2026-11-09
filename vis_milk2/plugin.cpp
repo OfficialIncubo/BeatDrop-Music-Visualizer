@@ -1395,6 +1395,12 @@ void CPlugin::MyReadConfig()
     m_fWebcamBurnOpacity = readWebcamOpacity(L"fWebcamBurnOpacity", BeatDropWebcam::DefaultBurnOpacity);
     m_fWebcamDeepOpacity = readWebcamOpacity(L"fWebcamDeepOpacity", BeatDropWebcam::DefaultDeepOpacity);
     m_fWebcamTopOpacity = readWebcamOpacity(L"fWebcamTopOpacity", BeatDropWebcam::DefaultTopOpacity);
+    { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrPaperWhiteNits"), 0.0f, pIni); m_hdr.settings.paperWhite=std::isfinite(v)?(std::max)(0.0f,(std::min)(1000.0f,v)):0.0f; }
+    { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrPeakNits"), 0.0f, pIni); m_hdr.settings.peak=std::isfinite(v)?(std::max)(0.0f,(std::min)(10000.0f,v)):0.0f; }
+    { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrHighlightStrength"), 1.0f, pIni); m_hdr.settings.highlights=std::isfinite(v)?(std::max)(0.0f,(std::min)(4.0f,v)):1.0f; }
+    { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrCompression"), 1.0f, pIni); m_hdr.settings.compression=std::isfinite(v)?(std::max)(0.25f,(std::min)(4.0f,v)):1.0f; }
+    { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrTextBrightness"), 1.5f, pIni); m_hdr.settings.titleBrightness=std::isfinite(v)?(std::max)(0.1f,(std::min)(4.0f,v)):1.5f; }
+    { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrLyricsBrightness"), 1.5f, pIni); m_hdr.settings.lyricsBrightness=std::isfinite(v)?(std::max)(0.1f,(std::min)(4.0f,v)):1.5f; }
 	// ======================================
 
 	m_bFirstRun		= !GetPrivateProfileBoolW(L"settings",L"bConfigured" ,false,pIni);
@@ -1544,6 +1550,17 @@ void CPlugin::MyReadConfig()
 
 //----------------------------------------------------------------------
 
+void CPlugin::SaveHdrSettings()
+{
+    wchar_t* pIni=GetConfigIniFile();
+    WritePrivateProfileFloatW(m_hdr.settings.paperWhite, L"fHdrPaperWhiteNits", pIni, L"settings");
+    WritePrivateProfileFloatW(m_hdr.settings.peak, L"fHdrPeakNits", pIni, L"settings");
+    WritePrivateProfileFloatW(m_hdr.settings.highlights, L"fHdrHighlightStrength", pIni, L"settings");
+    WritePrivateProfileFloatW(m_hdr.settings.compression, L"fHdrCompression", pIni, L"settings");
+    WritePrivateProfileFloatW(m_hdr.settings.titleBrightness, L"fHdrTextBrightness", pIni, L"settings");
+    WritePrivateProfileFloatW(m_hdr.settings.lyricsBrightness, L"fHdrLyricsBrightness", pIni, L"settings");
+}
+
 void CPlugin::MyWriteConfig()
 {
     // Write the user's settings to the .INI file.
@@ -1576,6 +1593,7 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileFloatW(m_fWebcamBurnOpacity, L"fWebcamBurnOpacity", pIni, L"settings");
     WritePrivateProfileFloatW(m_fWebcamDeepOpacity, L"fWebcamDeepOpacity", pIni, L"settings");
     WritePrivateProfileFloatW(m_fWebcamTopOpacity, L"fWebcamTopOpacity", pIni, L"settings");
+    SaveHdrSettings();
 	// ================================
 
 	WritePrivateProfileIntW(m_bSongTitleAnims,		L"bSongTitleAnims",		pIni, L"settings");
@@ -4388,6 +4406,7 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
 
 void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
 {
+    m_hdr.Reset();
     if (final_cleanup)
         m_webcam.Stop();
     else
@@ -6620,6 +6639,14 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
          break;
 
     case WM_KEYDOWN:    // virtual-key codes
+        if (wParam == 'H' && m_UI_mode == UI_REGULAR &&
+            (GetKeyState(VK_CONTROL) & 0x8000) && !(GetKeyState(VK_MENU) & 0x8000) &&
+            !(GetKeyState(VK_SHIFT) & 0x8000))
+        {
+            if (!(lParam & (static_cast<LPARAM>(1) << 30))) ToggleHdr();
+            return 0;
+        }
+
 
         // Note that some keys will never reach this point, since they are
         //   intercepted by the plugin shell (see PluginShellWindowProc(),
@@ -12500,16 +12527,21 @@ bool CPlugin::CaptureScreenshotWithFilename(wchar_t* outFilename, size_t outFile
     // interfering with our render target while we generate the capture.
     EnterCriticalSection(&g_cs);
 
-    // Redraw the current visualizer frame strictly without any UI.
-    // This cleanly isolates the renderer output on the render target.
-    PrepareFor2DDrawing(pDevice);
-    RenderFrame(1);
-
     IDirect3DSurface9* pRenderTarget = nullptr;
-    HRESULT hr = pDevice->GetRenderTarget(0, &pRenderTarget);
+    HRESULT hr=S_OK;
+    if (m_hdr.Active()) {
+        // Use the completed, UI-free SDR conversion. Replaying a frame here
+        // would advance preset feedback just to take a screenshot.
+        if (!m_hdr.GetSdrExport(&pRenderTarget)) hr=E_FAIL;
+    } else {
+        PrepareFor2DDrawing(pDevice);
+        RenderFrame(1);
+        hr=pDevice->GetRenderTarget(0,&pRenderTarget);
+    }
     if (FAILED(hr) || !pRenderTarget) {
         wchar_t msg[256];
         swprintf_s(msg, 256, L"CaptureScreenshot: Failed to get render target (HRESULT 0x%08X)", hr);
+        LeaveCriticalSection(&g_cs);
         return false;
     }
 
