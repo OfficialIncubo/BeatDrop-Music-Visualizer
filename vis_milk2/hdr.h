@@ -19,6 +19,8 @@ public:
     bool Prepare(IDirect3DDevice9* source, HWND window, std::wstring& reason);
     bool BeginFrame(IDirect3DDevice9* source);
     bool EndFrame(IDirect3DDevice9* source);
+    // True when presented or skipped because the GPU is still writing the frame.
+    // False requests SDR fallback and supplies an error message.
     bool Present(IDirect3DDevice9* source, std::wstring& reason);
     bool Active() const;
     bool BeginLegacyComposite(IDirect3DDevice9* source);

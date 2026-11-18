@@ -2516,19 +2516,19 @@ void CPluginShell::DrawAndDisplay(int redraw)
 		m_vjd3d9_device->EndScene();
 	}
 
-    bool hdrPresented = false;
+    bool hdrHandledFrame = false;
     if (g_plugin.m_hdr.Active())
     {
         std::wstring reason;
-        hdrPresented = g_plugin.m_hdr.Present(GetDevice(), reason);
-        if (!hdrPresented)
+        hdrHandledFrame = g_plugin.m_hdr.Present(GetDevice(), reason);
+        if (!hdrHandledFrame)
         {
             g_plugin.m_bHdr = false;
             if (!reason.empty()) g_plugin.AddErrorNotif(reason.data());
         }
     }
 
-    if (!hdrPresented)
+    if (!hdrHandledFrame)
     {
 	if (m_lpDX->m_client_width != m_lpDX->m_REAL_client_width || m_lpDX->m_client_height != m_lpDX->m_REAL_client_height)
 	{

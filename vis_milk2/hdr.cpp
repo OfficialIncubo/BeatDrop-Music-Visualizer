@@ -142,13 +142,14 @@ float SdrWhite(HMONITOR monitor) {
     }
     return 203.0f;
 }
-bool Wait9(IDirect3DQuery9* query) {
-    if (!query || FAILED(query->Issue(D3DISSUE_END))) return false;
-    const auto start=std::chrono::steady_clock::now();
+HRESULT Wait9(IDirect3DQuery9* query) {
+    if (!query) return E_POINTER;
+    const HRESULT issued = query->Issue(D3DISSUE_END);
+    if (FAILED(issued)) return issued;
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(250);
     for (;;) {
-        const HRESULT hr=query->GetData(nullptr,0,D3DGETDATA_FLUSH);
-        if (hr==S_OK) return true;
-        if (FAILED(hr) || std::chrono::steady_clock::now()-start>std::chrono::milliseconds(250)) return false;
+        const HRESULT hr = query->GetData(nullptr, 0, D3DGETDATA_FLUSH);
+        if (hr != S_FALSE || std::chrono::steady_clock::now() >= deadline) return hr;
         SwitchToThread();
     }
 }
@@ -459,7 +460,19 @@ bool HdrPresenter::EndFrame(IDirect3DDevice9* source){
 }
 
 bool HdrPresenter::Present(IDirect3DDevice9* source,std::wstring& reason){
-    if(!p||source!=p->sourceDevice.Get()||!p->frameReady||!Wait9(p->ready9.Get())){reason=L"HDR frame transfer failed; SDR output restored.";Reset();return false;}
+    const HRESULT transfer = p && source == p->sourceDevice.Get() && p->frameReady
+        ? Wait9(p->ready9.Get()) : E_UNEXPECTED;
+    if (transfer == S_FALSE) {
+        // The GPU is still writing the shared texture. Keep the last presented
+        // image and skip this frame before D3D11 binds the texture. The next
+        // frame fences all preceding D3D9 writes before attempting another read.
+        return true;
+    }
+    if (transfer != S_OK) {
+        reason = L"HDR frame transfer failed; SDR output restored.";
+        Reset();
+        return false;
+    }
     const float white=settings.paperWhite>0?settings.paperWhite:p->whiteNits;
     const float reportedPeak=p->displayInfo.MaxLuminance;
     const float peak=(std::max)(white,settings.peak>0?settings.peak:(std::isfinite(reportedPeak)?reportedPeak:white));
