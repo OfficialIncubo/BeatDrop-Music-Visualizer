@@ -221,6 +221,23 @@ extern "C" const PfnDliHook __pfnDliNotifyHook2 = DelayLoadHook;
 
 namespace BeatDropPortableDll
 {
+    HMODULE LoadGraphicsLibrary(const wchar_t* name)
+    {
+        if (!name) return nullptr;
+        const bool compiler = _wcsicmp(name, L"d3dcompiler_47.dll") == 0;
+        if (!compiler && _wcsicmp(name, L"d3d11.dll") != 0 &&
+            _wcsicmp(name, L"dxgi.dll") != 0) return nullptr;
+
+        wchar_t directory[MAX_PATH] = {};
+        const UINT length = GetSystemDirectoryW(directory, _countof(directory));
+        if (length && length < _countof(directory)) {
+            const std::wstring path = std::wstring(directory) + L"\\" + name;
+            if (HMODULE library = ::LoadLibraryW(path.c_str())) return library;
+        }
+        // Never override the OS graphics stack with packaged runtime DLLs.
+        return compiler ? LoadFromPackage(name) : nullptr;
+    }
+
     HMODULE LoadLibrary(const wchar_t* name)
     {
         if (!name || !*name)
