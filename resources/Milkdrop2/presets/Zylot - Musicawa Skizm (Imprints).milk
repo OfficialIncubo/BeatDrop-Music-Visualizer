@@ -164,7 +164,7 @@ wavecode_2_b=1.000
 wavecode_2_a=1.000
 wave_2_per_point1=fvar = sample*512;
 wave_2_per_point2=svar = fvar/16;
-wave_2_per_point3=tvar = 0|svar;
+wave_2_per_point3=tvar = int(svar+.5);
 wave_2_per_point4=nsample = tvar*3+2.5*sin(time*1.795);
 wave_2_per_point5=
 wave_2_per_point6=x = .5 + (.1 + .02*bass)*cos(nsample);

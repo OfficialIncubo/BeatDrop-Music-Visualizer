@@ -83,7 +83,7 @@ per_frame_19=q5=bass_tresh+cos(.2*2)*(dx_r*dy_r);
 per_frame_20=q6=bass_thresh+0.1*(atan(abs(-rad+.5)))*q1;
 per_frame_21=q7=if(above(bass+bass_att,2),-1.5+bass+bass_att,0);
 per_frame_22=q8=below(rad- 0.1*x,0.18);
-per_frame_23=q9=if(below(rad,.5),.9+rad,.5+bass*3%1000*.1);
+per_frame_23=q9=if(below(rad,.5),.9+rad,.5+(bass*3)%1000*.1);
 per_frame_24=wave_y = wave_y + 0.2*sin(1.85*time);
 per_frame_25=wave_x = wave_x + 0.5*sin(1.85*time);
 per_frame_26=cx = cx - (cx+0.07*sin(rad*18 + time*9))+(zoom + 0.005*tan(ang-ang));

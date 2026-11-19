@@ -1,0 +1,110 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+comp_1=// aiekick - Fur Space 3 / https://www.shadertoy.com/view/4ddSDS
+comp_2=// License: Creative Commons Attribution-NonCommercial-ShareAlike 3.0 (Shadertoy default)
+comp_3=// Transpiled to HLSL using Milkwave
+comp_4=
+comp_5=#define tx (sin(time)*0.5+1)
+comp_6=
+comp_7=// CONV: adding helper functions
+comp_8=float mod_conv(float x, float y) { return x - y * floor(x / y); }
+comp_9=float2 mod_conv(float2 x, float2 y) { return x - y * floor(x / y); }
+comp_10=float3 mod_conv(float3 x, float3 y) { return x - y * floor(x / y); }
+comp_11=float4 mod_conv(float4 x, float4 y) { return x - y * floor(x / y); }
+comp_12=
+comp_13=// CONV2: guarded length helpers (legacy compiler reports lenv() as division by zero)
+comp_14=float lenv(float2 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_15=float lenv(float3 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_16=
+comp_17=float3x3 getRotZMat(float a){return float3x3(cos(a),-sin(a),0.,sin(a),cos(a),0.,0.,0.,1.);}
+comp_18=
+comp_19=static float dstepf = 0.0;
+comp_20=
+comp_21=float map(float3 p)
+comp_22={
+comp_23=  p.x += sin(p.z*1.8);
+comp_24=  p.y += cos(p.z*.2) * sin(p.x*.8);
+comp_25=  p = mul(p, transpose(getRotZMat(p.z*0.8+sin(p.x)+cos(p.y))));
+comp_26=  p.xy = mod_conv(p.xy, 0.3) - 0.15;
+comp_27=  dstepf += 0.003;
+comp_28=  return lenv(p.xy);
+comp_29=}
+comp_30=
+comp_31=shader_body {
+comp_32=  float4 fragColor = 0;
+comp_33=  float2 fragCoord  = uv;
+comp_34=  // CONV: Center on screen, then try some aspect correction
+comp_35=  uv = (uv*2) - 1;
+comp_36=  uv *= aspect.xy;
+comp_37=  // CONV: Adjust this to flip the output (±uv.x, ±uv.y)
+comp_38=  uv = float2(uv.x, -uv.y);
+comp_39=  // CONV: Adjust viewpoint (x,y individually or both)
+comp_40=  uv += float2(0,0) + 0;
+comp_41=  uv *= float2(1,1) * 1;
+comp_42=  // AUDIO: 1 = calm (bass_smooth), 2 = more reactive (bass_att), 3+ = static - see the remote's Version tooltip
+comp_43=  #ifdef vis_version
+comp_44=    float aRng = (int)vis_version == 1 ? 0.26 : 0.45;
+comp_45=    float aFac = (int)vis_version > 2 ? 1*vis_intensity+vis_shift
+comp_46=      : (1.0 - aRng*0.5 + smoothstep(0,2,(int)vis_version == 1 ? bass_smooth : bass_att)*aRng) * vis_intensity + vis_shift;
+comp_47=  #else
+comp_48=    float aFac = (1.0 - 0.15) + smoothstep(0,2,bass_att)*0.30;
+comp_49=  #endif
+comp_50=  float aDev = aFac - 1.0;   // 0 at the track average, +loud, -quiet
+comp_51=  #ifdef vis_version
+comp_52=    float aBe  = aDev * 4.0, aCol = (int)vis_version == 1 ? 0.9 : 1.3;   // beat scale, colour reaction scale
+comp_53=  #else
+comp_54=    float aBe  = aDev * 4.0, aCol = 1.3;   // other MilkDrop variants: v2 tuning
+comp_55=  #endif
+comp_56=
+comp_57=  // float2 uv = (fragCoord - uv.xy*.5 )/uv.y;
+comp_58=  float3 rd = normalize(float3(uv, (1.-dot(uv, uv)*.5)*.5));
+comp_59=  float3 ro = float3(0, 0, time*1.26), col = float3(0, 0, 0), sp;
+comp_60=  float cs = cos( time*0.375 ), si = sin( time*0.375 );
+comp_61=  rd.xz = mul(transpose(float2x2(cs, si,-si, cs)), rd.xz);
+comp_62=  // MOUSE: holding the mouse button turns the view - pointer X steers yaw, pointer Y steers pitch.
+comp_63=  // Independent of the audio versions; saturate(mouse.z) keeps the un-pressed frame identical.
+comp_64=  float mMx = (mouse.x - 0.5) * saturate(mouse.z);
+comp_65=  float mMy = (mouse.y - 0.5) * saturate(mouse.z);
+comp_66=  float mYaw = mMx * 0.85, mPitch = mMy * 0.5;
+comp_67=  float mCy = cos(mYaw), mSy = sin(mYaw);
+comp_68=  rd.xz = mul(transpose(float2x2(mCy, mSy, -mSy, mCy)), rd.xz);
+comp_69=  float mCp = cos(mPitch), mSp = sin(mPitch);
+comp_70=  rd.yz = mul(transpose(float2x2(mCp, mSp, -mSp, mCp)), rd.yz);
+comp_71=  float t=0.06, layers=0., d=0., aD;
+comp_72=  float thD = 0.02;
+comp_73=  // AUDIO: the strands keep their march step but get thicker/thinner with the level,
+comp_74=  // so the fur pulses in place instead of the view tilting (version 1 gets the bigger swing)
+comp_75=  #ifdef vis_version
+comp_76=    float aThG = (int)vis_version == 1 ? 0.9 : 0.55;
+comp_77=  #else
+comp_78=    float aThG = 0.55;   // other MilkDrop variants: v2 tuning
+comp_79=  #endif
+comp_80=  float thT = thD * clamp(1.0 + aBe * aThG, 0.55, 1.8);
+comp_81=  for (float i=min(frame,0); i<250.; i++)
+comp_82=  {
+comp_83=    // CONV: replaced break with breaking condition
+comp_84=    if(layers>15. || col.x > 1. || t>5.6)  i=250.;
+comp_85=    sp = ro + rd*t;
+comp_86=    d = map(sp);
+comp_87=    aD = (thT-abs(d)*15./16.)/thT;
+comp_88=    if(aD>0.)
+comp_89=    {
+comp_90=      col += aD*aD*(3.-2.*aD)/(1. + t*t*0.25)*.2;
+comp_91=      layers++;
+comp_92=    }
+comp_93=
+comp_94=    t += max(d*.7, thD*1.5) * dstepf;
+comp_95=  }
+comp_96=
+comp_97=  col = max(col, 0.);
+comp_98=  col = lerp(col, float3(min(col.x*1.5, 1.), pow(col.x, 2.5), pow(col.x, 12.)),
+comp_99=  dot(sin(rd.yzx*8. + sin(rd.zxy*8.)), float3(.1666, .1666, .1666))+0.4);
+comp_100=  col = lerp(col, float3(col.x*col.x*.85, col.x, col.x*col.x*0.3),
+comp_101=  dot(sin(rd.yzx*4. + sin(rd.zxy*4.)), float3(.1666, .1666, .1666))+0.25);
+comp_102=  fragColor = float4( clamp(col, 0., 1.), 1.0 );
+comp_103=  ret = fragColor;
+comp_104=  // AUDIO: the streaks gain colour on beats
+comp_105=  ret = lerp(float3(lum(ret), lum(ret), lum(ret)), ret, 1.0 + aBe * 0.8 * aCol);
+comp_106=}

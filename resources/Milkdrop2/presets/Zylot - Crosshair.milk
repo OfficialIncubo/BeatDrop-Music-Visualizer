@@ -18,7 +18,7 @@ bBrighten=0
 bDarken=0
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.000000
+fWaveAlpha=0.001000
 fWaveScale=0.741900
 fWaveSmoothing=0.000000
 fWaveParam=0.000000
@@ -266,5 +266,5 @@ per_frame_5=midc = if(above(mid,midc),midc + mid*.07,midc-.03);
 per_frame_6=
 per_frame_7=q1 = bassc;
 per_frame_8=q2 = midc;
-per_pixel_1=dy = .5+.5*0|sin((x-.53)-q1*.3)-.5;
-per_pixel_2=dx = 0|sin((y-.48)+q2*.3)+.5;
+per_pixel_1=dy = int(sin((x-.53)-q1*.3)+.5);
+per_pixel_2=dx = int(sin((y-.48)+q2*.3)+.5);

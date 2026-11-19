@@ -306,8 +306,8 @@ per_frame_25=q8=vol_thresh;
 per_frame_26=wave_r=ob_r+.3*sin(q3-time);
 per_frame_27=wave_b=ob_b-.3*sin(q2-time);
 per_frame_28=wave_g=ob_g+.2*sin(q1-time);
-per_pixel_1=d_X=x-.2*(rad-x)-2&(x+.2*sin(time*.64*sin(Q2|time)))+.5;
-per_pixel_2=d_y=y-.2*(rad-y)-2&(y+.2*sin(time*.54*sin(q1|time)))+.5;
+per_pixel_1=d_X=int(x+.2*sin(time*.64*sin(Q2|time))+.5);
+per_pixel_2=d_y=int(y+.2*sin(time*.54*sin(q1|time))+.5);
 per_pixel_3=dx=d_X;
 per_pixel_4=dy=d_y;
 per_pixel_5=

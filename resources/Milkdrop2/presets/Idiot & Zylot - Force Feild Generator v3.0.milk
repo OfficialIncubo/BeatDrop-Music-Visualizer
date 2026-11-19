@@ -74,7 +74,7 @@ per_frame_10=q4=vol_thresh;
 per_frame_11=warp = 0;
 per_frame_12=wave_mode = 6;
 per_frame_13=m = if(below(frame%2,1),0,1)+time*.5;
-per_frame_14=wave_r = 0|bass*.5;
+per_frame_14=wave_r = int(bass*.5+.5);
 per_frame_15=wave_b = abs(wave_r-1);
 per_frame_16=wave_mystery=if(above(q1,q2),m-.03*sin(above(q1,q3)),-m+.03*sin(above(q2,q3))+1
 per_frame_17=*sin(if(Above(q1,q3),.5,-.5)));

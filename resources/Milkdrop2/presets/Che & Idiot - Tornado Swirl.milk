@@ -106,11 +106,11 @@ per_pixel_4=arad=sqrt(sqr(y-q4)+sqr(x-q3))*q6;
 per_pixel_5=atx=cos(aang)*arad;
 per_pixel_6=aty=sin(aang)*arad;
 per_pixel_7=
-per_pixel_8=boxzone=below(arad,q4-rad|rad*sin(q3-q2));
+per_pixel_8=boxzone=below(arad,int(rad*sin(q3-q2)+.5));
 per_pixel_9=
 per_pixel_10=fxzone=band(band(above(x,.1),below(x,.9))-rad+.4*sin(q4),
 per_pixel_11=band(above(y,.1),below(y,9)));
 per_pixel_12=
 per_pixel_13=
 per_pixel_14=zoom=zoom+.2*sin(rad+time*q3)-x+y;
-per_pixel_15=rot=if(below(q3|mid,q2|bass),rot+.02*sin(rad+5*q3)+.5*sin(below(q3,q2)),0-y*x*sin(ang));
+per_pixel_15=rot=if(below(int(mid+.5),int(bass+.5)),rot+.02*sin(rad+5*q3)+.5*sin(below(q3,q2)),0-y*x*sin(ang));

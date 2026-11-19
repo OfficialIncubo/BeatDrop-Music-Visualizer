@@ -297,7 +297,7 @@ per_frame_14=decay=decay-0.01*(frame%5);
 per_frame_15=dx = dx + dx_residual;
 per_frame_16=dy = dy + dy_residual;
 per_frame_17=dx_residual = equal(bass_thresh,2)*0.016*sin(time*7) + (1-equal(bass_thresh,2))*dx_residual;
-per_frame_18=rot = wave_x & wave_y;
+per_frame_18=rot = int(wave_y+.5);
 per_frame_19=zoom = wave_x + wave_y;
 per_pixel_1=ckdx=dx;//////////////////////////////////////////    
 per_pixel_2=ckdy=dy;    

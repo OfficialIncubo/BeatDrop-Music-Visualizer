@@ -245,8 +245,8 @@ per_frame_37=ob_b=b+.3-.1*sin(time*.12);
 per_frame_38=ob_g=g-.3-.5*sin(time+.1);;
 per_pixel_1=rot=if(above(zoom,box),if(equal(myzoom,1),rot+.2*sin(q1-q2*rad*.25),0)
 per_pixel_2=*if(above(rad,x),rad-x*.25,pow(rad,1000)),0-.02*rad*x*-.2*sin(q1));
-per_pixel_3=be2=rad-2&rad-.4-.5*sin(q6)+.5;
-per_pixel_4=box=sin(if(above(q1,q3),rad&rad+.2-x-y*.25*sin(Q3),be2));
+per_pixel_3=be2=rad-.4-.5*sin(q6);be2=above(be2,.5)+bnot(below(be2,1.5))-above(-.5,be2);
+per_pixel_4=_andval=rad+.2-x-y*.25*sin(Q3);_andval=above(_andval,.5)+bnot(below(_andval,1.5))-above(-.5,_andval);box=sin(if(above(q1,q3),_andval,be2));
 per_pixel_5=myzoomexp=cos(sin(if(Above(q1,q2),pow(box,2)*rad*5,box)));;
 per_pixel_6=myzoom=if(Above(q1,q2),if(above(Q2,q3),1-y+.3*sin(q1)+.3,zoom-.2),1)+.1;
 per_pixel_7=a=if(above(q3,q2),pow(myzoom-x,pow(myzoomexp,rad*2-.22-box-x+.2*sin(q1-q3)))+.2*.25,1);

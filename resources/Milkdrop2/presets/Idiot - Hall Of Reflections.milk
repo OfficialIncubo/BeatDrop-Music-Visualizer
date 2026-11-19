@@ -65,7 +65,7 @@ per_frame_1=ob_r=obr-.2*sin(time*.35);
 per_frame_2=ob_g=obg+.2*sin(time*15);
 per_frame_3=ob_b=obg-.1*sin(time*.25);
 per_frame_4=echo_alpha=1*sin(time*.54)
-per_pixel_1=rot=rot-rad+ang&x|y+.15
+per_pixel_1=rot=int(y-.4+.5)
 per_frame_init_1=obr=int(rand(10));
 per_frame_init_2=obg=int(rand(10));
 per_frame_init_3=obb=int(rand(10));

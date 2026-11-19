@@ -1,5 +1,5 @@
 [preset00]
-fRating=2.000000
+fRating=3.000000
 fGammaAdj=1.000000
 fDecay=0.970000
 fVideoEchoZoom=0.999609
@@ -62,11 +62,11 @@ mv_g=0.500000
 mv_b=1.000000
 mv_a=0.000000
 per_frame_1=wave_r=wave_r+waver*sin(if(Above(bass,bass_Att),sin(bass+bass_Att),sin(treb+Treb_att)))
-per_frame_2=-waver*sin(if(above(mid,mid_att),sin(mid-mid_att),sin(bass-treb)))*int(rand(10))
+per_frame_2=-waver*sin(if(above(mid,mid_att),sin(mid-mid_att),sin(bass-treb)))*rand(10)
 per_frame_3=*sin(above(Bass,bass_att));
 per_frame_4=wave_b=wave_b+waveb*sin(if(Above(bass,bass_Att),sin(bass+bass_Att),sin(treb+bass)))
-per_frame_5=-waveb*sin(if(above(treb,mid),sin(mid*bass),sin(bass*treb)))*int(rand(10))
-per_frame_6=*sin(above(treb,treb_att))*int(rand(10))*Sin(above(bass,bass_Att));
+per_frame_5=-waveb*sin(if(above(treb,mid),sin(mid*bass),sin(bass*treb)))*rand(10)
+per_frame_6=*sin(above(treb,treb_att))*rand(10)*Sin(above(bass,bass_Att));
 per_frame_7=wave_G=wave_g+waveg*sin(if(Above(bass,bass_Att),sin(bass+bass_Att),sin(mid-treb)))
 per_frame_8=-waveg*sin(if(Above(mid,bass+1),sin(bass+treb_att),sin(mid-bass)));
 per_frame_9=vol_att=bass_att+treb_Att+mid_att;
@@ -95,9 +95,9 @@ per_frame_31=q4=new_vol;
 per_frame_32=q5=q4*.4*sin(q4)*.04;
 per_frame_33=q6=-q1+q2+Q3+q4+q5+q6;;
 per_frame_34=
-per_pixel_1=zoom=zoom-.10*sin(time-rad-2&rad*sin(q1)*q4)*sin(ang-.20*rad*sin(q4))-log(rad-2&rad+.4*sin(q4)+rad+.5)
+per_pixel_1=zoom=zoom-.10*sin(time-int(rad*sin(q1)*q4+.5))*sin(ang-.20*rad*sin(q4))-log(int(rad+.4*sin(q4)+rad+.5))
 per_pixel_2=+g;
-per_pixel_3=g=(x-2&rad-y-2&rad)*g*sin(q4)+rad-2&rad+.5
+per_pixel_3=g=(int(rad+.5)-int(rad+.5))*g*sin(q4)+int(rad+.5)
 per_frame_init_1=waver=time6*int(rand(10))*sin(int(rand(time1*sin(int(rand(5))))))*sin(above(bass,bass_Att)-.2*sin
 per_frame_init_2=(below(mid,mid_att)));
 per_frame_init_3=waveb=time7*int(rand(10))*sin(int(rand(time2*sin(int(rand(10))))))*sin(above(treb,treb_Att)-.5*sin

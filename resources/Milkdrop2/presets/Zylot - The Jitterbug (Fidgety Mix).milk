@@ -18,7 +18,7 @@ bBrighten=0
 bDarken=1
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.000000
+fWaveAlpha=0.001000
 fWaveScale=2.987793
 fWaveSmoothing=0.750000
 fWaveParam=0.000000
@@ -74,10 +74,10 @@ wavecode_0_r=1.000000
 wavecode_0_g=1.000000
 wavecode_0_b=1.000000
 wavecode_0_a=1.000000
-wave_0_per_point1=x=.5+(bass*.1)*cos(sample*10)+(-1&value2*15)*.2;
-wave_0_per_point2=y= .5+.1*sin(sample*10)+(-1&value1*15)*.2;
-wave_0_per_point3=r=.5+(bass*.1)*cos(sample*10)+(-1&value2*15)*.2;
-wave_0_per_point4=g = .5+.1*sin(sample*10)+(-1&value1*15)*.2;
+wave_0_per_point1=x=.5+(bass*.1)*cos(sample*10)+(int(value2*5+.5))*.2;
+wave_0_per_point2=y= .5+.1*sin(sample*10)+(int(value1*5+.5))*.2;
+wave_0_per_point3=r=.5+(bass*.1)*cos(sample*10)+(int(value2*5+.5))*.2;
+wave_0_per_point4=g = .5+.1*sin(sample*10)+(int(value1*5+.5))*.2;
 wave_0_per_point5=b = value2;
 wavecode_1_enabled=0
 wavecode_1_samples=512

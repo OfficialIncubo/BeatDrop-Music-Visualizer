@@ -108,12 +108,12 @@ per_frame_44=v1=new_bass-2&time;
 per_frame_45=v2=new_treb-2&time;
 per_frame_46=v3=new_mid-2&time;
 per_frame_47=v4=new_vol-2&time;
-per_frame_48=v5=if(above(q2,q3),above(q1,q3),-above(q1,q3))&time;
+per_frame_48=v5=if(above(q2,q3),above(q1,q3),-above(q1,q3))-2&time;
 per_frame_49=
-per_frame_50=v6=if(above(q1,q3),above(q2,q4),-above(q2,q3))&time;
-per_frame_51=v7=if(above(q5,q6),q5,-q6)&time;;
-per_frame_52=v8=if(above(q6,q7),q6,-q7)&time;;
+per_frame_50=v6=if(above(q1,q3),above(q2,q4),-above(q2,q3))-2&time;
+per_frame_51=v7=if(above(q5,q6),q5,-q6)-2&time;;
+per_frame_52=v8=if(above(q6,q7),q6,-q7)-2&time;;
 per_frame_53=
-per_pixel_1=rot=rot+if(equal(sin(rad-2&(rad+ang)+.5), 0), -rot, 0.05*sin(q4));
+per_pixel_1=rot=rot+if(equal(sin(int(rad+ang+.5)), 0), -rot, 0.05*sin(q4));
 per_pixel_2=
 per_pixel_3=

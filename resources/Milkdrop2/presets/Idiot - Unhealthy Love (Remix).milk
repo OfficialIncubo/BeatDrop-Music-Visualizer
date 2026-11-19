@@ -110,5 +110,5 @@ per_pixel_8=if(above(change,q3),-zoom+.3-rad,change2))+.2;
 per_pixel_9=effect4=if(above(change3,change4),if(above(chang2,change3),if(above(change,change2)
 per_pixel_10=,effect,effect2),effect0),zoom);
 per_pixel_11=zoom=effect4;
-per_pixel_12=effect5=effect4-1+effect3-1*rad-1;
-per_pixel_13=rot=if(above(change0-.2,change4),effect5,-effect5)|x*sin(q8)*3&y*sin(Q4);
+per_pixel_12=effect5=effect4-1+effect3-1*rad-.4;
+per_pixel_13=rot=int(y*sin(Q4)+.5);

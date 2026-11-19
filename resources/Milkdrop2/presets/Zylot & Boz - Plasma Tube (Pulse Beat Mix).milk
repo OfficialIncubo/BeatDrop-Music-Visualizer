@@ -75,4 +75,4 @@ per_frame_11=dx = -.07;
 per_frame_12=decay = if(above(frame%30,4),1.00,.930);
 per_frame_13=monitor = decay;
 per_frame_14=wave_y = if(above(frame%2,0),wave_y + bass*.2,wave_y - bass*.2);
-per_pixel_1=rot = -1&(rad/ang*bass*.1)+.5;
+per_pixel_1=rot = int(rad/ang*bass*.1+.5);

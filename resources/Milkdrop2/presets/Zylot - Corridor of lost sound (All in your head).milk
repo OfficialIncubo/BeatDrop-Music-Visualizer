@@ -88,15 +88,15 @@ wavecode_0_a=1.000
 wave_0_per_point1=x = -.5+.05*sin(sample*10);
 wave_0_per_point2=y = -.5+.056* cos(sample*10);
 wave_0_per_point3=
-wave_0_per_point4=x = x+(0|bass*10)*.1;
-wave_0_per_point5=y = y+(0|treb*10)*.1;
+wave_0_per_point4=x = x+(int(bass*10+.5))*.1;
+wave_0_per_point5=y = y+(int(treb*10+.5))*.1;
 wave_0_per_point6=
-wave_0_per_point7=r = (0|(bass*sin(time))*10)*.1;
-wave_0_per_point8=g = (0|(treb*sin(time*.54667))*10)*.1;
+wave_0_per_point7=r = (int(bass*sin(time)+.5)*10)*.1;
+wave_0_per_point8=g = (int(treb*sin(time*.54667)+.5)*10)*.1;
 wave_0_per_point9=b = mid*.3;
 wave_0_per_point10=
-wave_0_per_point11=x = x+(0|value1*10)*(.01*bass);
-wave_0_per_point12=y = y+(0|value2*10)*(.01*treb);
+wave_0_per_point11=x = x+(int(value1*10+.5))*(.01*bass);
+wave_0_per_point12=y = y+(int(value2*10+.5))*(.01*treb);
 wavecode_1_enabled=0
 wavecode_1_samples=512
 wavecode_1_sep=0
@@ -111,7 +111,7 @@ wavecode_1_g=1.000
 wavecode_1_b=1.000
 wavecode_1_a=1.000
 wave_1_per_point1=x = sample;
-wave_1_per_point2=y = 0+(0|(value1*25+value2*25))*.02;
+wave_1_per_point2=y = 0+(int(value1*25+value2*25+.5))*.02;
 wavecode_2_enabled=0
 wavecode_2_samples=512
 wavecode_2_sep=0
@@ -128,15 +128,15 @@ wavecode_2_a=1.000
 wave_2_per_point1=x = 1.5+.05*sin(sample*10);
 wave_2_per_point2=y = -.5+.056* cos(sample*10);
 wave_2_per_point3=
-wave_2_per_point4=x = x-(0|bass*10)*.1;
-wave_2_per_point5=y = y+(0|treb*10)*.1;
+wave_2_per_point4=x = x-(int(bass*10+.5))*.1;
+wave_2_per_point5=y = y+(int(treb*10+.5))*.1;
 wave_2_per_point6=
-wave_2_per_point7=r = (0|(bass*sin(time))*10)*.1;
-wave_2_per_point8=g = (0|(treb*sin(time*.54667))*10)*.1;
+wave_2_per_point7=r = (int(bass*sin(time)+.5)*10)*.1;
+wave_2_per_point8=g = (int(treb*sin(time*.54667)+.5)*10)*.1;
 wave_2_per_point9=b = mid*.3;
 wave_2_per_point10=
-wave_2_per_point11=x = x+(0|value1*10)*(.01*bass);
-wave_2_per_point12=y = y+(0|value2*10)*(.01*treb);
+wave_2_per_point11=x = x+(int(value1*10+.5))*(.01*bass);
+wave_2_per_point12=y = y+(int(value2*10+.5))*(.01*treb);
 wavecode_3_enabled=0
 wavecode_3_samples=512
 wavecode_3_sep=0
@@ -151,7 +151,7 @@ wavecode_3_g=1.000
 wavecode_3_b=1.000
 wavecode_3_a=1.000
 wave_3_per_point1=x = 1-sample;
-wave_3_per_point2=y = 0+(0|(value1*25+value2*25))*.02;
+wave_3_per_point2=y = 0+(int(value1*25+value2*25+.5))*.02;
 shapecode_0_enabled=1
 shapecode_0_sides=4
 shapecode_0_additive=0

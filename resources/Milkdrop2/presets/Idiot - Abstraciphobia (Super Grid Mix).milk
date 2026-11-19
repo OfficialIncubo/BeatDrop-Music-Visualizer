@@ -18,7 +18,7 @@ bBrighten=0
 bDarken=0
 bSolarize=0
 bInvert=0
-fWaveAlpha=0.000000
+fWaveAlpha=0.001000
 fWaveScale=0.010000
 fWaveSmoothing=0.630000
 fWaveParam=0.200000
@@ -89,10 +89,10 @@ per_frame_25=q8=vol_thresh;
 per_frame_26=ob_r=ob_r+.3*sin(q3-time);
 per_frame_27=ob_b=ob_b-.3*sin(q2-time);
 per_frame_28=ob_g=ob_g+.2*sin(q1-time);
-per_pixel_1=c_X=(x-.2*(rad-x))-2&(x+.2*sin(q1))+.5;
-per_pixel_2=c_y=(y-.2*(rad-y))-2&(y+.2*sin(q2))+.5;
-per_pixel_3=d_X=(x-.2*(rad-x))-2&(x+.2*sin(q2)+.2*sin(Q6-time)+.2*sin(q7))+.5;
-per_pixel_4=d_y=(y-.2*(rad-y))-2&(y+.2*sin(q3)+.2*sin(Q7-time)+.2*sin(q6))+.5;
+per_pixel_1=c_X=int((x+.2*sin(q1))+.5);
+per_pixel_2=c_y=int((y+.2*sin(q2))+.5);
+per_pixel_3=d_X=int((x+.2*sin(q2)+.2*sin(Q6-time)+.2*sin(q7))+.5);
+per_pixel_4=d_y=int((y+.2*sin(q3)+.2*sin(Q7-time)+.2*sin(q6))+.5);
 per_pixel_5=dx=d_y+.2*sin(Above(q1,q3)-x*sin(above(q6,q8)));
 per_pixel_6=dy=d_y+.2*sin(above(q1,q2)-x*sin(above(q5,q7)));
 per_pixel_7=cx=c_x;

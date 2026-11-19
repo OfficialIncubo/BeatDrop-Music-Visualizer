@@ -105,7 +105,7 @@ per_frame_35=ib_b = if(below(wave_x, 0.55), if(above(wave_x, 0.45), if(below(wav
 per_frame_36=rot = if(below(wave_x, 0.55), if(above(wave_x, 0.45), if(below(wave_y, 0.55), -0.6, rot), rot), rot);
 
 //Rovastar
-per_pixel_1=box =0.5+0.8*(2*x%2+2*y%2);
+per_pixel_1=box =0.5+0.8*((2*x)%2+(2*y)%2);
 per_pixel_2=q1 = 2*q5+7.7+0.3*(sin(pow(x,3)+0.137*time)-cos(pow(y,3)+0.213*time));
 
 //Wulfson

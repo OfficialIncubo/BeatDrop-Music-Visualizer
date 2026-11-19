@@ -75,5 +75,5 @@ per_frame_11=q1=above(bass,bass_Att)*sin(time*.42)+1*sin(Above(crap_beat,mid));
 per_pixel_1=vol=treb*bass+mid-.4-effect;
 per_pixel_2=effect=rot;
 per_pixel_3=vol_att=bass_Att+mid_att*treb_att-.4;
-per_pixel_4=rot=(if(above(vol,vol_att),rot+rad*sin(time-above(bass,bass_Att)),
-per_pixel_5=-rot+rad*sin(time-above(bass,bass_Att)))-rad)-2&(rad%x+rad)+.5;
+per_pixel_4=rot=if(above(vol,vol_att),rot+rad*sin(time-above(bass,bass_Att)),-rot+rad*sin(time-above(bass,bass_Att)))
+per_pixel_5=-int(rad%x+rad+.5);

@@ -81,5 +81,5 @@ per_pixel_6=effect4 = dy+0.008*cos((x*2-1)*64)+0.008*cos((x*2-1)*48);
 per_pixel_7=box_effect2= if(above(y,q3),if(below(y,(q3+q1)), if(above(x,q4),if(below(x,(q4+q2)),effect3,effect4),effect4),effect4),effect4);
 per_pixel_8=dy= box_effect2;
 per_frame_init_1=q8=0;
-per_frame_init_2=q1 = 0.005*rand(60)+0.2;
-per_frame_init_3=q2 = 0.005*rand(60)+0.2;
+per_frame_init_2=q1 = 0.005*int(rand(60))+0.2;
+per_frame_init_3=q2 = 0.005*int(rand(60))+0.2;

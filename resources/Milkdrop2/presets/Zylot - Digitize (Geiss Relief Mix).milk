@@ -88,7 +88,7 @@ wavecode_0_a=1.000000
 wave_0_per_frame1=r = .6+.3*sin(time*.8765);
 wave_0_per_frame2=g = .6+.3*sin(time);
 wave_0_per_frame3=b = .6+.3*sin(time*1.4321);
-wave_0_per_point1=x = (0|(sample*20))*.05;
+wave_0_per_point1=x = (int(sample*20+.5))*.05;
 wave_0_per_point2=y = .5+(value1+value2)*4;
 wave_0_per_point3=r = r+if(above(r+abs(y-.5)*10,1),0,abs(y-.5)*10);
 wave_0_per_point4=g = g+if(above(g+abs(y-.5)*10,1),0,abs(y-.5)*10);

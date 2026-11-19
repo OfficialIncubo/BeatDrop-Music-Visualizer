@@ -65,7 +65,7 @@ per_frame_1=ob_r=obr-.2*sin(time*.35);
 per_frame_2=ob_g=obg+.2*sin(time*15);
 per_frame_3=ob_b=obg-.1*sin(time*.25);
 per_pixel_1=
-per_pixel_2=rot=rot-rad&x|y-.4*rad|rad-.2*Sin((time*0.80)*.42)+rad*Sin((time*0.80)*.31)-rad*sin((time*0.80)*.42)+.5
+per_pixel_2=rot=int(rad-.2*Sin(time*.42)+rad*Sin(time*.31)-rad*sin(time*.42)+.5)
 per_frame_init_1=obr=int(rand(10));
 per_frame_init_2=obg=int(rand(10));
 per_frame_init_3=obb=int(rand(10));

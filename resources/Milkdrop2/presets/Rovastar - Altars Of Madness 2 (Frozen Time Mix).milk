@@ -80,7 +80,7 @@ per_frame_16=lastbeat = if(beat,time,lastbeat);
 per_frame_17=countertime = if(beat,time,countertime);
 per_frame_18=counter =-1*pow(min((time-countertime-1.5),0),9);
 per_frame_19=wave_a = beat;
-per_frame_20=wave_x =0.2+(0.01*rand(60))*beat;
+per_frame_20=wave_x =0.2+(0.01*int(rand(60)))*beat;
 per_frame_21=ib_r=wave_g;
 per_frame_22=ib_b= wave_r;
 per_frame_23=ib_g = wave_b;

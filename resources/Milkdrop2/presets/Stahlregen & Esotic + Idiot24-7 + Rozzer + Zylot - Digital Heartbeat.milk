@@ -230,7 +230,7 @@ per_pixel_1=zoom = zoom - (.55+.1*sin(time));
 per_pixel_2=
 per_pixel_3=zoom = zoom + abs(sin(rad*rad*rad*bass*8+time*5));
 per_pixel_4=
-per_pixel_5=zoom = sqrt(pow(zoom,(0|rad*1.4)*.3));
+per_pixel_5=zoom = sqrt(pow(zoom,(int(rad*1.4+.5))*.3));
 warp_1=`shader_body
 warp_2=`{
 warp_3=`    // sample previous frame

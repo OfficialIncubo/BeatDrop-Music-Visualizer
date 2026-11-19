@@ -70,7 +70,7 @@ per_frame_6=bass_c=q1-1*sin(bass_Att-2&time*.54);
 per_frame_7=treb_c=q2-1*sin(treb_att-2&time*.44);
 per_frame_8=mid_c=q3-1*sin(mid_att-2&time*.24);
 per_frame_9=vol_c=q4-1*sin(vol_att-2&time*.64);
-per_frame_10=q1=sin(Bass-new_bass-2&time*.63);
+per_frame_10=q1=sin(Bass-new_bass-2&timE*.63);
 per_frame_11=q2=sin(treb-new_treb-2&time*.43);
 per_frame_12=q3=sin(mid-new_mid-2&time*.23);
 per_frame_13=q4=sin(vol-2&time*.65);

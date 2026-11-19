@@ -247,7 +247,7 @@ per_frame_2=wave_g =if(above(frame%2,0),.6+.3*cos(time*1.66)+.1*cos(time),.6+.3*
 per_frame_3=wave_b =if(above(frame%2,0),.6+.4*cos(time*2)+.2*cos(time),.6+.4*sin(time*2)+.2*sin(time));
 per_frame_4=wave_mystery = .2+.4*sin(time);
 per_frame_5=wave_mode = if(above(frame%2,0),1,2);
-per_pixel_1=zoom = if(above(rad*bass,.3),0|bass,.99);
+per_pixel_1=zoom = if(above(rad*bass,.3),int(bass+.5),.99);
 per_pixel_2=rot = -ang*.5+time;
 warp_1=`sampler sampler_fw_rand07;
 warp_2=`shader_body

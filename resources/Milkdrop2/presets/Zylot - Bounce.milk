@@ -18,7 +18,7 @@ bBrighten=0
 bDarken=0
 bSolarize=0
 bInvert=1
-fWaveAlpha=0.000000
+fWaveAlpha=0.001000
 fWaveScale=0.010000
 fWaveSmoothing=0.270000
 fWaveParam=-0.380000
@@ -80,7 +80,7 @@ wave_0_per_frame1=t2 = if(above(t1,200),if(equal(t2,1),2,t2),if(below(t1,10),if(
 wave_0_per_frame2=t1 = if(equal(t2,1),t1 + .1,t1 - .1);
 wave_0_per_point1=fvar = sample*512;
 wave_0_per_point2=svar = fvar/16;
-wave_0_per_point3=tvar = 0|svar;
+wave_0_per_point3=tvar = int(svar+.5);
 wave_0_per_point4=newsample = tvar/3.2;
 wave_0_per_point5=
 wave_0_per_point6=
@@ -159,7 +159,7 @@ shape_0_per_frame5=
 shape_0_per_frame6=bassc = if(above(bass*.4,bassc),bassc+bass*.01,bassc-bass*.01);
 shape_0_per_frame7=y = bassc;
 shape_0_per_frame8=
-shape_0_per_frame9=sides = 3+(-1&(y*15)+.5);
+shape_0_per_frame9=sides = 3+int(y*15+.5);
 shapecode_1_enabled=1
 shapecode_1_sides=3
 shapecode_1_additive=0
@@ -191,7 +191,7 @@ shape_1_per_frame5=
 shape_1_per_frame6=trebc = if(above(treb*.4,trebc),trebc+treb*.01,trebc-treb*.01);
 shape_1_per_frame7=y = trebc;
 shape_1_per_frame8=
-shape_1_per_frame9=sides = 3+(-1&(y*15)+.5);
+shape_1_per_frame9=sides = 3+int(y*15+.5);
 shapecode_2_enabled=1
 shapecode_2_sides=3
 shapecode_2_additive=0
@@ -222,7 +222,7 @@ shape_2_per_frame4=
 shape_2_per_frame5=midc = if(above(mid*.4,midc),midc+mid*.01,midc-mid*.01);
 shape_2_per_frame6=y = midc;
 shape_2_per_frame7=
-shape_2_per_frame8=sides = 3+(-1&(y*15)+.5);
+shape_2_per_frame8=sides = 3+int(y*15+.5);
 shapecode_3_enabled=0
 shapecode_3_sides=4
 shapecode_3_additive=0

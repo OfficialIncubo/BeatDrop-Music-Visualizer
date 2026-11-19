@@ -69,4 +69,4 @@ per_frame_5=obr=int(rand(10));
 per_frame_6=obg=int(rand(10));
 per_frame_7=obb=int(rand(10));
 per_pixel_1=
-per_pixel_2=rot=rot-rad+ang-2&x|y-.4*rad|rad-.5*Sin(time*.42)+rad*Sin(time*.31)-rad*sin(time*.42)-x*rad-y*rad*sin(time*.52)
+per_pixel_2=rot=int(rad-.2*Sin(time*.42)+rad*Sin(time*.31)-rad*sin(time*.42)-x*rad-y*rad*sin(time*.52)+.5)

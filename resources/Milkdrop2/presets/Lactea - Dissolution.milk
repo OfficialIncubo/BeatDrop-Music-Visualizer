@@ -1,0 +1,82 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+[preset00]
+fRating=5.000000
+fGammaAdj=1.000
+fDecay=1.000
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.500
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.000
+fShader=0.000
+zoom=1.012
+rot=0.002
+cx=0.500
+cy=0.500
+dx=0.000
+dy=0.000
+warp=0.000
+sx=1.000
+sy=1.000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.000
+mv_r=0.000
+mv_g=0.000
+mv_b=0.000
+mv_a=0.000
+warp_1=`sampler sampler_rand00;
+warp_2=`shader_body
+warp_3=`{
+warp_4=`    float2 n = (tex2D(sampler_noise_lq, uv * 0.6 + time * 0.02).xy - 0.5) * 0.01;
+warp_5=`    float3 prev = tex2D(sampler_main, uv + n).xyz * 0.975;
+warp_6=`    float2 p = (uv - 0.5) * aspect.xy;
+warp_7=`    float inside = 1.0 - smoothstep(0.18, 0.22, max(abs(p.x), abs(p.y)));
+warp_8=`    float3 cov = tex2D(sampler_rand00, saturate(p / 0.4 + 0.5)).xyz;
+warp_9=`    ret = lerp(prev, cov, inside * (0.06 + 0.3 * saturate(bass_att - 1.1)));
+warp_10=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float2 d = uv - 0.5;
+comp_4=`    ret = GetPixel(uv) * (1.12 - dot(d, d) * 0.6);
+comp_5=`}

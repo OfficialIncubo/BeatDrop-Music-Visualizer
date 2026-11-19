@@ -71,4 +71,4 @@ per_frame_7=
 per_frame_8=dx=dx*sin(above(bass,1));
 per_frame_9=dy=dy*Sin(above(treb,1));
 per_pixel_1=rot=if(above(bnot(1*bass),bnot(1*treb)),rot*sin(rad*sin(time)),-rot*sin(rad*cos(time)));
-per_pixel_2=rot=rot*sin(rad*2*sin(Time))*rad*(rad-2&rad*10+.5)
+per_pixel_2=rot=rot*sin(rad*2*sin(Time))*rad*(int(rad*10+.5))

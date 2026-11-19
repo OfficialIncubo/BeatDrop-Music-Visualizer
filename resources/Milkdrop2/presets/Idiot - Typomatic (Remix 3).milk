@@ -96,9 +96,9 @@ per_frame_32=wave_b=.6*sin(Q1);
 per_frame_33=wave_g=.7*sin(Q2);
 per_pixel_1=zoom=if(above(q1-q3,q6-q7),if(above(q2,q1),if(above(pow(x,q1-q5),pow(y,q1-q6)),zoom*sin(rad+1*sin(q1)*sin(q4)),zoom
 per_pixel_2=*sin(Rad-.2)+1)-rad*sin(q6+rad-x-q6)+x*sin(above(q7,q6)*sin(Q7))+.2*sin(x*sin(q8)),1.20
-per_pixel_3=*sin(pow(x,y)*sin(Q4))),1+rad-.2*sin(q4-x))-(rad|rad*sin(q4))+.5;
+per_pixel_3=*sin(pow(x,y)*sin(Q4))),1+rad-.2*sin(q4-x))-(int(rad*sin(q4)+.5));
 per_pixel_4=
 per_pixel_5=rot=if(above(q3,q5),if(above(q5,.5),if(above(q7,q6),if(Above(q1,q2),rot*sin(Rad-.2*ang+x),-rot*Sin(rad+x-tan(ang)-cos(x*q3))+.2
-per_pixel_6=-x)*band(rad-zoom,rad+zoom),-.2*Sin(rad-ang-x)),0*sin(rad-.2)*zoom)*sin(q1-q2),rot|rad-1*x-.5);
+per_pixel_6=-x)*band(rad-zoom,rad+zoom),-.2*Sin(rad-ang-x)),0*sin(rad-.2)*zoom)*sin(q1-q2),int(rad-1*x+.5));
 per_pixel_7=
 per_pixel_8=

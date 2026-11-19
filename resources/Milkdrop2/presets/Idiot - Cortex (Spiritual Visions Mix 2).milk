@@ -89,7 +89,7 @@ per_frame_25=q6=-q1+q2+Q3+q4+q5+q6;;
 per_frame_26=wave_r=wave_r*sin(q3);
 per_frame_27=wave_B=wave_B-.2*cos(q4);
 per_frame_28=wave_g=wave_b+wave_g*sin(q2+q5);
-per_frame_29=wave_mystery=wave_myster-.1*sin(q1)+.4*sin(q5);
+per_frame_29=wave_mystery=wave_mystery-.1*sin(q1)+.4*sin(q5);
 per_pixel_1=rot=rot*Sin(-ang+ang-.4*q1)-rot*sin(ang+-ang*q3)*rad*Sin(q1-rad)-x*.05*sin(q4)-y*.05*sin(q6)
 per_pixel_2=-rot*tan(above(q2-rad,q3+rad))+rot*.25*tan(above(q1+ang,q2-ang));
 per_pixel_3=zoom=zoom+rad+.3*sin(Q4-q1)*pow(x+.2*sin(Q4),y-.2*sin(Q1))

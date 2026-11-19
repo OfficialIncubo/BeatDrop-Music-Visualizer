@@ -1,0 +1,129 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=2
+PSVERSION_COMP=3
+[preset00]
+fRating=4.000
+fGammaAdj=1.000
+fDecay=1.000
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.000
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=travel = 0; turn = 0; glow = 0; flash = 0;
+per_frame_1=// a square corridor of neon tiles that winds on and on
+per_frame_2=speed = 0.6 + 0.45*min(bass_att, 2.2);
+per_frame_3=travel = travel + speed/max(fps, 15);
+per_frame_4=turn = turn + (0.12 + 0.08*treb_att)/max(fps, 15);
+per_frame_5=glow = max(glow*0.9, min(bass, 2.2) - 1.0);
+per_frame_6=flash = max(flash*0.85, min(treb, 2.0) - 1.1);
+per_frame_7=q1 = travel;
+per_frame_8=q2 = turn;
+per_frame_9=q3 = glow;
+per_frame_10=q4 = time*0.03;
+per_frame_11=q5 = flash;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    ret = tex2D(sampler_main, uv).xyz * 0.0;
+warp_4=`}
+comp_1=`sampler sampler_cells;
+comp_2=`shader_body
+comp_3=`{
+comp_4=`    float2 p = (uv - 0.5) * aspect.xy * 2.0;
+comp_5=`    // the corridor turns: its far end drifts
+comp_6=`    float2 bend = float2(sin(q2*1.1) + 0.4*sin(q2*0.37), sin(q2*0.7 + 1.3) + 0.3*cos(q2*0.5)) * 0.22;
+comp_7=`    float2 d = p - bend*saturate(1.0 - length(p)*0.6);
+comp_8=`    float ax = abs(d.x);
+comp_9=`    float ay = abs(d.y);
+comp_10=`    float r = max(max(ax, ay), 0.01);
+comp_11=`    float side = step(ay, ax);
+comp_12=`    // across each wall (-1 to 1) and down the corridor
+comp_13=`    float u = lerp(d.x, d.y, side)/r;
+comp_14=`    float z = 0.38/r + q1;
+comp_15=`    // the tiles' seams, lit
+comp_16=`    float tu = frac(u*3.0);
+comp_17=`    float tz = frac(z*1.4);
+comp_18=`    float lu = 1.0 - smoothstep(0.0, 0.05, min(tu, 1.0 - tu));
+comp_19=`    float lz = 1.0 - smoothstep(0.0, 0.09, min(tz, 1.0 - tz));
+comp_20=`    float3 hue = 0.5 + 0.5*cos(6.2832*(q4 + float3(0.0, 0.33, 0.67)));
+comp_21=`    float3 hue2 = 0.5 + 0.5*cos(6.2832*(q4 + 0.5 + float3(0.0, 0.33, 0.67)));
+comp_22=`    // dark tiles with a faint pattern in them
+comp_23=`    float3 tile = tex2D(sampler_cells, abs(frac(float2(u*0.5, z*0.35))*2.0 - 1.0)).xyz;
+comp_24=`    float3 col = tile*0.4*hue2;
+comp_25=`    col += hue*lz*(0.7 + 0.8*q3);
+comp_26=`    // (the seams along the corridor soften close by, where they'd glare)
+comp_27=`    col += hue2*lu*(0.45 + 1.1*q5)*(1.0 - 0.65*saturate(r*1.4 - 0.25));
+comp_28=`    // rings of light running towards you
+comp_29=`    float run = frac(z*0.2 - time*0.35);
+comp_30=`    col += hue*smoothstep(0.93, 1.0, run)*(0.6 + q3);
+comp_31=`    // the corners where the walls meet
+comp_32=`    float corner = 1.0 - smoothstep(0.0, 0.04, abs(ax - ay)/r);
+comp_33=`    col += hue2*corner*0.35;
+comp_34=`    // dark far away
+comp_35=`    float fog = saturate(r*2.0);
+comp_36=`    col *= fog;
+comp_37=`    col += hue*exp(-r*20.0)*0.4;
+comp_38=`    ret = col;
+comp_39=`}

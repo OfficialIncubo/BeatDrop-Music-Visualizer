@@ -1,5 +1,5 @@
 [preset00]
-fRating=2.000000
+fRating=3.000000
 fGammaAdj=2.000000
 fDecay=0.980000
 fVideoEchoZoom=2.000000
@@ -65,5 +65,5 @@ per_frame_1=warp = 0;
 per_frame_2=wave_r = .3 + .2*sin(time);
 per_frame_3=wave_g = .3 + .2*sin(time*.888);
 per_frame_4=wave_b = .3 + .2*sin(time*1.222);
-per_pixel_1=zoom = zoom +sin(ang*10+time)*(1.1&bass);
+per_pixel_1=zoom = zoom +sin(ang*10+time)*(int(bass-1+.5));
 per_pixel_2=zoom = if(below(zoom,1),1,zoom);

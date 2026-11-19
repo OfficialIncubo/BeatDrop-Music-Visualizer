@@ -1,5 +1,5 @@
 [preset00]
-fRating=3.000000
+fRating=2.000000
 fGammaAdj=1.000000
 fDecay=0.925000
 fVideoEchoZoom=0.999609
@@ -69,12 +69,12 @@ per_frame_5=sx=if(Above(bass,mid),sx-.20*sin(Time)*sin(mid),1);
 per_frame_6=sx=1*if(above(bass+Treb+mid,bass),sx,1);
 per_frame_7=sy=if(above(bass,treb),sy*sin(treb+bass),1)*sin(time*.52);
 per_frame_8=sy=1*if(Above(mid+bass_att-.2,mid+treb),sy,1);
-per_frame_9=wave_r=if(above(bass,bass_att),wave_r&bass,wave_r&treb)+.200;
-per_frame_10=wave_b=wave_b+.20*sin(treb*bass&mid);
-per_frame_11=wave_g=wave_G-.20*cos(bass*treb&mid);
+per_frame_9=wave_r=if(above(bass,bass_att),int(bass+.5),int(treb+.5))+.200;
+per_frame_10=wave_b=wave_b+.20*sin(int(mid+.5));
+per_frame_11=wave_g=wave_G-.20*cos(int(mid+.5));
 per_frame_12=wave_mystery=wave_mystery+1.2*cos(bass)*sin(above(bass+Treb,bass_att+treb_att));
 per_frame_13=
-per_frame_14=ib_r=bass*2&bass;
-per_frame_15=ib_g=treb*2&treb;
-per_frame_16=ib_B=mid*2&mid;
+per_frame_14=ib_r=int(bass+.5);
+per_frame_15=ib_g=int(treb+.5);
+per_frame_16=ib_B=int(mid+.5);
 per_pixel_1=rot=if(above(mid+treb,treb*time),rot*Rad,-rot*rad);

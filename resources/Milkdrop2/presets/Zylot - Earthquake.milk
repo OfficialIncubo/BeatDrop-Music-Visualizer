@@ -91,7 +91,7 @@ wave_0_per_frame1=t2 = if(above(t1,200),if(equal(t2,1),2,t2),if(below(t1,10),if(
 wave_0_per_frame2=t1 = if(equal(t2,1),t1 + .1,t1 - .1);
 wave_0_per_point1=fvar = sample*512;
 wave_0_per_point2=svar = fvar/16;
-wave_0_per_point3=tvar = 0|svar;
+wave_0_per_point3=tvar = int(svar+.5);
 wave_0_per_point4=newsample = tvar/3.2;
 wave_0_per_point5=
 wave_0_per_point6=
@@ -164,7 +164,7 @@ shapecode_0_border_r=1.000
 shapecode_0_border_g=1.000
 shapecode_0_border_b=1.000
 shapecode_0_border_a=0.000
-shape_0_init1=sidesin = 3 + 0|rand(8);
+shape_0_init1=sidesin = 3 + int(rand(8)+.5);
 shape_0_init2=t = int(rand(40))*.1;
 shape_0_init3=inneralpha = int(rand(100))*.01;
 shape_0_init4=outeralpha = int(rand(100))*.01;

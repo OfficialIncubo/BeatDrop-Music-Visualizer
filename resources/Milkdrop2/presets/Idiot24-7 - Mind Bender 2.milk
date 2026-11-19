@@ -1,5 +1,5 @@
 [preset00]
-fRating=3.000000
+fRating=1.000000
 fGammaAdj=1.420000
 fDecay=0.981000
 fVideoEchoZoom=0.999606
@@ -63,7 +63,7 @@ mv_b=0.500000
 mv_a=0.200000
 per_frame_1=ob_r=ob_r+.1*sin(time*.42);
 per_frame_2=ob_b=ob_b-.2*sin(time*.64);
-per_frame_3=ob_g=ob_g+.5&bass;
+per_frame_3=ob_g=int(bass+.5);
 per_frame_4=
 per_frame_5=cx=cx-.2*Sin(time);
 per_frame_6=cy=cy+.2*cos(time*.43);

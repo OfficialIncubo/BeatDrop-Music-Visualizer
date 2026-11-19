@@ -61,10 +61,10 @@ mv_r=1.000000
 mv_g=1.000000
 mv_b=1.000000
 mv_a=0.000000
-per_frame_1=warp = 0; dy -= 1;
-per_frame_2=wave_r = -1&(bass*.5);
-per_frame_3=wave_g = -1&(treb*.5);
+per_frame_1=warp = 0;
+per_frame_2=wave_r = int(bass*.5+.5);
+per_frame_3=wave_g = int(treb*.5+.5);
 per_frame_4=wave_b = if(below(wave_r,1),if(below(wave_g,1),1,0),0);
-per_pixel_1=dx = 1 + ((-1&x-(0|(bass_att)*1.25)+.5)*.1)*.05;
-per_pixel_2=dy = 1 + ((-1&y-(0|(treb_att)*1.25)+.5)*.1)*.05;
+per_pixel_1=dx = 1 + ((int(x-(int(bass_att*.35+.5))+.5))*.1)*.05;
+per_pixel_2=dy = 1 + ((int(y-(int(treb_att*.35+.5))+.5))*.1)*.05;
 per_pixel_3=dy -= 1;

@@ -61,7 +61,7 @@ mv_r=0.759900
 mv_g=0.480000
 mv_b=0.390000
 mv_a=0.000000
-per_frame_1=wave_r = rand(100)/100;
-per_frame_2=wave_g = rand(100)/100;
-per_frame_3=wave_b = rand(100)/100;
+per_frame_1=wave_r = int(rand(100))/100;
+per_frame_2=wave_g = int(rand(100))/100;
+per_frame_3=wave_b = int(rand(100))/100;
 per_pixel_1=zoom = pow(rad,0.05)+.05/bass;

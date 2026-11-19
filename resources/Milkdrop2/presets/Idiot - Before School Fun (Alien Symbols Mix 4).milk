@@ -71,5 +71,4 @@ per_frame_7=ob_r=ob_r-.2*sin(q3);
 per_frame_8=ob_b=ob_b-.4*sin(Q3-q4);
 per_frame_9=ob_g=ob_g-1*sin(time*.31);
 per_pixel_1=rot=rot*sin(time);
-per_pixel_2=rot=rot*rad*90*sin(Q3)-rot*rad*sin(bass-q3)+x-y*Sin(time*.42)-x+y*sin(time*.31*q3)-2&
-per_pixel_3=rad-log(ang)-ang*2*sin(Q3-q1)*sin(Q3)-.5;
+per_pixel_2=rot=int(rad-log(ang)-ang*2*sin(Q3-q1)*sin(Q3)+.5);

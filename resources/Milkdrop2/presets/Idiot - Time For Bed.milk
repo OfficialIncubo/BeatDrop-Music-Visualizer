@@ -94,4 +94,4 @@ per_frame_30=
 per_frame_31=dx=if(above(q2,q4),0,dx+.01*sin(q2));
 per_frame_32=dy=if(above(q1,q2),0,dx-.01*sin(q1));
 per_frame_33=rot=if(above(q3,q2),-.05*sin(q3-.2),rot+.05*sin(q3-.2));
-per_pixel_1=zoom=if(above(q2,q3),zoom-x*.25+.2*sin(above(q1,q3)-2&rad+x-.2-.2*sin(above(Q1,q3)))+.5,1-.02)
+per_pixel_1=zoom=if(above(q2,q3),zoom-x*.25+.2*sin(int(rad+x-.2-.2*sin(above(Q1,q3))+.5)),1-.02)

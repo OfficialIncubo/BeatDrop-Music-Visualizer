@@ -106,7 +106,6 @@ per_frame_42=ib_size=ib_size+ib_size*2*sin(q3+q4);
 per_frame_43=ib_r=bass+q1;
 per_frame_44=ib_b=treb+q2;
 per_frame_45=ib_g=mid+q3;
-per_pixel_1=rot=if(above(q1,q2),rot-ang*.06*ang,-rot-ang*.06)|rad*ang*sin(above(q1*sin(time),q2*sin(time)))
-per_pixel_2=*sin(time);
-per_pixel_3=zoom=zoom-x*sin(q4)+x*.25-y*.25*sin(Q2)+y*.25*sin(q3)+rad*.25*sin(q5)+.1*sin(bass-q1);
-per_pixel_4=;
+per_pixel_1=rot=int(rad*ang*sin(above(q1*sin(time),q2*sin(time)))*sin(time)+.5);
+per_pixel_2=zoom=zoom-x*sin(q4)+x*.25-y*.25*sin(Q2)+y*.25*sin(q3)+rad*.25*sin(q5)+.1*sin(bass-q1);
+per_pixel_3=;

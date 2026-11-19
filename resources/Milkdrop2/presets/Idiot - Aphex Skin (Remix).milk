@@ -110,10 +110,10 @@ per_frame_46=v1=new_bass-2&time;
 per_frame_47=v2=new_treb-2&time;
 per_frame_48=v3=new_mid-2&time;
 per_frame_49=v4=new_vol-2&time;
-per_frame_50=v5=if(above(q2,q3),above(q1,q3),-above(q1,q3))&time;
+per_frame_50=v5=if(above(q2,q3),above(q1,q3),-above(q1,q3))-2&time;
 per_frame_51=
-per_frame_52=v6=if(above(q1,q3),above(q2,q4),-above(q2,q3))&time;
-per_frame_53=v7=if(above(q5,q6),q5,-q6)&time;;
-per_frame_54=v8=if(above(q6,q7),q6,-q7)&time;;
+per_frame_52=v6=if(above(q1,q3),above(q2,q4),-above(q2,q3))-2&time;
+per_frame_53=v7=if(above(q5,q6),q5,-q6)-2&time;;
+per_frame_54=v8=if(above(q6,q7),q6,-q7)-2&time;;
 per_frame_55=
 per_pixel_1=zoom=if(above(q2,q3),if(above(q1,q2),zoom+.10*sin(rad-.20+q2),zoom-.10*sin(rad-.2)),1-.01);

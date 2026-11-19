@@ -66,5 +66,4 @@ per_frame_2=wave_b=wave_b+.2*sin(mid);
 per_frame_3=wave_g=wave_G-.5*sin(treb);
 per_frame_4=wave_mystery=wave_mystery+.4*Sin(time);
 per_pixel_1=zoom=exp(-x*-y*rad*sin(bass)*sin(rad-.20));
-per_pixel_2=rot=rot+.1*sin(bass|time*sin(bass_Att-x*y*RAd))-rad*sin(time*exp(bass)|time)*sin(treb)|time
-per_pixel_3=-rad*sin(above(bass,bass_att*time)|time)|sin(time)-exp(Rad*sin(mid_Att));
+per_pixel_2=rot=int(sin(time)-exp(Rad*sin(mid_Att))+0.5);

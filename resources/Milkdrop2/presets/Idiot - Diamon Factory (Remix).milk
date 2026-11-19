@@ -91,5 +91,5 @@ per_frame_27=wave_B=wave_b-.4*cos(q2-q6)+.4*Sin(Q3-q4)-.5*sin(Q4-q2);
 per_frame_28=
 per_frame_29=
 per_pixel_1=rot=rot+.10*sin(q3-q4)-.10*sin(Q2-q4)-1*Sin(Q4+q5*sin(Q2)+1*sin(q3-q5)*sin(q6));
-per_pixel_2=rot=rot*sin(if(above(q1,q2),rot*rad&rad-2*sin(time*q4),-rot*rad&rad*2*sin(time*q2)))+10*sin(q4
+per_pixel_2=rot=rot*sin(if(above(q1,q2),int(rad-2*sin(time*q4)+.5),int(rad*2*sin(time*q2)+.5)))+10*sin(q4
 per_pixel_3=)-10*sin(q4)-rad+1*sin(Q4)+rad*sin(Q3-q4*sin(Q2));;

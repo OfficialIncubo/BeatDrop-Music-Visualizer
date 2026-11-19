@@ -88,9 +88,9 @@ per_frame_24=wave_b=mv_b;
 per_frame_25=wave_g=mv_g;
 per_frame_26=
 per_pixel_1=dxe=dx+.01*(sin(vx*50-5*3.14*sin(q1)))*sin(above(q1,q2)-ang*sin(above(q4,q3)))*sin(q5)+.02
-per_pixel_2=*sin(x&rad*5*q2);
+per_pixel_2=*sin(int(rad*5*q2+.5));
 per_pixel_3=dye=dy-.01*(sin(vy*50-5*3.14*sin(q2)))*sin(above(Q2,q1)-ang*sin(abovE(q3,q4)))*sin(q4)+.02
-per_pixel_4=*sin(y&rad*5*q3);
+per_pixel_4=*sin(int(rad*5*q3+.5));
 per_pixel_5=vx=sin((x+q7)*3.14-q2)*rad+.03;
 per_pixel_6=vy=sin((y+q8)*3.14-q5)*rad+.03;
 per_pixel_7=dx=dxe/2/2/2;

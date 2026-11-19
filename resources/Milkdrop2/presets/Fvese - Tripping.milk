@@ -76,6 +76,6 @@ per_frame_12=dy = dy + 0.085*pow(rad,y*2)*cos(time)/vol;
 per_frame_13=sx = sx + 0.0555*pow(rad,x*2)*sin(time)/vol;
 per_frame_14=sy = sy + 0.0777*pow(rad,y*2)*sin(time)/vol;
 per_frame_15=monitor = vol;
-per_pixel_1=zoom =(.7+x-.7)|(.7+y+.5);
+per_pixel_1=zoom = int(.7+y+.5);
 per_pixel_2=rot = 0.03*sin(0.84*time)-0.013*cos(0.784*time)+0.02*sin(1-rad);
 per_pixel_3=zoom = pow(rad,0.05)+.050;

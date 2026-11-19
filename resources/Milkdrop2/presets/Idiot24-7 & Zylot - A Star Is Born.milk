@@ -72,6 +72,6 @@ per_frame_1=warp = 0;
 per_frame_2=wave_r=if(above(bass,bass_Att),wave_r+.2,wave_r-.2);
 per_frame_3=wave_B=if(Above(treb,treb_Att),wave_B-.3,wave_B*sin(Time));
 per_frame_4=wave_g=if(Above(mid,mid_att),wave_g*sin(Time),wave_G+.2*sin(Time));
-per_pixel_1=zoom = zoom +sin(ang*10+time)*(.5|bass-1);
+per_pixel_1=zoom = zoom +sin(ang*10+time)*(int(bass-1+.5));
 per_pixel_2=zoom = if(below(zoom,1),1,zoom);
 per_pixel_3=rot=if(above(mid,bass_att), rot*sin(Rad*above(bass,bass_Att)),-rot*sin(rad*above(treb,treb_att)));

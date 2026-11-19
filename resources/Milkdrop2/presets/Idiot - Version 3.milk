@@ -103,6 +103,5 @@ per_frame_39=ib_size=ib_size+ib_size*2*sin(q3+q4);
 per_frame_40=ib_r=q2+q1;
 per_frame_41=ib_b=q3+q2;
 per_frame_42=ib_g=q5+q3;
-per_pixel_1=rot=if(above(q1,q2),rot-ang*.06*ang,-rot-ang*.06)|rad*ang*sin(above(q1*sin(time),q2*sin(time)))
-per_pixel_2=*sin(time);
-per_pixel_3=zoom=zoom-x*sin(q4)+x*.25-y*.25*sin(Q2)+y*.25*sin(q3)+rad*.25*sin(q5)-.1;
+per_pixel_1=rot=int(rad*ang*sin(above(q1*sin(time),q2*sin(time)))*sin(time)+.5);
+per_pixel_2=zoom=zoom-x*sin(q4)+x*.25-y*.25*sin(Q2)+y*.25*sin(q3)+rad*.25*sin(q5)-.1;

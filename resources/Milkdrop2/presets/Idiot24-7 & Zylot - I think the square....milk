@@ -66,14 +66,14 @@ per_frame_2=vol_att=bass_att+treb_att+mid_att;
 per_frame_3=
 per_frame_4=//You will die for adding all these lame spaces here
 per_frame_5=
-per_frame_6=wave_R=wave_R+.5*sin(-1&frame*.1);
+per_frame_6=wave_R=wave_R+.5*sin(int(frame*.1+.5));
 per_frame_7=wave_g = wave_g + .1*sin(time)*treb*.2;
 per_frame_8=wave_b = .2;
 per_frame_9=cx=cx+.400*sin(bass+mid)-.400*cos(treb-mid_att);
 per_frame_10=cy=cy-.400*cos(mid+bass)+.400*cos(bass-treb_att);
 per_frame_11=dx=dx-.02*sin(bass)+.02*cos(mid);
 per_frame_12=dy=dy-.02*cos(mid)+.02*sin(treb);
-per_pixel_1=zoom=zoom + (-1&bass*1.1*rad+.5)*.1;
+per_pixel_1=zoom=zoom + (int(bass*1.1*rad+.5))*.1;
 per_pixel_2=///me destroys you
 per_pixel_3=rot = treb*.064*if(above(mid,bass),rad,-rad);
 per_pixel_4=

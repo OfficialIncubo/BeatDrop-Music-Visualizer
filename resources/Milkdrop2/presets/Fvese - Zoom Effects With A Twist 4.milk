@@ -82,7 +82,7 @@ per_frame_18=q5=bass_tresh+cos(.2*2)*(dx_r*dy_r);
 per_frame_19=q6=bass_thresh+0.1*(atan(abs(-rad+.5)))*q1;
 per_frame_20=q7=if(above(bass+bass_att,2),-1.5+bass+bass_att,0);
 per_frame_21=q8=below(rad- 0.1*x,0.18);
-per_frame_22=q9=if(below(rad,.5),.9+rad,.5+bass*3%1000*.1);
+per_frame_22=q9=if(below(rad,.5),.9+rad,.5+(bass*3)%1000*.1);
 per_frame_23=wave_y = if(below(q1,q6),0.3*x,if(equal(q2,q5),0.2*(1-x),if(above(q3,q4),0.3*y,0.2*(1-y)+if(equal(q4,q3),0.3* xpos, if(above(q5,q2),0.25*(1-xpos),if(below(q6,q1),0.3*ypos,0.25*(1-ypos)+if(equal(q7,q9),0.3*x, if(below(q8,q7),0.2*(1-x),if(equal(q9,q6),0.3*y,0.2*(1-y)))))))))) + .8 - 0.02*(min(q6+q1,.5));
 per_frame_24=wave_x = if(below(q1,q6),0.3*x,if(equal(q2,q5),0.2*(1-x),if(above(q3,q4),0.3*y,0.2*(1-y)+if(equal(q4,q3),0.3* xpos, if(above(q5,q2),0.25*(1-xpos),if(below(q6,q1),0.3*ypos,0.25*(1-ypos)+if(equal(q7,q9),0.3*x, if(below(q8,q7),0.2*(1-x),if(equal(q9,q6),0.3*y,0.2*(1-y)))))))))) + .8 - 0.02*(min(q6+q1,.5));
 per_frame_25=cx = cx - (cx+0.07*sin(rad*18 + time*9))+(zoom + 0.005*tan(ang-ang));

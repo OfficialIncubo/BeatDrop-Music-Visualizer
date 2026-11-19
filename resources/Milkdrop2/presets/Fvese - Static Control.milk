@@ -67,7 +67,7 @@ per_frame_3=wave_b = wave_b + 0.350*( 0.60*sin(0.810*time) + 0.40*sin(0.950*time
 per_frame_4=time = time/100;
 per_frame_5=dx = 0.005 + 0.002*( 0.60*sin(0.234*time) + 0.40*sin(0.277*time) );
 per_frame_6=dy = 0.005 + 0.002*( 0.60*sin(0.234*time) + 0.40*sin(0.277*time) );
-per_pixel_1=sx=sx+0.07*sin(rad*18 + time*9)+(0.45|(x*7))*0.3;
-per_pixel_2=sy=sy+0.07*sin(rad*18 + time*9)+(0.45|(y*7))*0.3;
-per_pixel_3=cx = (0.25|(x*10))*0.1+0.025-0.005-abs(x-1)*0.02;
-per_pixel_4=cy = (0.25|(y*10))*0.1+0.025-0.005-abs(x-1)*0.02;
+per_pixel_1=sx=sx+0.07*sin(rad*18 + time*9)+(int(x*7))*0.3;
+per_pixel_2=sy=sy+0.07*sin(rad*18 + time*9)+(int(y*7))*0.3;
+per_pixel_3=cx = (int(x*10))*0.1+0.025-0.005-abs(x-1)*0.02;
+per_pixel_4=cy = (int(y*10))*0.1+0.025-0.005-abs(x-1)*0.02;

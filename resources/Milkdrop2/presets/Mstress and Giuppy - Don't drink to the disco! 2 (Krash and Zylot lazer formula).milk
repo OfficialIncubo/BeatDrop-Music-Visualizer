@@ -259,7 +259,7 @@ wave_2_per_point3=//Define 3D Shape
 wave_2_per_point4=//Zylot's dumb 3d wave
 wave_2_per_point5=fvar = sample*512;
 wave_2_per_point6=svar = fvar/16;
-wave_2_per_point7=tvar = 0|svar;
+wave_2_per_point7=tvar = int(svar+.5);
 wave_2_per_point8=rn=if(above(bass,1.5),int(rand(300))*.001,rn);
 wave_2_per_point9=newsample = tvar/(rn);//*value1;
 wave_2_per_point10=x1 = sin(newsample*3.1415926*2);

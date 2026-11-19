@@ -74,4 +74,4 @@ per_frame_10=q2 = .6+.4*sin(time*1.5);
 per_frame_11=dx = -.07;
 per_frame_12=decay = if(above(frame%30,4),1.00,.990);
 per_frame_13=monitor = decay;
-per_pixel_1=rot = antirot|rad/-ang;
+per_pixel_1=rot = int(rad/-ang+.5);

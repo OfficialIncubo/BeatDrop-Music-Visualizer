@@ -88,4 +88,4 @@ per_frame_24=q5=q4*.4*sin(q4)*.04;
 per_frame_25=q6=-q1+q2+Q3+q4+q5+q6;;
 per_frame_26=wave_r=wave_R-.2*sin(q3-q2)+.5*sin(q2-q4)+.5*sin(Q4);
 per_frame_27=wave_B=wave_b-.4*cos(q2-q6)+.4*Sin(Q3-q4)-.5*sin(Q4-q2);
-per_pixel_1=rot=if(above(q1,q2),rot*rad-2&rad-2*sin(time*q4),-rot*rad-2&rad*2*sin(time*q2));
+per_pixel_1=rot=if(above(q1,q2),int(rad-2*sin(time*q4)+.5),int(rad*2*sin(time*q2)+.5));

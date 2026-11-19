@@ -1,0 +1,118 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=2
+PSVERSION_COMP=3
+[preset00]
+fRating=4.000
+fGammaAdj=1.000
+fDecay=1.000
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.000
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=travel = 0; turn = 0; glow = 0; spark = 0;
+per_frame_1=// a rough cave that never ends, crystals glinting in its walls
+per_frame_2=speed = 0.35 + 0.3*min(bass_att, 2.2);
+per_frame_3=travel = travel + speed/max(fps, 15);
+per_frame_4=turn = turn + (0.1 + 0.08*mid_att)/max(fps, 15);
+per_frame_5=glow = max(glow*0.93, min(bass, 2.2) - 1.0);
+per_frame_6=spark = max(spark*0.8, min(treb, 2.2) - 1.0);
+per_frame_7=q1 = travel;
+per_frame_8=q2 = turn;
+per_frame_9=q3 = glow;
+per_frame_10=q4 = time*0.025;
+per_frame_11=q5 = spark;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    ret = tex2D(sampler_main, uv).xyz * 0.0;
+warp_4=`}
+comp_1=`sampler sampler_lichen;
+comp_2=`sampler sampler_clouds;
+comp_3=`shader_body
+comp_4=`{
+comp_5=`    float2 p = (uv - 0.5) * aspect.xy * 2.0;
+comp_6=`    float2 bend = float2(sin(q2*1.3) + 0.5*sin(q2*0.45 + 2.0), cos(q2*0.9) + 0.4*sin(q2*0.6)) * 0.28;
+comp_7=`    float2 d = p - bend*saturate(1.0 - length(p)*0.65);
+comp_8=`    float a = atan2(d.y, d.x);
+comp_9=`    float rr = max(length(d), 0.012);
+comp_10=`    // the cave isn't round: its wall comes and goes with the rock
+comp_11=`    float zz = 0.4/rr + q1;
+comp_12=`    float2 nc = float2(a*0.3183, zz*0.15);
+comp_13=`    float bump = tex2D(sampler_clouds, abs(frac(nc*0.5)*2.0 - 1.0)).x;
+comp_14=`    float r = rr*(0.75 + 0.5*bump);
+comp_15=`    float z = 0.4/r + q1;
+comp_16=`    float2 tc = float2(a*0.3183 + q2*0.03, z*0.45);
+comp_17=`    float3 rock = tex2D(sampler_lichen, abs(frac(tc*0.5)*2.0 - 1.0)).xyz;
+comp_18=`    // crystals: bright specks that catch the light on the high notes
+comp_19=`    float c = tex2D(sampler_noise_hq, frac(float2(tc.x*3.0, tc.y*2.0))).x;
+comp_20=`    float crystal = smoothstep(0.82, 0.97, c);
+comp_21=`    float3 hue = 0.55 + 0.45*cos(6.2832*(q4 + float3(0.0, 0.33, 0.67)));
+comp_22=`    float fog = saturate(r*1.7);
+comp_23=`    float3 col = rock*rock*fog*(1.4 + 0.5*q3)*lerp(float3(1.0, 1.0, 1.0), hue, 0.6);
+comp_24=`    col += hue*crystal*fog*(0.35 + 1.4*q5);
+comp_25=`    // light from somewhere ahead
+comp_26=`    col += float3(0.8, 0.9, 1.0)*exp(-rr*12.0)*(0.45 + 0.5*q3);
+comp_27=`    ret = col;
+comp_28=`}

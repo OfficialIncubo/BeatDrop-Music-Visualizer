@@ -77,7 +77,7 @@ wavecode_0_a=1.000000
 wavecode_1_enabled=1
 wavecode_1_samples=512
 wavecode_1_sep=0
-wavecode_1_bSpectrum=1
+wavecode_1_bSpectrum=0
 wavecode_1_bUseDots=0
 wavecode_1_bDrawThick=1
 wavecode_1_bAdditive=0
@@ -110,7 +110,7 @@ wave_1_per_point2=
 wave_1_per_point3=//Sphere
 wave_1_per_point4=fvar = sample*512;
 wave_1_per_point5=svar = fvar*128;
-wave_1_per_point6=tvar = 0|svar;
+wave_1_per_point6=tvar = int(svar+.5);
 wave_1_per_point7=nsample = tvar*4.5;
 wave_1_per_point8=x1 = -.75+(1.5)*sin(sample);
 wave_1_per_point9=y1 = (1)*cos(t8*nsample);

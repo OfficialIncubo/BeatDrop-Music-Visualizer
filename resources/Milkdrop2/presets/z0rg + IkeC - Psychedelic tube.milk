@@ -1,0 +1,164 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+comp_1=// z0rg - Psychedelic tube / https://www.shadertoy.com/view/sdcGRX
+comp_2=// License: Creative Commons Attribution-NonCommercial-ShareAlike 3.0 (Shadertoy default)
+comp_3=// Transpiled to HLSL using Milkwave
+comp_4=// Adapted: the original is a 2-pass shader whose Buffer A feeds itself (previous frame
+comp_5=// via iChannel2). A MilkDrop comp shader cannot read the previous frame, so the temporal
+comp_6=// echo/trail pass is omitted; the raymarched tube, stripes and texture overlay are kept.
+comp_7=
+comp_8=// CONV: setting iChannel samplers to default noise texture
+comp_9=#define iChannel0 sampler_noise_lq
+comp_10=
+comp_11=// CONV: adding helper functions
+comp_12=float2 mod_conv(float2 x, float2 y) { return x - y * floor(x / y); }
+comp_13=
+comp_14=// CONV2: guarded length helpers (legacy compiler reports lenv() as division by zero)
+comp_15=float lenv(float2 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_16=float lenv(float3 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_17=float lenv(float4 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_18=
+comp_19=// AUDIO: rotate a colour around the grey axis (0 = unchanged)
+comp_20=float3 hueRotate(float3 c, float a)
+comp_21={
+comp_22=  float3 k = float3(0.57735027, 0.57735027, 0.57735027);
+comp_23=  float ca = cos(a), sa = sin(a);
+comp_24=  return c * ca + cross(k, c) * sa + k * dot(k, c) * (1.0 - ca);
+comp_25=}
+comp_26=
+comp_27=#define sat(a) clamp(a, 0., 1.)
+comp_28=#define FFT(a) 0.5
+comp_29=
+comp_30=// row-vector rotation, equivalent to GLSL v * mat2(c,-s,s,c)
+comp_31=float2x2 r2d(float a) { float c = cos(a), s = sin(a); return float2x2(c, s, -s, c); }
+comp_32=
+comp_33=float2 _min(float2 a, float2 b) { return a.x < b.x ? a : b; }
+comp_34=
+comp_35=float2 map(float3 p) {
+comp_36=  float2 acc = float2(1000., -1.);
+comp_37=
+comp_38=  p.xy -= float2(sin(p.z+time), cos(p.z*.5+time))*.5;
+comp_39=  p.y += sin(p.z*2.+time)*.1;
+comp_40=  // tube radius breathes with the low end (base look is audio-independent)
+comp_41=  float trad = 0.125;
+comp_42=  #ifdef vis_version
+comp_43=    if ((int)vis_version == 1)      trad += 0.25*(smoothstep(0, 2, bass_smooth) - 0.5)*vis_intensity + vis_shift;
+comp_44=    else if ((int)vis_version == 2) trad += 0.40*(smoothstep(0, 2, bass_att) - 0.5)*vis_intensity + vis_shift;
+comp_45=    else                            trad += 0.0*vis_intensity + vis_shift;
+comp_46=  #else
+comp_47=    trad += 0.20*(smoothstep(0, 2, bass_att) - 0.5);
+comp_48=  #endif
+comp_49=  float2 tube = float2(-(lenv(p.xy)-2.-trad+sin(p.z*.25)), 0.);
+comp_50=  acc = _min(acc, tube);
+comp_51=
+comp_52=  return acc;
+comp_53=}
+comp_54=
+comp_55=static float3 accCol;
+comp_56=
+comp_57=float3 trace(float3 ro, float3 rd, int steps) {
+comp_58=  accCol = float3(0., 0., 0.);
+comp_59=  float3 p = ro;
+comp_60=  float3 outv = float3(-1., -1., -1.);
+comp_61=  for (int i = 0; i < steps; ++i) {
+comp_62=    float2 res = map(p);
+comp_63=    if (res.x < 0.01) {
+comp_64=      outv = float3(res.x, distance(p, ro), res.y);
+comp_65=      i = steps;
+comp_66=    } else {
+comp_67=      accCol += float3(1., .5, sin(p.z)*.5+.5)*pow(1.-sat(res.x/.7), 30.)*.3;
+comp_68=      p += rd*res.x*.7;
+comp_69=    }
+comp_70=  }
+comp_71=  return outv;
+comp_72=}
+comp_73=
+comp_74=float3 getCam(float3 rd, float2 u) {
+comp_75=  float fov = 1.;
+comp_76=  float3 r = normalize(cross(rd, float3(0.,1.,0.)));
+comp_77=  float3 un = normalize(cross(rd, r));
+comp_78=  return normalize(rd+fov*(r*u.x+un*u.y));
+comp_79=}
+comp_80=
+comp_81=float3 getNorm(float3 p, float d) {
+comp_82=  float2 e = float2(0.01, 0.);
+comp_83=  return normalize(float3(d, d, d)-float3(map(p-e.xyy).x, map(p-e.yxy).x, map(p-e.yyx).x));
+comp_84=}
+comp_85=
+comp_86=float _sqr(float2 p, float2 s) {
+comp_87=  float2 l = abs(p)-s;
+comp_88=  return max(l.x, l.y);
+comp_89=}
+comp_90=
+comp_91=float3 rdr(float2 u) {
+comp_92=  float3 col = float3(1., 1., 1.);
+comp_93=  float t = time*2.;
+comp_94=  float3 ro = float3(sin(time)*.15, cos(time*.5)*.12, -12.+t);
+comp_95=  float3 ta = float3(0., 0., t);
+comp_96=  float3 rd = normalize(ta-ro);
+comp_97=  rd.xz = mul(rd.xz, r2d(sin(time*.5)*.15));
+comp_98=  rd.yz = mul(rd.yz, r2d(sin(time+.5)*.15));
+comp_99=
+comp_100=  // MOUSE: holding the button looks around the tube - pointer X yaws, pointer Y pitches. Both
+comp_101=  // rotations keep the ray a unit vector and are exact identities while the button is up.
+comp_102=  float2 mMouse = (mouse.xy - 0.5) * saturate(mouse.z);
+comp_103=  rd.xz = mul(rd.xz, r2d(mMouse.x * 1.1));    // +-0.55 rad
+comp_104=  rd.yz = mul(rd.yz, r2d(mMouse.y * 0.6));    // +-0.3 rad
+comp_105=  rd = getCam(rd, u);
+comp_106=  float3 res = trace(ro, rd, 256);
+comp_107=  if (res.y > 0.) {
+comp_108=    float3 p = ro+rd*res.y;
+comp_109=    float3 n = getNorm(p, res.x);
+comp_110=    col = n*.5+.5;
+comp_111=    float3 ldir = p-float3(0., 0., 0.);
+comp_112=    col = sat(dot(normalize(ldir), n))*float3(1., 1., 1.);
+comp_113=    col += accCol;
+comp_114=    col = pow(col, float3(3., 3., 3.));
+comp_115=    float2 rep = float2(.9, .5);
+comp_116=    float2 luv = float2(atan2(p.y, p.x), p.z+time);
+comp_117=    float2 id = floor((luv+.5*rep)/rep);
+comp_118=    luv.x += sin(id.y*.5)*time*2.;
+comp_119=    luv = mod_conv(luv+.5*rep, rep)-.5*rep;
+comp_120=    // dash width follows the high end
+comp_121=    float dashw = 0.169;
+comp_122=    #ifdef vis_version
+comp_123=      if ((int)vis_version == 1)      dashw += 0.10*(smoothstep(0, 2, treb_smooth) - 0.5)*vis_intensity + vis_shift;
+comp_124=      else if ((int)vis_version == 2) dashw += 0.16*(smoothstep(0, 2, treb_att) - 0.5)*vis_intensity + vis_shift;
+comp_125=      else                            dashw += 0.0*vis_intensity + vis_shift;
+comp_126=    #else
+comp_127=      dashw += 0.08*(smoothstep(0, 2, treb_att) - 0.5);
+comp_128=    #endif
+comp_129=    float shape = _sqr(luv, float2(dashw, .05));
+comp_130=    float3 rgb = lerp(col, float3(1., 1., 1.), 1.-sat(shape*50.));
+comp_131=    rgb += pow(FFT(.0),2.)*2.*float3(1., .5, sin(p.z*10.)*.5+.5)*(1.-sat(shape*1.))*(1.-sat(lenv(u)));
+comp_132=    col = lerp(col, rgb, sin(time*5.+p.z*.5)*.5+.5);
+comp_133=    col += 0.05*tex2D(iChannel0, float2(atan2(p.y, p.x)*2., lenv(p.xy*.1)-.25*time)*.1).xyz;
+comp_134=    col = lerp(col, col.zyx, sin(time*1.+p.z*.1)*.5+.5);
+comp_135=  }
+comp_136=
+comp_137=  return col;
+comp_138=}
+comp_139=
+comp_140=shader_body {
+comp_141=  float2 fragCoord = uv*texsize.xy;
+comp_142=  float2 u_rd = float2(uv.x-0.5, 0.5-uv.y)*texsize.xy/texsize.xx;
+comp_143=
+comp_144=  // AUDIO: 1 = calm (bass_smooth), 2 = more reactive (bass_att), 3+ = static - see the remote's Version tooltip
+comp_145=  #ifdef vis_version
+comp_146=    float aRng = (int)vis_version == 1 ? 0.34 : 0.42;
+comp_147=    float aFac = (int)vis_version > 2 ? 1*vis_intensity+vis_shift
+comp_148=      : (1.0 - aRng*0.5 + smoothstep(0,2,(int)vis_version == 1 ? bass_smooth : bass_att)*aRng) * vis_intensity + vis_shift;
+comp_149=  #else
+comp_150=    float aFac = (1.0 - 0.15) + smoothstep(0,2,bass_att)*0.30;
+comp_151=  #endif
+comp_152=  float aDev = aFac - 1.0;   // 0 at the track average, +loud, -quiet
+comp_153=
+comp_154=  float3 col = rdr(u_rd);
+comp_155=  col *= 1.+pow(FFT(.1), 1.)*2.;
+comp_156=  // AUDIO: the palette swings slightly with the level (0 at aDev = 0, so v3 is untouched)
+comp_157=  col = hueRotate(col, sat(aDev * 3.0) * 0.55);
+comp_158=
+comp_159=  ret = float4(col, 1.0);
+comp_160=}

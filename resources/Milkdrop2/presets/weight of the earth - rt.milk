@@ -245,7 +245,7 @@ per_frame_22=wave_r=.3+.5*sin(q3-time);
 per_frame_23=wave_g=.5-.2*sin(q2-time);
 per_frame_24=wave_b=.2+.6*sin(q1-time);
 per_pixel_1=shine=band(rad,2)-(rad+.5)%8*(rad+.5)%2+.2*sin(q1)+.1*sin(above(Q1,q2));
-per_pixel_2=zoom=shine+.2*sin(above(q2,q1)-rad*sin(q5&time*.75*sin(above(Q5,q6))));
+per_pixel_2=zoom=shine+.2*sin(above(q2,q1)-rad*sin(int(time*.75*sin(above(Q5,q6))+.5)));
 per_pixel_3=rot=if(above(q1,q2),.2*sin(q1),-.2*sin(q2));
 warp_1=`sampler sampler_pw_noise_lq;
 warp_2=`float3 color, mus, neu, ret1, noise, noise2;

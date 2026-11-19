@@ -61,9 +61,9 @@ mv_r=1.000000
 mv_g=1.000000
 mv_b=1.000000
 mv_a=0.000000
-per_frame_1=q1=bass*0.01-2&bass_att;
-per_frame_2=q2=treb*0.01-2&treb_Att;
-per_frame_3=q3=mid*0.01-2&mid_att;
+per_frame_1=q1=int(bass_att+.5);
+per_frame_2=q2=int(treb_Att+.5);
+per_frame_3=q3=int(mid_att+.5);
 per_frame_4=wave_R=wave_r*sin(above(bass,1.5)*bass);
 per_frame_5=wave_B=wave_b*sin(above(treb,1.5)*treb);
 per_frame_6=wave_G=wave_g*sin(above(mid,1.5)*mid);
@@ -73,5 +73,5 @@ per_frame_9=wave_y=wave_y-.1*sin(time*.12);
 per_frame_10=decay=10;
 per_pixel_1=rot=rot+.10*rad*Sin(above(Bass,1.2));
 per_pixel_2=rot=rot*sin(rad*time*.06*bass-3*ang+Rad);
-per_pixel_3=dx=dx+.10*sin(time&rad+.5)*sin(time*.42);
-per_pixel_4=dy=dy-.10*sin(time&rad+.5)*sin(time*.13);
+per_pixel_3=dx=dx+.10*sin(int(rad+.5))*sin(time*.42);
+per_pixel_4=dy=dy-.10*sin(int(rad+.5))*sin(time*.13);

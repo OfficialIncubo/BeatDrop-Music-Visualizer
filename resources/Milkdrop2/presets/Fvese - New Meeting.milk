@@ -71,4 +71,4 @@ per_frame_7=bass_thresh = above(bass_att,bass_thresh)*2 + (1-above(bass_att,bass
 per_frame_8=decay = decay - 0.05*equal(frame%5,0);
 per_frame_9=rot = bass_eff*bass_thresh;
 per_frame_10=monitor =bass_eff;
-per_pixel_1=zoom = (.7+x-.7)|(.9+y+.5)
+per_pixel_1=zoom = int(.9+y+.5)
