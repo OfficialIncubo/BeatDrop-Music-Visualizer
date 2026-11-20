@@ -246,6 +246,8 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
 {
     if (!m_lpDDSTitle)  // this *can* be NULL, if not much video mem!
         return false;
+    if (m_supertext.bIsSongTitle && !m_d3dx_title_font_doublesize)
+        return false;
 
 	if (m_supertext.szTextW[0]==0)
 		return false;
@@ -413,161 +415,138 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
     }
     else // song title
     {
-        wchar_t* str = m_supertext.szTextW;
-		wchar_t* secondLine = m_supertext.szTextLine2W;
-		const bool twoLines = m_supertext.bSongTitleTwoLines && secondLine[0] != L'\0';
-
-		// Fit a single title line without splitting a UTF-16 surrogate pair.
-		auto fitTitleLine = [&](LPD3DXFONT font, wchar_t* line)
-		{
-			RECT measured = rect;
-			BeatDropText::Draw(font, line, -1, &measured,
-				DT_SINGLELINE | DT_CALCRECT, 0xFFFFFFFF);
-			if (measured.right - measured.left <= m_nTitleTexSizeX)
-				return;
-
-			const int length = static_cast<int>(wcslen(line));
-			const float percentToKeep = 0.91f * m_nTitleTexSizeX /
-				(float)(measured.right - measured.left);
-			if (length <= 8)
-				return;
-
-			int keep = (std::max)(0, (std::min)(length - 3, (int)(length * percentToKeep)));
-			if (keep > 0 && line[keep] >= 0xDC00 && line[keep] <= 0xDFFF &&
-				line[keep - 1] >= 0xD800 && line[keep - 1] <= 0xDBFF)
-				--keep;
-			lstrcpyW(&line[keep], L"...");
-		};
-
-		if (twoLines)
-		{
-			// MilkDrop 3 makes the track title modestly smaller than the artist.
-			// Temporary D3DX fonts are scoped and released on every return path.
-			// If allocation fails, retain the existing font so the animation still
-			// renders rather than going blank.
-			BeatDropText::ComPtr<ID3DXFont> smallerTitleFont;
-			BeatDropText::ComPtr<ID3DXFont> fittedArtistFont;
-			BeatDropText::ComPtr<ID3DXFont> fittedTitleFont;
-			LPD3DXFONT firstLineFont = m_d3dx_title_font_doublesize;
-			LPD3DXFONT secondLineFont = firstLineFont;
-			D3DXFONT_DESCW artistFontDesc = {};
-			if (SUCCEEDED(firstLineFont->GetDescW(&artistFontDesc)))
-			{
-				D3DXFONT_DESCW titleFontDesc = artistFontDesc;
-				titleFontDesc.Height = (std::max)(1, (titleFontDesc.Height * 2 + 2) / 3);
-				if (SUCCEEDED(D3DXCreateFontIndirectW(lpDevice, &titleFontDesc, &smallerTitleFont.p)))
-					secondLineFont = smallerTitleFont.p;
-			}
-
-			auto measureTitleLine = [&](LPD3DXFONT font, const wchar_t* line)
-			{
-				RECT measured = rect;
-				return BeatDropText::Draw(font, line, -1, &measured,
-					DT_SINGLELINE | DT_CALCRECT, 0xFFFFFFFF);
-			};
-
-			int firstHeight = measureTitleLine(firstLineFont, str);
-			int secondHeight = measureTitleLine(secondLineFont, secondLine);
-			int combinedHeight = firstHeight + secondHeight;
-
-			// The old title texture is intentionally wide and short.  At large
-			// nFontSize5 values, two full lines could extend beyond it.  Scale the
-			// source fonts to the texture's safe vertical area; the existing title
-			// animation scale compensates, so the configured on-screen size remains
-			// intact while no glyphs are cut off.
-			const int maximumTitleHeight = (m_nTitleTexSizeY * 19) / 21;
-			if (combinedHeight > maximumTitleHeight && artistFontDesc.Height > 0)
-			{
-				D3DXFONT_DESCW fittedArtistDesc = artistFontDesc;
-				fittedArtistDesc.Height = (std::max)(1,
-					(fittedArtistDesc.Height * maximumTitleHeight) / combinedHeight);
-				D3DXFONT_DESCW fittedTitleDesc = fittedArtistDesc;
-				fittedTitleDesc.Height = (std::max)(1, (fittedTitleDesc.Height * 2 + 2) / 3);
-				if (SUCCEEDED(D3DXCreateFontIndirectW(lpDevice, &fittedArtistDesc, &fittedArtistFont.p)) &&
-					SUCCEEDED(D3DXCreateFontIndirectW(lpDevice, &fittedTitleDesc, &fittedTitleFont.p)))
-				{
-					firstLineFont = fittedArtistFont.p;
-					secondLineFont = fittedTitleFont.p;
-					firstHeight = measureTitleLine(firstLineFont, str);
-					secondHeight = measureTitleLine(secondLineFont, secondLine);
-					combinedHeight = firstHeight + secondHeight;
-				}
-			}
-
-			fitTitleLine(firstLineFont, str);
-			fitTitleLine(secondLineFont, secondLine);
-			if (combinedHeight <= 0)
-				ret = false;
-			else
-			{
-				const int middle = m_nTitleTexSizeY / 2;
-				const int firstTop = middle - combinedHeight / 2;
-				RECT firstRect = { 0, firstTop, m_nTitleTexSizeX, firstTop + firstHeight };
-				RECT secondRect = { 0, firstRect.bottom, m_nTitleTexSizeX,
-					firstRect.bottom + secondHeight };
-				const int drawnFirst = BeatDropText::Draw(firstLineFont, str, -1,
-					&firstRect, DT_SINGLELINE | DT_CENTER, 0xFFFFFFFF);
-				const int drawnSecond = BeatDropText::Draw(secondLineFont, secondLine, -1,
-					&secondRect, DT_SINGLELINE | DT_CENTER, 0xFFFFFFFF);
-				m_supertext.nFontSizeUsed = drawnFirst;
-				ret = drawnFirst > 0 && drawnSecond > 0;
-			}
-		}
-		else
-		{
-        // clip the text manually...
-        // NOTE: DT_END_ELLIPSIS CAUSES NOTHING TO DRAW, IF YOU USE W/D3DX9!
-        int h = 0;
-        int max_its = 6;
-        int it = 0;
-        while (it < max_its)
+        std::wstring firstLine = m_supertext.szTextW;
+        std::wstring secondLine = m_supertext.szTextLine2W;
+        const bool separateMetadata = m_supertext.bSongTitleTwoLines && !secondLine.empty();
+        const UINT titleFlags = DT_SINGLELINE | DT_NOPREFIX;
+        auto measureLine = [&](LPD3DXFONT font, const std::wstring& line, int& width)
         {
-            it++;
+            RECT measured = rect;
+            const int height = BeatDropText::Draw(font, line.c_str(), -1, &measured,
+                titleFlags | DT_CALCRECT, 0xFFFFFFFF);
+            width = measured.right - measured.left;
+            return height;
+        };
 
-            if (!str[0])
-                break;
-
-            RECT temp = rect;
-            h = BeatDropText::Draw(m_d3dx_title_font_doublesize, str, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX | DT_END_ELLIPSIS*/, 0xFFFFFFFF);
-            if (temp.right-temp.left <= m_nTitleTexSizeX)
-                break;
-
-			// 11/01/2009 DO - disabled as it was causing to users 'random' titles against
-			// what is expected so we now just work on the ellipse at the end approach which
-
-            // manually clip the text... chop segments off the front
-            /*wchar_t* p = wcsstr(str, L" - ");
-            if (p)
-            {
-                str = p+3;
-                continue;
-            }*/
-
-            // no more stuff to chop off the front; chop off the end w/ ...
-            int len = wcslen(str);
-            float fPercentToKeep = 0.91f * m_nTitleTexSizeX / (float)(temp.right-temp.left);
-            if (len > 8)
-            {
-                int keep = (std::max)(0, (std::min)(len - 3, (int)(len*fPercentToKeep)));
-                // Do not leave half of a UTF-16 surrogate pair before the ellipsis.
-                if (keep > 0 && str[keep] >= 0xDC00 && str[keep] <= 0xDFFF &&
-                    str[keep - 1] >= 0xD800 && str[keep - 1] <= 0xDBFF)
-                    --keep;
-                lstrcpyW(&str[keep], L"...");
-            }
-            break;
+        LPD3DXFONT firstFont = m_d3dx_title_font_doublesize;
+        LPD3DXFONT secondFont = firstFont;
+        BeatDropText::ComPtr<ID3DXFont> smallerTitleFont;
+        BeatDropText::ComPtr<ID3DXFont> fittedFirstFont;
+        BeatDropText::ComPtr<ID3DXFont> fittedSecondFont;
+        D3DXFONT_DESCW fontDesc = {};
+        const bool hasFontDesc = SUCCEEDED(firstFont->GetDescW(&fontDesc));
+        if (separateMetadata && hasFontDesc)
+        {
+            D3DXFONT_DESCW titleDesc = fontDesc;
+            titleDesc.Height = (std::max)(1, (titleDesc.Height * 2 + 2) / 3);
+            if (SUCCEEDED(D3DXCreateFontIndirectW(lpDevice, &titleDesc, &smallerTitleFont.p)))
+                secondFont = smallerTitleFont.p;
+        }
+        else if (!separateMetadata)
+        {
+            secondLine.clear();
         }
 
-        // now actually draw it
-        RECT temp;
-        temp.left   = 0;
-	    temp.right  = m_nTitleTexSizeX;  // now allow text to go all the way over, since we're actually drawing!
-        temp.top    = m_nTitleTexSizeY/2 - h/2;
-        temp.bottom = m_nTitleTexSizeY/2 + h/2;
+        // Leave room for italic overhang and the animation shadow.
+        const int maximumWidth = m_nTitleTexSizeX * 19 / 20;
+        int width = 0;
+        measureLine(firstFont, firstLine, width);
+        if (!separateMetadata && width > maximumWidth)
+        {
+            // Find a word boundary that balances the measured widths. Keep
+            // both lines at the same font size for a single combined title.
+            const wchar_t* whitespace = L" \t\r\n";
+            size_t firstEnd = 0;
+            size_t secondStart = 0;
+            int bestWidth = width;
+            for (size_t split = firstLine.find_first_of(whitespace, 1);
+                split != std::wstring::npos;)
+            {
+                const size_t next = firstLine.find_first_not_of(whitespace, split);
+                if (next == std::wstring::npos)
+                    break;
+                int leftWidth = 0, rightWidth = 0;
+                measureLine(firstFont, firstLine.substr(0, split), leftWidth);
+                measureLine(firstFont, firstLine.substr(next), rightWidth);
+                const int widest = (std::max)(leftWidth, rightWidth);
+                if (leftWidth > 0 && rightWidth > 0 && widest < bestWidth)
+                {
+                    bestWidth = widest;
+                    firstEnd = split;
+                    secondStart = next;
+                }
+                split = firstLine.find_first_of(whitespace, next);
+            }
+            if (firstEnd > 0)
+            {
+                secondLine = firstLine.substr(secondStart);
+                firstLine.resize(firstEnd);
+            }
+        }
 
-        // NOTE: DT_END_ELLIPSIS CAUSES NOTHING TO DRAW, IF YOU USE W/D3DX9!
-	    m_supertext.nFontSizeUsed = BeatDropText::Draw(m_d3dx_title_font_doublesize, str, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX | DT_END_ELLIPSIS*/ | DT_CENTER , 0xFFFFFFFF);
-		}
+        int firstHeight = measureLine(firstFont, firstLine, width);
+        int secondHeight = secondLine.empty() ? 0 : measureLine(secondFont, secondLine, width);
+        const int maximumHeight = m_nTitleTexSizeY * 19 / 21;
+        const int combinedHeight = firstHeight + secondHeight;
+        if (combinedHeight > maximumHeight && maximumHeight > 0 && hasFontDesc && fontDesc.Height > 0)
+        {
+            fontDesc.Height = (std::max)(1, fontDesc.Height * maximumHeight / combinedHeight);
+            D3DXFONT_DESCW secondDesc = fontDesc;
+            if (separateMetadata)
+                secondDesc.Height = (std::max)(1, (fontDesc.Height * 2 + 2) / 3);
+            if (SUCCEEDED(D3DXCreateFontIndirectW(lpDevice, &fontDesc, &fittedFirstFont.p)) &&
+                (secondLine.empty() ||
+                 SUCCEEDED(D3DXCreateFontIndirectW(lpDevice, &secondDesc, &fittedSecondFont.p))))
+            {
+                firstFont = fittedFirstFont.p;
+                secondFont = fittedSecondFont.p;
+            }
+        }
+
+        // Fit display copies only. Rebuilding the texture must use the original
+        // metadata, and an ellipsis must never leave half a surrogate pair.
+        auto fitLine = [&](LPD3DXFONT font, std::wstring& line)
+        {
+            int measuredWidth = 0;
+            int height = measureLine(font, line, measuredWidth);
+            if (measuredWidth <= maximumWidth)
+                return height;
+            for (size_t keep = line.size(); keep > 0;)
+            {
+                --keep;
+                if (keep > 0 && line[keep] >= 0xDC00 && line[keep] <= 0xDFFF &&
+                    line[keep - 1] >= 0xD800 && line[keep - 1] <= 0xDBFF)
+                    --keep;
+                std::wstring fitted = line.substr(0, keep) + L"...";
+                height = measureLine(font, fitted, measuredWidth);
+                if (height > 0 && measuredWidth <= maximumWidth)
+                {
+                    line = std::move(fitted);
+                    return height;
+                }
+            }
+            return 0;
+        };
+
+        firstHeight = fitLine(firstFont, firstLine);
+        secondHeight = secondLine.empty() ? 0 : fitLine(secondFont, secondLine);
+        ret = firstHeight > 0 && (secondLine.empty() || secondHeight > 0) &&
+            firstHeight + secondHeight <= m_nTitleTexSizeY;
+        if (ret)
+        {
+            const int top = (m_nTitleTexSizeY - firstHeight - secondHeight) / 2;
+            RECT firstRect = { 0, top, m_nTitleTexSizeX, top + firstHeight };
+            m_supertext.nFontSizeUsed = BeatDropText::Draw(firstFont, firstLine.c_str(), -1,
+                &firstRect, titleFlags | DT_CENTER, 0xFFFFFFFF);
+            ret = m_supertext.nFontSizeUsed > 0;
+            if (ret && !secondLine.empty())
+            {
+                RECT secondRect = { 0, top + firstHeight, m_nTitleTexSizeX,
+                    top + firstHeight + secondHeight };
+                ret = BeatDropText::Draw(secondFont, secondLine.c_str(), -1,
+                    &secondRect, titleFlags | DT_CENTER, 0xFFFFFFFF) > 0;
+            }
+        }
     }
 
     // Change the rendertarget back to the original setup
@@ -6088,7 +6067,7 @@ void CPlugin::ShowSongTitleAnim(int w, int h, float fProgress)
 		//if (fSizeX > 0.92f) fSizeX = 0.92f;
 		//if (fSizeY > 0.92f) fSizeY = 0.92f;
 		i = 0;
-		float vert_clip = VERT_CLIP;//1.0f;//0.45f;	// warning: visible clipping has been observed at 0.4!
+		const float vert_clip = 1.0f;  // Keep both lines and their descenders in the mesh.
 		for (y=0; y<8; y++)
 		{
 			for (x=0; x<16; x++)
