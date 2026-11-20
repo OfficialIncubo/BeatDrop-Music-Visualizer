@@ -7,10 +7,24 @@ on:
     branches: ["**"]
     paths-ignore:
       - 'website/**'
+      - 'APPLICABLE LICENSES.md'
+      - 'CODE_OF_CONDUCT.md'
+      - 'LICENSE.txt'
+      - 'PRESET LICENSE.md'
+      - 'README.md'
+      - 'TODO.md'
+      - 'Logos/**'
   pull_request:
     branches: ["**"]
     paths-ignore:
       - 'website/**'
+      - 'APPLICABLE LICENSES.md'
+      - 'CODE_OF_CONDUCT.md'
+      - 'LICENSE.txt'
+      - 'PRESET LICENSE.md'
+      - 'README.md'
+      - 'TODO.md'
+      - 'Logos/**'
   workflow_dispatch: # Allows you to run this workflow manually
 
 jobs:
