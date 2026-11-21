@@ -1,0 +1,433 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=2
+PSVERSION_COMP=3
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=4
+bAdditiveWaves=0
+bWaveDots=1
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=1.035
+fWaveScale=8.682
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99990
+rot=-0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=0.99990
+sy=1.00000
+wave_r=1.000
+wave_g=0.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=0
+wavecode_0_samples=120
+wavecode_0_sep=38
+wavecode_0_bSpectrum=1
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=2.15542
+wavecode_0_smoothing=0.10000
+wavecode_0_r=1.000
+wavecode_0_g=0.000
+wavecode_0_b=0.000
+wavecode_0_a=0.500
+wavecode_1_enabled=0
+wavecode_1_samples=120
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=0
+wavecode_1_scaling=0.89152
+wavecode_1_smoothing=0.82000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=0.000
+wavecode_1_a=0.500
+wavecode_2_enabled=0
+wavecode_2_samples=120
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=5.34537
+wavecode_2_smoothing=0.82000
+wavecode_2_r=0.000
+wavecode_2_g=0.600
+wavecode_2_b=1.000
+wavecode_2_a=0.500
+wavecode_3_enabled=0
+wavecode_3_samples=40
+wavecode_3_sep=0
+wavecode_3_bSpectrum=1
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=1
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=0.600
+shapecode_0_enabled=0
+shapecode_0_sides=4
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.09820
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=1.00531
+shapecode_0_tex_zoom=1.53110
+shapecode_0_r=0.000
+shapecode_0_g=0.000
+shapecode_0_b=0.000
+shapecode_0_a=0.500
+shapecode_0_r2=0.300
+shapecode_0_g2=0.300
+shapecode_0_b2=0.300
+shapecode_0_a2=0.000
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=1.000
+shapecode_1_enabled=1
+shapecode_1_sides=30
+shapecode_1_additive=0
+shapecode_1_thickOutline=1
+shapecode_1_textured=0
+shapecode_1_num_inst=1
+shapecode_1_x=0.500
+shapecode_1_y=0.500
+shapecode_1_rad=1.00088
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=0.93550
+shapecode_1_r=0.000
+shapecode_1_g=1.000
+shapecode_1_b=0.000
+shapecode_1_a=0.800
+shapecode_1_r2=0.000
+shapecode_1_g2=0.000
+shapecode_1_b2=1.000
+shapecode_1_a2=1.000
+shapecode_1_border_r=0.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=0.000
+shapecode_1_border_a=0.000
+shape_1_per_frame1=tic = min(time - tin,.1);
+shape_1_per_frame2=tin = time;
+shape_1_per_frame3=
+shape_1_per_frame4=rb = 1;
+shape_1_per_frame5=vav = tic*(vav*(1/tic - rb) + rb*(bass+treb+mid)*.33333);
+shape_1_per_frame6=
+shape_1_per_frame7=tm = if(above(vav,tm),tm + tic,tm - tic*.3);
+shape_1_per_frame8=td = (td + tic*tm*4)*below(td,10000);
+shape_1_per_frame9=jss = .75 + sin(td)*.05;
+shape_1_per_frame10=rad = rad*jss;
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=1
+shapecode_2_thickOutline=1
+shapecode_2_textured=0
+shapecode_2_num_inst=21
+shapecode_2_x=0.950
+shapecode_2_y=0.900
+shapecode_2_rad=0.06380
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=0.73678
+shapecode_2_r=1.000
+shapecode_2_g=0.600
+shapecode_2_b=1.000
+shapecode_2_a=1.000
+shapecode_2_r2=0.000
+shapecode_2_g2=0.700
+shapecode_2_b2=1.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=0.000
+shapecode_2_border_a=0.000
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=1
+shapecode_3_textured=0
+shapecode_3_num_inst=2
+shapecode_3_x=0.600
+shapecode_3_y=0.650
+shapecode_3_rad=0.04914
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=0.34933
+shapecode_3_r=1.000
+shapecode_3_g=1.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=0.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=0.200
+shapecode_3_border_g=0.700
+shapecode_3_border_b=0.500
+shapecode_3_border_a=0.000
+per_frame_1=warp = 0.2;
+per_frame_2=wave_a = 1;
+per_frame_3=
+per_frame_4=// ============== Bintang ==============
+per_frame_5=speed = speed + (0.4 + 0.3 * bass_att) / fps;
+per_frame_6=q1 = speed;
+per_frame_7=
+per_frame_8=// Rotasi lorong perlahan
+per_frame_9=rott = rott + 0.15 / fps;
+per_frame_10=q2 = cos(rott);
+per_frame_11=q3 = sin(rott);
+per_frame_12=
+per_frame_13=// Intensitas kilau berdasarkan treble
+per_frame_14=q4 = 0.8 + 0.5 * treb_att;
+per_frame_15=
+per_frame_16=// ======= Posisi pada lambang meditasi ========
+per_frame_17=q5 = 0.20; // Posisi kiri dan kanan
+per_frame_18=q6 = 0.24; // Posisi atas dan bawah
+per_frame_19=
+per_frame_20=// ========== Posisi pada matahari ==========
+per_frame_21=q7 = 0.496; // Posisi kiri dan kanan
+per_frame_22=q8 = 0.6; // Posisi atas dan bawah
+per_frame_23=
+per_frame_24=// ========== Posisi sinar matahari ==========
+per_frame_25=q9 = (bass_att*2.0); // bass
+per_frame_26=q10 = 0.495; // Posisi kiri dan kanan
+per_frame_27=q11 = 0.60; // Posisi atas dan bawah
+per_frame_28=q12 = 20.0; // Menambahkan banyak garis
+per_frame_29=q13 = -4.0; // Kecepatan putaran garis
+per_frame_30=
+per_frame_31=q14 = 0.15; // gamma
+per_frame_32=
+per_frame_33=// -- Written code by Jian Simanjuntak
+per_frame_34=// -- Thank you for helping and keep up the good work
+per_frame_35=//		
+per_frame_36=// -- Don't forget follow in social media:
+per_frame_37=// Instagram : @jian_simanjuntak_milkdrop
+per_frame_38=// Facebook : Jian Simanjuntak MilkDrop
+per_frame_39=// Twitter : Jian Simanjuntak MilkDrop
+per_pixel_1=zoom = zoom + rad * 0.3;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`
+warp_4=`uv = lerp(uv_orig,uv,0.05);
+warp_5=`
+warp_6=`float2 d = texsize.zw * 6;
+warp_7=`float3 dx = ( GetBlur1(uv + float2(1,0)*d) - GetBlur1(uv-float2(1,0)*d) );
+warp_8=`float3 dy = ( GetBlur1(uv + float2(0,1)*d) - GetBlur1(uv-float2(0,1)*d) );
+warp_9=`
+warp_10=`uv += float2(lum(dx),lum(dy))*texsize.zw*8;
+warp_11=`ret = tex2d(sampler_fc_main, uv) - 0.006;
+warp_12=`
+warp_13=`}
+comp_1=`sampler sampler_pw_noise_lq;
+comp_2=`sampler sampler_SpiritualMeditation_Mask02;
+comp_3=`
+comp_4=`float r, z, angle; // starfield
+comp_5=`float2 uv_c, uv_rot, tunnel_uv, cell_id, cell_uv;
+comp_6=`float3 stars;
+comp_7=`
+comp_8=`float rad_sun, dist_sun, circle_mask; // sun
+comp_9=`float2 circle_pos;
+comp_10=`float3 circle_color;
+comp_11=`
+comp_12=`float2 sunline; // // sunshine
+comp_13=`float angle_sun, pulse_sun, dz;
+comp_14=`float3 lines_sunshine, sunshine_effect_color;
+comp_15=`
+comp_16=`shader_body
+comp_17=`{
+comp_18=`    float3 color1 = float3(0.0, 0.0, 0.2);
+comp_19=`    float3 color2 = float3(1, 0.6, 0.2);
+comp_20=`    float3 neoncolor = float3(0.5, 0.5, 0.5);
+comp_21=`
+comp_22=`    float3 src = tex2D(sampler_main, uv).xyz;
+comp_23=`
+comp_24=`    float3 mapped = src.r * color1 + src.g * color2 + src.b * float3(0.2, 0.2, 0.8);
+comp_25=`
+comp_26=`    float3 blur1 = max(GetBlur1(uv) - blur1_min, 0.0);
+comp_27=`    float3 neon_glow = (blur1.r * color1 + blur1.g * color2 + lum(blur1) * neoncolor*2) * 8.0;
+comp_28=`
+comp_29=`    float3 bg = (mapped*2 + neon_glow*0.8) * q14;
+comp_30=`
+comp_31=`    // ========= Bintang =========
+comp_32=`    uv_c = (uv - 0.5) * aspect.xy;
+comp_33=`
+comp_34=`    uv_rot.x = uv_c.x * q2 - uv_c.y * q3;
+comp_35=`    uv_rot.y = uv_c.x * q3 + uv_c.y * q2;
+comp_36=`
+comp_37=`    // Proyeksi Terbalik (Inverse Projection) untuk silinder/lorong
+comp_38=`    r = length(uv_rot);
+comp_39=`
+comp_40=`    // Hindari pembagian dengan nol/tak hingga di titik pusat layar
+comp_41=`    z = 0.35 / max(r, 0.001);
+comp_42=`
+comp_43=`    // Hitung sudut di sekitar lorong (normalisasi ke 0..1)
+comp_44=`    angle = atan2(uv_rot.y, uv_rot.x) / 6.2831853 + 0.5;
+comp_45=`
+comp_46=`    float3 stars = 0;
+comp_47=`    int layers = 4; // Jumlah lapisan kedalaman bintang (parallax)
+comp_48=`
+comp_49=`    // Loop beberapa lapisan agar lorong terasa bervolume 3D
+comp_50=`    for (int i = 0; i < layers; i++)
+comp_51=`    {
+comp_52=`        float layer_offset = i * 0.25;
+comp_53=`
+comp_54=`        // Skala grid melingkar (16 sektor sudut) dan memanjang ke dalam lorong
+comp_55=`        tunnel_uv = float2(angle * 50.0, z * 1.5 + q1 * (1.0 + i * 0.3) + layer_offset);
+comp_56=`
+comp_57=`        // Identitas unik tiap sel grid & posisi lokal di dalam sel (-0.5 s/d 0.5)
+comp_58=`        cell_id = floor(tunnel_uv);
+comp_59=`        cell_uv = frac(tunnel_uv) - 0.5;
+comp_60=`
+comp_61=`        // Ambil nilai acak per sel menggunakan point-sampled noise
+comp_62=`        float4 rnd = tex2D(sampler_pw_noise_lq, (cell_id + i * 17.0) / 256.0);
+comp_63=`
+comp_64=`        // Hanya munculkan bintang pada ~40% sel agar tidak terlalu penuh
+comp_65=`        if (rnd.r > 0.2)
+comp_66=`        {
+comp_67=`            // Geser posisi bintang secara acak di dalam sel agar tidak terlihat kaku seperti grid
+comp_68=`            float2 star_pos = (rnd.gb - 0.5) * 0.55;
+comp_69=`
+comp_70=`            // Koreksi rasio sel agar bintang tetap bulat sempurna meski melingkari lorong
+comp_71=`            float2 diff = cell_uv - star_pos;
+comp_72=`            float d = length(diff);
+comp_73=`
+comp_74=`            // Ukuran & bentuk bulat bintang (falloff radial halus)
+comp_75=`            float radius = 0.15 + 0.08 * rnd.a;
+comp_76=`            float star_shape = saturate(1.0 - d / radius);
+comp_77=`            star_shape = pow(star_shape, 2.5); // Mempertajam inti bintang
+comp_78=`
+comp_79=`            // Variasi warna bintang (putih kebiruan hingga kekuningan) + kedip
+comp_80=`            float3 star_col = lerp(float3(0.6, 0.8, 1.0), float3(1.0, 0.9, 1.0), rnd.g);
+comp_81=`            float twinkle = 0.7 + 0.3 * sin(time * 6.0 + rnd.a * 30.0);
+comp_82=`
+comp_83=`            stars += star_shape * star_col * twinkle;
+comp_84=`        }
+comp_85=`    }
+comp_86=`
+comp_87=`    // Efek kabut gelap (fog) di ujung tengah lorong untuk menyembunyikan aliasing pusat
+comp_88=`    float center_fade = saturate(r * 4.5);
+comp_89=`
+comp_90=`    // Sedikit redupkan bagian yang sangat dekat dengan tepi kamera agar tidak menyilaukan
+comp_91=`    float near_fade = saturate(1.8 - r);
+comp_92=`
+comp_93=`    float3 star_fg = stars * center_fade * near_fade * q4 * 1.6;
+comp_94=`
+comp_95=`    float star_mask = saturate(max(star_fg.r, max(star_fg.g, star_fg.b)));
+comp_96=`    ret = lerp(bg, star_fg, star_mask);
+comp_97=`
+comp_98=`    // ========= Vignette =========
+comp_99=`    float2 vig_uv = (uv - 0.5) * aspect.xy;
+comp_100=`    float vig_dist = length(vig_uv) * 1.6;
+comp_101=`    float vig_mask = saturate(1.0 - pow(vig_dist, 2.2));
+comp_102=`    float3 vignette = vig_mask.xxx;
+comp_103=`    ret *= vignette;
+comp_104=`
+comp_105=`    // ========= Lambang meditasi =========
+comp_106=`    float2 center_uv1;
+comp_107=`    center_uv1.x = (uv.x - q5) * 1.7;
+comp_108=`    center_uv1.y = (uv.y - q6) * 1.3;
+comp_109=`
+comp_110=`    float inside_fg = smoothstep(0.0, 0.10, center_uv1.x) *
+comp_111=`                    smoothstep(1.0, 0.88, center_uv1.x) *
+comp_112=`                    smoothstep(-0.070, 0.06, center_uv1.y) *
+comp_113=`                    smoothstep(1.5, 0.88, center_uv1.y);
+comp_114=`
+comp_115=`    float3 fg = tex2D(sampler_SpiritualMeditation_Mask02, center_uv1).xyz;
+comp_116=`    fg *= 1.00;
+comp_117=`
+comp_118=`    float3 cc = float3(0.0, 0.0, 0.0);
+comp_119=`    float whiteness = min(fg.r, min(fg.g, fg.b));
+comp_120=`    float3 fp = lerp(fg, cc * (fg / max(whiteness, 0.001)), whiteness);
+comp_121=`
+comp_122=`    float fg_mask = saturate(dot(fg, float3(0.5, 0.5, 0.0))) * inside_fg;
+comp_123=`
+comp_124=`    ret = lerp(ret, fp, fg_mask);
+comp_125=`
+comp_126=`    // ========= Matahari =========
+comp_127=`    circle_pos = float2(q7, q8);
+comp_128=`    rad_sun = 0.005;
+comp_129=`    circle_color = float3(1, 0.6, 0.4);
+comp_130=`    dist_sun = length((uv - circle_pos) * aspect.xy);
+comp_131=`    circle_mask = 1.0 - smoothstep(rad_sun - 0.050, rad_sun + 0.05, dist_sun);
+comp_132=`    float sun_mask = saturate(circle_mask);
+comp_133=`    ret = lerp(ret, circle_color, sun_mask*bass_att*4); 
+comp_134=`
+comp_135=`    // ========= Sinar matahari =========
+comp_136=`    dz = 0.1;
+comp_137=`    sunline = float2(uv.x - q10, uv.y - q11);
+comp_138=`    angle_sun = atan2(sunline.y, sunline.x) * q12;
+comp_139=`    pulse_sun = pow(sin(time * q13 + angle_sun) * 0.8 + 0.5, 5.0);
+comp_140=`    sunline = normalize(sunline + 1e-5) * pulse_sun * dz;
+comp_141=`    lines_sunshine = saturate(0.15 * 1.0 * pulse_sun / length(sunline - uv + dz));
+comp_142=`
+comp_143=`    sunshine_effect_color = lines_sunshine * float3(1, 0.6, 0.2) * 0.3 * q9;
+comp_144=`    float ray_mask = saturate(max(sunshine_effect_color.r, max
+comp_145=`                                      (sunshine_effect_color.g, sunshine_effect_color.b)));
+comp_146=`
+comp_147=`    ret = lerp(ret, ret + sunshine_effect_color, ray_mask);
+comp_148=`}
