@@ -1430,8 +1430,8 @@ bool CState::Export(const wchar_t *szIniFile)
 	SYSTEMTIME st;
 	GetLocalTime(&st);
 
-	fprintf(fOut, "This preset has been created/edited using BeatDrop Music Visualizer v1.5 on %02d/%02d/%02d at %02d:%02d:%02d.\n", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond);
-	fprintf(fOut, "Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer\n");
+	fprintf(fOut, "This preset has been created/edited using BeatDrop Music Visualizer v1.5.1 on %02d/%02d/%02d at %02d:%02d:%02d.\n", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond);
+	fprintf(fOut, "Try creating your own preset by getting this from https://officialincubo.github.io/BeatDrop-Music-Visualizer\n");
 	fprintf(fOut, "Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.\n");
 	fprintf(fOut, "Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM\n");
 	fprintf(fOut, "###################################################################################################\n\n");
