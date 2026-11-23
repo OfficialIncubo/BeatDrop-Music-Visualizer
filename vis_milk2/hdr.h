@@ -28,6 +28,9 @@ public:
     bool ExpandPresetHighlights(IDirect3DDevice9* source); // inside scene, before overlays
     bool CaptureSdrExport(IDirect3DDevice9* source); // inside the scene, after overlays
     bool GetSdrExport(IDirect3DSurface9** surface) const; // caller releases
+    bool BeginSpoutExport(IDirect3DDevice9* source);
+    bool EndSpoutExport(IDirect3DDevice9* source);
+    bool GetSpoutExport(IDirect3DSurface9** surface) const; // caller releases
     HdrSettings settings;
     // Display text only; refuses feedback/title burn-in render targets.
     bool BindTextShader(IDirect3DDevice9* source, bool brighten = true,

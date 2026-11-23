@@ -1335,7 +1335,7 @@ void CPlugin::RenderFrame(int bRedraw)
             hasSprites = true;
             break;
         }
-    const bool deferHighlights = webcamTop || hasSprites;
+    const bool deferHighlights = webcamTop || hasSprites || bSpoutOut;
     const bool hasShaderComposite = bNewPresetUsesCompShader ||
         (m_pState->m_bBlending && bOldPresetUsesCompShader);
     bool highlightsExpanded = false;
@@ -1421,30 +1421,30 @@ void CPlugin::RenderFrame(int bRedraw)
     // Sprites stay above the webcam, followed by title and lyrics overlays.
     DrawUserSprites();
 
+    const bool drawTitle = m_supertext.fStartTime >= 0 && !m_supertext.bRedrawSuperText;
+    auto drawOverlays = [&](HdrPresenter* hdr) {
+        if (drawTitle)
+            ShowSongTitleAnim(GetWidth(), GetHeight(), min(fProgress, 0.9999f));
+        if (m_bEnableLyrics)
+            m_lyricsRenderer.Render(lpDevice, GetWidth(), GetHeight(), GetTime(), hdr);
+    };
+
+    // Spout receivers use SDR. Copy the composed scene before the display's
+    // highlight expansion and add the overlays at their SDR brightness.
+    if (bSpoutOut && m_hdr.BeginSpoutExport(lpDevice)) {
+        drawOverlays(nullptr);
+        m_hdr.EndSpoutExport(lpDevice);
+    }
+
     if (!highlightsExpanded && m_hdr.Active() && !m_hdr.ExpandPresetHighlights(lpDevice)) {
         m_bHdr=false;m_hdr.Reset();
         std::wstring error=L"HDR preset highlight transfer failed; SDR output restored.";
         AddErrorNotif(error.data());
     }
 
-	// The current display target is FP16 while HDR is active, otherwise the
-	// SDR backbuffer. Title and lyrics share that target and the output mapping.
-	// The separate title burn-in above deliberately retains legacy feedback.
-	// Finally, render the song title animation to the display target.
-	if (m_supertext.fStartTime >= 0 &&
-		!m_supertext.bRedrawSuperText)
-	{
-		ShowSongTitleAnim(GetWidth(), GetHeight(), min(fProgress, 0.9999f));
-        if (fProgress >= 1.0f)
-            m_supertext.fStartTime = -1.0f;	// 'off' state
-	}
-
-	// Lyrics are the final subtitle overlay, after the preset composite,
-	// user sprites and title animation.
-    // The dedicated renderer restores every D3D state it touches, so it cannot
-    // alter the shared title texture or regress a preset's next frame.
-    if (m_bEnableLyrics)
-        m_lyricsRenderer.Render(lpDevice, GetWidth(), GetHeight(), GetTime(), &m_hdr);
+    drawOverlays(&m_hdr);
+    if (drawTitle && fProgress >= 1.0f)
+        m_supertext.fStartTime = -1.0f;
 
     if (m_hdr.Active()) m_hdr.CaptureSdrExport(lpDevice);
 
@@ -1502,7 +1502,9 @@ void CPlugin::SendSpoutFrame()
 
 		// Grab the backbuffer from the Direct3D device
 		LPDIRECT3DSURFACE9 back_buffer = NULL;
-		HRESULT hr = m_hdr.GetSdrExport(&back_buffer) ? S_OK : GetDevice()->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &back_buffer);
+		if (m_hdr.Active() && !m_hdr.GetSpoutExport(&back_buffer))
+			return;
+		HRESULT hr = back_buffer ? S_OK : GetDevice()->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &back_buffer);
 		// HRESULT hr = GetDevice()->GetRenderTarget(0, &back_buffer); // Faster ?
 		if (SUCCEEDED(hr)) {
 			// Create a sender at the size of the backbuffer

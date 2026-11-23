@@ -226,7 +226,13 @@ struct LegacyComposite9 {
     bool End(IDirect3DDevice9* source,IDirect3DPixelShader9* copy) {
         if(!display)return false;
         bool ok=CopyHdrTexture9(source,texture.Get(),display.Get(),copy,true);
-        source->SetRenderTarget(0,display.Get());display.Reset();return ok;
+        return Restore(source) && ok;
+    }
+    bool Restore(IDirect3DDevice9* source) {
+        if(!display)return false;
+        const bool ok=SUCCEEDED(source->SetRenderTarget(0,display.Get()));
+        display.Reset();
+        return ok;
     }
 };
 struct HdrPresenter::Impl {
@@ -245,6 +251,8 @@ struct HdrPresenter::Impl {
     ComPtr<IDirect3DTexture9> cleanSdr;
     ComPtr<IDirect3DTexture9> presetDisplay;
     LegacyComposite9 legacy;
+    LegacyComposite9 spout;
+    bool spoutReady=false;
     bool exportReady=false;
     ComPtr<ID3D11ShaderResourceView> shared11;
     ComPtr<IDirect3DDevice9> sourceDevice;
@@ -362,6 +370,7 @@ bool HdrPresenter::Prepare(IDirect3DDevice9* source,HWND window,std::wstring& re
 }
 bool HdrPresenter::BeginFrame(IDirect3DDevice9* source){
     if(!p||source!=p->sourceDevice.Get()||p->originalTarget)return false;
+    p->spoutReady=false;
     auto now=std::chrono::steady_clock::now();
     if (now>=p->nextWhiteRead) {
         p->whiteNits=SdrWhite(p->displayInfo.Monitor);
@@ -443,6 +452,22 @@ bool HdrPresenter::CaptureSdrExport(IDirect3DDevice9* source) {
 }
 bool HdrPresenter::GetSdrExport(IDirect3DSurface9** surface) const {
     return surface && p && p->exportReady && SUCCEEDED(p->cleanSdr->GetSurfaceLevel(0,surface));
+}
+bool HdrPresenter::BeginSpoutExport(IDirect3DDevice9* source) {
+    if (!p || !p->originalTarget || source != p->sourceDevice.Get()) return false;
+    ComPtr<IDirect3DSurface9> display;
+    D3DSURFACE_DESC desc{};
+    if (FAILED(p->shared9->GetSurfaceLevel(0, &display)) || FAILED(p->originalTarget->GetDesc(&desc)))
+        return false;
+    return p->spout.Begin(source, display.Get(), desc.Format, p->copyShader.Get());
+}
+bool HdrPresenter::EndSpoutExport(IDirect3DDevice9* source) {
+    if (!p || source != p->sourceDevice.Get()) return false;
+    p->spoutReady = p->spout.Restore(source);
+    return p->spoutReady;
+}
+bool HdrPresenter::GetSpoutExport(IDirect3DSurface9** surface) const {
+    return surface && p && p->spoutReady && SUCCEEDED(p->spout.texture->GetSurfaceLevel(0, surface));
 }
 bool HdrPresenter::EndFrame(IDirect3DDevice9* source){
     if(!p||source!=p->sourceDevice.Get()||!p->originalTarget)return false;
