@@ -11,8 +11,10 @@
 #include <cstring>
 #include <errno.h>
 #include <excpt.h>
+#include <memory>
 #include <mmsystem.h>
 #include <propvarutil.h>
+#include <random>
 
 extern "C"
 {
@@ -53,34 +55,68 @@ typedef struct DXGI_JPEG_QUANTIZATION_TABLE
 
 namespace
 {
-    // Caps on the decoded-frame lookahead buffer between the video decode
-    // thread and the render thread (see m_videoQueue in MediaTexture.h and
-    // VideoQueueHasRoom()). Two caps apply together - whichever is hit
-    // first stops the worker from decoding further ahead:
-    //  - kVideoQueueMaxFrames keeps small/moderate-resolution video from
-    //    being buffered needlessly deep (more buffered frames = more
-    //    decode-ahead CPU work batched right when a sprite is invoked).
-    //  - kVideoQueueMaxBytes bounds worst-case memory across *all* active
-    //    video sprites regardless of their resolution. A flat frame-count
-    //    cap alone doesn't do this: 4 frames of 3840x2160 BGRA is ~133MB for
-    //    a single sprite, and this project is a 32-bit (Win32) build, so
-    //    that multiplies badly if several such sprites are active at once -
-    //    this is a real scenario, not hypothetical (see astronaut_swim.mp4,
-    //    a 3840x2160 test clip used as a sprite in beatdrop_img.ini). The
-    //    previous 24MB cap admitted only one 4K BGRA frame, eliminating the
-    //    lookahead queue and making every decode hitch visible to the renderer.
-    // The queue is always allowed to hold at least one frame regardless of
-    // its size, so a single oversized frame can never permanently starve
-    // decoding (see VideoQueueHasRoom()).
-    const size_t kVideoQueueMaxFrames = 6;
-    const size_t kVideoQueueMaxBytes = 64 * 1024 * 1024; // enough for three 4K BGRA frames
-    const size_t kVideoFreeBufferMaxFrames = 1;
-    const double kVideoTimestampToleranceSeconds = 0.0005;
-    // BeatDrop filters long render pauses in its own animation clock. The
-    // media clock is wall-clock based, so rebase it after a long gap instead
-    // of making the decoder race through hours of missed video.
-    const double kVideoRenderGapResetSeconds = 0.5;
-    const double kVideoMaxResumeAdvanceSeconds = 0.25;
+    constexpr size_t kVideoQueueMaxFrames = 5;
+    constexpr size_t kVideoQueueMinFrames = 2;
+    constexpr uint64_t kVideoQueueBytes32 = 64ULL * 1024 * 1024;
+    constexpr size_t kVideoStartupFrames = 3;
+    constexpr uint64_t kDefaultVideoMemoryBudget = (sizeof(void*) == 4 ? 768ULL : 2048ULL) * 1024 * 1024;
+    constexpr int64_t kRandomStartThresholdSeconds = 120;
+    constexpr double kRandomStartEndMarginSeconds = 5.0;
+    constexpr double kVideoTimestampToleranceSeconds = 0.0005;
+    constexpr double kVideoStallSeconds = 0.25;
+    constexpr auto kVideoRenderGap = std::chrono::milliseconds(500);
+    std::mutex g_videoAdmissionMutex;
+    size_t g_videoReservedBytes = 0;
+    unsigned int g_videoExtraThreads = 0;
+
+    int ReserveVideoDecoder(uint64_t frameBytes, uint64_t convertedFrameBytes, size_t extraConvertedFrames,
+        unsigned int preferredThreads, size_t& reservedBytes, size_t& queueCapacity)
+    {
+        // Leave CPU capacity for the renderer and for other sprite workers.
+        static const unsigned int extraThreadLimit = (std::min)(8u, std::thread::hardware_concurrency() / 2);
+        uint64_t memoryBudget = kDefaultVideoMemoryBudget;
+        uint64_t availableBytes = UINT64_MAX;
+        MEMORYSTATUSEX memory = {};
+        memory.dwLength = sizeof(memory);
+        if (GlobalMemoryStatusEx(&memory))
+        {
+            // Allow more independent clips when the machine and process have room.
+            const uint64_t capacity = (std::min)(memory.ullTotalVirtual / 3, memory.ullTotalPhys / 4);
+            memoryBudget = (std::max)(memoryBudget, capacity);
+            availableBytes = (std::min)(memory.ullAvailVirtual, memory.ullAvailPageFile);
+        }
+
+        std::lock_guard<std::mutex> lock(g_videoAdmissionMutex);
+        const unsigned int extraAvailable = extraThreadLimit - g_videoExtraThreads;
+        // A deep queue of native 4K frames can crowd out other clips on x86.
+        const size_t maxQueueFrames = sizeof(void*) == 4 ?
+            (std::clamp)(static_cast<size_t>(kVideoQueueBytes32 / convertedFrameBytes),
+                kVideoQueueMinFrames, kVideoQueueMaxFrames) : kVideoQueueMaxFrames;
+        for (unsigned int threads = (std::min)(preferredThreads, extraAvailable + 1); threads > 0; --threads)
+        {
+            // Each extra thread can hold another decoded frame.
+            constexpr unsigned int baseDecoderFrames = 20;
+            const uint64_t decoderBytes = frameBytes * (baseDecoderFrames + threads - 1);
+            for (size_t queueFrames = maxQueueFrames; queueFrames >= kVideoQueueMinFrames; --queueFrames)
+            {
+                const uint64_t bytes = convertedFrameBytes * (queueFrames + extraConvertedFrames) + decoderBytes;
+                if (bytes + g_videoReservedBytes > memoryBudget || bytes > availableBytes)
+                    continue;
+
+                queueCapacity = queueFrames;
+                reservedBytes = static_cast<size_t>(bytes);
+                g_videoReservedBytes += reservedBytes;
+                g_videoExtraThreads += threads - 1;
+                return static_cast<int>(threads);
+            }
+        }
+        return 0;
+    }
+
+    int GetVideoFrameBytes(AVPixelFormat format, int width, int height)
+    {
+        return av_image_get_buffer_size(format, (width + 63) & ~63, (height + 63) & ~63, 64);
+    }
 
     template <class T>
     void SafeReleaseLocal(T*& p)
@@ -258,8 +294,10 @@ namespace
             return std::string();
 
         std::string out;
-        out.resize(needed - 1);
-        WideCharToMultiByte(CP_UTF8, 0, text, -1, &out[0], needed, nullptr, nullptr);
+        out.resize(needed);
+        if (WideCharToMultiByte(CP_UTF8, 0, text, -1, &out[0], needed, nullptr, nullptr) != needed)
+            return {};
+        out.pop_back();
         return out;
     }
 }
@@ -282,24 +320,9 @@ MediaTexture::MediaTexture(LPDIRECT3DDEVICE9EX device)
     , m_videoPacket(nullptr)
     , m_swsContext(nullptr)
     , m_videoStreamIndex(-1)
-    , m_videoSrcWidth(0)
-    , m_videoSrcHeight(0)
-    , m_videoSrcFormat(-1)
-    , m_videoReachedEnd(false)
-    , m_videoStopWorker(false)
-    , m_videoHavePlaybackStart(false)
-    , m_videoHaveLastUpdateClock(false)
-    , m_videoDisplayedPresentationSeconds(0.0)
     , m_videoTimeBaseSeconds(0.0)
-    , m_videoTimestampOriginSeconds(0.0)
-    , m_videoHaveTimestampOrigin(false)
-    , m_videoLoopOffsetSeconds(0.0)
-    , m_videoLastPresentationSeconds(0.0)
-    , m_videoLastFrameDurationSeconds(1.0 / 30.0)
-    , m_videoHavePresentation(false)
     , m_videoFrameSeconds(1.0 / 30.0)
     , m_videoColorKey(0)
-    , m_videoApplyColorKey(false)
     , m_spoutReceiver(nullptr)
     , m_spoutWasConnected(false)
     , m_spoutColorKey(0)
@@ -314,6 +337,9 @@ MediaTexture::~MediaTexture()
     ReleaseVideo();
     ReleaseSpout(false);
     ReleaseTexture();
+    UnbindTextureFromDevice(m_device, m_videoKeyedTexture);
+    SafeReleaseLocal(m_videoKeyedTexture);
+    ReleaseVideoReservation();
 
     if (m_comInitialized)
         CoUninitialize();
@@ -362,63 +388,47 @@ bool MediaTexture::IsSpoutPath(const wchar_t* path)
     return StartsWithSpoutPrefix(path);
 }
 
-MediaTexture* MediaTexture::Create(LPDIRECT3DDEVICE9EX device, const wchar_t* path, unsigned int colorKey, bool allowSpout)
+MediaTexture* MediaTexture::Create(LPDIRECT3DDEVICE9EX device, const wchar_t* path, unsigned int colorKey,
+    bool allowSpout, bool isVideoSprite, bool* outOfMemory)
 {
-    if (!device || !path || !path[0])
+    if (outOfMemory)
+        *outOfMemory = false;
+    if (!device || !path || !path[0] || device->TestCooperativeLevel() != D3D_OK)
         return nullptr;
 
-    if (device->TestCooperativeLevel() != D3D_OK)
-        return nullptr;
-
-    if (allowSpout && IsSpoutPath(path))
+    try
     {
-        MediaTexture* media = new MediaTexture(device);
-        if (media->InitSpout(path, colorKey))
-            return media;
-        delete media;
+        std::unique_ptr<MediaTexture> media(new MediaTexture(device));
+        bool initialized = false;
+        if (allowSpout && IsSpoutPath(path))
+            initialized = media->InitSpout(path, colorKey);
+        else if (IsGifFile(path))
+            initialized = media->InitGif(path, colorKey);
+        else if (IsVideoFile(path))
+            initialized = media->InitVideo(path, colorKey, isVideoSprite, outOfMemory);
+
+        return initialized ? media.release() : nullptr;
+    }
+    catch (const std::bad_alloc&)
+    {
+        if (outOfMemory)
+            *outOfMemory = true;
         return nullptr;
     }
-
-    if (IsGifFile(path))
-    {
-        MediaTexture* media = new MediaTexture(device);
-        if (media->InitGif(path, colorKey))
-            return media;
-        delete media;
-        return nullptr;
-    }
-
-    if (IsVideoFile(path))
-    {
-        MediaTexture* media = new MediaTexture(device);
-        if (media->InitVideo(path, colorKey))
-            return media;
-        delete media;
-        return nullptr;
-    }
-
-    return nullptr;
 }
 
-bool MediaTexture::CreateDynamicTexture(int width, int height)
+bool MediaTexture::CreateDynamicTexture(int width, int height, bool* outOfMemory)
 {
     if (!m_device || width <= 0 || height <= 0)
         return false;
 
+    if (m_texture && m_width == width && m_height == height)
+        return true;
+
     if (m_device->TestCooperativeLevel() != D3D_OK)
         return false;
 
-    if (m_texture)
-    {
-        D3DSURFACE_DESC desc;
-        if (SUCCEEDED(m_texture->GetLevelDesc(0, &desc)) &&
-            (int)desc.Width == width &&
-            (int)desc.Height == height)
-        {
-            return true;
-        }
-        ReleaseTexture();
-    }
+    ReleaseTexture();
 
     HRESULT hr = m_device->CreateTexture(
         width,
@@ -431,7 +441,11 @@ bool MediaTexture::CreateDynamicTexture(int width, int height)
         nullptr);
 
     if (FAILED(hr))
+    {
+        if (outOfMemory)
+            *outOfMemory = hr == E_OUTOFMEMORY || hr == D3DERR_OUTOFVIDEOMEMORY;
         return false;
+    }
 
     m_width = width;
     m_height = height;
@@ -444,9 +458,27 @@ void MediaTexture::ReleaseTexture()
     SafeReleaseLocal(m_texture);
 }
 
+void MediaTexture::ReleaseVideoReservation()
+{
+    if (m_videoReservedBytes == 0)
+        return;
+
+    std::lock_guard<std::mutex> lock(g_videoAdmissionMutex);
+    g_videoReservedBytes -= m_videoReservedBytes;
+    g_videoExtraThreads -= m_videoExtraThreads;
+    m_videoReservedBytes = 0;
+    m_videoExtraThreads = 0;
+}
+
 void MediaTexture::ReleaseVideo()
 {
-    StopVideoWorker();
+    {
+        std::lock_guard<std::mutex> lock(m_videoMutex);
+        m_videoStopWorker = true;
+    }
+    m_videoCondition.notify_one();
+    if (m_videoThread.joinable())
+        m_videoThread.join();
 
     if (m_swsContext)
     {
@@ -466,21 +498,9 @@ void MediaTexture::ReleaseVideo()
     if (m_formatContext)
         avformat_close_input(&m_formatContext);
 
-    m_videoStreamIndex = -1;
-    m_videoSrcWidth = 0;
-    m_videoSrcHeight = 0;
-    m_videoSrcFormat = -1;
-    m_videoReachedEnd = false;
-    m_videoHavePlaybackStart = false;
-    m_videoHaveLastUpdateClock = false;
-    m_videoDisplayedPresentationSeconds = 0.0;
-    m_videoTimeBaseSeconds = 0.0;
-    m_videoTimestampOriginSeconds = 0.0;
-    m_videoHaveTimestampOrigin = false;
-    m_videoLoopOffsetSeconds = 0.0;
-    m_videoLastPresentationSeconds = 0.0;
-    m_videoLastFrameDurationSeconds = 1.0 / 30.0;
-    m_videoHavePresentation = false;
+    m_videoQueue.clear();
+    std::vector<unsigned char>().swap(m_videoFreeBuffer);
+    std::vector<unsigned char>().swap(m_videoDisplayedPixels);
 }
 
 void MediaTexture::ReleaseSpout(bool waitForSpout)
@@ -495,210 +515,186 @@ void MediaTexture::ReleaseSpout(bool waitForSpout)
     m_spoutWasConnected = false;
 }
 
-bool MediaTexture::StartVideoWorker()
-{
-    if (m_videoThread.joinable())
-        return true;
-
-    {
-        std::lock_guard<std::mutex> lock(m_videoMutex);
-        m_videoStopWorker = false;
-        m_videoQueue.clear();
-        m_videoFreeBuffers.clear();
-    }
-
-    try
-    {
-        m_videoThread = std::thread(&MediaTexture::VideoWorkerMain, this);
-    }
-    catch (...)
-    {
-        return false;
-    }
-
-    return true;
-}
-
-void MediaTexture::StopVideoWorker()
-{
-    {
-        std::lock_guard<std::mutex> lock(m_videoMutex);
-        m_videoStopWorker = true;
-    }
-    m_videoCondition.notify_all();
-
-    if (m_videoThread.joinable())
-        m_videoThread.join();
-
-    {
-        std::lock_guard<std::mutex> lock(m_videoMutex);
-        m_videoStopWorker = false;
-        m_videoQueue.clear();
-        m_videoFreeBuffers.clear();
-    }
-}
-
-bool MediaTexture::VideoQueueHasRoom() const
-{
-    if (m_videoQueue.empty())
-        return true; // always allow at least one frame, however large, so decoding can never fully stall
-
-    if (m_videoQueue.size() >= kVideoQueueMaxFrames)
-        return false;
-
-    size_t bytes = 0;
-    for (const VideoFrame& f : m_videoQueue)
-        bytes += f.pixels.size();
-
-    return bytes < kVideoQueueMaxBytes;
-}
-
 void MediaTexture::VideoWorkerMain()
 {
-    for (;;)
+    try
     {
-        std::vector<unsigned char> decodedPixels;
+        for (;;)
         {
-            std::unique_lock<std::mutex> lock(m_videoMutex);
-            m_videoCondition.wait(lock, [this]()
+            VideoFrame frame;
             {
-                return m_videoStopWorker || VideoQueueHasRoom();
-            });
+                std::unique_lock<std::mutex> lock(m_videoMutex);
+                m_videoCondition.wait(lock, [this]()
+                {
+                    return m_videoStopWorker || m_videoQueue.size() < m_videoQueueCapacity;
+                });
 
-            if (m_videoStopWorker)
+                if (m_videoStopWorker)
+                    return;
+                frame.pixels.swap(m_videoFreeBuffer);
+            }
+
+            if (!DecodeNextVideoFrame(frame))
                 break;
 
-            if (!m_videoFreeBuffers.empty())
-            {
-                decodedPixels.swap(m_videoFreeBuffers.front());
-                m_videoFreeBuffers.pop_front();
-            }
+            std::lock_guard<std::mutex> lock(m_videoMutex);
+            if (m_videoStopWorker)
+                return;
+            m_videoQueue.push_back(std::move(frame));
+        }
+    }
+    catch (const std::exception&)
+    {
+        // Allocation failures must stay on the worker side of the thread boundary.
+    }
+
+    std::lock_guard<std::mutex> lock(m_videoMutex);
+    m_videoWorkerFailed = true;
+}
+
+bool MediaTexture::UpdateVideo(bool* shouldKill, bool applyColorKey)
+{
+    using Clock = std::chrono::steady_clock;
+    const auto now = Clock::now();
+    const auto renderGap = now - m_videoLastUpdateClock;
+    m_videoLastUpdateClock = now;
+
+    bool& textureCurrent = applyColorKey ? m_videoKeyedTextureCurrent : m_videoRawTextureCurrent;
+    if (!m_videoHavePlaybackStart)
+    {
+        bool buffered;
+        {
+            std::lock_guard<std::mutex> lock(m_videoMutex);
+            const size_t startupFrames = (std::min)(kVideoStartupFrames, m_videoQueueCapacity);
+            buffered = m_videoWorkerFailed ? !m_videoQueue.empty() : m_videoQueue.size() >= startupFrames;
+            if (m_videoWorkerFailed && !buffered && shouldKill)
+                *shouldKill = true;
         }
 
-        int width = 0;
-        int height = 0;
-        double presentationSeconds = 0.0;
-        if (!DecodeNextVideoFrame(decodedPixels, &width, &height, &presentationSeconds, true))
+        // Both variants must show the already decoded first frame while buffering.
+        if (!textureCurrent)
+            textureCurrent = UploadVideoPixels(m_videoDisplayedPixels.data(), applyColorKey);
+        if (buffered && textureCurrent)
         {
-            Sleep(2);
-            continue;
+            m_videoPlaybackStartClock = Clock::now();
+            m_videoHavePlaybackStart = true;
+        }
+        return textureCurrent;
+    }
+
+    const double elapsed = std::chrono::duration<double>(now - m_videoPlaybackStartClock).count();
+    double position = elapsed;
+    if (renderGap > kVideoRenderGap)
+        position = (std::min)(position, m_videoDisplayedEndSeconds);
+
+    VideoFrame frame;
+    {
+        std::lock_guard<std::mutex> lock(m_videoMutex);
+        while (!m_videoQueue.empty() &&
+            m_videoQueue.front().presentationSeconds <= position + kVideoTimestampToleranceSeconds)
+        {
+            if (m_videoFreeBuffer.empty())
+                m_videoFreeBuffer.swap(frame.pixels);
+
+            frame = std::move(m_videoQueue.front());
+            m_videoQueue.pop_front();
+        }
+
+        if (m_videoQueue.empty())
+        {
+            if (frame.pixels.empty() && m_videoWorkerFailed && shouldKill)
+                *shouldKill = true;
+
+            // Leave the clock alone on brief underruns. Rebasing on each
+            // missed frame turns small decode delays into sustained slow motion.
+            const double availableEnd = frame.pixels.empty() ? m_videoDisplayedEndSeconds :
+                frame.presentationSeconds + frame.durationSeconds;
+            if (position > availableEnd + kVideoStallSeconds)
+                position = availableEnd;
+        }
+    }
+
+    if (!frame.pixels.empty())
+    {
+        if (UploadVideoPixels(frame.pixels.data(), applyColorKey))
+        {
+            m_videoDisplayedEndSeconds = frame.presentationSeconds + frame.durationSeconds;
+            m_videoRawTextureCurrent = !applyColorKey;
+            m_videoKeyedTextureCurrent = applyColorKey;
+            m_videoDisplayedPixels.swap(frame.pixels);
         }
 
         {
             std::lock_guard<std::mutex> lock(m_videoMutex);
-            if (m_videoStopWorker)
-                break;
-
-            VideoFrame item;
-            item.pixels.swap(decodedPixels);
-            item.width = width;
-            item.height = height;
-            item.presentationSeconds = presentationSeconds;
-            m_videoQueue.push_back(std::move(item));
+            if (m_videoFreeBuffer.empty())
+                m_videoFreeBuffer.swap(frame.pixels);
         }
-        m_videoCondition.notify_all();
+        m_videoCondition.notify_one();
     }
+
+    if (position != elapsed)
+        m_videoPlaybackStartClock = now - std::chrono::duration_cast<Clock::duration>(
+            std::chrono::duration<double>(position));
+    if (!textureCurrent)
+        textureCurrent = UploadVideoPixels(m_videoDisplayedPixels.data(), applyColorKey);
+    return textureCurrent;
 }
 
-bool MediaTexture::UploadPendingVideoFrame(double targetPresentationSeconds)
+bool MediaTexture::UploadVideoPixels(const unsigned char* pixels, bool applyColorKey)
 {
-    VideoFrame frame;
-    bool haveFrame = false;
-
-    {
-        std::lock_guard<std::mutex> lock(m_videoMutex);
-        while (!m_videoQueue.empty() &&
-            m_videoQueue.front().presentationSeconds <= targetPresentationSeconds + kVideoTimestampToleranceSeconds)
-        {
-            if (haveFrame && m_videoFreeBuffers.size() < kVideoFreeBufferMaxFrames)
-                m_videoFreeBuffers.push_back(std::move(frame.pixels));
-
-            frame = std::move(m_videoQueue.front());
-            m_videoQueue.pop_front();
-            haveFrame = true;
-        }
-    }
-
-    if (!haveFrame)
-        return false; // decoder hasn't produced the next due frame yet; keep showing the current texture
-
-    m_videoCondition.notify_all(); // queue has room again; wake the worker if it was waiting
-
-    if (frame.width <= 0 || frame.height <= 0 || frame.pixels.empty())
+    if (applyColorKey && !m_videoKeyedTexture &&
+        FAILED(m_device->CreateTexture(m_width, m_height, 1, D3DUSAGE_DYNAMIC, D3DFMT_A8R8G8B8,
+            D3DPOOL_DEFAULT, &m_videoKeyedTexture, nullptr)))
         return false;
 
-    bool uploaded = UploadPixels(frame.pixels.data(), frame.width, frame.height, m_videoColorKey, m_videoApplyColorKey, false);
-    if (uploaded)
-        m_videoDisplayedPresentationSeconds = frame.presentationSeconds;
-
-    {
-        std::lock_guard<std::mutex> lock(m_videoMutex);
-        if (m_videoFreeBuffers.size() < kVideoFreeBufferMaxFrames)
-            m_videoFreeBuffers.push_back(std::move(frame.pixels));
-    }
-    return uploaded;
+    return UploadPixels(GetTexture(applyColorKey), pixels, m_videoColorKey, applyColorKey);
 }
 
-bool MediaTexture::UploadPixels(const unsigned char* pixels, int width, int height, unsigned int colorKey, bool applyColorKey, bool forceOpaque)
+bool MediaTexture::UploadPixels(LPDIRECT3DTEXTURE9 texture, const unsigned char* pixels,
+    unsigned int colorKey, bool applyColorKey)
 {
-    if (!pixels || !CreateDynamicTexture(width, height))
+    if (!texture || !pixels)
         return false;
 
     D3DLOCKED_RECT lr;
-    HRESULT hr = m_texture->LockRect(0, &lr, nullptr, D3DLOCK_DISCARD);
+    HRESULT hr = texture->LockRect(0, &lr, nullptr, D3DLOCK_DISCARD);
     if (FAILED(hr))
         return false;
 
-    if (!applyColorKey && !forceOpaque)
+    if (!applyColorKey)
     {
-        const int rowBytes = width * 4;
-        for (int y = 0; y < height; y++)
+        const int rowBytes = m_width * 4;
+        if (lr.Pitch == rowBytes)
+            std::memcpy(lr.pBits, pixels, static_cast<size_t>(rowBytes) * m_height);
+        else
         {
-            const unsigned char* src = pixels + y * rowBytes;
-            unsigned char* dst = (unsigned char*)lr.pBits + y * lr.Pitch;
-            std::memcpy(dst, src, rowBytes);
+            for (int y = 0; y < m_height; ++y)
+                std::memcpy(static_cast<unsigned char*>(lr.pBits) + y * lr.Pitch, pixels + y * rowBytes, rowBytes);
         }
-
-        m_texture->UnlockRect(0);
-        return true;
+        return SUCCEEDED(texture->UnlockRect(0));
     }
 
-    // Colorkey/force-opaque path: still O(width*height) since every pixel has
-    // to be checked, but operates a whole BGRA pixel at a time (one 32-bit
-    // read/compare/write) instead of unpacking and repacking 4 separate
-    // bytes per pixel - meaningfully cheaper per pixel than the old version
-    // of this loop for sprites that do genuinely need a colorkey (this is
-    // still slower than the plain memcpy path above, which is why video only
-    // takes this path on frames where blendmode is actually 4 - see
-    // wantColorKeyThisFrame in Update()/texmgr::UpdateTex - rather than on
-    // every frame regardless of blendmode).
-    // colorKey is 0x00RRGGBB. A raw little-endian read of 4 source bytes
-    // stored in memory as B,G,R,A packs into an int as B | G<<8 | R<<16 |
-    // A<<24 - i.e. masking off the top byte gives 0x00RRGGBB too, so
-    // colorKey compares directly against a masked pixel with no repacking.
+    // BGRA bytes form a 0xAARRGGBB word on Windows.
     const unsigned int keyMasked = colorKey & 0x00FFFFFFu;
 
-    for (int y = 0; y < height; y++)
+    for (int y = 0; y < m_height; y++)
     {
-        const unsigned char* srcRow = pixels + (size_t)y * width * 4;
+        const unsigned char* srcRow = pixels + (size_t)y * m_width * 4;
         unsigned char* dstRow = (unsigned char*)lr.pBits + (size_t)y * lr.Pitch;
 
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < m_width; x++)
         {
             unsigned int pixel;
             std::memcpy(&pixel, srcRow + (size_t)x * 4, 4);
 
-            if (forceOpaque)
-                pixel |= 0xFF000000u;
-            if (applyColorKey && (pixel & 0x00FFFFFFu) == keyMasked)
+            if ((pixel & 0x00FFFFFFu) == keyMasked)
                 pixel &= 0x00FFFFFFu; // alpha = 0, color unchanged
 
             std::memcpy(dstRow + (size_t)x * 4, &pixel, 4);
         }
     }
 
-    m_texture->UnlockRect(0);
-    return true;
+    return SUCCEEDED(texture->UnlockRect(0));
 }
 
 bool MediaTexture::InitGif(const wchar_t* path, unsigned int colorKey)
@@ -922,14 +918,24 @@ bool MediaTexture::InitGif(const wchar_t* path, unsigned int colorKey)
     if (m_gifTotalSeconds <= 0.0)
         m_gifTotalSeconds = 0.1;
 
-    return UploadPixels(m_gifFrames[0].pixels.data(), m_width, m_height, colorKey, true, false);
+    return CreateDynamicTexture(m_width, m_height) &&
+        UploadPixels(m_texture, m_gifFrames[0].pixels.data(), colorKey, true);
 }
 
-bool MediaTexture::InitVideo(const wchar_t* path, unsigned int colorKey)
+bool MediaTexture::InitVideo(const wchar_t* path, unsigned int colorKey, bool isVideoSprite, bool* outOfMemory)
 {
     std::string utf8Path = WideToUtf8(path);
     if (utf8Path.empty())
         return false;
+
+    m_formatContext = avformat_alloc_context();
+    if (!m_formatContext)
+        return false;
+    m_formatContext->interrupt_callback.callback = [](void* context) -> int
+    {
+        return static_cast<MediaTexture*>(context)->m_videoStopWorker.load() ? 1 : 0;
+    };
+    m_formatContext->interrupt_callback.opaque = this;
 
     if (avformat_open_input(&m_formatContext, utf8Path.c_str(), nullptr, nullptr) < 0)
         return false;
@@ -956,32 +962,85 @@ bool MediaTexture::InitVideo(const wchar_t* path, unsigned int colorKey)
     if (avcodec_parameters_to_context(m_codecContext, stream->codecpar) < 0)
         return false;
 
-    // Keep decode parallelism bounded per video texture. FF_THREAD_SLICE on
-    // its own often falls back to one CPU core for ordinary H.264/H.265 clips
-    // that were encoded as a single slice, so large video sprites could not
-    // stay ahead of the renderer. Frame threading fills that gap; the small
-    // cap keeps several simultaneous sprites from consuming every core.
-    const long long sourcePixels = (long long)stream->codecpar->width * (long long)stream->codecpar->height;
-    m_codecContext->thread_count = sourcePixels >= 3840LL * 2160LL ? 4 :
-        (sourcePixels >= 1920LL * 1080LL ? 3 : 2);
-    m_codecContext->thread_type = FF_THREAD_FRAME | FF_THREAD_SLICE;
-
-    if (avcodec_open2(m_codecContext, codec, nullptr) < 0)
+    const int sourceWidth = m_codecContext->width;
+    const int sourceHeight = m_codecContext->height;
+    if (!IsReasonableMediaSize(sourceWidth, sourceHeight))
         return false;
 
-    AVFrame* frame = av_frame_alloc();
-    AVPacket* packet = av_packet_alloc();
-    if (!frame || !packet)
+    double textureScale = 1.0;
+    if (isVideoSprite)
     {
-        if (frame)
-            av_frame_free(&frame);
-        if (packet)
-            av_packet_free(&packet);
+        D3DCAPS9 caps{};
+        if (SUCCEEDED(m_device->GetDeviceCaps(&caps)))
+        {
+            textureScale = (std::min)({1.0,
+                double(caps.MaxTextureWidth) / sourceWidth,
+                double(caps.MaxTextureHeight) / sourceHeight});
+        }
+    }
+
+    const int sourceBytes = GetVideoFrameBytes(m_codecContext->pix_fmt, sourceWidth, sourceHeight);
+    m_videoMaxSourceFrameBytes = sourceBytes > 0 ? sourceBytes :
+        GetVideoFrameBytes(AV_PIX_FMT_BGRA, sourceWidth, sourceHeight);
+
+    unsigned int preferredThreads = 1;
+    if (codec->capabilities & AV_CODEC_CAP_FRAME_THREADS)
+    {
+        const int sourcePixels = sourceWidth * sourceHeight;
+        if (sourcePixels >= 3840 * 2160)
+            preferredThreads = 4;
+        else if (sourcePixels >= 1280 * 720)
+            preferredThreads = 2;
+    }
+    // Include the displayed CPU frame and the optional keyed GPU texture.
+    const size_t extraConvertedFrames = isVideoSprite ? 6 : 5;
+    int threads;
+    for (;;)
+    {
+        const int textureWidth = (std::max)(1, static_cast<int>(std::lround(sourceWidth * textureScale)));
+        const int textureHeight = (std::max)(1, static_cast<int>(std::lround(sourceHeight * textureScale)));
+        const uint64_t convertedFrameBytes = uint64_t(textureWidth) * textureHeight * 4;
+        threads = ReserveVideoDecoder(m_videoMaxSourceFrameBytes, convertedFrameBytes,
+            extraConvertedFrames, preferredThreads, m_videoReservedBytes, m_videoQueueCapacity);
+        if (threads > 0)
+        {
+            m_videoExtraThreads = threads - 1;
+            bool textureOutOfMemory = false;
+            if (CreateDynamicTexture(textureWidth, textureHeight, &textureOutOfMemory))
+                break;
+            ReleaseVideoReservation();
+            if (!textureOutOfMemory)
+                return false;
+        }
+
+        if (!isVideoSprite || (textureWidth == 1 && textureHeight == 1))
+        {
+            if (outOfMemory)
+                *outOfMemory = true;
+            return false;
+        }
+
+        // The source still decodes at its encoded size. A smaller upload
+        // texture reduces the cost of the converted frames under pressure.
+        textureScale *= 0.5;
+    }
+
+    m_codecContext->thread_count = threads;
+    m_codecContext->thread_type = FF_THREAD_FRAME;
+    m_codecContext->max_pixels = int64_t((sourceWidth + 63) & ~63) * ((sourceHeight + 63) & ~63);
+    const int openResult = avcodec_open2(m_codecContext, codec, nullptr);
+    if (openResult < 0)
+    {
+        if (outOfMemory)
+            *outOfMemory = openResult == AVERROR(ENOMEM);
         return false;
     }
 
-    m_videoFrame = frame;
-    m_videoPacket = packet;
+    m_videoFrame = av_frame_alloc();
+    m_videoPacket = av_packet_alloc();
+    if (!m_videoFrame || !m_videoPacket)
+        return false;
+
     m_videoStreamIndex = streamIndex;
     m_videoTimeBaseSeconds = av_q2d(stream->time_base);
     if (!std::isfinite(m_videoTimeBaseSeconds) || m_videoTimeBaseSeconds <= 0.0)
@@ -1003,247 +1062,171 @@ bool MediaTexture::InitVideo(const wchar_t* path, unsigned int colorKey)
     }
 
     m_kind = KIND_VIDEO;
-    m_width = m_codecContext->width > 0 ? m_codecContext->width : stream->codecpar->width;
-    m_height = m_codecContext->height > 0 ? m_codecContext->height : stream->codecpar->height;
     m_videoColorKey = colorKey;
-    // Whether colorkey actually gets applied is now decided fresh every
-    // frame in Update(), based on whether this sprite's blendmode is
-    // *currently* 4 (see wantColorKeyThisFrame there, and the comment on
-    // Update() in MediaTexture.h for the full reasoning). m_videoApplyColorKey
-    // just needs a safe starting value here; Update() overwrites it every
-    // call before it's used.
-    m_videoApplyColorKey = false;
-    m_videoReachedEnd = false;
-    m_videoTimestampOriginSeconds = 0.0;
-    m_videoHaveTimestampOrigin = false;
-    m_videoLoopOffsetSeconds = 0.0;
-    m_videoLastPresentationSeconds = 0.0;
-    m_videoLastFrameDurationSeconds = m_videoFrameSeconds;
-    m_videoHavePresentation = false;
-    m_videoDisplayedPresentationSeconds = 0.0;
+    if (m_videoTimeBaseSeconds > 0.0)
+    {
+        if (stream->start_time != AV_NOPTS_VALUE)
+            m_videoSeekStart = stream->start_time;
+        else if (m_formatContext->start_time != AV_NOPTS_VALUE)
+            m_videoSeekStart = av_rescale_q(m_formatContext->start_time, AV_TIME_BASE_Q, stream->time_base);
 
-    if (m_width > 0 && m_height > 0 && !CreateDynamicTexture(m_width, m_height))
+        if (m_formatContext->pb && (m_formatContext->pb->seekable & AVIO_SEEKABLE_NORMAL))
+        {
+            int64_t duration = stream->duration;
+            if (duration <= 0 && m_formatContext->duration > 0)
+                duration = av_rescale_q(m_formatContext->duration, AV_TIME_BASE_Q, stream->time_base);
+            if (duration > 0 &&
+                av_compare_ts(duration, stream->time_base, kRandomStartThresholdSeconds, AVRational{1, 1}) > 0 &&
+                m_videoSeekStart <= INT64_MAX - duration)
+            {
+                m_videoSeekRange = duration - static_cast<int64_t>(kRandomStartEndMarginSeconds / m_videoTimeBaseSeconds);
+            }
+        }
+    }
+
+    // Expose a real frame before either a sprite or a shader can sample the texture.
+    SeekToRandomVideoStart();
+    VideoFrame firstFrame;
+    if (!DecodeNextVideoFrame(firstFrame))
+    {
+        if (m_videoPrerollEnd == AV_NOPTS_VALUE || !SeekVideo(m_videoSeekStart) || !DecodeNextVideoFrame(firstFrame))
+            return false;
+    }
+    if (!UploadVideoPixels(firstFrame.pixels.data(), false))
         return false;
+    m_videoDisplayedPixels.swap(firstFrame.pixels);
+    m_videoDisplayedEndSeconds = firstFrame.presentationSeconds + firstFrame.durationSeconds;
+    m_videoRawTextureCurrent = true;
 
-    std::vector<unsigned char> firstFrame;
-    int firstWidth = 0;
-    int firstHeight = 0;
-    if (!DecodeNextVideoFrame(firstFrame, &firstWidth, &firstHeight, nullptr, false))
+    try
+    {
+        m_videoThread = std::thread(&MediaTexture::VideoWorkerMain, this);
+    }
+    catch (const std::system_error&)
+    {
         return false;
-
-    if (!UploadPixels(firstFrame.data(), firstWidth, firstHeight, colorKey, m_videoApplyColorKey, false))
-        return false;
-
-    if (!StartVideoWorker())
-        return false;
-
+    }
     return true;
 }
 
-bool MediaTexture::SeekVideoToStart()
+bool MediaTexture::SeekVideo(int64_t timestamp)
 {
-    if (!m_formatContext || !m_codecContext || m_videoStreamIndex < 0)
-        return false;
-
-    int64_t timestamp = 0;
-    if (m_videoStreamIndex < (int)m_formatContext->nb_streams)
+    int result = av_seek_frame(m_formatContext, m_videoStreamIndex, timestamp, AVSEEK_FLAG_BACKWARD);
+    if (result < 0 && timestamp == m_videoSeekStart)
     {
-        AVStream* stream = m_formatContext->streams[m_videoStreamIndex];
-        if (stream && stream->start_time != AV_NOPTS_VALUE)
-            timestamp = stream->start_time;
+        const int64_t start = m_formatContext->start_time == AV_NOPTS_VALUE ? 0 : m_formatContext->start_time;
+        result = av_seek_frame(m_formatContext, -1, start, AVSEEK_FLAG_BACKWARD);
     }
-
-    int ret = av_seek_frame(m_formatContext, m_videoStreamIndex, timestamp, AVSEEK_FLAG_BACKWARD);
-    if (ret < 0)
-        ret = av_seek_frame(m_formatContext, -1, 0, AVSEEK_FLAG_BACKWARD);
-    if (ret < 0)
+    if (result < 0)
         return false;
 
     avcodec_flush_buffers(m_codecContext);
     m_videoReachedEnd = false;
-    m_videoLoopOffsetSeconds = m_videoHavePresentation ?
-        m_videoLastPresentationSeconds + m_videoLastFrameDurationSeconds : 0.0;
-    m_videoTimestampOriginSeconds = 0.0;
     m_videoHaveTimestampOrigin = false;
+    m_videoPrerollEnd = AV_NOPTS_VALUE;
     return true;
 }
 
-bool MediaTexture::DecodeNextVideoFrame(std::vector<unsigned char>& pixels, int* width, int* height,
-    double* presentationSeconds, bool loop)
+void MediaTexture::SeekToRandomVideoStart()
 {
-    if (!m_formatContext || !m_codecContext || !m_videoFrame || !m_videoPacket || m_videoStreamIndex < 0)
-        return false;
+    if (m_videoSeekRange <= 0)
+        return;
 
-    if (width)
-        *width = 0;
-    if (height)
-        *height = 0;
-    if (presentationSeconds)
-        *presentationSeconds = 0.0;
+    const auto seed = std::chrono::steady_clock::now().time_since_epoch().count();
+    std::mt19937_64 random(seed);
+    std::uniform_int_distribution<int64_t> offset(0, m_videoSeekRange);
+    const int64_t target = m_videoSeekStart + offset(random);
+    if (SeekVideo(target))
+        m_videoPrerollEnd = target;
+    else
+        SeekVideo(m_videoSeekStart);
+}
 
-    for (int attempt = 0; attempt < 4096; attempt++)
+bool MediaTexture::DecodeNextVideoFrame(VideoFrame& frame)
+{
+    // Bound retries for damaged files and empty streams, including EOF/seek loops.
+    for (int attempt = 0; attempt < 4096 && !m_videoStopWorker; ++attempt)
     {
-        int ret = avcodec_receive_frame(m_codecContext, m_videoFrame);
-        if (ret == 0)
+        int result = avcodec_receive_frame(m_codecContext, m_videoFrame);
+        if (result == 0)
         {
-            int srcW = m_videoFrame->width;
-            int srcH = m_videoFrame->height;
-            int srcFormat = m_videoFrame->format;
-            const int64_t bestEffortTimestamp = m_videoFrame->best_effort_timestamp;
-            const int64_t decodedFrameDuration = m_videoFrame->duration;
-            if (srcW <= 0 || srcH <= 0 || srcFormat < 0)
+            const int64_t timestamp = m_videoFrame->best_effort_timestamp;
+            if (m_videoPrerollEnd != AV_NOPTS_VALUE && timestamp != AV_NOPTS_VALUE && timestamp < m_videoPrerollEnd)
             {
                 av_frame_unref(m_videoFrame);
+                continue;
+            }
+            m_videoPrerollEnd = AV_NOPTS_VALUE;
+
+            const int width = m_videoFrame->width;
+            const int height = m_videoFrame->height;
+            const auto format = static_cast<AVPixelFormat>(m_videoFrame->format);
+            const int bytes = IsReasonableMediaSize(width, height) ? GetVideoFrameBytes(format, width, height) : 0;
+            if (bytes <= 0 || bytes > m_videoMaxSourceFrameBytes)
                 return false;
-            }
 
-            if (!m_swsContext ||
-                m_videoSrcWidth != srcW ||
-                m_videoSrcHeight != srcH ||
-                m_videoSrcFormat != srcFormat)
-            {
-                m_swsContext = sws_getCachedContext(
-                    m_swsContext,
-                    srcW,
-                    srcH,
-                    (AVPixelFormat)srcFormat,
-                    srcW,
-                    srcH,
-                    AV_PIX_FMT_BGRA,
-                    SWS_FAST_BILINEAR,
-                    nullptr,
-                    nullptr,
-                    nullptr);
-                if (!m_swsContext)
-                {
-                    av_frame_unref(m_videoFrame);
-                    return false;
-                }
-
-                m_videoSrcWidth = srcW;
-                m_videoSrcHeight = srcH;
-                m_videoSrcFormat = srcFormat;
-            }
-
-            size_t pixelBytes = (size_t)srcW * (size_t)srcH * 4;
-            if (pixelBytes == 0)
-            {
-                av_frame_unref(m_videoFrame);
+            m_swsContext = sws_getCachedContext(m_swsContext, width, height, format,
+                m_width, m_height, AV_PIX_FMT_BGRA, SWS_FAST_BILINEAR, nullptr, nullptr, nullptr);
+            if (!m_swsContext)
                 return false;
-            }
 
-            pixels.resize(pixelBytes);
-            uint8_t* dstData[4] = { pixels.data(), nullptr, nullptr, nullptr };
-            int dstStride[4] = { srcW * 4, 0, 0, 0 };
-            int convertedRows = sws_scale(
-                m_swsContext,
-                m_videoFrame->data,
-                m_videoFrame->linesize,
-                0,
-                srcH,
-                dstData,
-                dstStride);
-
+            const int stride = m_width * 4;
+            frame.pixels.resize(static_cast<size_t>(stride) * m_height + AV_INPUT_BUFFER_PADDING_SIZE);
+            uint8_t* destination[] = {frame.pixels.data(), nullptr, nullptr, nullptr};
+            const int strides[] = {stride, 0, 0, 0};
+            const int rows = sws_scale(m_swsContext, m_videoFrame->data, m_videoFrame->linesize,
+                0, height, destination, strides);
+            const double duration = m_videoFrame->duration * m_videoTimeBaseSeconds;
             av_frame_unref(m_videoFrame);
-            if (convertedRows != srcH)
+            if (rows != m_height)
                 return false;
 
-            double decodedPresentationSeconds = 0.0;
-            double decodedFrameDurationSeconds = m_videoFrameSeconds;
-            if (decodedFrameDuration > 0 && m_videoTimeBaseSeconds > 0.0)
+            const double next = m_videoLastPresentationSeconds + m_videoLastFrameDurationSeconds;
+            frame.presentationSeconds = next;
+            frame.durationSeconds = duration > 0.0 && std::isfinite(duration) ? duration : m_videoFrameSeconds;
+            if (timestamp != AV_NOPTS_VALUE && m_videoTimeBaseSeconds > 0.0)
             {
-                const double durationSeconds = (double)decodedFrameDuration * m_videoTimeBaseSeconds;
-                if (std::isfinite(durationSeconds) && durationSeconds > 0.0 && durationSeconds <= 10.0)
-                    decodedFrameDurationSeconds = durationSeconds;
+                const double sourceSeconds = timestamp * m_videoTimeBaseSeconds;
+                if (!m_videoHaveTimestampOrigin)
+                {
+                    m_videoTimestampOffsetSeconds = next - sourceSeconds;
+                    m_videoHaveTimestampOrigin = true;
+                }
+                const double presentation = sourceSeconds + m_videoTimestampOffsetSeconds;
+                if (presentation > m_videoLastPresentationSeconds)
+                    frame.presentationSeconds = presentation;
             }
-            const bool hasTimestamp = bestEffortTimestamp != AV_NOPTS_VALUE && m_videoTimeBaseSeconds > 0.0;
-            bool establishesTimestampOrigin = false;
-            if (hasTimestamp)
-            {
-                const double sourceSeconds = (double)bestEffortTimestamp * m_videoTimeBaseSeconds;
-                const double timestampOriginSeconds = m_videoHaveTimestampOrigin ?
-                    m_videoTimestampOriginSeconds : sourceSeconds;
-                establishesTimestampOrigin = !m_videoHaveTimestampOrigin;
-                decodedPresentationSeconds = m_videoLoopOffsetSeconds + (sourceSeconds - timestampOriginSeconds);
-            }
-            else
-            {
-                decodedPresentationSeconds = m_videoHavePresentation ?
-                    m_videoLastPresentationSeconds + m_videoFrameSeconds : m_videoLoopOffsetSeconds;
-            }
-
-            // best_effort_timestamp should be display ordered, but malformed
-            // files occasionally regress. Do not let one bad timestamp rewind
-            // the queue and freeze the texture.
-            if (m_videoHavePresentation &&
-                decodedPresentationSeconds + kVideoTimestampToleranceSeconds < m_videoLastPresentationSeconds)
-            {
-                decodedPresentationSeconds = m_videoLastPresentationSeconds + m_videoFrameSeconds;
-            }
-
-            if (m_videoHavePresentation && decodedFrameDuration <= 0)
-            {
-                const double observedDurationSeconds = decodedPresentationSeconds - m_videoLastPresentationSeconds;
-                if (std::isfinite(observedDurationSeconds) && observedDurationSeconds > 0.0 && observedDurationSeconds <= 10.0)
-                    decodedFrameDurationSeconds = observedDurationSeconds;
-            }
-
-            if (establishesTimestampOrigin)
-            {
-                m_videoTimestampOriginSeconds = (double)bestEffortTimestamp * m_videoTimeBaseSeconds;
-                m_videoHaveTimestampOrigin = true;
-            }
-            m_videoLastPresentationSeconds = decodedPresentationSeconds;
-            m_videoLastFrameDurationSeconds = decodedFrameDurationSeconds;
-            m_videoHavePresentation = true;
-
-            m_width = srcW;
-            m_height = srcH;
-            if (width)
-                *width = srcW;
-            if (height)
-                *height = srcH;
-            if (presentationSeconds)
-                *presentationSeconds = decodedPresentationSeconds;
+            m_videoLastPresentationSeconds = frame.presentationSeconds;
+            m_videoLastFrameDurationSeconds = frame.durationSeconds;
             return true;
         }
 
-        if (ret == AVERROR_EOF)
+        if (result == AVERROR_EOF || (result == AVERROR(EAGAIN) && m_videoReachedEnd))
         {
-            if (!loop || !SeekVideoToStart())
+            if (!SeekVideo(m_videoSeekStart))
                 return false;
             continue;
         }
-
-        if (ret != AVERROR(EAGAIN))
+        if (result != AVERROR(EAGAIN))
             return false;
 
-        if (m_videoReachedEnd)
+        result = av_read_frame(m_formatContext, m_videoPacket);
+        if (result == AVERROR_EOF)
         {
-            if (!loop || !SeekVideoToStart())
+            result = avcodec_send_packet(m_codecContext, nullptr);
+            if (result < 0 && result != AVERROR_EOF)
                 return false;
-            continue;
-        }
-
-        ret = av_read_frame(m_formatContext, m_videoPacket);
-        if (ret < 0)
-        {
-            avcodec_send_packet(m_codecContext, nullptr);
             m_videoReachedEnd = true;
             continue;
         }
+        if (result < 0)
+            return false;
 
         if (m_videoPacket->stream_index == m_videoStreamIndex)
-        {
-            ret = avcodec_send_packet(m_codecContext, m_videoPacket);
-            av_packet_unref(m_videoPacket);
-            if (ret < 0 && ret != AVERROR(EAGAIN))
-                return false;
-        }
-        else
-        {
-            av_packet_unref(m_videoPacket);
-        }
+            result = avcodec_send_packet(m_codecContext, m_videoPacket);
+        av_packet_unref(m_videoPacket);
+        if (result < 0 && result != AVERROR_INVALIDDATA)
+            return false;
     }
 
     return false;
@@ -1337,52 +1320,12 @@ bool MediaTexture::Update(float now, bool* shouldKill, bool wantColorKeyThisFram
         if (frameIndex != m_gifFrameIndex)
         {
             m_gifFrameIndex = frameIndex;
-            return UploadPixels(m_gifFrames[frameIndex].pixels.data(), m_width, m_height, m_gifColorKey, m_gifApplyColorKey, false);
+            return UploadPixels(m_texture, m_gifFrames[frameIndex].pixels.data(), m_gifColorKey, m_gifApplyColorKey);
         }
         return true;
     }
     case KIND_VIDEO:
-    {
-        m_videoApplyColorKey = wantColorKeyThisFrame;
-
-        const std::chrono::steady_clock::time_point currentClock = std::chrono::steady_clock::now();
-        if (!m_videoHavePlaybackStart)
-        {
-            m_videoPlaybackStartClock = currentClock;
-            m_videoHavePlaybackStart = true;
-        }
-
-        if (m_videoHaveLastUpdateClock)
-        {
-            const double renderGapSeconds = std::chrono::duration<double>(
-                currentClock - m_videoLastUpdateClock).count();
-            if (!std::isfinite(renderGapSeconds) || renderGapSeconds > kVideoRenderGapResetSeconds)
-            {
-                // Continue from the frame currently shown. This prevents a
-                // minimized/suspended window from causing a fast-forward burst
-                // when rendering resumes.
-                const double resumeAdvance = std::isfinite(renderGapSeconds) ?
-                    min(renderGapSeconds, kVideoMaxResumeAdvanceSeconds) :
-                    kVideoMaxResumeAdvanceSeconds;
-                const double resumePosition = max(0.0, m_videoDisplayedPresentationSeconds) + resumeAdvance;
-                const std::chrono::steady_clock::duration resumeOffset =
-                    std::chrono::duration_cast<std::chrono::steady_clock::duration>(
-                        std::chrono::duration<double>(resumePosition));
-                m_videoPlaybackStartClock = currentClock - resumeOffset;
-            }
-        }
-        m_videoLastUpdateClock = currentClock;
-        m_videoHaveLastUpdateClock = true;
-
-        double elapsedSeconds = std::chrono::duration<double>(
-            currentClock - m_videoPlaybackStartClock).count();
-        if (elapsedSeconds < 0.0)
-            elapsedSeconds = 0.0; // guard against a theoretical clock anomaly
-
-        UploadPendingVideoFrame(elapsedSeconds);
-
-        return m_texture != nullptr;
-    }
+        return UpdateVideo(shouldKill, wantColorKeyThisFrame);
     case KIND_SPOUT:
     {
         if (!m_spoutReceiver)

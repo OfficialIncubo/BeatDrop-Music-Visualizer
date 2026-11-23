@@ -4799,20 +4799,28 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 	for (int iSlot=0; iSlot < NUM_TEX; iSlot++)
 	{
         bool bLiveSpriteShouldKill = false;
-        if (m_texmgr.m_tex[iSlot].pMedia)
+        if (MediaTexture* media = m_texmgr.m_tex[iSlot].pMedia)
         {
-            m_texmgr.UpdateTex(iSlot, GetTime(), &bLiveSpriteShouldKill);
+            const bool mediaReady = m_texmgr.UpdateTex(iSlot, GetTime(), &bLiveSpriteShouldKill);
             if (bLiveSpriteShouldKill)
             {
                 wchar_t buf[1024];
-                const wchar_t* senderName = MediaTexture::IsSpoutPath(m_texmgr.m_tex[iSlot].szFileName)
-                    ? m_texmgr.m_tex[iSlot].szFileName + 6
-                    : L"unknown sender";
-                swprintf(buf, L"Spout sender \"%ls\" turned off by the user process. Spout Input Sprite is now automatically killed.", senderName);
+                const wchar_t* filename = m_texmgr.m_tex[iSlot].szFileName;
+                if (media->IsSpout())
+                {
+                    const wchar_t* senderName = MediaTexture::IsSpoutPath(filename) ? filename + 6 : L"unknown sender";
+                    swprintf(buf, L"Spout sender \"%ls\" turned off by the user process. Spout Input Sprite is now automatically killed.", senderName);
+                }
+                else
+                {
+                    swprintf(buf, L"Could not continue video sprite #%02d playback.", iSlot);
+                }
                 AddError(buf, 7.0f, ERR_MISC, false);
                 KillSprite(iSlot);
                 continue;
             }
+            if (!mediaReady && media->GetKind() == MediaTexture::KIND_VIDEO)
+                continue;
         }
 
 		if (m_texmgr.m_tex[iSlot].pSurface)

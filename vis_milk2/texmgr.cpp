@@ -137,12 +137,13 @@ int texmgr::LoadTex(wchar_t *szFilename, int iSlot, char *szInitCode, char *szCo
 	bool bTextureInstanced = false;
 	{
 		for (int x=0; x<NUM_TEX; x++)
-			if (m_tex[x].pSurface && _wcsicmp(m_tex[x].szFileName, szFilename)==0)
+			if (x != iSlot && (m_tex[x].pSurface || m_tex[x].pMedia) && _wcsicmp(m_tex[x].szFileName, szFilename)==0)
 			{
-				if (m_tex[x].pMedia)
+				if (m_tex[x].pMedia && !m_tex[x].pMedia->CanShareVideo(ck))
 					continue;
 
-				//Kai Blaschke - Sprite Slots Code Conflict fix
+				// Each sprite retains its own expressions. Matching video slots share playback.
+				KillTex(iSlot);
 				m_tex[iSlot].pSurface = m_tex[x].pSurface;
 				m_tex[iSlot].pMedia = m_tex[x].pMedia;
 				m_tex[iSlot].img_w = m_tex[x].img_w;
@@ -166,9 +167,10 @@ int texmgr::LoadTex(wchar_t *szFilename, int iSlot, char *szInitCode, char *szCo
 
 		if (MediaTexture::IsSupportedFile(szFilename) || MediaTexture::IsSpoutPath(szFilename))
 		{
-			m_tex[iSlot].pMedia = MediaTexture::Create(m_lpDD, szFilename, ck, true);
+			bool outOfMemory = false;
+			m_tex[iSlot].pMedia = MediaTexture::Create(m_lpDD, szFilename, ck, true, true, &outOfMemory);
 			if (!m_tex[iSlot].pMedia)
-				return TEXMGR_ERR_BADFILE;
+				return outOfMemory ? TEXMGR_ERR_OUTOFMEM : TEXMGR_ERR_BADFILE;
 
 			m_tex[iSlot].pSurface = m_tex[iSlot].pMedia->GetTexture();
 			m_tex[iSlot].img_w = m_tex[iSlot].pMedia->GetWidth();
@@ -242,11 +244,10 @@ bool texmgr::UpdateTex(int iSlot, float time, bool* shouldKill)
 	if (!m_tex[iSlot].pMedia) return (m_tex[iSlot].pSurface != NULL);
 
 	bool wantColorKeyThisFrame = m_tex[iSlot].var_blendmode &&
-		//fabs(*(m_tex[iSlot].var_blendmode) - 4.0) < 1;
 		(int)(*(m_tex[iSlot].var_blendmode)) == 4;
 
 	bool ok = m_tex[iSlot].pMedia->Update(time, shouldKill, wantColorKeyThisFrame);
-	m_tex[iSlot].pSurface = m_tex[iSlot].pMedia->GetTexture();
+	m_tex[iSlot].pSurface = m_tex[iSlot].pMedia->GetTexture(wantColorKeyThisFrame);
 	m_tex[iSlot].img_w = m_tex[iSlot].pMedia->GetWidth();
 	m_tex[iSlot].img_h = m_tex[iSlot].pMedia->GetHeight();
 

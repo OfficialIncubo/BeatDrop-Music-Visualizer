@@ -6,6 +6,7 @@
 #define BEATDROP_MEDIA_TEXTURE_H 1
 
 #include <d3d9.h>
+#include <atomic>
 #include <chrono>
 #include <condition_variable>
 #include <cstdint>
@@ -37,16 +38,24 @@ public:
     static bool IsVideoFile(const wchar_t* path);
     static bool IsSupportedFile(const wchar_t* path);
     static bool IsSpoutPath(const wchar_t* path);
-    static MediaTexture* Create(LPDIRECT3DDEVICE9EX device, const wchar_t* path, unsigned int colorKey, bool allowSpout);
+    static MediaTexture* Create(LPDIRECT3DDEVICE9EX device, const wchar_t* path, unsigned int colorKey,
+        bool allowSpout, bool isVideoSprite = false, bool* outOfMemory = nullptr);
 
     ~MediaTexture();
 
     bool Update(float now, bool* shouldKill, bool wantColorKeyThisFrame = false);
-    LPDIRECT3DTEXTURE9 GetTexture() const { return m_texture; }
+    LPDIRECT3DTEXTURE9 GetTexture(bool applyColorKey = false) const
+    {
+        return applyColorKey && m_kind == KIND_VIDEO ? m_videoKeyedTexture : m_texture;
+    }
     int GetWidth() const { return m_width; }
     int GetHeight() const { return m_height; }
     Kind GetKind() const { return m_kind; }
     bool IsSpout() const { return m_kind == KIND_SPOUT; }
+    bool CanShareVideo(unsigned int colorKey) const
+    {
+        return m_kind == KIND_VIDEO && (m_videoColorKey & 0xFFFFFFu) == (colorKey & 0xFFFFFFu);
+    }
     const char* GetSpoutSenderName() const { return m_spoutSenderName.c_str(); }
 
     // Returns true and fills in *outColorKey if this texture has a colorkey to
@@ -68,20 +77,21 @@ private:
     explicit MediaTexture(LPDIRECT3DDEVICE9EX device);
 
     bool InitGif(const wchar_t* path, unsigned int colorKey);
-    bool InitVideo(const wchar_t* path, unsigned int colorKey);
+    bool InitVideo(const wchar_t* path, unsigned int colorKey, bool isVideoSprite, bool* outOfMemory);
     bool InitSpout(const wchar_t* path, unsigned int colorKey);
 
-    bool CreateDynamicTexture(int width, int height);
-    bool UploadPixels(const unsigned char* pixels, int width, int height, unsigned int colorKey, bool applyColorKey, bool forceOpaque);
-    bool DecodeNextVideoFrame(std::vector<unsigned char>& pixels, int* width, int* height, double* presentationSeconds, bool loop);
-    bool SeekVideoToStart();
-    bool StartVideoWorker();
-    void StopVideoWorker();
+    bool CreateDynamicTexture(int width, int height, bool* outOfMemory = nullptr);
+    bool UploadPixels(LPDIRECT3DTEXTURE9 texture, const unsigned char* pixels, unsigned int colorKey, bool applyColorKey);
+    bool UploadVideoPixels(const unsigned char* pixels, bool applyColorKey);
+    struct VideoFrame;
+    bool DecodeNextVideoFrame(VideoFrame& frame);
+    bool SeekVideo(int64_t timestamp);
+    void SeekToRandomVideoStart();
     void VideoWorkerMain();
-    bool UploadPendingVideoFrame(double targetPresentationSeconds);
-    bool VideoQueueHasRoom() const;
+    bool UpdateVideo(bool* shouldKill, bool applyColorKey);
     void ReleaseTexture();
     void ReleaseVideo();
+    void ReleaseVideoReservation();
     void ReleaseSpout(bool waitForSpout);
 
     LPDIRECT3DDEVICE9EX m_device;
@@ -102,9 +112,8 @@ private:
     struct VideoFrame
     {
         std::vector<unsigned char> pixels;
-        int width;
-        int height;
-        double presentationSeconds;
+        double presentationSeconds = 0.0;
+        double durationSeconds = 0.0;
     };
 
     AVFormatContext* m_formatContext;
@@ -113,31 +122,36 @@ private:
     AVPacket* m_videoPacket;
     SwsContext* m_swsContext;
     int m_videoStreamIndex;
-    int m_videoSrcWidth;
-    int m_videoSrcHeight;
-    int m_videoSrcFormat;
-    bool m_videoReachedEnd;
+    bool m_videoReachedEnd = false;
+    size_t m_videoReservedBytes = 0;
+    size_t m_videoQueueCapacity = 0;
+    unsigned int m_videoExtraThreads = 0;
+    int m_videoMaxSourceFrameBytes = 0;
+    int64_t m_videoSeekStart = 0;
+    int64_t m_videoSeekRange = 0;
+    int64_t m_videoPrerollEnd = INT64_MIN;
     std::thread m_videoThread;
     std::mutex m_videoMutex;
     std::condition_variable m_videoCondition;
-    bool m_videoStopWorker;
+    std::atomic<bool> m_videoStopWorker{false};
+    bool m_videoWorkerFailed = false;
     std::deque<VideoFrame> m_videoQueue;
-    std::deque<std::vector<unsigned char> > m_videoFreeBuffers;
+    std::vector<unsigned char> m_videoFreeBuffer;
+    std::vector<unsigned char> m_videoDisplayedPixels;
+    LPDIRECT3DTEXTURE9 m_videoKeyedTexture = nullptr;
+    bool m_videoRawTextureCurrent = false;
+    bool m_videoKeyedTextureCurrent = false;
     std::chrono::steady_clock::time_point m_videoPlaybackStartClock;
     std::chrono::steady_clock::time_point m_videoLastUpdateClock;
-    bool m_videoHavePlaybackStart;
-    bool m_videoHaveLastUpdateClock;
-    double m_videoDisplayedPresentationSeconds;
+    bool m_videoHavePlaybackStart = false;
+    double m_videoDisplayedEndSeconds = 0.0;
     double m_videoTimeBaseSeconds;
-    double m_videoTimestampOriginSeconds;
-    bool m_videoHaveTimestampOrigin;
-    double m_videoLoopOffsetSeconds;
-    double m_videoLastPresentationSeconds;
-    double m_videoLastFrameDurationSeconds;
-    bool m_videoHavePresentation;
+    double m_videoTimestampOffsetSeconds = 0.0;
+    bool m_videoHaveTimestampOrigin = false;
+    double m_videoLastPresentationSeconds = 0.0;
+    double m_videoLastFrameDurationSeconds = 0.0;
     double m_videoFrameSeconds;
     unsigned int m_videoColorKey;
-    bool m_videoApplyColorKey;
 
     spoutDX9* m_spoutReceiver;
     bool m_spoutWasConnected;
