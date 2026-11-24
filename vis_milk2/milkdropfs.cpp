@@ -2386,13 +2386,19 @@ void CPlugin::WarpedBlit_NoShaders(int nPass, bool bAlphaBlend, bool bFlipAlpha,
         (format == D3DFMT_R5G6B5 || format == D3DFMT_X1R5G5B5 ||
          format == D3DFMT_A1R5G5B5 || format == D3DFMT_A4R4G4B4);
     const float decayLimit = (32.0f - m_n16BitGamma) / 32.0f;
-    auto decayByte = [&](float multiplier) {
+    auto decayByte = [&](float multiplier) -> DWORD {
         float channel = decay * multiplier;
         if (limitDecay && channel < 0.9999f)
             channel = min(channel, decayLimit);
-        if (!(channel > 0.0f))
-            return 0;
-        return static_cast<int>(min(channel, 1.0f) * 255.0f);
+        // Legacy presets use out-of-range decay on purpose. D3DCOLOR keeps
+        // the low byte of the truncated 8-bit color value, so it wraps.
+        const float scaled = channel * 255.0f;
+        constexpr float intLimit = 2147483648.0f;
+        if (scaled >= -intLimit && scaled < intLimit)
+            return static_cast<DWORD>(static_cast<int>(scaled)) & 0xffu;
+        // Outside this range a float has no low-byte precision. Avoid an
+        // undefined float-to-int conversion here, including for NaN/Inf.
+        return 0;
     };
 
     if (bAlphaBlend)
