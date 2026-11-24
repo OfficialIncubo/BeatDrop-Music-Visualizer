@@ -802,6 +802,9 @@ void CState::RegisterBuiltInVariables(int flags)
 	    var_pf_treb_att	= NSEEL_VM_regvar(m_pf_eel, "treb_att");	// i
 	    var_pf_frame    = NSEEL_VM_regvar(m_pf_eel, "frame");
 	    var_pf_decay	= NSEEL_VM_regvar(m_pf_eel, "decay");
+		var_pf_decay_r  = NSEEL_VM_regvar(m_pf_eel, "decay_r");
+		var_pf_decay_g  = NSEEL_VM_regvar(m_pf_eel, "decay_g");
+		var_pf_decay_b  = NSEEL_VM_regvar(m_pf_eel, "decay_b");
 	    var_pf_wave_a	= NSEEL_VM_regvar(m_pf_eel, "wave_a");
 	    var_pf_wave_r	= NSEEL_VM_regvar(m_pf_eel, "wave_r");
 	    var_pf_wave_g	= NSEEL_VM_regvar(m_pf_eel, "wave_g");
@@ -918,6 +921,9 @@ void CState::RegisterBuiltInVariables(int flags)
 		var_pv_ctrlrt   = NSEEL_VM_regvar(m_pv_eel, "ctrlrt");		// i
 		var_pv_ctrldn   = NSEEL_VM_regvar(m_pv_eel, "ctrldn");		// i
 		var_pv_ctrlup   = NSEEL_VM_regvar(m_pv_eel, "ctrlup");		// i
+		var_pv_decay_r  = NSEEL_VM_regvar(m_pv_eel, "decay_r");		// i
+		var_pv_decay_g  = NSEEL_VM_regvar(m_pv_eel, "decay_g");		// i
+		var_pv_decay_b  = NSEEL_VM_regvar(m_pv_eel, "decay_b");		// i
         for (vi=0; vi<NUM_Q_VAR; vi++)
         {
             char buf[16];
@@ -1080,6 +1086,9 @@ void CState::Default(DWORD ApplyFlags)
     {
         m_fRating				= 3.0f;
 	    m_fDecay				= 0.98f;	// 1.0 = none, 0.95 = heavy decay
+		m_fDecayR               = 1.0f;     // 1.0 = none, red channel decay
+		m_fDecayG               = 1.0f;     // 1.0 = none, green channel decay
+		m_fDecayB               = 1.0f;     // 1.0 = none, blue channel decay
 		m_fFFTAttack			= 0.5f;
 		m_fFFTDecay				= 0.7f;
 	    m_fGammaAdj				= 2.0f;		// 1.0 = reg; +2.0 = double, +3.0 = triple...
@@ -1452,6 +1461,9 @@ bool CState::Export(const wchar_t *szIniFile)
 	fprintf(fOut, "%s=%.3f\n", "fRating",                m_fRating);
 	fprintf(fOut, "%s=%.3f\n", "fGammaAdj",              m_fGammaAdj.eval(-1));
 	fprintf(fOut, "%s=%.3f\n", "fDecay",                 m_fDecay.eval(-1));
+	fprintf(fOut, "%s=%.5f\n", "fDecayR",                m_fDecayR.eval(-1));
+	fprintf(fOut, "%s=%.5f\n", "fDecayG",                m_fDecayG.eval(-1));
+	fprintf(fOut, "%s=%.5f\n", "fDecayB",                m_fDecayB.eval(-1));
 	fprintf(fOut, "%s=%.3f\n", "FFTAttack",				 m_fFFTAttack.eval(-1));
 	fprintf(fOut, "%s=%.3f\n", "FFTDecay",				 m_fFFTDecay.eval(-1));
 	fprintf(fOut, "%s=%.3f\n", "fVideoEchoZoom",         m_fVideoEchoZoom.eval(-1));
@@ -1814,6 +1826,9 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
     {
         m_fRating				= GetFastFloat("fRating",m_fRating,f);
 	    m_fDecay                = GetFastFloat("fDecay",m_fDecay.eval(-1),f);
+		m_fDecayR               = GetFastFloat("fDecayR",m_fDecayR.eval(-1),f);
+	    m_fDecayG               = GetFastFloat("fDecayG",m_fDecayG.eval(-1),f);
+	    m_fDecayB               = GetFastFloat("fDecayB",m_fDecayB.eval(-1),f);
 		m_fFFTAttack			= GetFastFloat("FFTAttack", m_fFFTAttack.eval(-1), f);
 		m_fFFTDecay				= GetFastFloat("FFTDecay", m_fFFTDecay.eval(-1), f);
 	    m_fGammaAdj             = GetFastFloat("fGammaAdj" ,m_fGammaAdj.eval(-1),f);
@@ -1919,7 +1934,7 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
             return false;
         }
         if (!m_szWarpShadersText[0])
-            g_plugin.GenWarpPShaderText(m_szWarpShadersText, m_fDecay.eval(-1), m_bTexWrap);
+			g_plugin.GenWarpPShaderText(m_szWarpShadersText, m_fDecay.eval(-1), m_fDecayR.eval(-1), m_fDecayG.eval(-1), m_fDecayB.eval(-1), m_bTexWrap);
         m_nWarpPSVersion = nWarpPSVersionInFile;
     }
 
@@ -1950,7 +1965,7 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
 void CState::GenDefaultWarpShader()
 {
     if (m_nWarpPSVersion>0)
-        g_plugin.GenWarpPShaderText(m_szWarpShadersText, m_fDecay.eval(-1), m_bTexWrap);
+		g_plugin.GenWarpPShaderText(m_szWarpShadersText, m_fDecay.eval(-1), m_fDecayR.eval(-1), m_fDecayG.eval(-1), m_fDecayB.eval(-1), m_bTexWrap);
 }
 void CState::GenDefaultCompShader()
 {

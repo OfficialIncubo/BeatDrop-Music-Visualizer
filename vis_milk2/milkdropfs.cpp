@@ -44,6 +44,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 #include "utility.h"
 #include <assert.h>
+#include <cstdint>
 #include <math.h>
 
 #define D3DCOLOR_RGBA_01(r,g,b,a) D3DCOLOR_RGBA(((int)(r*255)),((int)(g*255)),((int)(b*255)),((int)(a*255)))
@@ -597,6 +598,9 @@ void CPlugin::LoadPerFrameEvallibVars(CState* pState)
 
 	// 2. vars that do NOT affect pixel motion: (eval at time==now)
 	*pState->var_pf_decay		= (double)pState->m_fDecay.eval(GetTime());
+	*pState->var_pf_decay_r     = (double)pState->m_fDecayR.eval(GetTime());
+	*pState->var_pf_decay_g     = (double)pState->m_fDecayG.eval(GetTime());
+	*pState->var_pf_decay_b     = (double)pState->m_fDecayB.eval(GetTime());
 	*pState->var_pf_wave_a		= (double)pState->m_fWaveAlpha.eval(GetTime());
 	*pState->var_pf_wave_r		= (double)pState->m_fWaveR.eval(GetTime());
 	*pState->var_pf_wave_g		= (double)pState->m_fWaveG.eval(GetTime());
@@ -2153,6 +2157,13 @@ void CPlugin::ComputeGridAlphaValues()
 		float fDY		= (float)(*pState->var_pf_dy);
 		float fSX		= (float)(*pState->var_pf_sx);
 		float fSY		= (float)(*pState->var_pf_sy);
+        const float frameDecay[] = {
+            (float)*pState->var_pf_decay_r,
+            (float)*pState->var_pf_decay_g,
+            (float)*pState->var_pf_decay_b
+        };
+        const bool legacyWarp = pState->m_nWarpPSVersion <= 0;
+        const bool hasPerVertexCode = pState->m_pp_codehandle != nullptr;
 
 		int n = 0;
 
@@ -2165,7 +2176,7 @@ void CPlugin::ComputeGridAlphaValues()
 				//m_verts[n].y = j/(float)m_nGridY*2.0f - 1.0f;
 				//m_verts[n].z = 0.0f;
 
-				if (pState->m_pp_codehandle)
+				if (hasPerVertexCode)
 				{
 					// restore all the variables to their original states,
 					//  run the user-defined equations,
@@ -2200,6 +2211,10 @@ void CPlugin::ComputeGridAlphaValues()
 					//*pState->var_pv_mid_att	= *pState->var_pv_mid_att;
 					//*pState->var_pv_treb_att	= *pState->var_pv_treb_att;
 
+                    *pState->var_pv_decay_r = frameDecay[0];
+                    *pState->var_pv_decay_g = frameDecay[1];
+                    *pState->var_pv_decay_b = frameDecay[2];
+
 #ifndef _NO_EXPR_
 					NSEEL_code_execute(pState->m_pp_codehandle);
 #endif
@@ -2214,7 +2229,13 @@ void CPlugin::ComputeGridAlphaValues()
 					fDY   = (float)(*pState->var_pv_dy);
 					fSX   = (float)(*pState->var_pv_sx);
 					fSY   = (float)(*pState->var_pv_sy);
-				}
+                }
+
+                const float decay[] = {
+                    hasPerVertexCode ? (float)*pState->var_pv_decay_r : frameDecay[0],
+                    hasPerVertexCode ? (float)*pState->var_pv_decay_g : frameDecay[1],
+                    hasPerVertexCode ? (float)*pState->var_pv_decay_b : frameDecay[2]
+                };
 
 				float fZoom2 = powf(fZoom, powf(fZoomExp, m_vertinfo[n].rad*2.0f - 1.0f));
 
@@ -2279,7 +2300,10 @@ void CPlugin::ComputeGridAlphaValues()
                     // UV's for m_pState
 					m_verts[n].tu = u;
 					m_verts[n].tv = v;
-					m_verts[n].Diffuse = 0xFFFFFFFF;
+                    m_verts[n].Diffuse = 0xFFFFFFFF;
+                    if (legacyWarp)
+                        for (int channel = 0; channel < 3; ++channel)
+                            m_vertinfo[n].warpDecay[channel] = decay[channel];
 				}
 				else
 				{
@@ -2291,7 +2315,18 @@ void CPlugin::ComputeGridAlphaValues()
 					m_verts[n].tu = m_verts[n].tu*(mix2) + u*(1-mix2);
 					m_verts[n].tv = m_verts[n].tv*(mix2) + v*(1-mix2);
                     // this sets the alpha values for blending between two presets:
-					m_verts[n].Diffuse = 0x00FFFFFF | (((DWORD)(mix2*255))<<24);
+                    m_verts[n].Diffuse = 0x00FFFFFF | (((DWORD)(mix2 * 255)) << 24);
+                    if (legacyWarp)
+                    {
+                        // Two legacy presets share one draw. A mixed transition
+                        // uses just the legacy preset's decay in its own pass.
+                        const bool blendDecay = m_pState->m_nWarpPSVersion <= 0;
+                        for (int channel = 0; channel < 3; ++channel)
+                        {
+                            float& current = m_vertinfo[n].warpDecay[channel];
+                            current = blendDecay ? current * mix2 + decay[channel] * (1 - mix2) : decay[channel];
+                        }
+                    }
 				}
 
 				n++;
@@ -2346,25 +2381,26 @@ void CPlugin::WarpedBlit_NoShaders(int nPass, bool bAlphaBlend, bool bFlipAlpha,
     lpDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, texaddr);
     lpDevice->SetSamplerState(0, D3DSAMP_ADDRESSW, texaddr);
 
-	// decay
-	float fDecay = (float)(*m_pState->var_pf_decay);
-
-	//if (m_pState->m_bBlending)
-	//	fDecay = fDecay*(fCosineBlend) + (1.0f-fCosineBlend)*((float)(*m_pOldState->var_pf_decay));
-
-	if (m_n16BitGamma > 0 &&
-        (GetBackBufFormat()==D3DFMT_R5G6B5 || GetBackBufFormat()==D3DFMT_X1R5G5B5 || GetBackBufFormat()==D3DFMT_A1R5G5B5 || GetBackBufFormat()==D3DFMT_A4R4G4B4) &&
-        fDecay < 0.9999f)
-    {
-		fDecay = min(fDecay, (32.0f - m_n16BitGamma)/32.0f);
-    }
-
-	D3DCOLOR cDecay = D3DCOLOR_RGBA_01(fDecay,fDecay,fDecay,1);
-
-	// hurl the triangle strips at the video card
-	int poly;
-	for (poly=0; poly<(m_nGridX+1)*2; poly++)
-		m_verts_temp[poly].Diffuse = cDecay;
+    const float decay = (float)*m_pState->var_pf_decay;
+    const auto format = GetBackBufFormat();
+    const bool limitDecay = m_n16BitGamma > 0 &&
+        (format == D3DFMT_R5G6B5 || format == D3DFMT_X1R5G5B5 ||
+         format == D3DFMT_A1R5G5B5 || format == D3DFMT_A4R4G4B4);
+    const float decayLimit = (32.0f - m_n16BitGamma) / 32.0f;
+    auto decayBits = [&](float multiplier) -> DWORD {
+        float channel = decay * multiplier;
+        if (limitDecay && channel < 0.9999f)
+            channel = min(channel, decayLimit);
+        // MilkDrop 1.03 used single-precision scaling and truncated through
+        // a signed 64-bit integer, keeping the low 32 bits for color packing.
+        const float scaled = channel * 255.0f;
+        constexpr float int64Limit = 0x1p63f;
+        if (scaled >= -int64Limit && scaled < int64Limit)
+            return static_cast<DWORD>(static_cast<std::int64_t>(scaled));
+        // Outside this range a float has no low-byte precision. Avoid an
+        // undefined float-to-int conversion here, including for NaN/Inf.
+        return 0;
+    };
 
     if (bAlphaBlend)
     {
@@ -2406,10 +2442,16 @@ void CPlugin::WarpedBlit_NoShaders(int nPass, bool bAlphaBlend, bool bFlipAlpha,
             // copy 3 verts
             for (int j=0; j<3; j++)
             {
-                tempv[i++] = m_verts[ m_indices_list[src_idx++] ];
-                // don't forget to flip sign on Y and factor in the decay color!:
-                tempv[i-1].y *= -1;
-		        tempv[i-1].Diffuse = (cDecay & 0x00FFFFFF) | (tempv[i-1].Diffuse & 0xFF000000);
+                const int vertex = m_indices_list[src_idx++];
+                auto& target = tempv[i++];
+                target = m_verts[vertex];
+                target.y *= -1;
+                const auto& rgb = m_vertinfo[vertex].warpDecay;
+                // The original shifts let oversized values spill into neighboring
+                // color channels. Keep the mesh's transition alpha independent.
+                const DWORD decayColor = (decayBits(rgb[0]) << 16) |
+                    (decayBits(rgb[1]) << 8) | decayBits(rgb[2]);
+                target.Diffuse = (target.Diffuse & 0xff000000u) | (decayColor & 0x00ffffffu);
             }
             if (bCullTiles)
             {
