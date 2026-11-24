@@ -44,6 +44,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 #include "utility.h"
 #include <assert.h>
+#include <cstdint>
 #include <math.h>
 
 #define D3DCOLOR_RGBA_01(r,g,b,a) D3DCOLOR_RGBA(((int)(r*255)),((int)(g*255)),((int)(b*255)),((int)(a*255)))
@@ -2386,16 +2387,16 @@ void CPlugin::WarpedBlit_NoShaders(int nPass, bool bAlphaBlend, bool bFlipAlpha,
         (format == D3DFMT_R5G6B5 || format == D3DFMT_X1R5G5B5 ||
          format == D3DFMT_A1R5G5B5 || format == D3DFMT_A4R4G4B4);
     const float decayLimit = (32.0f - m_n16BitGamma) / 32.0f;
-    auto decayByte = [&](float multiplier) -> DWORD {
+    auto decayBits = [&](float multiplier) -> DWORD {
         float channel = decay * multiplier;
         if (limitDecay && channel < 0.9999f)
             channel = min(channel, decayLimit);
-        // Legacy presets use out-of-range decay on purpose. D3DCOLOR keeps
-        // the low byte of the truncated 8-bit color value, so it wraps.
+        // MilkDrop 1.03 used single-precision scaling and truncated through
+        // a signed 64-bit integer, keeping the low 32 bits for color packing.
         const float scaled = channel * 255.0f;
-        constexpr float intLimit = 2147483648.0f;
-        if (scaled >= -intLimit && scaled < intLimit)
-            return static_cast<DWORD>(static_cast<int>(scaled)) & 0xffu;
+        constexpr float int64Limit = 0x1p63f;
+        if (scaled >= -int64Limit && scaled < int64Limit)
+            return static_cast<DWORD>(static_cast<std::int64_t>(scaled));
         // Outside this range a float has no low-byte precision. Avoid an
         // undefined float-to-int conversion here, including for NaN/Inf.
         return 0;
@@ -2446,8 +2447,11 @@ void CPlugin::WarpedBlit_NoShaders(int nPass, bool bAlphaBlend, bool bFlipAlpha,
                 target = m_verts[vertex];
                 target.y *= -1;
                 const auto& rgb = m_vertinfo[vertex].warpDecay;
-                target.Diffuse = D3DCOLOR_ARGB(target.Diffuse >> 24,
-                    decayByte(rgb[0]), decayByte(rgb[1]), decayByte(rgb[2]));
+                // The original shifts let oversized values spill into neighboring
+                // color channels. Keep the mesh's transition alpha independent.
+                const DWORD decayColor = (decayBits(rgb[0]) << 16) |
+                    (decayBits(rgb[1]) << 8) | decayBits(rgb[2]);
+                target.Diffuse = (target.Diffuse & 0xff000000u) | (decayColor & 0x00ffffffu);
             }
             if (bCullTiles)
             {
