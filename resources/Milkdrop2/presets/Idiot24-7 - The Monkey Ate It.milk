@@ -87,7 +87,7 @@ per_frame_23=q5=cos(pulse/2+q1);
 per_frame_24=q6=sin(q6*q1+q7*q2);
 per_frame_25=q7=above(q1,0)+above(q2,0)+above(q3,0)+above(q3,0)*treb_flop+above(q2,0)*bass_flop+above(q1,0)*mid_flop;
 per_frame_26=q8=entropy;
-per_frame_27=decay=1;
+per_frame_27=decay=10000000;
 per_frame_28=ob_a=ob_a+1*sin(q4/q3*a2);
 per_frame_29=wave_mystery=wave_mystery-.5*sin(q1);
 per_frame_30=wave_r=wave_r+.5*sin(q1);

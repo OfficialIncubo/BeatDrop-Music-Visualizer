@@ -72,7 +72,7 @@ per_frame_8=wave_b=if(firsttest,if(secondtest,1,0),1);
 per_frame_9=wave_x=if(firsttest,if(secondtest,0.9+0.05*(1-bass),0.92),0.14);
 per_frame_10=wave_mode=if(firsttest,if(secondtest,6,0),0);
 per_frame_11=wave_mystery=if(firsttest,if(secondtest,0,wave_mystery),wave_mystery);
-per_frame_12=decay = .94;
+per_frame_12=decay = 1000000.94;
 per_frame_13=volume = 0.15*(bass_att+bass+mid+mid_att);
 per_frame_14=beatrate = if(equal(beatrate,0),1,if(below(volume,0.01),1,beatrate));
 per_frame_15=lastbeat = if(equal(lastbeat,0),time,lastbeat);
