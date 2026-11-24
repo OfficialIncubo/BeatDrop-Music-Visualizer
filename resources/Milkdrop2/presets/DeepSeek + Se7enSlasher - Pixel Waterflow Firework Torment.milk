@@ -1,0 +1,175 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 21/01/2026 at 11:33:37.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=2
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=17
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=2.002
+fWaveScale=2.503
+fWaveSmoothing=0.000
+fWaveParam=-0.000
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=smooth_reaction = int(rand(2));
+per_frame_1=q1 = smooth_reaction;
+per_frame_2=wm = if (bass>1.8, rand(1), wm);
+per_frame_3=wave_mystery = wm;
+per_frame_4=wave_a = bass+mid+treb == 0 ? 0 : 2.5;
+per_frame_5=wave_r = rand(1);
+per_frame_6=wave_g = rand(1);
+per_frame_7=wave_b = rand(1);
+warp_1=`sampler sampler_rand02;  // Random texture sampler
+warp_2=`
+warp_3=`shader_body
+warp_4=`{
+warp_5=`    // Get audio values
+warp_6=`    if (q1) {
+warp_7=`    bass = bass_att;
+warp_8=`    mid = mid_att;
+warp_9=`    treb = treb_att;
+warp_10=`    }    
+warp_11=`
+warp_12=`    // Create music-reactive distortion
+warp_13=`    float music_strength = bass * 0.4 + mid * 0.3 + treb * 0.3;
+warp_14=`    float distortion = music_strength * 0.15;
+warp_15=`    
+warp_16=`    // Sample random texture for glass pattern
+warp_17=`    float2 random_uv = float2(
+warp_18=`        sin(uv.x * 8.0 + bass * 2.0) * 0.1 + uv.x,
+warp_19=`        cos(uv.y * 6.0 + treb * 2.0) * 0.1 + uv.y
+warp_20=`    );
+warp_21=`    
+warp_22=`    // Get random values from texture
+warp_23=`    float4 random_sample = tex2D(sampler_rand02, random_uv);
+warp_24=`    
+warp_25=`    // Create broken glass pattern
+warp_26=`    float2 glass_uv = uv;
+warp_27=`    glass_uv.x += (random_sample.r - 0.5) * 0.025 * (0.5 + bass * 0.5);
+warp_28=`    glass_uv.y += (random_sample.g - 0.5) * 0.025 * (0.5 + treb * 0.5);
+warp_29=`    
+warp_30=`    // Sample original texture with glass distortion
+warp_31=`    float4 color = tex2D(sampler_main, glass_uv);
+warp_32=`    
+warp_33=`    // Create edge detection for glow effect
+warp_34=`    float2 pixel_size = float2(1.0 / 1920.0, 1.0 / 1080.0);
+warp_35=`    
+warp_36=`    // Sample surrounding pixels
+warp_37=`    float4 up = tex2D(sampler_main, glass_uv + float2(0, pixel_size.y));
+warp_38=`    float4 down = tex2D(sampler_main, glass_uv - float2(0, pixel_size.y));
+warp_39=`    float4 left = tex2D(sampler_main, glass_uv - float2(pixel_size.x, 0));
+warp_40=`    float4 right = tex2D(sampler_main, glass_uv + float2(pixel_size.x, 0));
+warp_41=`    
+warp_42=`    // Calculate edge strength (simplified Sobel)
+warp_43=`    float edge_strength = 0.0;
+warp_44=`    edge_strength += length(up - down) * 0.5;
+warp_45=`    edge_strength += length(left - right) * 0.5;
+warp_46=`    
+warp_47=`    // Audio-reactive edge threshold
+warp_48=`    float edge_threshold = 0.15 + mid * 0.1;
+warp_49=`    float edge = step(edge_threshold, edge_strength);
+warp_50=`    
+warp_51=`    // Create glowing edges
+warp_52=`    float3 glow_color = float3(0.2, 0.5, 1.0);  // Blue glow
+warp_53=`    glow_color.r += bass * 0.4;  // Bass adds red
+warp_54=`    glow_color.g += treb * 0.25;  // Treble adds green
+warp_55=`    
+warp_56=`    // Intensity based on audio
+warp_57=`    float glow_intensity = 0.5 + music_strength * 1.5;
+warp_58=`    float3 glow = glow_color * edge * glow_intensity;
+warp_59=`    
+warp_60=`    // Add crack lines using random texture
+warp_61=`    float2 crack_uv = uv;
+warp_62=`    float4 crack_sample = tex2D(sampler_rand02, crack_uv);
+warp_63=`    float crack_pattern = crack_sample.rgb;
+warp_64=`    
+warp_65=`    // Threshold for crack lines (audio reactive)
+warp_66=`    float crack_threshold = 0.7 - mid * 0.2;
+warp_67=`    float cracks = step(crack_threshold, crack_pattern);
+warp_68=`    
+warp_69=`    // Darken cracks
+warp_70=`    float3 crack_color = color.rgb * (1 - cracks * .5);
+warp_71=`    
+warp_72=`    // Combine everything
+warp_73=`    float3 final_color = crack_color;
+warp_74=`    final_color = lerp(final_color, glow_color, edge * 0.7 * glow_intensity);
+warp_75=`    
+warp_76=`    // Add subtle pulse to entire effect
+warp_77=`    float pulse = 0.8 + sin(time * .35 + bass * 3) * .25;
+warp_78=`    final_color *= pulse;
+warp_79=`    
+warp_80=`    // Mix with original color based on audio
+warp_81=`    float mix_amount = 0.5 + music_strength * 0.3;
+warp_82=`    final_color = lerp(color.rgb, final_color, mix_amount);
+warp_83=`    
+warp_84=`    // Return final color with original alpha
+warp_85=`    ret = float4(final_color, color.a);
+warp_86=`}
+comp_1=`shader_body{ret=GetPixel(uv);}

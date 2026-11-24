@@ -1,0 +1,174 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 05/02/2026 at 15:23:50.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=smooth_reaction = int(rand(2));
+per_frame_init_2=randtemp1 = rand(1) * .35;
+per_frame_init_3=randtemp2 = rand(1) * .35;
+per_frame_init_4=randtemp3 = rand(1) * .35;
+per_frame_init_5=q2 = if(int(rand(2)), -randtemp1, randtemp1);
+per_frame_init_6=q3 = if(int(rand(2)), -randtemp2, randtemp2);
+per_frame_init_7=q4 = if(int(rand(2)), -randtemp3, randtemp3);
+per_frame_1=q1 = smooth_reaction;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`// Comp shader only - 3D Music-Reactive Aurora Borealis
+comp_2=`// Uses random texture for natural variations
+comp_3=`
+comp_4=`sampler sampler_rand00;  // Random noise texture
+comp_5=`sampler sampler_rand01;
+comp_6=`sampler sampler_rand02;
+comp_7=`sampler sampler_rand03;
+comp_8=`
+comp_9=`shader_body {
+comp_10=`    // Get audio parameters
+comp_11=`    if (q1)
+comp_12=`    {
+comp_13=`        bass = bass_att;
+comp_14=`        mid = mid_att;
+comp_15=`        treb = treb_att;
+comp_16=`    }
+comp_17=`    time = time * 0.5;  // Slower time for natural movement
+comp_18=`    
+comp_19=`    // Get random values from texture
+comp_20=`    float2 tex = uv;
+comp_21=`    uv = tex * 2.0 - 1.0;
+comp_22=`    float2 randUV = float2(tex.x + time * q2, tex.y - time * q3);
+comp_23=`    float rand1 = tex2D(sampler_rand00, randUV).r;
+comp_24=`    float rand2 = tex2D(sampler_rand01, randUV * 1.7).g;
+comp_25=`    float rand3 = tex2D(sampler_rand02, randUV * 2.5).b;
+comp_26=`    
+comp_27=`    // Create 3D aurora layers
+comp_28=`    float3 aurora = float3(0, 0, 0);
+comp_29=`    float intensity = 0.0;
+comp_30=`    
+comp_31=`    // Layer 1 - Base aurora (music-reactive)
+comp_32=`    float layer1 = sin(uv.x * 8.0 + time * 0.5 + rand1 * 2.0) * 0.5 + 0.5;
+comp_33=`    layer1 = pow(layer1, 3.0);
+comp_34=`    layer1 *= sin(uv.y * 3.0 + time * 0.2) * 0.5 + 0.5;
+comp_35=`    layer1 *= (0.7 + bass * 0.3);  // React to bass
+comp_36=`    aurora += float3(0.1, 0.4, 0.8) * layer1 * 0.8;
+comp_37=`    
+comp_38=`    // Layer 2 - Mid-range reactive layer
+comp_39=`    float layer2 = sin(uv.x * 12.0 + time * 0.4 + rand2 * 3.0) * 0.5 + 0.5;
+comp_40=`    layer2 = pow(layer2, 4.0);
+comp_41=`    layer2 *= sin(uv.y * 4.0 + time * 0.15 + mid * 0.5) * 0.5 + 0.5;
+comp_42=`    layer2 *= (0.6 + mid * 0.4);  // React to mid frequencies
+comp_43=`    aurora += float3(0.3, 0.7, 1.0) * layer2 * 0.6;
+comp_44=`    
+comp_45=`    // Layer 3 - Treble-reactive highlights
+comp_46=`    float layer3 = sin(uv.x * 16.0 + time * 0.5 + rand3 * 4.0) * 0.5 + 0.5;
+comp_47=`    layer3 = pow(layer3, 5.0);
+comp_48=`    layer3 *= sin(uv.y * 5.0 + time * 0.1 + treb * 0.3) * 0.5 + 0.5;
+comp_49=`    layer3 *= (0.5 + treb * 0.5);  // React to treble
+comp_50=`    aurora += float3(0.8, 1.0, 1.0) * layer3 * 0.4;
+comp_51=`    
+comp_52=`    // Create depth effect with parallax
+comp_53=`    float depth = 1.0 - length(uv) * 0.7;
+comp_54=`    depth = pow(depth, 2.0);
+comp_55=`    
+comp_56=`    // Add atmospheric glow
+comp_57=`    float glow = sin(uv.x * 3.0 + time * 0.1) * 0.3 + 0.7;
+comp_58=`    glow *= sin(uv.y * 2.0 + time * 0.05) * 0.3 + 0.7;
+comp_59=`    glow *= depth;
+comp_60=`    
+comp_61=`    // Combine all layers with depth
+comp_62=`    float3 color = aurora * depth * 1.5;
+comp_63=`    color += float3(0.1, 0.3, 0.5) * glow * 0.3;
+comp_64=`    
+comp_65=`    // Add pulsating effect based on overall music
+comp_66=`    float pulse = (bass + mid + treb) / 3.0;
+comp_67=`    color *= (1.0 + pulse * 0.2);
+comp_68=`    
+comp_69=`    // Soft vignette
+comp_70=`    float vignette = 1.0 - length(uv) * 0.3;
+comp_71=`    vignette = pow(vignette, 1.5);
+comp_72=`    color *= vignette;
+comp_73=`    
+comp_74=`    // Add subtle noise texture
+comp_75=`    float noise = tex2D(sampler_rand03, tex * 3.0 + time * q4).r * 0.275 + 0.95;
+comp_76=`    color *= noise;
+comp_77=`    
+comp_78=`    // Ensure brightness doesn't clip
+comp_79=`    color = min(color, 1.0);
+comp_80=`    
+comp_81=`    ret = float4(color, 1.0);
+comp_82=`}

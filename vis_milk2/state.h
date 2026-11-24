@@ -40,13 +40,14 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#include "evallib/eval.h"
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 #include "md_defines.h"
+#include "shader_text_limits.h"
 
 // flags for CState::RecompileExpressions():
 #define RECOMPILE_PRESET_CODE  1
 #define RECOMPILE_WAVE_CODE    2
 #define RECOMPILE_SHAPE_CODE   4
 
-#define NUM_Q_VAR 32
+#define NUM_Q_VAR 64
 #define NUM_T_VAR 8
 
 #define MAX_BIGSTRING_LEN    32768
@@ -380,8 +381,8 @@ public:
     char			m_szPerFrameInit[MAX_BIGSTRING_LEN];
     char			m_szPerFrameExpr[MAX_BIGSTRING_LEN];
     char			m_szPerPixelExpr[MAX_BIGSTRING_LEN];
-    char            m_szWarpShadersText[MAX_BIGSTRING_LEN]; // pixel shader code
-    char            m_szCompShadersText[MAX_BIGSTRING_LEN]; // pixel shader code
+    char            m_szWarpShadersText[MAX_SHADER_TEXT_LEN]; // pixel shader code
+    char            m_szCompShadersText[MAX_SHADER_TEXT_LEN]; // pixel shader code
 	void			FreeVarsAndCode(bool bFree = true);
 	void			RegisterBuiltInVariables(int flags);
 	void			StripLinefeedCharsAndComments(char *src, char *dest);
@@ -432,6 +433,8 @@ public:
 	// new in BeatDrop v1.4.1:
 	double *var_pf_mousex, * var_pf_mousey, *var_pf_mousedown, *var_pf_mouseclick;
 	double *var_pf_ctrllt, *var_pf_ctrlrt, *var_pf_ctrldn, *var_pf_ctrlup;
+	// new in BeatDrop v1,5:
+	double *var_pf_year, *var_pf_month, *var_pf_day, *var_pf_weekday, *var_pf_hour, *var_pf_minute, *var_pf_second, *var_pf_milliseconds, *var_pf_totalseconds;
 
 	// for per-vertex expression evaluation:
 		NSEEL_VMCTX m_pv_eel;

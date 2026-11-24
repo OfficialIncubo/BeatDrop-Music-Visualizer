@@ -1,0 +1,128 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+per_frame_init_1=travel = 0;
+per_frame_init_2=last = 0;
+per_frame_init_3=bar = 9;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=travel = travel + (0.9 + 1.6*bass_att)/fps;
+per_frame_5=beat = (bass > 1.25)*((time - last) > 0.3);
+per_frame_6=last = if(beat, time, last);
+per_frame_7=bar = if(beat, 0, bar + 1.2/fps);
+per_frame_8=q1 = travel;
+per_frame_9=q2 = bar;
+per_frame_10=q3 = treb_att;
+per_frame_11=q4 = 0.5 + 0.5*sin(time*0.04 + mid_att*0.3);
+per_frame_12=q5 = time;
+warp_1=`sampler sampler_pw_noise_lq;
+warp_2=`shader_body
+warp_3=`{
+warp_4=`  float2 p = (uv - 0.5) * aspect.xy;
+warp_5=`  float m = max(abs(p.x), abs(p.y)) + 0.0001;
+warp_6=`  float z = 0.22 / m;
+warp_7=`  float side = abs(p.x) > abs(p.y) ? (p.x > 0.0 ? 0.0 : 2.0) : (p.y > 0.0 ? 1.0 : 3.0);
+warp_8=`  float t = abs(p.x) > abs(p.y) ? p.y / m : p.x / m;
+warp_9=`  float u = side + t * 0.5 + 0.5;
+warp_10=`  float2 w = float2(u * 6.0, z * 1.4 + q1);
+warp_11=`  float2 cell = floor(w);
+warp_12=`  float2 f = w - cell;
+warp_13=`  float aa = 0.012 * z + 0.02;
+warp_14=`  float edge = saturate(1.0 - min(min(f.x, 1.0 - f.x), min(f.y, 1.0 - f.y)) / aa);
+warp_15=`  float4 h = tex2D(sampler_pw_noise_lq, (cell + 0.5) / 256.0);
+warp_16=`  float2 g = floor(f * float2(6.0, 4.0));
+warp_17=`  float glyph = step(0.55, tex2D(sampler_pw_noise_lq, (g + cell * 7.0 + floor(q5 * (2.0 + h.y * 6.0)) * 13.0) / 256.0).x);
+warp_18=`  float inner = step(0.12, f.x) * step(f.x, 0.88) * step(0.15, f.y) * step(f.y, 0.85);
+warp_19=`  float active = step(0.72 - 0.12 * q3, h.x);
+warp_20=`  float3 cA = float3(0.1, 0.75, 1.0);
+warp_21=`  float3 cB = float3(1.0, 0.55, 0.15);
+warp_22=`  float3 c = lerp(cA, cB, saturate(q4 + (h.z - 0.5) * 0.4));
+warp_23=`  float3 col = c * edge * 0.55;
+warp_24=`  col += c * glyph * inner * active * 0.7;
+warp_25=`  col += float3(0.02, 0.03, 0.05);
+warp_26=`  float ring = exp(-pow((z - (9.0 - q2 * 9.0)) * 1.2, 2.0)) * saturate(1.0 - q2 * 0.9);
+warp_27=`  col += float3(0.85, 0.95, 1.0) * ring * (0.4 + edge * 0.8);
+warp_28=`  float fog = exp(-z * 0.16) * saturate(m * 6.0);
+warp_29=`  col *= fog;
+warp_30=`  col += c * 0.04 / (1.0 + m * 30.0);
+warp_31=`  float3 scene = 1.0 - exp(-col * 1.6);
+warp_32=`  float2 back = 0.5 + (uv - 0.5) * 0.985;
+warp_33=`  ret = max(scene, tex2D(sampler_main, back).xyz * pow(0.72, q30));
+warp_34=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`  float3 m = tex2D(sampler_main, uv).xyz;
+comp_4=`  ret = m + GetBlur1(uv) * 0.35 + GetBlur2(uv) * 0.25;
+comp_5=`}

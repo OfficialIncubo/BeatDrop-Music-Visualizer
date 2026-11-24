@@ -35,6 +35,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #include "plugin.h"
+#include "unicode_text.h"
+#include "MediaTexture.h"
 #include "resource.h"
 #include "support.h"
 //#include "evallib\eval.h"		// for math. expr. eval - thanks Francis! (in SourceOffSite, it's the 'vis_avs\evallib' project.)
@@ -46,6 +48,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define D3DCOLOR_RGBA_01(r,g,b,a) D3DCOLOR_RGBA(((int)(r*255)),((int)(g*255)),((int)(b*255)),((int)(a*255)))
 #define FRAND ((rand() % 7381)/7380.0f)
+extern std::mt19937_64 gen;
 
 #define VERT_CLIP 0.75f		// warning: top/bottom can get clipped if you go < 0.65!
 
@@ -101,7 +104,12 @@ static void MungeFPCW( WORD *pwOldCW )
 
 void RestoreFPCW(WORD wSave)
 {
+#if defined(_M_IX86)
     __asm fldcw wSave
+#else
+    // x64 uses SSE2 floating-point control; the legacy x87 control word is irrelevant.
+    (void)wSave;
+#endif
 }
 
 int GetNumToSpawn(float fTime, float fDeltaT, float fRate, float fRegularity, int iNumSpawnedSoFar)
@@ -238,6 +246,8 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
 {
     if (!m_lpDDSTitle)  // this *can* be NULL, if not much video mem!
         return false;
+    if (m_supertext.bIsSongTitle && !m_d3dx_title_font_doublesize)
+        return false;
 
 	if (m_supertext.szTextW[0]==0)
 		return false;
@@ -247,7 +257,7 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
         return false;
 
 	wchar_t szTextToDraw[512];
-	swprintf(szTextToDraw, L" %s ", m_supertext.szTextW);  //add a space @ end for italicized fonts; and at start, too, because it's centered!
+	lstrcpynW(szTextToDraw, m_supertext.szTextW, _countof(szTextToDraw));
 
     // Remember the original backbuffer and zbuffer
     LPDIRECT3DSURFACE9 pBackBuffer=NULL;//, pZBuffer=NULL;
@@ -367,7 +377,7 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
 
                     // compute size of text if drawn w/font of THIS size:
 		            temp = rect;
-		            int h = d3dx_font->DrawTextW(NULL, szTextToDraw, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX*/, 0xFFFFFFFF);
+		            int h = BeatDropText::Draw(d3dx_font, szTextToDraw, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX*/, 0xFFFFFFFF);
 
                     // adjust & prepare to reiterate:
 		            if (temp.right >= rect.right || h > rect.bottom-rect.top)
@@ -385,12 +395,12 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
         if (gdi_font && d3dx_font)
         {
 	        // do actual drawing + set m_supertext.nFontSizeUsed; use 'lo' size
-            int h = d3dx_font->DrawTextW(NULL, szTextToDraw, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX*/ | DT_CENTER, 0xFFFFFFFF);
+            int h = BeatDropText::Draw(d3dx_font, szTextToDraw, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX*/ | DT_CENTER, 0xFFFFFFFF);
 	        temp.left   = 0;
 	        temp.right  = m_nTitleTexSizeX;  // now allow text to go all the way over, since we're actually drawing!
             temp.top    = m_nTitleTexSizeY/2 - h/2;
             temp.bottom = m_nTitleTexSizeY/2 + h/2;
-	        m_supertext.nFontSizeUsed = d3dx_font->DrawTextW(NULL, szTextToDraw, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX*/ | DT_CENTER, 0xFFFFFFFF);
+	        m_supertext.nFontSizeUsed = BeatDropText::Draw(d3dx_font, szTextToDraw, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX*/ | DT_CENTER, 0xFFFFFFFF);
 
             ret = true;
         }
@@ -405,53 +415,138 @@ bool CPlugin::RenderStringToTitleTexture()	// m_szSongMessage
     }
     else // song title
     {
-        wchar_t* str = m_supertext.szTextW;
-
-        // clip the text manually...
-        // NOTE: DT_END_ELLIPSIS CAUSES NOTHING TO DRAW, IF YOU USE W/D3DX9!
-        int h;
-        int max_its = 6;
-        int it = 0;
-        while (it < max_its)
+        std::wstring firstLine = m_supertext.szTextW;
+        std::wstring secondLine = m_supertext.szTextLine2W;
+        const bool separateMetadata = m_supertext.bSongTitleTwoLines && !secondLine.empty();
+        const UINT titleFlags = DT_SINGLELINE | DT_NOPREFIX;
+        auto measureLine = [&](LPD3DXFONT font, const std::wstring& line, int& width)
         {
-            it++;
+            RECT measured = rect;
+            const int height = BeatDropText::Draw(font, line.c_str(), -1, &measured,
+                titleFlags | DT_CALCRECT, 0xFFFFFFFF);
+            width = measured.right - measured.left;
+            return height;
+        };
 
-            if (!str[0])
-                break;
-
-            RECT temp = rect;
-            h = m_d3dx_title_font_doublesize->DrawTextW(NULL, str, -1, &temp, DT_SINGLELINE | DT_CALCRECT /*| DT_NOPREFIX | DT_END_ELLIPSIS*/, 0xFFFFFFFF);
-            if (temp.right-temp.left <= m_nTitleTexSizeX)
-                break;
-
-			// 11/01/2009 DO - disabled as it was causing to users 'random' titles against
-			// what is expected so we now just work on the ellipse at the end approach which
-
-            // manually clip the text... chop segments off the front
-            /*wchar_t* p = wcsstr(str, L" - ");
-            if (p)
-            {
-                str = p+3;
-                continue;
-            }*/
-
-            // no more stuff to chop off the front; chop off the end w/ ...
-            int len = wcslen(str);
-            float fPercentToKeep = 0.91f * m_nTitleTexSizeX / (float)(temp.right-temp.left);
-            if (len > 8)
-                lstrcpyW( &str[ (int)(len*fPercentToKeep) ], L"...");
-            break;
+        LPD3DXFONT firstFont = m_d3dx_title_font_doublesize;
+        LPD3DXFONT secondFont = firstFont;
+        BeatDropText::ComPtr<ID3DXFont> smallerTitleFont;
+        BeatDropText::ComPtr<ID3DXFont> fittedFirstFont;
+        BeatDropText::ComPtr<ID3DXFont> fittedSecondFont;
+        D3DXFONT_DESCW fontDesc = {};
+        const bool hasFontDesc = SUCCEEDED(firstFont->GetDescW(&fontDesc));
+        if (separateMetadata && hasFontDesc)
+        {
+            D3DXFONT_DESCW titleDesc = fontDesc;
+            titleDesc.Height = (std::max)(1, (titleDesc.Height * 2 + 2) / 3);
+            if (SUCCEEDED(D3DXCreateFontIndirectW(lpDevice, &titleDesc, &smallerTitleFont.p)))
+                secondFont = smallerTitleFont.p;
+        }
+        else if (!separateMetadata)
+        {
+            secondLine.clear();
         }
 
-        // now actually draw it
-        RECT temp;
-        temp.left   = 0;
-	    temp.right  = m_nTitleTexSizeX;  // now allow text to go all the way over, since we're actually drawing!
-        temp.top    = m_nTitleTexSizeY/2 - h/2;
-        temp.bottom = m_nTitleTexSizeY/2 + h/2;
+        // Leave room for italic overhang and the animation shadow.
+        const int maximumWidth = m_nTitleTexSizeX * 19 / 20;
+        int width = 0;
+        measureLine(firstFont, firstLine, width);
+        if (!separateMetadata && width > maximumWidth)
+        {
+            // Find a word boundary that balances the measured widths. Keep
+            // both lines at the same font size for a single combined title.
+            const wchar_t* whitespace = L" \t\r\n";
+            size_t firstEnd = 0;
+            size_t secondStart = 0;
+            int bestWidth = width;
+            for (size_t split = firstLine.find_first_of(whitespace, 1);
+                split != std::wstring::npos;)
+            {
+                const size_t next = firstLine.find_first_not_of(whitespace, split);
+                if (next == std::wstring::npos)
+                    break;
+                int leftWidth = 0, rightWidth = 0;
+                measureLine(firstFont, firstLine.substr(0, split), leftWidth);
+                measureLine(firstFont, firstLine.substr(next), rightWidth);
+                const int widest = (std::max)(leftWidth, rightWidth);
+                if (leftWidth > 0 && rightWidth > 0 && widest < bestWidth)
+                {
+                    bestWidth = widest;
+                    firstEnd = split;
+                    secondStart = next;
+                }
+                split = firstLine.find_first_of(whitespace, next);
+            }
+            if (firstEnd > 0)
+            {
+                secondLine = firstLine.substr(secondStart);
+                firstLine.resize(firstEnd);
+            }
+        }
 
-        // NOTE: DT_END_ELLIPSIS CAUSES NOTHING TO DRAW, IF YOU USE W/D3DX9!
-	    m_supertext.nFontSizeUsed = m_d3dx_title_font_doublesize->DrawTextW(NULL, str, -1, &temp, DT_SINGLELINE /*| DT_NOPREFIX | DT_END_ELLIPSIS*/ | DT_CENTER , 0xFFFFFFFF);
+        int firstHeight = measureLine(firstFont, firstLine, width);
+        int secondHeight = secondLine.empty() ? 0 : measureLine(secondFont, secondLine, width);
+        const int maximumHeight = m_nTitleTexSizeY * 19 / 21;
+        const int combinedHeight = firstHeight + secondHeight;
+        if (combinedHeight > maximumHeight && maximumHeight > 0 && hasFontDesc && fontDesc.Height > 0)
+        {
+            fontDesc.Height = (std::max)(1, fontDesc.Height * maximumHeight / combinedHeight);
+            D3DXFONT_DESCW secondDesc = fontDesc;
+            if (separateMetadata)
+                secondDesc.Height = (std::max)(1, (fontDesc.Height * 2 + 2) / 3);
+            if (SUCCEEDED(D3DXCreateFontIndirectW(lpDevice, &fontDesc, &fittedFirstFont.p)) &&
+                (secondLine.empty() ||
+                 SUCCEEDED(D3DXCreateFontIndirectW(lpDevice, &secondDesc, &fittedSecondFont.p))))
+            {
+                firstFont = fittedFirstFont.p;
+                secondFont = fittedSecondFont.p;
+            }
+        }
+
+        // Fit display copies only. Rebuilding the texture must use the original
+        // metadata, and an ellipsis must never leave half a surrogate pair.
+        auto fitLine = [&](LPD3DXFONT font, std::wstring& line)
+        {
+            int measuredWidth = 0;
+            int height = measureLine(font, line, measuredWidth);
+            if (measuredWidth <= maximumWidth)
+                return height;
+            for (size_t keep = line.size(); keep > 0;)
+            {
+                --keep;
+                if (keep > 0 && line[keep] >= 0xDC00 && line[keep] <= 0xDFFF &&
+                    line[keep - 1] >= 0xD800 && line[keep - 1] <= 0xDBFF)
+                    --keep;
+                std::wstring fitted = line.substr(0, keep) + L"...";
+                height = measureLine(font, fitted, measuredWidth);
+                if (height > 0 && measuredWidth <= maximumWidth)
+                {
+                    line = std::move(fitted);
+                    return height;
+                }
+            }
+            return 0;
+        };
+
+        firstHeight = fitLine(firstFont, firstLine);
+        secondHeight = secondLine.empty() ? 0 : fitLine(secondFont, secondLine);
+        ret = firstHeight > 0 && (secondLine.empty() || secondHeight > 0) &&
+            firstHeight + secondHeight <= m_nTitleTexSizeY;
+        if (ret)
+        {
+            const int top = (m_nTitleTexSizeY - firstHeight - secondHeight) / 2;
+            RECT firstRect = { 0, top, m_nTitleTexSizeX, top + firstHeight };
+            m_supertext.nFontSizeUsed = BeatDropText::Draw(firstFont, firstLine.c_str(), -1,
+                &firstRect, titleFlags | DT_CENTER, 0xFFFFFFFF);
+            ret = m_supertext.nFontSizeUsed > 0;
+            if (ret && !secondLine.empty())
+            {
+                RECT secondRect = { 0, top + firstHeight, m_nTitleTexSizeX,
+                    top + firstHeight + secondHeight };
+                ret = BeatDropText::Draw(secondFont, secondLine.c_str(), -1,
+                    &secondRect, titleFlags | DT_CENTER, 0xFFFFFFFF) > 0;
+            }
+        }
     }
 
     // Change the rendertarget back to the original setup
@@ -580,6 +675,16 @@ void CPlugin::LoadPerFrameEvallibVars(CState* pState)
 	*pState->var_pf_ctrlrt        = m_CtrlRight ? 1.0 : 0.0;
 	*pState->var_pf_ctrldn        = m_CtrlDown ? 1.0 : 0.0;
 	*pState->var_pf_ctrlup        = m_CtrlUp ? 1.0 : 0.0;
+	// new in BeatDrop v1.5:
+	*pState->var_pf_year          = m_year;
+	*pState->var_pf_month         = m_month;
+	*pState->var_pf_day           = m_day;
+	*pState->var_pf_weekday       = m_weekday;
+	*pState->var_pf_hour          = m_hour;
+	*pState->var_pf_minute        = m_minute;
+	*pState->var_pf_second        = m_second;
+	*pState->var_pf_milliseconds  = m_milliseconds;
+	*pState->var_pf_totalseconds  = m_totalSeconds;
 }
 
 void CPlugin::RunPerFrameEquations(int code)
@@ -684,9 +789,6 @@ void CPlugin::RunPerFrameEquations(int code)
 		*pState->var_pv_ctrlrt      = *pState->var_pf_ctrlrt;
 		*pState->var_pv_ctrldn      = *pState->var_pf_ctrldn;
 		*pState->var_pv_ctrlup      = *pState->var_pf_ctrlup;
-		*pState->var_pv_decay_r     = *pState->var_pf_decay_r;
-		*pState->var_pv_decay_g     = *pState->var_pf_decay_g;
-		*pState->var_pv_decay_b     = *pState->var_pf_decay_b;
         *pState->var_pv_meshx       = (double)m_nGridX;
         *pState->var_pv_meshy       = (double)m_nGridY;
         *pState->var_pv_pixelsx     = (double)GetWidth();
@@ -794,14 +896,20 @@ void CPlugin::RunPerFrameEquations(int code)
         *m_pState->var_pf_blur3max  = mix*(*m_pState->var_pf_blur3max ) + mix2*(*m_pOldState->var_pf_blur3max );
         *m_pState->var_pf_blur1_edge_darken = mix*(*m_pState->var_pf_blur1_edge_darken) + mix2*(*m_pOldState->var_pf_blur1_edge_darken);
 		// added in BeatDrop v1.4.1:
-		*m_pState->var_pf_mousex = mix * (*m_pState->var_pf_mousex) + mix2 * (*m_pOldState->var_pf_mousex);
-		*m_pState->var_pf_mousey = mix * (*m_pState->var_pf_mousey) + mix2 * (*m_pOldState->var_pf_mousey);
-		*m_pState->var_pf_mousedown = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_mousedown : *m_pState->var_pf_mousedown;
-		*m_pState->var_pf_mouseclick = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_mouseclick : *m_pState->var_pf_mouseclick;
+		*m_pState->var_pf_mousex       = mix * (*m_pState->var_pf_mousex) + mix2 * (*m_pOldState->var_pf_mousex);
+		*m_pState->var_pf_mousey       = mix * (*m_pState->var_pf_mousey) + mix2 * (*m_pOldState->var_pf_mousey);
+		*m_pState->var_pf_mousedown    = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_mousedown : *m_pState->var_pf_mousedown;
+		*m_pState->var_pf_mouseclick   = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_mouseclick : *m_pState->var_pf_mouseclick;
 		// added in BeatDrop v1.5:
-		*m_pState->var_pf_decay_r = mix * (*m_pState->var_pf_decay_r) + mix2 * (*m_pOldState->var_pf_decay_r);
-		*m_pState->var_pf_decay_g = mix * (*m_pState->var_pf_decay_g) + mix2 * (*m_pOldState->var_pf_decay_g);
-		*m_pState->var_pf_decay_b = mix * (*m_pState->var_pf_decay_b) + mix2 * (*m_pOldState->var_pf_decay_b);
+		*m_pState->var_pf_year         = mix*(*m_pState->var_pf_year) + mix2*(*m_pOldState->var_pf_year);
+		*m_pState->var_pf_month        = mix*(*m_pState->var_pf_month) + mix2*(*m_pOldState->var_pf_month);
+		*m_pState->var_pf_day          = mix*(*m_pState->var_pf_day) + mix2*(*m_pOldState->var_pf_day);
+		*m_pState->var_pf_weekday      = mix*(*m_pState->var_pf_weekday) + mix2*(*m_pOldState->var_pf_weekday);
+		*m_pState->var_pf_hour         = mix*(*m_pState->var_pf_hour) + mix2*(*m_pOldState->var_pf_hour);
+		*m_pState->var_pf_minute       = mix*(*m_pState->var_pf_minute) + mix2*(*m_pOldState->var_pf_minute);
+		*m_pState->var_pf_second       = mix*(*m_pState->var_pf_second) + mix2*(*m_pOldState->var_pf_second);
+		*m_pState->var_pf_milliseconds = mix*(*m_pState->var_pf_milliseconds) + mix2*(*m_pOldState->var_pf_milliseconds);
+		*m_pState->var_pf_totalseconds = mix*(*m_pState->var_pf_totalseconds) + mix2*(*m_pOldState->var_pf_totalseconds);
     }
 }
 
@@ -827,7 +935,8 @@ void CPlugin::RenderFrame(int bRedraw)
 
 	if (m_fNextPresetTime < 0)
 	{
-		float dt = m_fTimeBetweenPresetsRand * (rand()%1000)*0.001f;
+		std::uniform_real_distribution<float> dist(0.0f, 1.0f);
+		float dt = m_fTimeBetweenPresetsRand * dist(gen);
 		m_fNextPresetTime = GetTime() + m_fBlendTimeAuto + m_fTimeBetweenPresets + dt;
 	}
 
@@ -875,6 +984,8 @@ void CPlugin::RenderFrame(int bRedraw)
 		    if (m_pState->m_fBlendProgress > 1.0f)
 		    {
 			    m_pState->m_bBlending = false;
+                m_OldShaders.comp.Clear();
+                m_OldShaders.warp.Clear();
 		    }
 	    }
 
@@ -935,6 +1046,15 @@ void CPlugin::RenderFrame(int bRedraw)
     LPDIRECT3DDEVICE9 lpDevice = GetDevice();
     if (!lpDevice)
         return;
+
+    UpdateLiveTextures();
+
+    std::wstring webcamError, webcamNotice;
+    m_webcam.Update(lpDevice, webcamError, &webcamNotice);
+    if (!webcamError.empty())
+        AddErrorNotif(webcamError.data());
+    else if (!webcamNotice.empty())
+        AddNotif(webcamNotice.data());
 
     // Remember the original backbuffer and zbuffer
     LPDIRECT3DSURFACE9 pBackBuffer=NULL;//, pZBuffer=NULL;
@@ -1037,6 +1157,11 @@ void CPlugin::RenderFrame(int bRedraw)
         lpDevice->Clear(0, NULL, D3DCLEAR_TARGET, 0x00000000, 1.0f, 0);
     }
 
+    // Feed the camera into the old frame before warping it. The next frame
+    // retains this image, so preset distortion and feedback affect the feed.
+    if (m_webcam.GetMode() == BeatDropWebcam::DeepBurn)
+        m_webcam.DrawBurn(lpDevice, m_nTexSizeX, m_nTexSizeY, m_fWebcamBurnOpacity, fDeltaT);
+
     // set up to render [from VS0] to VS1.
     {
         IDirect3DSurface9* pNewTarget = NULL;
@@ -1063,6 +1188,10 @@ void CPlugin::RenderFrame(int bRedraw)
     ComputeGridAlphaValues();
 
 	// do the warping for this frame [warp shader]
+    // The optional no-burn camera pass reuses this geometry and these shader
+    // settings, without executing preset equations a second time.
+    auto renderWarp = [&]()
+    {
     if (!m_pState->m_bBlending)
     {
         // no blend
@@ -1104,6 +1233,9 @@ void CPlugin::RenderFrame(int bRedraw)
         }
     }
 
+    };
+    renderWarp();
+
     if (m_nMaxPSVersion > 0)
 	    BlurPasses();
 
@@ -1123,12 +1255,115 @@ void CPlugin::RenderFrame(int bRedraw)
 		ShowSongTitleAnim(m_nTexSizeX, m_nTexSizeY, 1.0f);
 	}
 
+    IDirect3DTexture9* cleanFeedback = m_lpVS[1];
+    IDirect3DTexture9* cleanInput = m_lpVS[0];
+    bool webcamDisplayPass = false;
+    // Compiled sampler bindings tell us whether changing the warp input can
+    // affect its output. Procedural warps need no camera or baseline replay:
+    // both would produce identical pixels and cancel out in BlendDeepScene.
+    const auto warpSamplesFeedback = [](const PShaderInfo& shader)
+    {
+        for (const auto code : shader.params.m_texcode)
+            if (code == TEX_VS) return true;
+        return false;
+    };
+    const bool cameraAffectsWarp =
+        !bNewPresetUsesWarpShader || warpSamplesFeedback(m_shaders.warp) ||
+        (m_pState->m_bBlending &&
+            (!bOldPresetUsesWarpShader || warpSamplesFeedback(m_OldShaders.warp)));
+    if (m_webcam.GetMode() == BeatDropWebcam::Deep && cameraAffectsWarp &&
+        m_webcam.PrepareDeepInput(lpDevice, cleanFeedback, m_fWebcamDeepOpacity))
+    {
+        IDirect3DSurface9* cameraTarget = nullptr;
+        if (SUCCEEDED(m_webcam.GetDeepOutput()->GetSurfaceLevel(0, &cameraTarget)))
+        {
+            for (DWORD stage = 0; stage < 16; ++stage) lpDevice->SetTexture(stage, nullptr);
+            if (SUCCEEDED(lpDevice->SetRenderTarget(0, cameraTarget)))
+            {
+                lpDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+                lpDevice->Clear(0, nullptr, D3DCLEAR_TARGET, 0, 1, 0);
+                m_lpVS[0] = m_webcam.GetDeepInput();
+                renderWarp();
+                // Measure the warp shader's output with black input as well.
+                // Procedural shader color must not be added a second time with
+                // the camera pass (even shaders that never sample sampler_main).
+                IDirect3DSurface9* blackInput = nullptr;
+                IDirect3DSurface9* baselineTarget = nullptr;
+                bool baselineReady = false;
+                for (DWORD stage = 0; stage < 16; ++stage) lpDevice->SetTexture(stage, nullptr);
+                if (SUCCEEDED(m_webcam.GetDeepInput()->GetSurfaceLevel(0, &blackInput)) &&
+                    SUCCEEDED(m_webcam.GetDeepBaseline()->GetSurfaceLevel(0, &baselineTarget)) &&
+                    SUCCEEDED(lpDevice->SetRenderTarget(0, blackInput)))
+                {
+                    lpDevice->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+                    if (SUCCEEDED(lpDevice->Clear(0, nullptr, D3DCLEAR_TARGET, 0, 1, 0)) &&
+                        SUCCEEDED(lpDevice->SetRenderTarget(0, baselineTarget)))
+                    {
+                        lpDevice->Clear(0, nullptr, D3DCLEAR_TARGET, 0, 1, 0);
+                        renderWarp();
+                        baselineReady = true;
+                    }
+                }
+                SafeRelease(blackInput);
+                SafeRelease(baselineTarget);
+                for (DWORD stage = 0; stage < 16; ++stage) lpDevice->SetTexture(stage, nullptr);
+                m_lpVS[0] = cleanInput;
+                baselineReady = baselineReady && SUCCEEDED(lpDevice->SetRenderTarget(0, cameraTarget));
+                if (baselineReady)
+                    m_webcam.BlendDeepScene(lpDevice, cleanFeedback);
+
+                // Both fixed-function and shader composites sample this
+                // temporary scene. Neither persistent feedback pointer owns it.
+                if (baselineReady)
+                {
+                    m_lpVS[0] = m_lpVS[1] = m_webcam.GetDeepOutput();
+                    webcamDisplayPass = true;
+                }
+            }
+            cameraTarget->Release();
+        }
+    }
+
     // Change the rendertarget back to the original setup
     lpDevice->SetTexture(0, NULL);
     lpDevice->SetRenderTarget(0,  pBackBuffer );
 	 //lpDevice->SetDepthStencilSurface( pZBuffer );
     SafeRelease(pBackBuffer);
     //SafeRelease(pZBuffer);
+
+    const bool webcamTop = m_webcam.GetMode() == BeatDropWebcam::Top;
+    bool hasSprites = false;
+    for (int slot = 0; slot < NUM_TEX; ++slot)
+        if (m_texmgr.m_tex[slot].pSurface || m_texmgr.m_tex[slot].pMedia) {
+            hasSprites = true;
+            break;
+        }
+    const bool deferHighlights = webcamTop || hasSprites || bSpoutOut;
+    const bool hasShaderComposite = bNewPresetUsesCompShader ||
+        (m_pState->m_bBlending && bOldPresetUsesCompShader);
+    bool highlightsExpanded = false;
+    auto showLegacyComposite = [&]() {
+        // Only the classic pass needs UNORM gamma/filter semantics. Restore
+        // FP16 before a shader pass blends into it, so its HDR values survive
+        // from the first transition frame through the last, in either direction.
+        const bool legacy = m_hdr.Active() && m_hdr.BeginLegacyComposite(lpDevice);
+        if (m_hdr.Active() && !legacy) {
+            m_bHdr=false;m_hdr.Reset();
+            std::wstring error=L"HDR legacy composite unavailable; SDR output restored.";
+            AddErrorNotif(error.data());
+        }
+        ShowToUser_NoShaders();
+        if (legacy) {
+            const bool expand = !hasShaderComposite && !deferHighlights;
+            if (!m_hdr.EndLegacyComposite(lpDevice, expand)) {
+                m_bHdr=false;m_hdr.Reset();
+                std::wstring error=L"HDR legacy composite transfer failed; SDR output restored.";
+                AddErrorNotif(error.data());
+            } else {
+                highlightsExpanded = expand;
+            }
+        }
+    };
 
     // show it to the user [composite shader]
     if (!m_pState->m_bBlending)
@@ -1137,7 +1372,7 @@ void CPlugin::RenderFrame(int bRedraw)
         if (bNewPresetUsesCompShader)
 	        ShowToUser_Shaders(1, false, false, false, false);
         else
-	        ShowToUser_NoShaders();//1, false, false, false, false);
+	        showLegacyComposite();//1, false, false, false, false);
     }
     else
     {
@@ -1158,7 +1393,7 @@ void CPlugin::RenderFrame(int bRedraw)
         }
         else if (!bOldPresetUsesCompShader && bNewPresetUsesCompShader)
         {
-	        ShowToUser_NoShaders();
+	        showLegacyComposite();
 	        ShowToUser_Shaders  (1, true,  false, true, false);
         }
         else if (bOldPresetUsesCompShader && !bNewPresetUsesCompShader)
@@ -1166,26 +1401,55 @@ void CPlugin::RenderFrame(int bRedraw)
             // THA FUNKY REVERSAL
 	        //ShowToUser_Shaders  (0);
 	        //ShowToUser_NoShaders(1);
-	        ShowToUser_NoShaders();
+	        showLegacyComposite();
 	        ShowToUser_Shaders  (0, true, true, true, true);
         }
         else if (!bOldPresetUsesCompShader && !bNewPresetUsesCompShader)
         {
             // special case - all the blending just happens in the blended state vars, so just pretend there's no blend.
-	        ShowToUser_NoShaders();//1, false, false, false, false);
+	        showLegacyComposite();//1, false, false, false, false);
         }
     }
 
-	// finally, render song title animation to back buffer
-	if (m_supertext.fStartTime >= 0 &&
-		!m_supertext.bRedrawSuperText)
-	{
-		ShowSongTitleAnim(GetWidth(), GetHeight(), min(fProgress, 0.9999f));
-        if (fProgress >= 1.0f)
-            m_supertext.fStartTime = -1.0f;	// 'off' state
-	}
+    if (webcamDisplayPass)
+    {
+        // Restore clean history before sprites can burn in or buffers flip.
+        m_lpVS[0] = cleanInput;
+        m_lpVS[1] = cleanFeedback;
+    }
 
-	DrawUserSprites();
+    if (webcamTop)
+        m_webcam.Draw(lpDevice, GetWidth(), GetHeight(), false, m_fWebcamTopOpacity);
+
+    // Sprites stay above the webcam, followed by title and lyrics overlays.
+    DrawUserSprites();
+
+    const bool drawTitle = m_supertext.fStartTime >= 0 && !m_supertext.bRedrawSuperText;
+    auto drawOverlays = [&](HdrPresenter* hdr) {
+        if (drawTitle)
+            ShowSongTitleAnim(GetWidth(), GetHeight(), min(fProgress, 0.9999f));
+        if (m_bEnableLyrics)
+            m_lyricsRenderer.Render(lpDevice, GetWidth(), GetHeight(), GetTime(), hdr);
+    };
+
+    // Spout receivers use SDR. Copy the composed scene before the display's
+    // highlight expansion and add the overlays at their SDR brightness.
+    if (bSpoutOut && m_hdr.BeginSpoutExport(lpDevice)) {
+        drawOverlays(nullptr);
+        m_hdr.EndSpoutExport(lpDevice);
+    }
+
+    if (!highlightsExpanded && m_hdr.Active() && !m_hdr.ExpandPresetHighlights(lpDevice)) {
+        m_bHdr=false;m_hdr.Reset();
+        std::wstring error=L"HDR preset highlight transfer failed; SDR output restored.";
+        AddErrorNotif(error.data());
+    }
+
+    drawOverlays(&m_hdr);
+    if (drawTitle && fProgress >= 1.0f)
+        m_supertext.fStartTime = -1.0f;
+
+    if (m_hdr.Active()) m_hdr.CaptureSdrExport(lpDevice);
 
 	// flip buffers
 	IDirect3DTexture9* pTemp = m_lpVS[0];
@@ -1210,6 +1474,10 @@ void CPlugin::RenderFrame(int bRedraw)
     */
 
 
+} // end RenderFrame
+
+void CPlugin::SendSpoutFrame()
+{
 	// =========================================================
 	//
 	// SPOUT output
@@ -1237,7 +1505,9 @@ void CPlugin::RenderFrame(int bRedraw)
 
 		// Grab the backbuffer from the Direct3D device
 		LPDIRECT3DSURFACE9 back_buffer = NULL;
-		HRESULT hr = GetDevice()->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &back_buffer);
+		if (m_hdr.Active() && !m_hdr.GetSpoutExport(&back_buffer))
+			return;
+		HRESULT hr = back_buffer ? S_OK : GetDevice()->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &back_buffer);
 		// HRESULT hr = GetDevice()->GetRenderTarget(0, &back_buffer); // Faster ?
 		if (SUCCEEDED(hr)) {
 			// Create a sender at the size of the backbuffer
@@ -1301,7 +1571,7 @@ void CPlugin::RenderFrame(int bRedraw)
 	} // end Spout output
 	// ======================================================================
 
-} // end RenderFrame
+} // end SendSpoutFrame
 
 void CPlugin::DrawMotionVectors()
 {
@@ -1397,7 +1667,8 @@ void CPlugin::DrawMotionVectors()
 						if (fx > 0.0001f && fx < 0.9999f)
 						{
 							float fx2, fy2;
-							ReversePropagatePoint(fx, fy, &fx2, &fy2);	// NOTE: THIS IS REALLY A REVERSE-PROPAGATION
+							float fys = 1.0f - fy;
+							ReversePropagatePoint(fx, fys, &fx2, &fy2);	// NOTE: THIS IS REALLY A REVERSE-PROPAGATION
 							//fx2 = fx*2 - fx2;
 							//fy2 = fy*2 - fy2;
 							//fx2 = fx + 1.0f/(float)m_nTexSize;
@@ -1406,7 +1677,7 @@ void CPlugin::DrawMotionVectors()
 							// enforce minimum trail lengths:
 							{
 								float dx = (fx2 - fx);
-								float dy = (fy2 - fy);
+								float dy = (fy2 - fys);
 								dx *= len_mult;
 								dy *= len_mult;
 								float len = sqrtf(dx*dx + dy*dy);
@@ -1424,18 +1695,18 @@ void CPlugin::DrawMotionVectors()
 								else
 								{
 									dx = min_len;
-									dy = min_len;
+									dy = -min_len;
 								}
 
 								fx2 = fx + dx;
-								fy2 = fy + dy;
+								fy2 = fys + dy;
 							}
 							/**/
 
 							v[n].x = fx * 2.0f - 1.0f;
-							v[n].y = fy * 2.0f - 1.0f;
+							v[n].y = -(fys * 2.0f - 1.0f);
 							v[n+1].x = fx2 * 2.0f - 1.0f;
-							v[n+1].y = fy2 * 2.0f - 1.0f;
+							v[n+1].y = -(fy2 * 2.0f - 1.0f);
 
 							// actually, project it in the reverse direction
 							//v[n+1].x = v[n].x*2.0f - v[n+1].x;// + dx*2;
@@ -1885,13 +2156,13 @@ void CPlugin::ComputeGridAlphaValues()
 		float fDY		= (float)(*pState->var_pf_dy);
 		float fSX		= (float)(*pState->var_pf_sx);
 		float fSY		= (float)(*pState->var_pf_sy);
-		float pf_decay  = (float)(*pState->var_pf_decay);
-		float pf_r = pf_decay * (float)(*pState->var_pf_decay_r);
-		float pf_g = pf_decay * (float)(*pState->var_pf_decay_g);
-		float pf_b = pf_decay * (float)(*pState->var_pf_decay_b);
-		float pv_r = pf_decay * (float)(*pState->var_pv_decay_r) * (float)(*pState->var_pf_decay_r);
-		float pv_g = pf_decay * (float)(*pState->var_pv_decay_g) * (float)(*pState->var_pf_decay_g);
-		float pv_b = pf_decay * (float)(*pState->var_pv_decay_b) * (float)(*pState->var_pf_decay_b);
+        const float frameDecay[] = {
+            (float)*pState->var_pf_decay_r,
+            (float)*pState->var_pf_decay_g,
+            (float)*pState->var_pf_decay_b
+        };
+        const bool legacyWarp = pState->m_nWarpPSVersion <= 0;
+        const bool hasPerVertexCode = pState->m_pp_codehandle != nullptr;
 
 		int n = 0;
 
@@ -1904,7 +2175,7 @@ void CPlugin::ComputeGridAlphaValues()
 				//m_verts[n].y = j/(float)m_nGridY*2.0f - 1.0f;
 				//m_verts[n].z = 0.0f;
 
-				if (pState->m_pp_codehandle)
+				if (hasPerVertexCode)
 				{
 					// restore all the variables to their original states,
 					//  run the user-defined equations,
@@ -1939,6 +2210,10 @@ void CPlugin::ComputeGridAlphaValues()
 					//*pState->var_pv_mid_att	= *pState->var_pv_mid_att;
 					//*pState->var_pv_treb_att	= *pState->var_pv_treb_att;
 
+                    *pState->var_pv_decay_r = frameDecay[0];
+                    *pState->var_pv_decay_g = frameDecay[1];
+                    *pState->var_pv_decay_b = frameDecay[2];
+
 #ifndef _NO_EXPR_
 					NSEEL_code_execute(pState->m_pp_codehandle);
 #endif
@@ -1953,36 +2228,13 @@ void CPlugin::ComputeGridAlphaValues()
 					fDY   = (float)(*pState->var_pv_dy);
 					fSX   = (float)(*pState->var_pv_sx);
 					fSY   = (float)(*pState->var_pv_sy);
-					pf_decay = (float)(*pState->var_pf_decay);
-					pf_r = pf_decay * (float)(*pState->var_pf_decay_r);
-					pf_g = pf_decay * (float)(*pState->var_pf_decay_g);
-					pf_b = pf_decay * (float)(*pState->var_pf_decay_b);
-					pv_r = pf_decay * (float)(*pState->var_pv_decay_r) * (float)(*pState->var_pf_decay_r);
-					pv_g = pf_decay * (float)(*pState->var_pv_decay_g) * (float)(*pState->var_pf_decay_g);
-					pv_b = pf_decay * (float)(*pState->var_pv_decay_b) * (float)(*pState->var_pf_decay_b);
-				}
+                }
 
-				float final_r = (pv_r != 0.0f) ? pv_r : pf_r;
-				float final_g = (pv_g != 0.0f) ? pv_g : pf_g;
-				float final_b = (pv_b != 0.0f) ? pv_b : pf_b;
-
-				if (m_n16BitGamma > 0 &&
-					(GetBackBufFormat() == D3DFMT_R5G6B5 || GetBackBufFormat() == D3DFMT_X1R5G5B5 || GetBackBufFormat() == D3DFMT_A1R5G5B5 || GetBackBufFormat() == D3DFMT_A4R4G4B4))
-				{
-					float limit = (32.0f - m_n16BitGamma)/32.0f;
-					if (final_r < 0.9999f) final_r = min(final_r, limit);
-					if (final_g < 0.9999f) final_g = min(final_g, limit);
-					if (final_b < 0.9999f) final_b = min(final_b, limit);
-				}
-
-				//final_r = max(0.0f, min(1.0f, final_r));
-				//final_g = max(0.0f, min(1.0f, final_g));
-				//final_b = max(0.0f, min(1.0f, final_b));
-
-				DWORD r_byte = (DWORD)(final_r * 255.0f);
-				DWORD g_byte = (DWORD)(final_g * 255.0f);
-				DWORD b_byte = (DWORD)(final_b * 255.0f);
-				DWORD decayColor = D3DCOLOR_XRGB(r_byte, g_byte, b_byte);
+                const float decay[] = {
+                    hasPerVertexCode ? (float)*pState->var_pv_decay_r : frameDecay[0],
+                    hasPerVertexCode ? (float)*pState->var_pv_decay_g : frameDecay[1],
+                    hasPerVertexCode ? (float)*pState->var_pv_decay_b : frameDecay[2]
+                };
 
 				float fZoom2 = powf(fZoom, powf(fZoomExp, m_vertinfo[n].rad*2.0f - 1.0f));
 
@@ -2047,7 +2299,10 @@ void CPlugin::ComputeGridAlphaValues()
                     // UV's for m_pState
 					m_verts[n].tu = u;
 					m_verts[n].tv = v;
-					m_verts[n].Diffuse = 0xFF000000 | decayColor;
+                    m_verts[n].Diffuse = 0xFFFFFFFF;
+                    if (legacyWarp)
+                        for (int channel = 0; channel < 3; ++channel)
+                            m_vertinfo[n].warpDecay[channel] = decay[channel];
 				}
 				else
 				{
@@ -2059,7 +2314,18 @@ void CPlugin::ComputeGridAlphaValues()
 					m_verts[n].tu = m_verts[n].tu*(mix2) + u*(1-mix2);
 					m_verts[n].tv = m_verts[n].tv*(mix2) + v*(1-mix2);
                     // this sets the alpha values for blending between two presets:
-					m_verts[n].Diffuse = decayColor | ((((DWORD)(mix2 * 255.0f)) << 24) & 0xFF000000);
+                    m_verts[n].Diffuse = 0x00FFFFFF | (((DWORD)(mix2 * 255)) << 24);
+                    if (legacyWarp)
+                    {
+                        // Two legacy presets share one draw. A mixed transition
+                        // uses just the legacy preset's decay in its own pass.
+                        const bool blendDecay = m_pState->m_nWarpPSVersion <= 0;
+                        for (int channel = 0; channel < 3; ++channel)
+                        {
+                            float& current = m_vertinfo[n].warpDecay[channel];
+                            current = blendDecay ? current * mix2 + decay[channel] * (1 - mix2) : decay[channel];
+                        }
+                    }
 				}
 
 				n++;
@@ -2114,36 +2380,20 @@ void CPlugin::WarpedBlit_NoShaders(int nPass, bool bAlphaBlend, bool bFlipAlpha,
     lpDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, texaddr);
     lpDevice->SetSamplerState(0, D3DSAMP_ADDRESSW, texaddr);
 
-	// decay
-	float fDecay  = (float)(*m_pState->var_pf_decay);
-	float fDecayR = (float)(*m_pState->var_pf_decay_r);
-	float fDecayG = (float)(*m_pState->var_pf_decay_g);
-	float fDecayB = (float)(*m_pState->var_pf_decay_b);
-
-	float fR = fDecay * fDecayR;
-	float fG = fDecay * fDecayG;
-	float fB = fDecay * fDecayB;
-
-	//if (m_pState->m_bBlending)
-	//	fDecay = fDecay*(fCosineBlend) + (1.0f-fCosineBlend)*((float)(*m_pOldState->var_pf_decay));
-
-	if (m_n16BitGamma > 0 &&
-        (GetBackBufFormat()==D3DFMT_R5G6B5 || GetBackBufFormat()==D3DFMT_X1R5G5B5 || GetBackBufFormat()==D3DFMT_A1R5G5B5 || GetBackBufFormat()==D3DFMT_A4R4G4B4) &&
-        fDecay < 0.9999f)
-    {
-		float limit = (32.0f - m_n16BitGamma)/32.0f;
-		if (fDecay < 0.9999f) fDecay = min(fDecay, limit);
-		if (fR < 0.9999f) fR = min(fR, limit);
-		if (fG < 0.9999f) fG = min(fG, limit);
-		if (fB < 0.9999f) fB = min(fB, limit);
-    }
-
-	D3DCOLOR cDecay = D3DCOLOR_RGBA_01(fR,fG,fB,1);
-
-	// hurl the triangle strips at the video card
-	int poly;
-	for (poly=0; poly<(m_nGridX+1)*2; poly++)
-		m_verts_temp[poly].Diffuse = cDecay;
+    const float decay = (float)*m_pState->var_pf_decay;
+    const auto format = GetBackBufFormat();
+    const bool limitDecay = m_n16BitGamma > 0 &&
+        (format == D3DFMT_R5G6B5 || format == D3DFMT_X1R5G5B5 ||
+         format == D3DFMT_A1R5G5B5 || format == D3DFMT_A4R4G4B4);
+    const float decayLimit = (32.0f - m_n16BitGamma) / 32.0f;
+    auto decayByte = [&](float multiplier) {
+        float channel = decay * multiplier;
+        if (limitDecay && channel < 0.9999f)
+            channel = min(channel, decayLimit);
+        if (!(channel > 0.0f))
+            return 0;
+        return static_cast<int>(min(channel, 1.0f) * 255.0f);
+    };
 
     if (bAlphaBlend)
     {
@@ -2185,10 +2435,13 @@ void CPlugin::WarpedBlit_NoShaders(int nPass, bool bAlphaBlend, bool bFlipAlpha,
             // copy 3 verts
             for (int j=0; j<3; j++)
             {
-                tempv[i++] = m_verts[ m_indices_list[src_idx++] ];
-                // don't forget to flip sign on Y and factor in the decay color!:
-                tempv[i-1].y *= -1;
-				tempv[i-1].Diffuse = (tempv[i-1].Diffuse & 0xFF000000);
+                const int vertex = m_indices_list[src_idx++];
+                auto& target = tempv[i++];
+                target = m_verts[vertex];
+                target.y *= -1;
+                const auto& rgb = m_vertinfo[vertex].warpDecay;
+                target.Diffuse = D3DCOLOR_ARGB(target.Diffuse >> 24,
+                    decayByte(rgb[0]), decayByte(rgb[1]), decayByte(rgb[2]));
             }
             if (bCullTiles)
             {
@@ -2739,12 +2992,6 @@ void CPlugin::DrawCustomWaves()
         {
             if (pState->m_wave[i].enabled)
             {
-                int nSamples = pState->m_wave[i].samples;
-                int max_samples = pState->m_wave[i].bSpectrum ? 512 : NUM_WAVEFORM_SAMPLES;
-                if (nSamples > max_samples)
-                    nSamples = max_samples;
-                nSamples -= pState->m_wave[i].sep;
-
                 // 1. execute per-frame code
                 LoadCustomWavePerFrameEvallibVars(pState, i);
 
@@ -2768,8 +3015,14 @@ void CPlugin::DrawCustomWaves()
                 for (vi=0; vi<NUM_T_VAR; vi++)
                     *pState->m_wave[i].var_pp_t[vi] = *pState->m_wave[i].var_pf_t[vi];
 
-                nSamples = (int)*pState->m_wave[i].var_pf_samples;
-                nSamples = min(512, nSamples);
+                // A custom wave can generate up to 512 vertices, but waveform
+                // input has only NUM_WAVEFORM_SAMPLES valid samples (480 in
+                // this build).  Keep those two limits separate: larger custom
+                // waves resample the input instead of reading past it.
+                const int maxOutputSamples = 512;
+                const int maxInputSamples = pState->m_wave[i].bSpectrum ? 512 : NUM_WAVEFORM_SAMPLES;
+                int nSamples = min(maxOutputSamples, max(0, (int)*pState->m_wave[i].var_pf_samples));
+                const int separator = min(nSamples - 1, max(0, pState->m_wave[i].sep));
 
                 if ((nSamples >= 2) || (pState->m_wave[i].bUseDots && nSamples >= 1))
                 {
@@ -2779,19 +3032,26 @@ void CPlugin::DrawCustomWaves()
                     float *pdata1 = (pState->m_wave[i].bSpectrum) ? m_sound.fSpectrum[0] : m_sound.fWaveform[0];
                     float *pdata2 = (pState->m_wave[i].bSpectrum) ? m_sound.fSpectrum[1] : m_sound.fWaveform[1];
 
-                    // initialize tempdata[2][512]
-                    int j0 = (pState->m_wave[i].bSpectrum) ? 0 : (max_samples - nSamples)/2/**(1-pState->m_wave[i].bSpectrum)*/ - pState->m_wave[i].sep/2;
-                    int j1 = (pState->m_wave[i].bSpectrum) ? 0 : (max_samples - nSamples)/2/**(1-pState->m_wave[i].bSpectrum)*/ + pState->m_wave[i].sep/2;
-                    float t = (pState->m_wave[i].bSpectrum) ? (max_samples - pState->m_wave[i].sep)/(float)nSamples : 1;
+                    // "samples" controls output vertices.  In spectrum mode,
+                    // "sep" trims high-frequency input samples.  Oscilloscope
+                    // waves ignore sep and resample only when they request more
+                    // vertices than the 480-sample input can provide.
+                    float sampleScale = 1.0f;
+                    if (pState->m_wave[i].bSpectrum)
+                        sampleScale = (float)(maxInputSamples - separator) / (float)nSamples;
+                    else if (nSamples > maxInputSamples)
+                        sampleScale = (float)maxInputSamples / (float)nSamples;
+
                     float mix1 = powf(pState->m_wave[i].smoothing*0.98f, 0.5f);  // lower exponent -> more default smoothing
                     float mix2 = 1-mix1;
                     // SMOOTHING:
-                    tempdata[0][0] = pdata1[j0];
-                    tempdata[1][0] = pdata2[j1];
+                    tempdata[0][0] = pdata1[0];
+                    tempdata[1][0] = pdata2[0];
                     for (j=1; j<nSamples; j++)
                     {
-                        tempdata[0][j] = pdata1[(int)(j*t)+j0]*mix2 + tempdata[0][j-1]*mix1;
-                        tempdata[1][j] = pdata2[(int)(j*t)+j1]*mix2 + tempdata[1][j-1]*mix1;
+                        const int pcmSample = (int)(j * sampleScale);
+                        tempdata[0][j] = pdata1[pcmSample]*mix2 + tempdata[0][j-1]*mix1;
+                        tempdata[1][j] = pdata2[pcmSample]*mix2 + tempdata[1][j-1]*mix1;
                     }
                     // smooth again, backwards: [this fixes the asymmetry of the beginning & end..]
                     for (j=nSamples-2; j>=0; j--)
@@ -4110,6 +4370,10 @@ void CPlugin::DrawWave(float *fL, float *fR)
 					{
 						//float rad = 0.53f + 0.43f * fR[i] + fWaveParam2;	// unused
 						float ang = 0.5f*(fL[i + 32] + fR[i + 32]) * 1.57f + GetTime() * 2.0f;
+						// Avoid an infinite tangent when the animated angle crosses zero.
+						// A non-finite vertex can poison the whole line strip.
+						if (fabsf(ang) < 0.001f)
+							ang = (ang < 0.0f) ? -0.001f : 0.001f;
 						float t = GetTime() / ang;
 						//ball
 						//v[i].x = cosf(ang* GetTime())*3 * m_fAspectY/3 + fWavePosX;// 0.75 = adj. for aspect ratio
@@ -4141,7 +4405,15 @@ void CPlugin::DrawWave(float *fL, float *fR)
 						float phi0 = (floor(progress * 3.0f) + .5f) / 3.0f * 6.28f + angleOffset;
 						float angle = (progress * 6.28f) + angleOffset;
 						float edgeDistance = cosf(angle - phi0);
+						// The triangle's edge distance reaches zero at its corners. A
+						// raw division there creates an unbounded vertex and a visible
+						// spike. Preserve the shape while applying a small denominator
+						// floor around the singularity.
+						if (fabsf(edgeDistance) < 0.02f)
+							edgeDistance = (edgeDistance < 0.0f) ? -0.02f : 0.02f;
 						float radius = (.7f + (edgeDistance * (fL[i]+fR[i])*0.5f) + fWaveParam2) / (2.0f * edgeDistance);
+						if (radius > 2.0f) radius = 2.0f;
+						if (radius < -2.0f) radius = -2.0f;
 
 						if (m_bScreenDependentRenderMode)
 						{
@@ -4525,6 +4797,7 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 
     lpDevice->SetTexture(0, NULL);
     lpDevice->SetVertexShader( NULL );
+    lpDevice->SetPixelShader( NULL );
     lpDevice->SetFVF( SPRITEVERTEX_FORMAT );
 
     //lpDevice->SetRenderState(D3DRS_WRAP0, 0);
@@ -4559,6 +4832,31 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 
 	for (int iSlot=0; iSlot < NUM_TEX; iSlot++)
 	{
+        bool bLiveSpriteShouldKill = false;
+        if (MediaTexture* media = m_texmgr.m_tex[iSlot].pMedia)
+        {
+            const bool mediaReady = m_texmgr.UpdateTex(iSlot, GetTime(), &bLiveSpriteShouldKill);
+            if (bLiveSpriteShouldKill)
+            {
+                wchar_t buf[1024];
+                const wchar_t* filename = m_texmgr.m_tex[iSlot].szFileName;
+                if (media->IsSpout())
+                {
+                    const wchar_t* senderName = MediaTexture::IsSpoutPath(filename) ? filename + 6 : L"unknown sender";
+                    swprintf(buf, L"Spout sender \"%ls\" turned off by the user process. Spout Input Sprite is now automatically killed.", senderName);
+                }
+                else
+                {
+                    swprintf(buf, L"Could not continue video sprite #%02d playback.", iSlot);
+                }
+                AddError(buf, 7.0f, ERR_MISC, false);
+                KillSprite(iSlot);
+                continue;
+            }
+            if (!mediaReady && media->GetKind() == MediaTexture::KIND_VIDEO)
+                continue;
+        }
+
 		if (m_texmgr.m_tex[iSlot].pSurface)
 		{
 			int k;
@@ -4605,9 +4903,10 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
                 pNewTarget->Release();
 
 	            lpDevice->SetTexture(0, NULL);
-            }
+			}
 
 			// finally, use the results to draw the sprite.
+            bool bSpoutSprite = m_texmgr.m_tex[iSlot].pMedia && m_texmgr.m_tex[iSlot].pMedia->IsSpout();
 			if (lpDevice->SetTexture(0, m_texmgr.m_tex[iSlot].pSurface) != D3D_OK)
 				return;
 
@@ -4637,7 +4936,7 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 			float repeatx = min(100.0f, max(0.01f, (float)(*m_texmgr.m_tex[iSlot].var_repeatx) ));
 			float repeaty = min(100.0f, max(0.01f, (float)(*m_texmgr.m_tex[iSlot].var_repeaty) ));
 
-			int blendmode = min(4, max(0, ((int)(*m_texmgr.m_tex[iSlot].var_blendmode))));
+			int blendmode = min(10, max(0, ((int)(*m_texmgr.m_tex[iSlot].var_blendmode))));
 			float r = min(1.0f, max(0.0f, ((float)(*m_texmgr.m_tex[iSlot].var_r))));
 			float g = min(1.0f, max(0.0f, ((float)(*m_texmgr.m_tex[iSlot].var_g))));
 			float b = min(1.0f, max(0.0f, ((float)(*m_texmgr.m_tex[iSlot].var_b))));
@@ -4708,6 +5007,17 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 			// finally, flip 'y' for annoying DirectX
 			//for (k=0; k<4; k++) v3[k].y *= -1.0f;
 
+			if (bSpoutSprite && GetWidth() > 0 && GetHeight() > 0)
+			{
+				float halfPixelX = 1.0f / (float)GetWidth();
+				float halfPixelY = 1.0f / (float)GetHeight();
+				for (k=0; k<4; k++)
+				{
+					v3[k].x -= halfPixelX;
+					v3[k].y -= halfPixelY; // This "down shift" thing fixes the issue, flipped the plus sign to minus
+				}
+			}
+
 			// set u,v coords
 			{
 				float dtu = 0.5f;// / (float)m_texmgr.m_tex[iSlot].tex_w;
@@ -4739,6 +5049,23 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 			// printf("blendmode = %d : opacity = %f\n", blendmode, a);
 
 			// blendmode = 3; // for testing
+
+			// A Spout colorkey uses a pixel shader, while every other sprite
+			// blend mode uses the fixed-function pipeline. Reset this per slot
+			// so a previous Spout sprite cannot affect the current sprite.
+			lpDevice->SetPixelShader(NULL);
+			
+			// IMPORTANT: reset the render states that the extra blend modes (5-10) can leave
+			// behind (D3DRS_BLENDOP, D3DRS_ALPHATESTENABLE) BEFORE applying this sprite's own
+			// blendmode. Previously these were only reset once, AFTER the whole sprite loop
+			// finished (see bottom of DrawUserSprites), so a sprite using BLENDOP_MIN/MAX/
+			// REVSUBTRACT (Darken/Vivid/Subtract) or ALPHATESTENABLE (Invert) would silently
+			// leave that state active for every sprite drawn AFTER it in the same frame, even
+			// if the next sprite used a completely different (and non-overriding) blendmode.
+			// This is what caused blendmode 10 (Vivid) to 'stick' to later sprites.
+			lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+			lpDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+
 			switch(blendmode)
 			{
 			case 0:
@@ -4819,6 +5146,105 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 				lpDevice->SetRenderState(D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA);
 				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 				for (k=0; k<4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r,g,b,a);
+
+				if (bSpoutSprite)
+				{
+					unsigned int colorKeyRGB = 0;
+					IDirect3DPixelShader9* pColorKeyPS =
+						m_texmgr.m_tex[iSlot].pMedia->GetColorKey(&colorKeyRGB) ? EnsureSpriteColorKeyPS() : nullptr;
+					if (pColorKeyPS)
+					{
+						float colorKeyConst[4] =
+						{
+							((colorKeyRGB >> 16) & 0xFF) / 255.0f,
+							((colorKeyRGB >>  8) & 0xFF) / 255.0f,
+							( colorKeyRGB        & 0xFF) / 255.0f,
+							0.001f // squared-distance match threshold; a live Spout
+							       // source is a rendered image, not a bit-exact
+							       // loaded file, so allow a little slack versus an
+							       // exact match.
+						};
+						lpDevice->SetPixelShaderConstantF(0, colorKeyConst, 1);
+						lpDevice->SetPixelShader(pColorKeyPS);
+					}
+				}
+				break;
+			case 5:
+				// multiply
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_DESTCOLOR);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ZERO);
+				// Modulate color allows for fading the multiplication effect
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r, g, b, a);
+				break;
+
+			case 6:
+				// subtract
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r*a, g*a, b*a, a);
+				break;
+
+			case 7:
+				// invert
+				// A true |Src-Dest| 'difference' invert can't be expressed in a single
+				// fixed-function blend pass (no per-pixel abs() without a pixel shader).
+				// Exclusion is the closest single-pass equivalent and reads as an
+				// inversion/negative effect. We still alpha-test out fully-transparent
+				// texels (ref lowered from 0x80/50% to 0x01) so we don't chop off the
+				// sprite's soft/anti-aliased edges - the old 50% cutoff is likely why
+				// this mode looked shrunken/dim compared to MilkDrop3.
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVDESTCOLOR);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r, g, b, a);
+				break;
+
+			case 8:
+				// Cut-off (Colorkeyed / Stencil)
+				// Punches a black hole where the sprite is opaque.
+				// Logic: Dest = 0*Src + Dest*(1-SrcAlpha)
+
+				// Setup Texture Stage for Colorkey
+				lpDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG2);
+				lpDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_TEXTURE);
+
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ZERO);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+
+				// Color doesn't affect the "cut", but Alpha does (so we pass 'a')
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r, g, b, a);
+				break;
+
+			case 9:
+				// Darken
+				// Dest = min(Src, Dest)
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_MIN);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r, g, b, a);
+				break;
+
+			case 10:
+				// Vivid (Screen-based glow): Result = Src + Dest - Src*Dest
+				// True Photoshop 'Vivid Light' conditionally dodges/burns per-pixel
+				// (branches on whether Src is above/below 0.5), which needs a pixel
+				// shader - not expressible as a fixed-function blend state. Screen is
+				// the closest single-pass formula with the same 'boosted brightness /
+				// glow' character, and unlike the old MAX/Lighten approach, it fades
+				// correctly to Dest (no effect) as 'a' drops to 0, since premultiplying
+				// Src by 'a' pushes DESTBLEND's (1-Src) factor toward 1.
+
+				lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+				lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+				lpDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_ONE);
+				lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
+				for (k = 0; k < 4; k++) v3[k].Diffuse = D3DCOLOR_RGBA_01(r*a, g*a, b*a, a);
 				break;
 			}
 
@@ -4860,7 +5286,22 @@ void CPlugin::DrawUserSprites()	// from system memory, to back buffer.
 		}
 	}
 
+	/*
+	Safety net: the REAL fix is now the per-sprite reset at the top of the blendmode switch
+	above (each sprite resets D3DRS_BLENDOP/D3DRS_ALPHATESTENABLE before applying its own
+	blendmode, so state from a previous sprite in the same frame can never leak forward).
+	This end-of-loop reset just makes sure nothing drawn AFTER DrawUserSprites() this frame
+	(borders, waveform, etc.) can inherit a leftover MIN/MAX/REVSUBTRACT/alpha-test state either.
+	*/
+	lpDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD); // <-
+	lpDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 	lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+
+	// Undo the pixel shader bound for a Spout sprite's blendmode-4 colorkey
+	// (see case 4 above) so it can't stay bound and affect anything drawn
+	// after this - every other sprite blendmode, and everything else in the
+	// renderer, expects the fixed-function pixel pipeline to be in control.
+	lpDevice->SetPixelShader(NULL);
 
     // reset these to the standard safe mode:
     lpDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
@@ -4943,9 +5384,15 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
             lpDevice->SetTexture(i, p->m_texture_bindings[i].texptr);
 
         // also set up sampler stage, if anything is bound here...
-        if (p->m_texcode[i]==TEX_VS || p->m_texcode[i] == TEX_FFT || p->m_texture_bindings[i].texptr)
+        if (p->m_texcode[i]==TEX_VS || p->m_texcode[i] == TEX_FFT || p->m_texcode[i] == TEX_WAVE || p->m_texture_bindings[i].texptr)
         {
-            bool bAniso = false;
+            bool bAniso = m_bAnisotropicFiltering;
+			/*
+			Prevent FFT and WAVE texture bindings from rendering anisotropic.
+			It could cause the spectrum bars looking "shredded" or strange, for example.
+			*/
+			if (p->m_texcode[i] == TEX_FFT || p->m_texcode[i] == TEX_WAVE)
+				bAniso = false;
             DWORD HQFilter = bAniso ? D3DTEXF_ANISOTROPIC : D3DTEXF_LINEAR;
             DWORD wrap   = p->m_texture_bindings[i].bWrap ? D3DTADDRESS_WRAP : D3DTADDRESS_CLAMP;
             DWORD filter = p->m_texture_bindings[i].bBilinear ? HQFilter : D3DTEXF_POINT;
@@ -4955,7 +5402,8 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
             lpDevice->SetSamplerState(i, D3DSAMP_MAGFILTER, filter);
             lpDevice->SetSamplerState(i, D3DSAMP_MINFILTER, filter);
             lpDevice->SetSamplerState(i, D3DSAMP_MIPFILTER, filter);
-            //lpDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, bAniso ? 4 : 1);  //FIXME:ANISO
+			if (m_nMaxAnisotropy >= 1)
+				lpDevice->SetSamplerState(i, D3DSAMP_MAXANISOTROPY, bAniso ? m_nMaxAnisotropy : 1);
         }
 
         // finally, if it was a blur texture, note that
@@ -4980,11 +5428,21 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
     float mip_avg = 0.5f*(mip_x + mip_y);
     float aspect_x = 1;
     float aspect_y = 1;
+	float aspect_x_sd = 1;
+	float aspect_y_sd = 1;
+
 	if (!m_bScreenDependentRenderMode)
+	{
 		if (GetWidth() > GetHeight())
-			aspect_y = GetHeight()/(float)GetWidth();
+			aspect_y_sd = GetHeight()/(float)GetWidth();
 		else
-			aspect_x = GetWidth()/(float)GetHeight();
+			aspect_x_sd = GetWidth()/(float)GetHeight();
+	}
+
+	if (GetWidth() > GetHeight())
+		aspect_y = GetHeight()/(float)GetWidth();
+	else
+		aspect_x = GetWidth()/(float)GetHeight();
 
     float blur_min[3], blur_max[3];
     GetSafeBlurMinMax(pState, blur_min, blur_max);
@@ -4994,10 +5452,10 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
     if (p->rand_preset) pCT->SetVector( lpDevice, p->rand_preset, &pState->m_rand_preset );
     D3DXHANDLE* h = p->const_handles;
     if (h[0]) pCT->SetVector( lpDevice, h[0], &D3DXVECTOR4( aspect_x, aspect_y, 1.0f/aspect_x, 1.0f/aspect_y ));
-    if (h[1]) pCT->SetVector( lpDevice, h[1], &D3DXVECTOR4(0, 0, 0, 0 ));
-    if (h[2]) pCT->SetVector( lpDevice, h[2], &D3DXVECTOR4(time_since_preset_start_wrapped, GetFps(), (float)GetFrame(), progress));
-    if (h[3]) pCT->SetVector( lpDevice, h[3], &D3DXVECTOR4(mysound.imm_rel[0], mysound.imm_rel[1], mysound.imm_rel[2], 0.3333f*(mysound.imm_rel[0], mysound.imm_rel[1], mysound.imm_rel[2]) ));
-    if (h[4]) pCT->SetVector( lpDevice, h[4], &D3DXVECTOR4(mysound.avg_rel[0], mysound.avg_rel[1], mysound.avg_rel[2], 0.3333f*(mysound.avg_rel[0], mysound.avg_rel[1], mysound.avg_rel[2]) ));
+    if (h[1]) pCT->SetVector( lpDevice, h[1], &D3DXVECTOR4( aspect_x_sd, aspect_y_sd, 1.0f/aspect_x_sd, 1.0f/aspect_y_sd ));
+    if (h[2]) pCT->SetVector( lpDevice, h[2], &D3DXVECTOR4(GetTime(), GetFps(), (float)GetFrame(), progress));
+    if (h[3]) pCT->SetVector( lpDevice, h[3], &D3DXVECTOR4(mysound.imm_rel[0], mysound.imm_rel[1], mysound.imm_rel[2], 0.3333f*(mysound.imm_rel[0]+mysound.imm_rel[1]+mysound.imm_rel[2]) ));
+    if (h[4]) pCT->SetVector( lpDevice, h[4], &D3DXVECTOR4(mysound.avg_rel[0], mysound.avg_rel[1], mysound.avg_rel[2], 0.3333f*(mysound.avg_rel[0]+mysound.avg_rel[1]+mysound.avg_rel[2]) ));
     if (h[5]) pCT->SetVector( lpDevice, h[5], &D3DXVECTOR4( blur_max[0]-blur_min[0], blur_min[0], blur_max[1]-blur_min[1], blur_min[1] ));
     if (h[6]) pCT->SetVector( lpDevice, h[6], &D3DXVECTOR4( blur_max[2]-blur_min[2], blur_min[2], blur_min[0], blur_max[0] ));
     if (h[7]) pCT->SetVector( lpDevice, h[7], &D3DXVECTOR4((float)m_nTexSizeX, (float)m_nTexSizeY, 1.0f/(float)m_nTexSizeX, 1.0f/(float)m_nTexSizeY ));
@@ -5024,6 +5482,9 @@ void CPlugin::ApplyShaderParams(CShaderParams* p, LPD3DXCONSTANTTABLE pCT, CStat
     if (h[12]) pCT->SetVector( lpDevice, h[12], &D3DXVECTOR4( mip_x, mip_y, mip_avg, 0 ));
     if (h[13]) pCT->SetVector( lpDevice, h[13], &D3DXVECTOR4( blur_min[1], blur_max[1], blur_min[2], blur_max[2] ));
 	if (h[14]) pCT->SetVector( lpDevice, h[14], &D3DXVECTOR4( m_mouseX != -1 ? m_mouseX : -1, m_mouseY != -1 ? -m_mouseY + 1 : -1, m_mouseDown ? m_lastMouseX : -m_lastMouseX, m_mouseClicked > 0 ? m_lastMouseY : -m_lastMouseY ));
+	// System time variables are declared in plugin.h; loaded them from MyRenderFn()
+	if (h[15]) pCT->SetVector( lpDevice, h[15], &D3DXVECTOR4((float)m_hour, (float)m_minute, (float)m_second, m_totalSeconds) );
+	if (h[16]) pCT->SetVector( lpDevice, h[16], &D3DXVECTOR4((float)m_year, (float)m_month, (float)m_day, (float)m_weekday) );
 
     // write q vars
     int num_q_float4s = sizeof(p->q_const_handles)/sizeof(p->q_const_handles[0]);
@@ -5600,6 +6061,10 @@ void CPlugin::ShowSongTitleAnim(int w, int h, float fProgress)
     if (!lpDevice)
         return;
 
+	IDirect3DStateBlock9* hdrTitleState = nullptr;
+    if (m_hdr.Active() && SUCCEEDED(lpDevice->CreateStateBlock(D3DSBT_ALL, &hdrTitleState)))
+        if (FAILED(hdrTitleState->Capture())) SafeRelease(hdrTitleState);
+
 	lpDevice->SetTexture(0, m_lpDDSTitle);
     lpDevice->SetVertexShader( NULL );
     lpDevice->SetFVF( SPRITEVERTEX_FORMAT );
@@ -5644,7 +6109,7 @@ void CPlugin::ShowSongTitleAnim(int w, int h, float fProgress)
 		//if (fSizeX > 0.92f) fSizeX = 0.92f;
 		//if (fSizeY > 0.92f) fSizeY = 0.92f;
 		i = 0;
-		float vert_clip = VERT_CLIP;//1.0f;//0.45f;	// warning: visible clipping has been observed at 0.4!
+		const float vert_clip = 1.0f;  // Keep both lines and their descenders in the mesh.
 		for (y=0; y<8; y++)
 		{
 			for (x=0; x<16; x++)
@@ -5821,8 +6286,13 @@ void CPlugin::ShowSongTitleAnim(int w, int h, float fProgress)
 			lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 		}
 
+		// The shadow remains a darkening pass. Only visible glyph RGB uses HDR
+		// headroom, and BindTextShader rejects the preset burn-in target.
+		const bool hdrText = hdrTitleState && m_hdr.BindTextShader(lpDevice, it == 1, false);
 		lpDevice->DrawIndexedPrimitiveUP(D3DPT_TRIANGLELIST, 0, 128, 15*7*6/3, indices, D3DFMT_INDEX16, v3, sizeof(SPRITEVERTEX));
+        if (hdrText) lpDevice->SetPixelShader(nullptr);
 	}
 
 	lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+    if (hdrTitleState) { hdrTitleState->Apply(); hdrTitleState->Release(); }
 }

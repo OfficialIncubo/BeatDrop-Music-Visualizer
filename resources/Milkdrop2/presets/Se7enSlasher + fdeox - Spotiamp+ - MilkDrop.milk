@@ -1,0 +1,169 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 24/07/2026 at 14:18:14.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.235
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`/*
+warp_2=`This shader has been ported to BeatDrop/MilkDrop (HLSL) by Incubo_/Se7enSlasher/DJ XcitMosphere.
+warp_3=`Try Spotiamp+: https://github.com/fdeox/spotiamp-plus
+warp_4=`*/
+warp_5=`
+warp_6=`float spec(float x) { 
+warp_7=`    return get_fft(x); 
+warp_8=`}
+warp_9=`
+warp_10=`float3 pal(float x, float3 a, float3 b, float3 c, float3 d) { 
+warp_11=`    return a + b * cos(M_PI_2 * (c * x + d)); 
+warp_12=`}
+warp_13=`
+warp_14=`// Simple pseudo-random hash function replacing GLSL hash()
+warp_15=`float hash(float2 p) {
+warp_16=`    return frac(sin(dot(p, float2(12.9898, 78.233))) * 43758.5453);
+warp_17=`}
+warp_18=`
+warp_19=`shader_body
+warp_20=`{
+warp_21=`    float3 col = 0;
+warp_22=`    float t = time * 0.25;
+warp_23=`
+warp_24=`    // milkdrop: the frame feeds back into itself. Each pass samples the
+warp_25=`    // previous one through a rotate+zoom warp and fades it, so motion
+warp_26=`    // leaves trails that spiral inward. That inheritance IS the look —
+warp_27=`    // it's what a single-pass shader can't fake.
+warp_28=`
+warp_29=`    // 1. Shift origin (0,0) to screen center with aspect correction
+warp_30=`    float2 uvX = (uv - 0.5) * aspect.xy;
+warp_31=`    float2 uvX_render = float2(uvX.x, -uvX.y);
+warp_32=`    //uvX.y = -uvX.y;
+warp_33=`
+warp_34=`    //float a = atan2(uvX.y, uvX.x);
+warp_35=`    float a = atan2(uvX_render.y, uvX_render.x);
+warp_36=`    float r = length(uvX);
+warp_37=`
+warp_38=`    // 2. Feedback Warp & Trail Layer
+warp_39=`    float ang3 = 0.05 + 0.10 * sin(t * 0.7) + mid * 0.12;
+warp_40=`    float zoom = 0.982 - bass * 0.030;
+warp_41=`
+warp_42=`    // Direct 2D rotation matrix math around center
+warp_43=`    float cos_a = cos(ang3);
+warp_44=`    float sin_a = sin(ang3);
+warp_45=`    float2 fq = float2(
+warp_46=`        cos_a * uvX.x - sin_a * uvX.y,
+warp_47=`        sin_a * uvX.x + cos_a * uvX.y
+warp_48=`    ) * zoom;
+warp_49=`
+warp_50=`    // Ripple effect on sampling coordinate
+warp_51=`    fq += 0.012 * float2(sin(uvX.y * 7.0 + t * 2.1), cos(uvX.x * 7.0 - t * 1.7)) * (0.4 + treb);
+warp_52=`
+warp_53=`    // Convert back from centered space to MilkDrop UV space [0..1] for GetPixel
+warp_54=`    float2 sampleUV = fq * aspect.zw + 0.5;
+warp_55=`    float3 prev = GetPixel(sampleUV).xyz;
+warp_56=`
+warp_57=`    // Frame feedback decay
+warp_58=`    prev *= 0.938 - 0.030 * treb;
+warp_59=`    prev -= 0.010;
+warp_60=`    col = max(prev, float3(0, 0, 0));
+warp_61=`
+warp_62=`    // 3. Flower / Petal Drawing Layer
+warp_63=`    float lobes = 3.0 + floor(mid * 4.0);
+warp_64=`    float petal = abs(sin(a * lobes + t * 1.6)) * (0.34 + bass * 0.30);
+warp_65=`    float shape = smoothstep(0.035, 0.0, abs(r - petal));
+warp_66=`    float core  = smoothstep(0.07 + bass * 0.06, 0.0, r);
+warp_67=`    float sparkle = smoothstep(0.988, 1.0, hash(floor(uvX_render * 90.0 + t * 30.0))) * treb;
+warp_68=`
+warp_69=`    // Palette ink color map
+warp_70=`    float3 ink = pal(frac(t * 0.13 + r * 0.55 + a * 0.16 + mid * 0.2),
+warp_71=`                     float3(0.5, 0.5, 0.5), float3(0.5, 0.5, 0.5), 
+warp_72=`                     float3(1.0, 1.0, 1.0), float3(0.0, 0.33, 0.67));
+warp_73=`
+warp_74=`    float reach = smoothstep(1.05, 0.15, r);
+warp_75=`
+warp_76=`    // Combine ink layers (uLevel mapped to vol)
+warp_77=`    col += ink * (shape * (0.30 + vol * 0.45) + core * (0.12 + bass * 0.30) + sparkle * 0.35) * reach;
+warp_78=`
+warp_79=`    // Audio spectrum ring overlay
+warp_80=`    float a_norm = (a + M_PI) / (2.0 * M_PI);
+warp_81=`    col += float3(0.6, 0.8, 1.0) * spec(a_norm) * smoothstep(0.8, 0.2, r) * 0.05;
+warp_82=`    //col += float3(0.6, 0.8, 1.0) * spec(frac(a / M_PI_2 + 0.5)) * smoothstep(0.8, 0.2, r) * 0.05;
+warp_83=`
+warp_84=`    ret = col;
+warp_85=`}
+comp_1=`shader_body
+comp_2=`{ ret = GetPixel(uv); }

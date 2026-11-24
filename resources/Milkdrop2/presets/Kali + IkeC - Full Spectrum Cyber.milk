@@ -1,0 +1,277 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+comp_1=// Full Spectrum Cyber by Kali (Shadertoy XcXXzS) / https://www.shadertoy.com/view/XcXXzS
+comp_2=// CC BY-NC-SA 3.0
+comp_3=// Transpiled to HLSL using Milkwave
+comp_4=
+comp_5=#define tx (sin(time)*0.5+1)
+comp_6=
+comp_7=// CONV: adding helper functions
+comp_8=float mod_conv(float x, float y) { return x - y * floor(x / y); }
+comp_9=float2 mod_conv(float2 x, float2 y) { return x - y * floor(x / y); }
+comp_10=float3 mod_conv(float3 x, float3 y) { return x - y * floor(x / y); }
+comp_11=float4 mod_conv(float4 x, float4 y) { return x - y * floor(x / y); }
+comp_12=
+comp_13=static int hexid;
+comp_14=float lenv(float3 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_15=static float3 hpos, fpoint, pt;
+comp_16=static float tcol, bcol, hitbol, hexpos, fparam=0.;
+comp_17=static float aBall = 1.0;   // AUDIO: ball radius scale (exactly 1.0 at version 3+)
+comp_18=
+comp_19=float2x2 rot(float a) {
+comp_20=  float s=sin(a),c=cos(a);
+comp_21=  return float2x2(c,s,-s,c);
+comp_22=}
+comp_23=
+comp_24=float3 path(float t) {
+comp_25=  return float3(sin(t*.3+cos(t*.2)*.5)*4.,cos(t*.2)*3.,t);
+comp_26=}
+comp_27=
+comp_28=float hexagon( in float2 p, in float r )
+comp_29={
+comp_30=  float3 k = float3(-0.866025404,0.5,0.577350269);
+comp_31=  p = abs(p);
+comp_32=  p -= 2.0*min(dot(k.xy,p),0.0)*k.xy;
+comp_33=  p -= float2(clamp(p.x, -k.z*r, k.z*r), r);
+comp_34=  return length(p)*sign(p.y);
+comp_35=}
+comp_36=
+comp_37=float hex(float2 p) {
+comp_38=  p.x *= 0.57735*2.0;
+comp_39=  p.y+=mod_conv(floor(p.x),2.0)*0.5;
+comp_40=  p=abs((mod_conv(p,float2(1.,1.))-0.5));
+comp_41=  return abs(max(p.x*1.5 + p.y, p.y*2.0) - 1.0);
+comp_42=}
+comp_43=
+comp_44=float3x3 lookat(float3 dir) {
+comp_45=  float3 up=float3(0.,1.,0.);
+comp_46=  float3 rt=normalize(cross(dir,up));
+comp_47=  return float3x3(rt, cross(rt,dir), dir);
+comp_48=}
+comp_49=
+comp_50=float hash12(float2 p)
+comp_51={
+comp_52=  p*=1000.;
+comp_53=  float3 p3  = frac(float3(p.xyx) * .1031);
+comp_54=  p3 += dot(p3, p3.yzx + 33.33);
+comp_55=  return frac((p3.x + p3.y) * p3.z);
+comp_56=}
+comp_57=
+comp_58=float sphereLineAB(float3 p, float3 a, float3 b, float srad){
+comp_59=
+comp_60=  p = normalize(p);
+comp_61=  // Normalize p. // Set radius: p /= rad;
+comp_62=  return dot(p, cross(a, b))/max(lenv(a - b), 1e-6);
+comp_63=
+comp_64=}
+comp_65=
+comp_66=float3 erot(float3 p, float3 ax, float ro) {
+comp_67=  return lerp(dot(ax, p)*ax, p, cos(ro)) + sin(ro)*cross(ax, p);
+comp_68=}
+comp_69=
+comp_70=#define PI 3.14159265359
+comp_71=#define PHI (1. + sqrt(5.))/2.
+comp_72=
+comp_73=void icosahedronVerts(in float3 p, out float3 face, out float3 a, out float3 b, out float3 c) {
+comp_74=
+comp_75=  float3 V = float3(PHI, 1,  0);
+comp_76=  float3 ap = abs(p), v = V;
+comp_77=  if (dot(ap, V.yzx - v) > 0.) v = V.yzx;
+comp_78=  if (dot(ap, V.zxy - v) > 0.) v = V.zxy;
+comp_79=  a = normalize(v)*sign(p);
+comp_80=
+comp_81=  v = V.xxx;
+comp_82=  V = float3(V.zy, V.x + V.y);
+comp_83=  if (dot(ap, V - v) > 0.) v = V;
+comp_84=  if (dot(ap, V.yzx - v) > 0.) v = V.yzx;
+comp_85=  if (dot(ap, V.zxy - v) > 0.) v = V.zxy;
+comp_86=  face = normalize(v)*sign(p);
+comp_87=
+comp_88=  float r = PI*2./3.;
+comp_89=
+comp_90=  b = erot(a, face, -r);
+comp_91=  c = erot(a, face, r);
+comp_92=
+comp_93=}
+comp_94=
+comp_95=float de(float3 p) {
+comp_96=  pt=float3(p.xy-path(p.z).xy,p.z);
+comp_97=  float h=abs(hexagon(pt.xy,3.+fparam));
+comp_98=  hexpos=hex(pt.yz);
+comp_99=  tcol=smoothstep(.0,.15,hexpos);
+comp_100=  h-=tcol*.1;
+comp_101=  float3 pp=p-hpos;
+comp_102=  pp = mul(pp, lookat(fpoint));
+comp_103=  pp.y-=abs(sin(time))*3.+(fparam-(2.-fparam));
+comp_104=  pp.yz = mul(pp.yz, transpose(rot(-time)));
+comp_105=
+comp_106=  float bola=lenv(pp)-aBall;
+comp_107=
+comp_108=  if(lenv(pp)<aBall*1.5){
+comp_109=
+comp_110=    float3 face;
+comp_111=    float3 v0, v1, v2;
+comp_112=    icosahedronVerts(pp, face, v0, v1, v2);
+comp_113=    float srad = 1.;
+comp_114=    // Sphere radius.
+comp_115=
+comp_116=    float3 mid0 = lerp(v0, v1, 1./3.);
+comp_117=    float3 mid1 = lerp(v0, v1, 2./3.);
+comp_118=    float3 mid2 = lerp(v1, v2, 1./3.);
+comp_119=    float3 mid3 = lerp(v1, v2, 2./3.);
+comp_120=    float3 mid4 = lerp(v2, v0, 1./3.);
+comp_121=    float3 mid5 = lerp(v2, v0, 2./3.);
+comp_122=
+comp_123=    float poly = -1e5;
+comp_124=    poly = max(poly, sphereLineAB(pp, mid0, mid1, srad));
+comp_125=    poly = max(poly, sphereLineAB(pp, mid1, mid2, srad));
+comp_126=    poly = max(poly, sphereLineAB(pp, mid2, mid3, srad));
+comp_127=    poly = max(poly, sphereLineAB(pp, mid3, mid4, srad));
+comp_128=    poly = max(poly, sphereLineAB(pp, mid4, mid5, srad));
+comp_129=    poly = max(poly, sphereLineAB(pp, mid5, mid0, srad));
+comp_130=
+comp_131=    bcol = smoothstep(0., .05, abs(poly));
+comp_132=    bola += bcol*.1;
+comp_133=
+comp_134=  }
+comp_135=
+comp_136=  float3 pr=p;
+comp_137=  pr.z=mod_conv(p.z,6.)-3.;
+comp_138=  float d=min(h,bola);
+comp_139=  if (d==bola) {
+comp_140=    tcol=1.;
+comp_141=    hitbol=1.;
+comp_142=  }
+comp_143=
+comp_144=  else {
+comp_145=    hitbol=0.;
+comp_146=    bcol=1.;
+comp_147=  }
+comp_148=
+comp_149=  return d*.5;
+comp_150=}
+comp_151=
+comp_152=float3 normal(float3 p) {
+comp_153=  float2 e=float2(0.,.005);
+comp_154=  return normalize(float3(de(p+e.yxx),de(p+e.xyx),de(p+e.xxy))-de(p));
+comp_155=}
+comp_156=
+comp_157=float3 march(float3 from, float3 dir) {
+comp_158=  float3 odir=dir;
+comp_159=  float3 p=from,col=float3(0., 0., 0.);
+comp_160=  float d,td=0.;
+comp_161=  float3 g=float3(0., 0., 0.);
+comp_162=  for (int i=min(frame,0); i<200; i++) {
+comp_163=    d=de(p);
+comp_164=    // CONV: replaced break with breaking condition
+comp_165=    if (d<.001||td>200.)  i=200;
+comp_166=    p+=dir*d;
+comp_167=    td+=d;
+comp_168=    g+=.1/(.1+d)*hitbol*abs(normalize(fpoint));
+comp_169=  }
+comp_170=
+comp_171=  float hp=hexpos*(1.-hitbol);
+comp_172=  p-=dir*.01;
+comp_173=  float3 n=normal(p);
+comp_174=  if (d<.001) {
+comp_175=    col=pow(max(0.,dot(-dir,n)),2.)*float3(.6,.7,.8)*tcol*bcol;
+comp_176=  }
+comp_177=
+comp_178=  col+=float(hexid);
+comp_179=  float3 pr=pt;
+comp_180=  dir=reflect(dir,n);
+comp_181=  td=0.;
+comp_182=  for (int i=min(frame,0); i<200; i++) {
+comp_183=    d=de(p);
+comp_184=    // CONV: replaced break with breaking condition
+comp_185=    if (d<.001||td>200.)  i=200;
+comp_186=    p+=dir*d;
+comp_187=    td+=d;
+comp_188=    g+=.1/(.1+d)*abs(normalize(fpoint));
+comp_189=  }
+comp_190=
+comp_191=  float zz=p.z;
+comp_192=  if (d<.001) {
+comp_193=    float3 refcol=pow(max(0.,dot(-odir,n)),2.)*float3(.6,.7,.8)*tcol*bcol;
+comp_194=    p=pr;
+comp_195=    p=abs(.5-frac(p*.1));
+comp_196=    float m=100.;
+comp_197=    for (int i=0; i<10; i++) {
+comp_198=      p=abs(p)/max(dot(p,p),1e-6)-.8;
+comp_199=      m=min(m,lenv(p));
+comp_200=    }
+comp_201=
+comp_202=    col=lerp(col,refcol,m)-m*.3;
+comp_203=    col+=step(.3,hp)*step(.9,frac(pr.z*.05+time*.5+hp*.1))*.7;
+comp_204=    col+=step(.3,hexpos)*step(.9,frac(zz*.05+time+hexpos*.1))*.3;
+comp_205=  }
+comp_206=
+comp_207=  col+=g*.03;
+comp_208=  col.rb = mul(col.rb, transpose(rot(odir.y*.5)));
+comp_209=  return col;
+comp_210=}
+comp_211=
+comp_212=shader_body {
+comp_213=  float4 fragColor = 0;
+comp_214=  float2 fragCoord  = uv;
+comp_215=  // CONV: Center on screen, then try some aspect correction
+comp_216=  uv = (uv*2) - 1;
+comp_217=  uv *= aspect.xy;
+comp_218=  // CONV: Adjust this to flip the output (±uv.x, ±uv.y)
+comp_219=  uv = float2(uv.x, -uv.y);
+comp_220=  // CONV: Adjust viewpoint (x,y individually or both)
+comp_221=  uv += float2(0,0) + 0;
+comp_222=  uv *= float2(1,1) * 1;
+comp_223=  // AUDIO: 1 = calm (bass_smooth), 2 = more reactive (bass_att), 3+ = static - see the remote's Version tooltip
+comp_224=  #ifdef vis_version
+comp_225=    float aRng = (int)vis_version == 1 ? 0.34 : 0.42;
+comp_226=    float aFac = (int)vis_version > 2 ? 1*vis_intensity+vis_shift
+comp_227=      : (1.0 - aRng*0.5 + smoothstep(0,2,(int)vis_version == 1 ? bass_smooth : bass_att)*aRng) * vis_intensity + vis_shift;
+comp_228=  #else
+comp_229=    float aFac = (1.0 - 0.15) + smoothstep(0,2,bass_att)*0.30;
+comp_230=  #endif
+comp_231=  float aDev = aFac - 1.0;   // 0 at the track average, +loud, -quiet
+comp_232=  #ifdef vis_version
+comp_233=    float aBe  = aDev * 4.0, aCol = (int)vis_version == 1 ? 0.7 : 1.3;   // beat scale, colour reaction scale
+comp_234=  #else
+comp_235=    float aBe  = aDev * 4.0, aCol = 1.3;   // other MilkDrop variants: v2 tuning
+comp_236=  #endif
+comp_237=  // AUDIO: the level changes the size of the ball instead of tilting the camera
+comp_238=  #ifdef vis_version
+comp_239=    aBall = 1.0 + aDev * ((int)vis_version == 1 ? 1.15 : 0.7);
+comp_240=  #else
+comp_241=    aBall = 1.0 + aDev * 0.7;   // other MilkDrop variants: v2 tuning
+comp_242=  #endif
+comp_243=
+comp_244=  // float2 uv = fragCoord/uv.xy-.5;
+comp_245=  // CONV: aspect correction is already done by the prologue (was applied twice)
+comp_246=  float t=time*2.;
+comp_247=  float3 from=path(t);
+comp_248=  if (mod_conv(time-10.,20.)>10.) {
+comp_249=    from=path(floor(t/20.)*20.+10.);
+comp_250=    from.x+=2.;
+comp_251=  }
+comp_252=
+comp_253=  hpos=path(t+3.);
+comp_254=  float3 adv=path(t+2.);
+comp_255=  float3 dir=normalize(float3(uv,.7));
+comp_256=  float3 dd=normalize(adv-from);
+comp_257=  fpoint=normalize(adv-hpos);
+comp_258=  fpoint.xz = mul(fpoint.xz, transpose(rot(sin(time)*.2)));
+comp_259=  dir = mul(dir, lookat(dd));
+comp_260=  // MOUSE: holding the button turns the camera (pointer X = yaw, pointer Y = pitch). At zero
+comp_261=  // rotation this is bit-exact identity, so the un-pressed frame is unchanged.
+comp_262=  float2 mRot = (mouse.xy - 0.5) * saturate(mouse.z) * float2(1.0, 0.6);
+comp_263=  float mCy = cos(mRot.x), mSy = sin(mRot.x);
+comp_264=  dir.xz = float2(dir.x * mCy - dir.z * mSy, dir.x * mSy + dir.z * mCy);
+comp_265=  float mCp = cos(mRot.y), mSp = sin(mRot.y);
+comp_266=  dir.yz = float2(dir.y * mCp - dir.z * mSp, dir.y * mSp + dir.z * mCp);
+comp_267=  float3 col = march(from, dir);
+comp_268=  col*=float3(1.,.9,.8);
+comp_269=  fragColor = float4(col,1.0);
+comp_270=  ret = fragColor;
+comp_271=  // AUDIO: the palette rotates on beats
+comp_272=  ret = lerp(ret, ret.zyx, aBe * 0.2 * aCol);
+comp_273=}

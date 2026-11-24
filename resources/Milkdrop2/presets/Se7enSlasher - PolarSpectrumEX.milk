@@ -1,0 +1,163 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 10/03/2026 at 20:58:10.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=2
+[preset00]
+fRating=5.000
+fGammaAdj=1.200
+fDecay=0.980
+FFTAttack=0.500
+FFTDecay=0.725
+fVideoEchoZoom=2.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.001
+fWaveSmoothing=0.000
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`sampler sampler_rand00;
+warp_2=`
+warp_3=`#define PI M_PI
+warp_4=`#define NUM_POINTS 128.0
+warp_5=`
+warp_6=`float3 hsv2rgb(float3 c) {
+warp_7=`    float4 K = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+warp_8=`    float3 p = abs(frac(c.xxx + K.xyz) * 6.0 - K.www);
+warp_9=`    return c.z * lerp(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+warp_10=`}
+warp_11=`
+warp_12=`shader_body
+warp_13=`{    
+warp_14=`    // 1. Center and Polar Coordinates
+warp_15=`    float2 aspect_texsize = float2(1, texsize.y/texsize.x);
+warp_16=`    float2 uv_c = (uv-0.5)*aspect_texsize;
+warp_17=`    float radian = length(uv_c);
+warp_18=`    float angle = atan2(uv_c.y, uv_c.x); // Range -PI to PI
+warp_19=`    
+warp_20=`    // Normalize angle to 0.0 -> 1.0
+warp_21=`    float ang_norm = (angle / PI) * 0.5 + 0.5;
+warp_22=`
+warp_23=`    // 2. Fetch FFT Data
+warp_24=`    // We use a slight offset so the "seam" isn't at the very bassy part
+warp_25=`    float fft_lookup = frac(ang_norm + 0.5);
+warp_26=`    float fft = get_fft(fft_lookup * 0.8 + 0.1); 
+warp_27=`
+warp_28=`    #if HAS_FFT_PEAK
+warp_29=`    float peak = get_fft_peak(fft_lookup * 0.8 + 0.1);
+warp_30=`    #endif
+warp_31=`
+warp_32=`    // Define Circle Radii
+warp_33=`    float inner_radius = 0.15;
+warp_34=`    float bar_height = fft * 0.5;
+warp_35=`    #if HAS_FFT_PEAK
+warp_36=`    float peak_height = peak * 0.5;
+warp_37=`    #endif
+warp_38=`
+warp_39=`    // 3. The "Crystally" Texture Effect
+warp_40=`    // Use sampler_rand with high scale and time-based rotation
+warp_41=`    float2 crystal_uv = (uv*3) + float2(sin(time*.3)/2.5, sin(time*.5)/2.5);
+warp_42=`    float3 crystal_tex = tex2D(sampler_rand00, crystal_uv).rgb;
+warp_43=`    // Make it "sharp" by using power
+warp_44=`    float sparkles = pow(crystal_tex.g, 12.0) * 20.0; 
+warp_45=`
+warp_46=`    // 4. Drawing the EQ Ring
+warp_47=`    float3 color = float3(0,0,0);
+warp_48=`    
+warp_49=`    // Main Audio Ring Mask
+warp_50=`    float ring_mask = step(radian, inner_radius + bar_height) * step(inner_radius, radian);
+warp_51=`    
+warp_52=`    // Peak Halo Mask (Thin shards at the top)
+warp_53=`    #if HAS_FFT_PEAK
+warp_54=`    float peak_mask = step(abs(radian - (inner_radius + peak_height)), 0.004);
+warp_55=`    #endif
+warp_56=`
+warp_57=`    // Coloring
+warp_58=`    float3 bar_color = hsv2rgb(float3(fft_lookup * 0.6 + time*0.1, 0.7, 1.0));
+warp_59=`    
+warp_60=`    // Combine
+warp_61=`    color += ring_mask * bar_color * (0.5 + sparkles * 0.5);
+warp_62=`    #if HAS_FFT_PEAK
+warp_63=`    color += peak_mask * float3(0.8, 0.9, 1.0) * 2.0; // Bright white peak shards
+warp_64=`    #endif
+warp_65=`
+warp_66=`    // 5. Center Core Glow
+warp_67=`    float core = exp(-radian * 20.0) * fft;
+warp_68=`    color += core * bar_color;
+warp_69=`
+warp_70=`    // 6. Background "Glass" distortion
+warp_71=`    float2 distort_uv = uv + (crystal_tex.rb - 0.5) * 0.05 * fft;
+warp_72=`    float3 bg = tex2D(sampler_main, distort_uv).rgb * 0.7;
+warp_73=`    color += bg * 0.3;
+warp_74=`
+warp_75=`    ret = float4(color, 1.0);
+warp_76=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    ret = tex2D(sampler_main, uv).xyz;
+comp_4=`    //ret *= 1.2; // Brighten the final output
+comp_5=`}

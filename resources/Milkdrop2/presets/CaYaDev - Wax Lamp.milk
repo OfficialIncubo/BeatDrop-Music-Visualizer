@@ -1,0 +1,148 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+per_frame_init_1=heat = 0;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=heat = heat + (0.08 + 0.12*min(bass_att, 2))/fps;
+per_frame_5=q1 = heat;
+per_frame_6=q2 = min(bass_att, 2);
+per_frame_7=q3 = time*0.01 + mid_att*0.02;
+per_frame_8=q4 = 0.5 + 0.075*sin(heat*0.70 + 0.0);
+per_frame_9=q5 = 0.5 + 0.33*sin(heat*0.50 + 0.0);
+per_frame_10=q6 = 0.5 + 0.075*sin(heat*0.83 + 1.9);
+per_frame_11=q7 = 0.5 + 0.33*sin(heat*0.67 + 2.3);
+per_frame_12=q8 = 0.5 + 0.075*sin(heat*0.96 + 3.8);
+per_frame_13=q9 = 0.5 + 0.33*sin(heat*0.84 + 4.6);
+per_frame_14=q10 = 0.5 + 0.075*sin(heat*1.09 + 5.7);
+per_frame_15=q11 = 0.5 + 0.33*sin(heat*1.01 + 6.9);
+per_frame_16=q12 = 0.5 + 0.075*sin(heat*1.22 + 7.6);
+per_frame_17=q13 = 0.5 + 0.33*sin(heat*1.18 + 9.2);
+per_frame_18=q14 = 0.5 + 0.075*sin(heat*1.35 + 9.5);
+per_frame_19=q15 = 0.5 + 0.33*sin(heat*1.35 + 11.5);
+per_frame_20=q16 = 0.5 + 0.075*sin(heat*1.48 + 11.4);
+per_frame_21=q17 = 0.5 + 0.33*sin(heat*1.52 + 13.8);
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  ret = float3(0.0, 0.0, 0.0);
+warp_4=`}
+comp_1=`float field(float2 p)
+comp_2=`{
+comp_3=`  float f = 0.0;
+comp_4=`  { float2 d = (p - float2(q4, 1.0 - q5)) * float2(1.0, 0.5625) * float2(1.0, 1.0 + 0.35 * sin(q1 * 0.90 + 0.0));
+comp_5=`    f += 0.00070 * (1.0 + 0.25 * q2) / (dot(d, d) + 1e-4); }
+comp_6=`  { float2 d = (p - float2(q6, 1.0 - q7)) * float2(1.0, 0.5625) * float2(1.0, 1.0 + 0.35 * sin(q1 * 1.10 + 1.0));
+comp_7=`    f += 0.00105 * (1.0 + 0.25 * q2) / (dot(d, d) + 1e-4); }
+comp_8=`  { float2 d = (p - float2(q8, 1.0 - q9)) * float2(1.0, 0.5625) * float2(1.0, 1.0 + 0.35 * sin(q1 * 1.30 + 2.0));
+comp_9=`    f += 0.00140 * (1.0 + 0.25 * q2) / (dot(d, d) + 1e-4); }
+comp_10=`  { float2 d = (p - float2(q10, 1.0 - q11)) * float2(1.0, 0.5625) * float2(1.0, 1.0 + 0.35 * sin(q1 * 1.50 + 3.0));
+comp_11=`    f += 0.00070 * (1.0 + 0.25 * q2) / (dot(d, d) + 1e-4); }
+comp_12=`  { float2 d = (p - float2(q12, 1.0 - q13)) * float2(1.0, 0.5625) * float2(1.0, 1.0 + 0.35 * sin(q1 * 1.70 + 4.0));
+comp_13=`    f += 0.00105 * (1.0 + 0.25 * q2) / (dot(d, d) + 1e-4); }
+comp_14=`  { float2 d = (p - float2(q14, 1.0 - q15)) * float2(1.0, 0.5625) * float2(1.0, 1.0 + 0.35 * sin(q1 * 1.90 + 5.0));
+comp_15=`    f += 0.00140 * (1.0 + 0.25 * q2) / (dot(d, d) + 1e-4); }
+comp_16=`  { float2 d = (p - float2(q16, 1.0 - q17)) * float2(1.0, 0.5625) * float2(1.0, 1.0 + 0.35 * sin(q1 * 2.10 + 6.0));
+comp_17=`    f += 0.00070 * (1.0 + 0.25 * q2) / (dot(d, d) + 1e-4); }
+comp_18=`  return f;
+comp_19=`}
+comp_20=`shader_body
+comp_21=`{
+comp_22=`  float2 p = uv;
+comp_23=`  // vessel: a tall rounded capsule, wider at the bottom
+comp_24=`  float vy = saturate((uv.y - 0.12) / 0.74);
+comp_25=`  float halfw = 0.11 + 0.06 * vy;
+comp_26=`  float inV = step(abs(uv.x - 0.5), halfw) * step(0.12, uv.y) * step(uv.y, 0.86);
+comp_27=`  float edgeV = exp(-abs(abs(uv.x - 0.5) - halfw) * 900.0) * step(0.12, uv.y) * step(uv.y, 0.86);
+comp_28=`  float3 pa = 0.5 + 0.5 * cos(6.28318 * (float3(0.0, 0.1, 0.2) + q3));
+comp_29=`  float3 wax = lerp(float3(1.0, 0.35, 0.08), lerp(float3(1.0, 0.2, 0.45), pa, 0.35), 0.4);
+comp_30=`  float f = field(p);
+comp_31=`  float body = smoothstep(0.95, 1.05, f);
+comp_32=`  // lit from the bulb below: brighter low in the lamp, a hot rim where the wax is thin
+comp_33=`  float light = 0.35 + 0.65 * vy;
+comp_34=`  float rim = smoothstep(0.6, 1.0, f) * (1.0 - smoothstep(1.0, 1.8, f));
+comp_35=`  float3 liquid = lerp(float3(0.05, 0.02, 0.06), float3(0.2, 0.08, 0.15), vy) + float3(0.9, 0.5, 0.2) * pow(vy, 3.0) * 0.4;
+comp_36=`  float3 inside = liquid + wax * body * (0.35 + 0.75 * light) + wax * rim * 0.5;
+comp_37=`  inside += float3(1.0, 0.7, 0.4) * pow(vy, 6.0) * 0.6;
+comp_38=`  float3 col = float3(0.02, 0.015, 0.03) + float3(0.25, 0.1, 0.05) * exp(-length((uv - float2(0.5, 0.9)) * float2(1.6, 1.0)) * 3.0) * (0.6 + 0.3 * q2);
+comp_39=`  col = lerp(col, inside, inV);
+comp_40=`  col += float3(0.7, 0.5, 0.4) * edgeV * 0.25;
+comp_41=`  float cap = step(abs(uv.x - 0.5), 0.07) * step(0.06, uv.y) * step(uv.y, 0.12);
+comp_42=`  float bas = step(abs(uv.x - 0.5), 0.15 - (0.95 - uv.y) * 0.4) * step(0.86, uv.y) * step(uv.y, 0.97);
+comp_43=`  float3 metal = float3(0.35, 0.3, 0.32) * (0.6 + 0.4 * cos((uv.x - 0.5) * 30.0));
+comp_44=`  col = lerp(col, metal * 0.6, cap);
+comp_45=`  col = lerp(col, metal * 0.45 + float3(0.2, 0.1, 0.05) * q2 * 0.3, bas);
+comp_46=`  col *= 1.0 - dot(uv - 0.5, uv - 0.5) * 0.7;
+comp_47=`  ret = 1.0 - exp(-col * 1.6);
+comp_48=`}

@@ -1,0 +1,469 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 14/07/2026 at 11:45:31.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=4.000
+fGammaAdj=2.200
+fDecay=0.980
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.630
+fWaveParam=-1.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=0.500
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=q1=0.0;
+per_frame_init_2=q2=0.0;
+per_frame_init_3=q3=0.0;
+per_frame_init_4=q4=0.0;
+per_frame_init_5=q5=0.0;
+per_frame_init_6=q6=0.0;
+per_frame_init_7=q7=0.0;
+per_frame_init_8=q8=0.0;
+per_frame_1=q1=bass_att;
+per_frame_2=q2=mid_att;
+per_frame_3=q3=treb_att;
+per_frame_4=q4=vol;
+per_frame_5=q5=time;
+per_frame_6=q6=bass;
+per_frame_7=q7=treb;
+per_frame_8=q8=mid;
+per_frame_9=beat=max(max(bass,mid),treb);
+per_frame_10=avg=avg*0.95+beat*0.05;
+per_frame_11=peak=peak*0.95+max(0,beat-avg)*0.5;
+per_frame_12=is_beat=above(beat,0.5+avg+peak)*above(time,t0+0.15);
+per_frame_13=t0=is_beat*time+(1-is_beat)*t0;
+per_frame_14=q9=is_beat;
+per_frame_15=q10=avg;
+per_frame_16=q11=peak;
+per_frame_17=lightning_phase=lightning_phase+is_beat*0.9+(1-is_beat)*(-lightning_phase*0.08);
+per_frame_18=q12=lightning_phase;
+per_frame_19=bass_smooth=bass_smooth*0.8+bass*0.2;
+per_frame_20=q13=bass_smooth;
+per_frame_21=speaker_push=bass_att*0.13+bass*0.06;
+per_frame_22=q14=speaker_push;
+per_frame_23=flow_speed=0.04+vol*0.018;
+per_frame_24=q15=flow_speed;
+per_frame_25=color_t=color_t+0.003+mid*0.001;
+per_frame_26=q16=color_t;
+per_frame_27=zoom=1.0;
+per_frame_28=warp=0.08+bass*0.04;
+per_frame_29=decay=0.980;
+warp_1=`shader_body {}
+comp_1=`#define PI 3.14159265359
+comp_2=`#define TWO_PI 6.28318530718
+comp_3=`
+comp_4=`// --- Utility functions ---
+comp_5=`float hash(float2 p) {
+comp_6=`  return frac(sin(dot(p, float2(127.1, 311.7))) * 43758.5453);
+comp_7=`}
+comp_8=`
+comp_9=`float noise2d(float2 p) {
+comp_10=`  float2 i = floor(p);
+comp_11=`  float2 f = frac(p);
+comp_12=`  f = f*f*(3.0-2.0*f);
+comp_13=`  float a = hash(i);
+comp_14=`  float b = hash(i+float2(1,0));
+comp_15=`  float c2 = hash(i+float2(0,1));
+comp_16=`  float d = hash(i+float2(1,1));
+comp_17=`  return lerp(lerp(a,b,f.x), lerp(c2,d,f.x), f.y);
+comp_18=`}
+comp_19=`
+comp_20=`// Smooth HSV to RGB
+comp_21=`float3 hsv2rgb(float3 c3) {
+comp_22=`  float3 p = abs(frac(c3.x+float3(0.0,2.0/3.0,1.0/3.0))*6.0-3.0);
+comp_23=`  return c3.z * lerp(float3(1,1,1), clamp(p-1.0,0.0,1.0), c3.y);
+comp_24=`}
+comp_25=`
+comp_26=`// Returns signed distance to a rounded rectangle
+comp_27=`float sdRoundRect(float2 p2, float2 halfsize, float r) {
+comp_28=`  float2 q2x = abs(p2) - halfsize + r;
+comp_29=`  return length(max(q2x,0.0)) + min(max(q2x.x,q2x.y),0.0) - r;
+comp_30=`}
+comp_31=`
+comp_32=`// Pipe cross-section SDF (rounded capsule)
+comp_33=`float sdCapsule2D(float2 p2, float2 a, float2 b, float r) {
+comp_34=`  float2 pa = p2-a, ba = b-a;
+comp_35=`  float h = clamp(dot(pa,ba)/dot(ba,ba), 0.0, 1.0);
+comp_36=`  return length(pa - ba*h) - r;
+comp_37=`}
+comp_38=`
+comp_39=`// --- Lightning bolt (branching fractal) ---
+comp_40=`float lightning(float2 uv_l, float2 seed2, float phase, float time2) {
+comp_41=`  float result = 0.0;
+comp_42=`  float2 p2 = uv_l;
+comp_43=`  float scale = 1.0;
+comp_44=`  for (int i2=0; i2<5; i2++) {
+comp_45=`    float2 offset = float2(
+comp_46=`      0.3*sin(float(i2)*1.7 + phase*3.1 + seed2.x*5.0 + time2*0.4),
+comp_47=`      0.3*cos(float(i2)*2.3 + phase*2.4 + seed2.y*4.0 + time2*0.3)
+comp_48=`    );
+comp_49=`    float bolt = 1.0 - smoothstep(0.0, 0.012/scale, abs(p2.y - offset.y - p2.x*0.5*sin(float(i2)+phase)));
+comp_50=`    result += bolt / scale;
+comp_51=`    p2 = p2*1.8 + offset*0.6;
+comp_52=`    scale *= 1.8;
+comp_53=`  }
+comp_54=`  return clamp(result, 0.0, 1.0);
+comp_55=`}
+comp_56=`
+comp_57=`// --- Fluid noise for liquid flow ---
+comp_58=`float fluidNoise(float2 p2, float t) {
+comp_59=`  float n = 0.0;
+comp_60=`  n += 0.50 * noise2d(p2*2.0 + float2(0.0, -t*1.2));
+comp_61=`  n += 0.25 * noise2d(p2*4.0 + float2(sin(t*0.3)*0.5, -t*2.1));
+comp_62=`  n += 0.12 * noise2d(p2*8.0 + float2(cos(t*0.5)*0.4, -t*3.7));
+comp_63=`  n += 0.06 * noise2d(p2*16.0 + float2(-t*0.8, t*1.3));
+comp_64=`  return n;
+comp_65=`}
+comp_66=`
+comp_67=`sampler2D sampler_rand00;
+comp_68=`sampler2D sampler_rand01;
+comp_69=`
+comp_70=`// --- Diamond / prism UV fold (standalone function) ---
+comp_71=`float2 diamondUV(float2 p2, float cell) {
+comp_72=`  float2 g = p2 / cell;
+comp_73=`  float2 gi = floor(g);
+comp_74=`  float2 gf = frac(g) - 0.5;
+comp_75=`  gf = abs(gf);
+comp_76=`  float ang2 = frac(sin(dot(gi, float2(7.31, 3.97))) * 5831.2) * 6.2832;
+comp_77=`  float ca = cos(ang2), sa = sin(ang2);
+comp_78=`  gf = float2(ca*gf.x - sa*gf.y, sa*gf.x + ca*gf.y);
+comp_79=`  return frac(gf + 0.5);
+comp_80=`}
+comp_81=`
+comp_82=`shader_body {
+comp_83=`
+comp_84=`  // Unpack q-variables
+comp_85=`  float bass_att2  = _qa.x; // q1
+comp_86=`  float mid_att2   = _qa.y; // q2
+comp_87=`  float treb_att2  = _qa.z; // q3
+comp_88=`  float vol2       = _qa.w; // q4
+comp_89=`  float t          = _qb.x; // q5 = time
+comp_90=`  float bass2      = _qb.y; // q6
+comp_91=`  float treb2      = _qb.z; // q7
+comp_92=`  float mid2       = _qb.w; // q8
+comp_93=`  float is_beat2   = _qc.x; // q9
+comp_94=`  float avg2       = _qc.y; // q10
+comp_95=`  float peak2      = _qc.z; // q11
+comp_96=`  float lightning_p = _qc.w; // q12
+comp_97=`  float bass_sm    = _qd.x; // q13
+comp_98=`  float speaker_p  = _qd.y; // q14
+comp_99=`  float flow_spd   = _qd.z; // q15
+comp_100=`  float color_t2   = _qd.w; // q16
+comp_101=`
+comp_102=`  //float2 uv = In.UV2;          // [0,1] screen coords, center = (0.5,0.5)
+comp_103=`  float2 p = uv - 0.5;         // centered coords [-0.5, 0.5]
+comp_104=`  p.x *= 16.0/9.0;            // correct for widescreen aspect
+comp_105=`
+comp_106=`  float3 color = float3(0,0,0);
+comp_107=`
+comp_108=`  // ============================================================
+comp_109=`  // 1. BACKGROUND — dark metallic grid (circuit board)
+comp_110=`  // ============================================================
+comp_111=`  float2 grid = frac(p * 8.0) - 0.5;
+comp_112=`  float grid_line = 1.0 - smoothstep(0.0, 0.02, min(abs(grid.x), abs(grid.y)));
+comp_113=`  float3 bg_metal = float3(0.02, 0.03, 0.05) + grid_line * float3(0.04, 0.07, 0.10);
+comp_114=`  // Subtle ambient glow from coolant
+comp_115=`  float ambient_hue = frac(color_t2 * 0.08);
+comp_116=`  bg_metal += hsv2rgb(float3(ambient_hue, 0.9, 0.06));
+comp_117=`  color = bg_metal;
+comp_118=`
+comp_119=`  // ============================================================
+comp_120=`  // 1b. DIAMOND PRISM BACKGROUND — sampler_rand00 as gem facets
+comp_121=`  // ============================================================
+comp_122=`  // Cell size pulses slowly with mid (prism shifts on melody)
+comp_123=`  float prism_cell = 0.09 + 0.03 * sin(t * 0.4 + mid_att2 * 1.5);
+comp_124=`  float2 d_uv = diamondUV(p, prism_cell);
+comp_125=`  // Chromatic dispersion: sample rand00 three times at slightly offset UVs
+comp_126=`  // The offset is driven by treb_att — sparkle-reactive color splitting
+comp_127=`  float disp = 0.007 + treb_att2 * 0.018;
+comp_128=`  float rand_r = tex2D(sampler_rand00, d_uv + float2( disp, 0.0)).r;
+comp_129=`  float rand_g = tex2D(sampler_rand00, d_uv).g;
+comp_130=`  float rand_b = tex2D(sampler_rand00, d_uv + float2(-disp, 0.0)).b;
+comp_131=`  float3 prism_rgb = float3(rand_r, rand_g, rand_b);
+comp_132=`  // Hue-rotate the prism sample to follow the coolant color cycle
+comp_133=`  float prism_hue = frac(color_t2 * 0.12 + prism_rgb.r * 0.6 + prism_rgb.g * 0.3);
+comp_134=`  float3 prism_col = hsv2rgb(float3(prism_hue, 0.85, 0.55 + bass_att2 * 0.3));
+comp_135=`  // Edge-only: facet borders catch the prism light (SDF of diamond grid edge)
+comp_136=`  float2 gf_raw = frac(p / prism_cell) - 0.5;
+comp_137=`  float facet_edge = 1.0 - smoothstep(0.0, 0.06, min(abs(gf_raw.x), abs(gf_raw.y)));
+comp_138=`  // Blend: prism glints visible through background, intensity ~ mid + bass
+comp_139=`  float prism_str = (0.18 + mid_att2 * 0.22 + bass_att2 * 0.10);
+comp_140=`  color += prism_col * prism_str * facet_edge;
+comp_141=`  // Soft fill: faint gem color floods each facet cell interior
+comp_142=`  float3 prism_fill = hsv2rgb(float3(frac(prism_hue + 0.5), 0.7, 0.08 + mid_att2 * 0.10));
+comp_143=`  color += prism_fill * (1.0 - facet_edge) * (1.0 - grid_line);
+comp_144=`
+comp_145=`  // ============================================================
+comp_146=`  // 2. COOLANT PIPES — tube network (horizontal + vertical runs)
+comp_147=`  // ============================================================
+comp_148=`  // Define pipe routes: pairs of endpoints in normalized coords
+comp_149=`  // Horizontal pipes
+comp_150=`  float pipe_mask = 0.0;
+comp_151=`  float pipe_inner_mask = 0.0;
+comp_152=`  float pipe_flow = 0.0;
+comp_153=`  float pipe_r = 0.032;       // outer tube radius
+comp_154=`  float pipe_ri = 0.018;      // inner liquid radius
+comp_155=`
+comp_156=`  // --- Top horizontal run ---
+comp_157=`  float2 pA = float2(-0.80, -0.28);
+comp_158=`  float2 pB = float2( 0.80, -0.28);
+comp_159=`  float d_h1 = sdCapsule2D(p, pA, pB, pipe_r);
+comp_160=`  float d_h1i = sdCapsule2D(p, pA, pB, pipe_ri);
+comp_161=`  pipe_mask     = max(pipe_mask,     1.0-smoothstep(-0.001, 0.003, d_h1));
+comp_162=`  pipe_inner_mask = max(pipe_inner_mask, 1.0-smoothstep(-0.001, 0.002, d_h1i));
+comp_163=`
+comp_164=`  // --- Bottom horizontal run ---
+comp_165=`  float2 pC = float2(-0.80,  0.28);
+comp_166=`  float2 pD = float2( 0.80,  0.28);
+comp_167=`  float d_h2 = sdCapsule2D(p, pC, pD, pipe_r);
+comp_168=`  float d_h2i = sdCapsule2D(p, pC, pD, pipe_ri);
+comp_169=`  pipe_mask     = max(pipe_mask,     1.0-smoothstep(-0.001, 0.003, d_h2));
+comp_170=`  pipe_inner_mask = max(pipe_inner_mask, 1.0-smoothstep(-0.001, 0.002, d_h2i));
+comp_171=`
+comp_172=`  // --- Left vertical run ---
+comp_173=`  float2 pE = float2(-0.65, -0.28);
+comp_174=`  float2 pF = float2(-0.65,  0.28);
+comp_175=`  float d_v1 = sdCapsule2D(p, pE, pF, pipe_r);
+comp_176=`  float d_v1i = sdCapsule2D(p, pE, pF, pipe_ri);
+comp_177=`  pipe_mask     = max(pipe_mask,     1.0-smoothstep(-0.001, 0.003, d_v1));
+comp_178=`  pipe_inner_mask = max(pipe_inner_mask, 1.0-smoothstep(-0.001, 0.002, d_v1i));
+comp_179=`
+comp_180=`  // --- Right vertical run ---
+comp_181=`  float2 pG = float2( 0.65, -0.28);
+comp_182=`  float2 pH = float2( 0.65,  0.28);
+comp_183=`  float d_v2 = sdCapsule2D(p, pG, pH, pipe_r);
+comp_184=`  float d_v2i = sdCapsule2D(p, pG, pH, pipe_ri);
+comp_185=`  pipe_mask     = max(pipe_mask,     1.0-smoothstep(-0.001, 0.003, d_v2));
+comp_186=`  pipe_inner_mask = max(pipe_inner_mask, 1.0-smoothstep(-0.001, 0.002, d_v2i));
+comp_187=`
+comp_188=`  // --- Inner diagonals (looks like radiator fins) ---
+comp_189=`  float2 pI = float2(-0.65, -0.28);
+comp_190=`  float2 pJ = float2(-0.30,  0.00);
+comp_191=`  float d_d1 = sdCapsule2D(p, pI, pJ, pipe_r*0.65);
+comp_192=`  float d_d1i = sdCapsule2D(p, pI, pJ, pipe_ri*0.65);
+comp_193=`  pipe_mask     = max(pipe_mask,     1.0-smoothstep(-0.001, 0.003, d_d1));
+comp_194=`  pipe_inner_mask = max(pipe_inner_mask, 1.0-smoothstep(-0.001, 0.002, d_d1i));
+comp_195=`
+comp_196=`  float2 pK = float2( 0.65,  0.28);
+comp_197=`  float2 pL = float2( 0.30,  0.00);
+comp_198=`  float d_d2 = sdCapsule2D(p, pK, pL, pipe_r*0.65);
+comp_199=`  float d_d2i = sdCapsule2D(p, pK, pL, pipe_ri*0.65);
+comp_200=`  pipe_mask     = max(pipe_mask,     1.0-smoothstep(-0.001, 0.003, d_d2));
+comp_201=`  pipe_inner_mask = max(pipe_inner_mask, 1.0-smoothstep(-0.001, 0.002, d_d2i));
+comp_202=`
+comp_203=`  // ============================================================
+comp_204=`  // 3. LIQUID FLOW COLOR — HDR vivid coolant
+comp_205=`  // ============================================================
+comp_206=`  // Hue cycles slowly over time, slightly sped by volume
+comp_207=`  float hue_base = frac(color_t2 * 0.12 + vol2 * 0.04);
+comp_208=`  // Along-pipe coordinate for flow animation (project to local tangent)
+comp_209=`  // Use per-pixel noise to fake fluid swirl inside tube
+comp_210=`  float flow_uv_x = p.x + p.y * 0.2;
+comp_211=`  float flow_uv_y = p.y - p.x * 0.1;
+comp_212=`  float fluid_n = fluidNoise(float2(flow_uv_x, flow_uv_y), t * flow_spd * 12.0);
+comp_213=`  // Map fluid noise to hue offset for iridescent swirl
+comp_214=`  float hue_swirl = hue_base + fluid_n * 0.35;
+comp_215=`  // Saturation & brightness very high — HDR-like (bloom will saturate)
+comp_216=`  float sat = 0.92 + treb_att2 * 0.07;
+comp_217=`  float bri = 2.8 + bass_sm * 1.2;   // over-bright = HDR bloom effect
+comp_218=`  float3 liquid_color = hsv2rgb(float3(frac(hue_swirl), sat, bri));
+comp_219=`
+comp_220=`  // --- Oil-slick iridescence via sampler_rand00 ---
+comp_221=`  // Sample rand00 distorted by fluid noise field — gives organic oily shimmer
+comp_222=`  float2 oil_uv = uv + float2(fluid_n * 0.04, fluid_n * 0.03) - float2(0.0, t * flow_spd * 0.5);
+comp_223=`  float3 oil_samp = tex2D(sampler_rand01, oil_uv * 3.0).rgb;
+comp_224=`  // Interpret as thin-film interference: each channel offset in hue
+comp_225=`  float oil_hue_r = frac(oil_samp.r * 2.1 + hue_base + 0.00);
+comp_226=`  float oil_hue_g = frac(oil_samp.g * 2.1 + hue_base + 0.33);
+comp_227=`  float oil_hue_b = frac(oil_samp.b * 2.1 + hue_base + 0.67);
+comp_228=`  float3 oil_col = float3(
+comp_229=`    hsv2rgb(float3(oil_hue_r, 1.0, 2.2)).r,
+comp_230=`    hsv2rgb(float3(oil_hue_g, 1.0, 2.2)).g,
+comp_231=`    hsv2rgb(float3(oil_hue_b, 1.0, 2.2)).b
+comp_232=`  );
+comp_233=`  float oil_str = 0.12 + bass_sm + (treb_att2 *.375);
+comp_234=`  liquid_color = lerp(liquid_color, liquid_color * oil_col * 1.4, oil_str);
+comp_235=`
+comp_236=`  // Pipe wall: dark metallic sheen
+comp_237=`  float pipe_wall = pipe_mask - pipe_inner_mask;
+comp_238=`  float3 metal_sheen = float3(0.15, 0.17, 0.20) * pipe_wall;
+comp_239=`  // Rim highlight on tube edge
+comp_240=`  float rim = pipe_wall * (0.5 + 0.5*sin(p.x*30.0 + p.y*25.0 + t));
+comp_241=`  metal_sheen += rim * float3(0.25, 0.30, 0.35);
+comp_242=`
+comp_243=`  // Apply pipe layers onto scene
+comp_244=`  color = lerp(color, metal_sheen, pipe_wall);
+comp_245=`  color = lerp(color, liquid_color, pipe_inner_mask);
+comp_246=`
+comp_247=`  // Glow halo around pipes
+comp_248=`  float glow_dist = min(min(min(min(min(d_h1, d_h2), d_v1), d_v2), d_d1), d_d2);
+comp_249=`  float glow_halo = exp(-max(0.0, glow_dist) * 25.0) * 0.35 * (1.0 + bass_sm);
+comp_250=`  color += glow_halo * hsv2rgb(float3(frac(hue_base+0.05), 1.0, 1.5));
+comp_251=`
+comp_252=`  // ============================================================
+comp_253=`  // 4. SPEAKER / SUBWOOFER — center circle with excursion
+comp_254=`  // ============================================================
+comp_255=`  float spk_rad = 0.13 + speaker_p * 0.045;   // cone excursion on bass
+comp_256=`  float spk_dist = length(p);
+comp_257=`
+comp_258=`  // Speaker surround (flexible rubber ring)
+comp_259=`  float surround_inner = spk_rad - 0.012;
+comp_260=`  float surround_outer = spk_rad + 0.022;
+comp_261=`  float surround_mask = smoothstep(surround_outer, surround_outer-0.005, spk_dist)
+comp_262=`                      * smoothstep(surround_inner-0.005, surround_inner, spk_dist);
+comp_263=`  float3 surround_col = float3(0.08,0.08,0.09) + surround_mask * float3(0.06,0.06,0.07);
+comp_264=`
+comp_265=`  // Speaker cone (pushed/pulled by bass)
+comp_266=`  float cone_mask = smoothstep(surround_inner, surround_inner - 0.004, spk_dist);
+comp_267=`  // Concentric rings on cone (depth illusion)
+comp_268=`  float cone_rings = 0.5 + 0.4*sin(spk_dist * 120.0 - speaker_p * 30.0);
+comp_269=`  float cone_shade = cone_rings * (1.0 - spk_dist/surround_inner);
+comp_270=`  float3 cone_col = float3(0.06,0.07,0.08) * (1.0 + cone_shade * 0.6);
+comp_271=`  // Dust cap (center dome)
+comp_272=`  float dustcap = smoothstep(0.028, 0.022, spk_dist);
+comp_273=`  cone_col = lerp(cone_col, float3(0.10,0.11,0.13), dustcap);
+comp_274=`
+comp_275=`  // Magnetic rim glow (cyan/blue) on bass hit
+comp_276=`  float rim_glow = exp(-abs(spk_dist - spk_rad) * 60.0) * (0.5 + bass_sm * 2.0);
+comp_277=`  float3 spk_rim_col = hsv2rgb(float3(frac(hue_base+0.55), 0.95, 2.0)) * rim_glow;
+comp_278=`
+comp_279=`  // Compose speaker over scene
+comp_280=`  float speaker_total = surround_mask + cone_mask;
+comp_281=`  speaker_total = clamp(speaker_total, 0.0, 1.0);
+comp_282=`  color = lerp(color, surround_col, surround_mask);
+comp_283=`  color = lerp(color, cone_col, cone_mask);
+comp_284=`  color += spk_rim_col;
+comp_285=`
+comp_286=`  // Speaker bass radiating pressure rings (outward on kick)
+comp_287=`  float press_ring = exp(-abs(spk_dist - spk_rad - bass_sm*0.08) * 50.0) * bass_sm * 0.7;
+comp_288=`  float3 press_col = hsv2rgb(float3(frac(hue_base+0.5), 0.85, 2.5)) * press_ring;
+comp_289=`  color += press_col * (1.0 - speaker_total);  // only outside speaker body
+comp_290=`
+comp_291=`  // ============================================================
+comp_292=`  // 5. CYBERNETIC LIGHTNING — fires on beat
+comp_293=`  // ============================================================
+comp_294=`  // Only visible when lightning_p > threshold; fades quickly
+comp_295=`  float lt_intensity = clamp(lightning_p * 1.5, 0.0, 1.0);
+comp_296=`  if (lt_intensity > 0.01) {
+comp_297=`    // Two bolt families emanating from speaker edge outward
+comp_298=`    float2 p_lt = p / max(0.001, spk_rad);   // normalize so bolt starts at speaker
+comp_299=`    float bolt1 = lightning(p_lt, float2(0.31, 0.71), lightning_p, t);
+comp_300=`    float bolt2 = lightning(p_lt, float2(0.82, 0.44), lightning_p + PI, t);
+comp_301=`    float bolt3 = lightning(p_lt*float2(-1,1), float2(0.56, 0.22), lightning_p*1.3, t);
+comp_302=`    float bolt4 = lightning(p_lt*float2(1,-1), float2(0.14, 0.63), lightning_p*0.8, t*1.1);
+comp_303=`    float bolts_total = clamp(bolt1+bolt2+bolt3+bolt4, 0.0, 1.0);
+comp_304=`    // Don't draw lightning over the speaker body
+comp_305=`    bolts_total *= (1.0 - speaker_total);
+comp_306=`    // Lightning color: electric cyan-white with purple fringe
+comp_307=`    float lt_hue = frac(hue_base + 0.62 + treb2 * 0.05);
+comp_308=`    float3 lt_col = lerp(
+comp_309=`      hsv2rgb(float3(lt_hue, 0.8, 3.5)),
+comp_310=`      float3(1.5, 1.7, 2.0),
+comp_311=`      bolts_total * 0.6
+comp_312=`    );
+comp_313=`    color += lt_col * bolts_total * lt_intensity;
+comp_314=`    // Wide electric glow bloom
+comp_315=`    float lt_glow = bolt1+bolt2+bolt3+bolt4;
+comp_316=`    color += hsv2rgb(float3(lt_hue, 0.6, 0.8)) * lt_glow * lt_intensity * 0.25 * (1.0-speaker_total);
+comp_317=`    // Chromatic plasma fringe: rand00 seeds per-pixel color noise on beat
+comp_318=`    float2 plasma_uv = p_lt * 0.4 + float2(t * 0.12, lightning_p * 0.3);
+comp_319=`    float3 plasma_samp = tex2D(sampler_rand00, frac(plasma_uv)).rgb;
+comp_320=`    // Map each RGB channel to a different spectral hue near the bolt hue
+comp_321=`    float3 plasma_col = float3(
+comp_322=`      hsv2rgb(float3(frac(lt_hue + plasma_samp.r * 0.25 - 0.12), 0.9, 1.6)).r,
+comp_323=`      hsv2rgb(float3(frac(lt_hue + plasma_samp.g * 0.10        ), 0.8, 1.8)).g,
+comp_324=`      hsv2rgb(float3(frac(lt_hue + plasma_samp.b * 0.25 + 0.12), 0.9, 1.6)).b
+comp_325=`    );
+comp_326=`    // Plasma halo: visible in a fuzzy radius around bolt cores
+comp_327=`    float plasma_rad = exp(-length(p_lt) * 1.5) * lt_intensity * 0.55;
+comp_328=`    color += plasma_col * plasma_rad * (1.0 - speaker_total);
+comp_329=`  }
+comp_330=`
+comp_331=`  // ============================================================
+comp_332=`  // 6. HDR TONE MAPPING + VIGNETTE
+comp_333=`  // ============================================================
+comp_334=`  // Reinhard-style soft tone map to keep HDR over-bright vivid
+comp_335=`  color = color / (1.0 + color * 0.28);
+comp_336=`  // Re-boost saturation after tone map
+comp_337=`  float lum = dot(color, float3(0.299,0.587,0.114));
+comp_338=`  color = lerp(float3(lum,lum,lum), color, 1.35 + mid_att2*0.3);
+comp_339=`  // Gamma correction (bright/HDR look)
+comp_340=`  color = pow(max(color, 0.0), 0.75);
+comp_341=`  // Vignette
+comp_342=`  float vign = 1.0 - smoothstep(0.35, 0.75, length(p));
+comp_343=`  color *= vign;
+comp_344=`  // Subtle scanline / panel grid overlay (panel aesthetic)
+comp_345=`  float scanline = 0.92 + 0.08*sin(uv.y * 480.0 * PI);
+comp_346=`  color *= scanline;
+comp_347=`
+comp_348=`  ret = float4(color, 1.0);
+comp_349=`}

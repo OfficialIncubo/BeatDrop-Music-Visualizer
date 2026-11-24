@@ -1,0 +1,348 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 28/06/2026 at 20:00:38.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=smooth_reaction = int(rand(2));
+per_frame_1=q1 = smooth_reaction
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`sampler sampler_rand00;
+comp_2=`sampler sampler_rand01;
+comp_3=`sampler sampler_rand02;
+comp_4=`sampler sampler_rand03;
+comp_5=`
+comp_6=`float hash(float n) { return frac(sin(n)*753.5453); }
+comp_7=`
+comp_8=`float noise3d(float3 p) {
+comp_9=`    float3 ip = floor(p);
+comp_10=`    float3 fp = frac(p);
+comp_11=`    fp = fp*fp*(3.0-2.0*fp);
+comp_12=`    
+comp_13=`    float n = ip.x + ip.y*137.0 + ip.z*937.0;
+comp_14=`    float h1 = lerp(hash(n), hash(n+1.0), fp.x);
+comp_15=`    float h2 = lerp(hash(n+137.0), hash(n+138.0), fp.x);
+comp_16=`    float h3 = lerp(hash(n+937.0), hash(n+938.0), fp.x);
+comp_17=`    float h4 = lerp(hash(n+1074.0), hash(n+1075.0), fp.x);
+comp_18=`    
+comp_19=`    return lerp(lerp(h1, h2, fp.y), lerp(h3, h4, fp.y), fp.z);
+comp_20=`}
+comp_21=`
+comp_22=`float fbm3d(float3 p, int octaves) {
+comp_23=`    float value = 0.0;
+comp_24=`    float amplitude = 0.5;
+comp_25=`    float frequency = 1.0;
+comp_26=`    
+comp_27=`    for(int i = 0; i < octaves; i++) {
+comp_28=`        value += amplitude * noise3d(p * frequency);
+comp_29=`        amplitude *= 0.5;
+comp_30=`        frequency *= 2.02;
+comp_31=`    }
+comp_32=`    return value;
+comp_33=`}
+comp_34=`
+comp_35=`float3 crystalline_web(float2 uva, float time_val) {
+comp_36=`    uva = uva * 2.5 - 1.25;
+comp_37=`    
+comp_38=`    float t = time_val * 0.4;
+comp_39=`    float bass_pulse = bass * 2.5 + bass_att * 1.5;
+comp_40=`    float treb_spark = treb * 4.0 + treb_att * 2.0;
+comp_41=`    
+comp_42=`    // Sample random textures for structural variation
+comp_43=`    float3 rand00 = tex2D(sampler_rand00, uva * 0.7 + t * 0.1).rgb;
+comp_44=`    float3 rand01 = tex2D(sampler_rand01, uva * 1.3 + t * 0.2).rgb;
+comp_45=`    
+comp_46=`    // Create geometric web pattern
+comp_47=`    float angle = atan2(uva.y, uva.x);
+comp_48=`    float radius = length(uva);
+comp_49=`    
+comp_50=`    float web1 = sin(angle * 8.0 + t * 1.3 + radius * 12.0);
+comp_51=`    float web2 = cos(angle * 5.0 + t * 0.7 + radius * 8.0);
+comp_52=`    float web3 = sin(angle * 13.0 + t * 1.8 + radius * 15.0);
+comp_53=`    
+comp_54=`    // Music-reactive modulation
+comp_55=`    web1 *= 0.6 + bass_pulse * 0.4;
+comp_56=`    web2 *= 0.5 + mid * 1.2 + mid_att * 0.6;
+comp_57=`    web3 *= 0.4 + treb_spark * 0.3;
+comp_58=`    
+comp_59=`    // Combine with random textures
+comp_60=`    float pattern = web1 * 0.4 + web2 * 0.3 + web3 * 0.3;
+comp_61=`    pattern += rand00.r * 0.2 + rand01.g * 0.15;
+comp_62=`    
+comp_63=`    // Create crystalline edges
+comp_64=`    float edges = abs(sin(pattern * 20.0));
+comp_65=`    edges = pow(edges, 3.0) * (0.8 + treb_spark * 0.5);
+comp_66=`    
+comp_67=`    // Color gradients
+comp_68=`    float3 color1 = float3(0.1, 0.7, 0.9); // Cyan
+comp_69=`    float3 color2 = float3(0.9, 0.2, 0.6); // Magenta
+comp_70=`    float3 color3 = float3(0.4, 0.1, 0.8); // Purple
+comp_71=`    
+comp_72=`    float color_shift = sin(t * 0.3 + uva.x * 2.0) * 0.5 + 0.5;
+comp_73=`    color_shift += bass_pulse * 0.2 - mid * 0.1;
+comp_74=`    
+comp_75=`    float3 base_color = lerp(color1, color2, color_shift);
+comp_76=`    base_color = lerp(base_color, color3, sin(t * 0.2 + uva.y * 3.0) * 0.5 + 0.5);
+comp_77=`    
+comp_78=`    return base_color * (pattern * 0.7 + edges * 0.3);
+comp_79=`}
+comp_80=`
+comp_81=`float3 quantum_foam(float2 uvb, float time_val) {
+comp_82=`    float t = time_val * 0.6;
+comp_83=`    float time_music = t + bass * 0.8 + mid * 0.4 + treb * 0.2;
+comp_84=`    
+comp_85=`    // Sample multiple random textures
+comp_86=`    float4 rand02 = tex2D(sampler_rand02, uvb * 1.7 + t * 0.05);
+comp_87=`    float4 rand03 = tex2D(sampler_rand03, uvb * 2.3 - t * 0.07);
+comp_88=`    
+comp_89=`    // Create 3D noise for foam structure
+comp_90=`    float3 p = float3(uvb * 4.0, time_music * 0.5);
+comp_91=`    float foam_base = fbm3d(p, 5);
+comp_92=`    
+comp_93=`    // Secondary noise layer
+comp_94=`    p = float3(uvb * 8.0 + 0.5, time_music * 0.7);
+comp_95=`    float foam_detail = fbm3d(p, 4);
+comp_96=`    
+comp_97=`    // Tertiary high-frequency noise
+comp_98=`    p = float3(uvb * 16.0 - 0.3, time_music * 0.9);
+comp_99=`    float foam_fine = fbm3d(p, 3);
+comp_100=`    
+comp_101=`    // Music-reactive blending
+comp_102=`    float blend_mod = 0.3 + bass * 0.5 + mid_att * 0.3;
+comp_103=`    float detail_mod = 0.2 + treb * 0.6 + treb_att * 0.4;
+comp_104=`    
+comp_105=`    float foam = foam_base * blend_mod + 
+comp_106=`                 foam_detail * detail_mod * 0.5 + 
+comp_107=`                 foam_fine * (0.1 + treb * 0.3);
+comp_108=`    
+comp_109=`    // Add random texture details
+comp_110=`    foam += rand02.r * 0.15 * (1.0 + bass);
+comp_111=`    foam += rand03.g * 0.1 * (1.0 + mid);
+comp_112=`    foam += rand02.b * 0.08 * (1.0 + treb);
+comp_113=`    
+comp_114=`    // Create bubble/cell pattern
+comp_115=`    foam = abs(foam * 2.0 - 1.0);
+comp_116=`    foam = pow(foam, 1.5 + bass * 0.8);
+comp_117=`    
+comp_118=`    // Dynamic coloring
+comp_119=`    float hue1 = sin(time_music * 0.2 + uvb.x * 1.5) * 0.5 + 0.5;
+comp_120=`    float hue2 = cos(time_music * 0.15 + uvb.y * 2.0) * 0.5 + 0.5;
+comp_121=`    float hue3 = sin(time_music * 0.25 + uvb.x * 3.0 + uvb.y * 2.0) * 0.5 + 0.5;
+comp_122=`    
+comp_123=`    // Music-modulated colors
+comp_124=`    hue1 += bass * 0.3 - mid * 0.1;
+comp_125=`    hue2 += mid * 0.2 - treb * 0.1;
+comp_126=`    hue3 += treb * 0.4;
+comp_127=`    
+comp_128=`    float3 color = float3(
+comp_129=`        0.5 + 0.5 * sin(hue1 * 6.283),
+comp_130=`        0.5 + 0.5 * sin(hue2 * 6.283 + 2.094),
+comp_131=`        0.5 + 0.5 * sin(hue3 * 6.283 + 4.188)
+comp_132=`    );
+comp_133=`    
+comp_134=`    return color * foam * (1.2 + bass_att * 0.8);
+comp_135=`}
+comp_136=`
+comp_137=`float3 stellar_rivers(float2 uvc, float time_val) {
+comp_138=`    // Transform coordinates
+comp_139=`    uvc = (uvc - 0.5) * 2.0;
+comp_140=`    
+comp_141=`    float t = time_val * 0.35;
+comp_142=`    float music_flow = bass * 1.2 + mid * 0.8 + treb * 0.5;
+comp_143=`    
+comp_144=`    // Create flowing river patterns
+comp_145=`    float river1 = sin(uvc.x * 6.0 + t * 1.2 + sin(uvc.y * 4.0 + t * 0.8));
+comp_146=`    float river2 = cos(uvc.y * 5.0 + t * 0.9 + cos(uvc.x * 3.0 + t * 1.1));
+comp_147=`    float river3 = sin(uvc.x * 8.0 + uvc.y * 8.0 + t * 1.5);
+comp_148=`    
+comp_149=`    // Music-reactive currents
+comp_150=`    float current_mod = 0.5 + music_flow * 0.5;
+comp_151=`    river1 = sin(river1 * 3.0 + t * 2.0) * current_mod;
+comp_152=`    river2 = cos(river2 * 2.0 + t * 1.7) * (0.4 + mid * 0.8);
+comp_153=`    river3 = sin(river3 * 4.0 + t * 2.3) * (0.3 + treb * 0.9);
+comp_154=`    
+comp_155=`    // Combine rivers
+comp_156=`    float rivers = river1 * 0.5 + river2 * 0.3 + river3 * 0.2;
+comp_157=`    
+comp_158=`    // Add turbulence from random textures
+comp_159=`    float2 rand_uv = uvc * 0.5 + t * 0.1;
+comp_160=`    float4 rand_sample = tex2D(sampler_rand00, frac(rand_uv));
+comp_161=`    rivers += (rand_sample.r - 0.5) * 0.2 * (1.0 + bass_att);
+comp_162=`    
+comp_163=`    // Create glowing edges
+comp_164=`    float glow = pow(abs(rivers), 0.7);
+comp_165=`    glow *= 1.0 + bass * 1.5 + treb_att * 0.6;
+comp_166=`    
+comp_167=`    // Star-like sparkles
+comp_168=`    float sparkles = pow(rand_sample.g, 4.0);
+comp_169=`    sparkles *= step(0.9, sparkles) * (2.0 + treb * 3.0);
+comp_170=`    
+comp_171=`    // Nebula colors
+comp_172=`    float3 nebula_color = float3(
+comp_173=`        0.3 + 0.5 * sin(t * 0.2 + uvc.x * 2.0),
+comp_174=`        0.2 + 0.6 * sin(t * 0.3 + uvc.y * 3.0),
+comp_175=`        0.4 + 0.5 * cos(t * 0.25 + uvc.x * 4.0 + uvc.y * 2.0)
+comp_176=`    );
+comp_177=`    
+comp_178=`    nebula_color += float3(bass * 0.4, mid * 0.2, treb * 0.3);
+comp_179=`    
+comp_180=`    return nebula_color * (glow * 1.5 + sparkles * 2.0);
+comp_181=`}
+comp_182=`
+comp_183=`shader_body {
+comp_184=`
+comp_185=`    if (q1)
+comp_186=`    {
+comp_187=`        bass = bass_att;
+comp_188=`        mid = mid_att;
+comp_189=`        treb = treb_att;
+comp_190=`    }
+comp_191=`
+comp_192=`    // Time with musical syncopation
+comp_193=`    float music_time = time * 0.5;
+comp_194=`    music_time += bass * 0.7 + bass_att * 0.4;
+comp_195=`    music_time -= mid * 0.2;
+comp_196=`    music_time += treb * 0.3 + treb_att * 0.2;
+comp_197=`    
+comp_198=`    // Dynamic warping based on frequency spectrum
+comp_199=`    float warp_strength = 0.05 + bass * 0.1 + mid * 0.05 + treb * 0.03;
+comp_200=`    
+comp_201=`    float2 warped_uv = uv;
+comp_202=`    
+comp_203=`    // Bass-driven low-frequency warping
+comp_204=`    warped_uv.x += sin(uv.y * 8.0 + music_time * 1.5) * warp_strength * bass;
+comp_205=`    warped_uv.y += cos(uv.x * 6.0 + music_time * 1.2) * warp_strength * (bass + mid * 0.5);
+comp_206=`    
+comp_207=`    // Mid-range swirling
+comp_208=`    float swirl = mid * 0.8 + mid_att * 0.4;
+comp_209=`    float2 center_vec = warped_uv - 0.5;
+comp_210=`    float angle = swirl * 0.5 * sin(music_time * 0.8);
+comp_211=`    float2x2 rot_mat = float2x2(cos(angle), -sin(angle),
+comp_212=`                                sin(angle), cos(angle));
+comp_213=`    warped_uv = 0.5 + mul(rot_mat, center_vec);
+comp_214=`    
+comp_215=`    // Treble-induced high-frequency distortion
+comp_216=`    float4 rand_tex = tex2D(sampler_rand01, warped_uv * 3.0 + music_time * 0.2);
+comp_217=`    warped_uv += (rand_tex.rg - 0.5) * 0.02 * (treb * 2.0 + treb_att);
+comp_218=`    
+comp_219=`    // Generate the three main effects
+comp_220=`    float3 web_layer = crystalline_web(warped_uv * 1.1, music_time);
+comp_221=`    float3 foam_layer = quantum_foam(warped_uv * 0.9 + 0.05, music_time);
+comp_222=`    float3 river_layer = stellar_rivers(warped_uv * 1.3 - 0.15, music_time);
+comp_223=`    
+comp_224=`    // Music-reactive layer blending
+comp_225=`    float blend_web = 0.6 + bass * 0.4 - mid * 0.1;
+comp_226=`    float blend_foam = 0.5 + mid * 0.5 + treb * 0.2;
+comp_227=`    float blend_river = 0.4 + treb * 0.6 + bass_att * 0.3;
+comp_228=`    
+comp_229=`    // Combine layers with modulation
+comp_230=`    float3 combined = web_layer * blend_web * 0.8;
+comp_231=`    combined = lerp(combined, foam_layer, blend_foam * 0.6);
+comp_232=`    combined += river_layer * blend_river * 0.7;
+comp_233=`    
+comp_234=`    // Add central energy burst from bass hits
+comp_235=`    float2 center = warped_uv - 0.5;
+comp_236=`    float dist_center = length(center);
+comp_237=`    float energy_ring = sin(dist_center * 20.0 - music_time * 3.0) * 0.5 + 0.5;
+comp_238=`    energy_ring = pow(energy_ring, 2.0) * (1.0 - smoothstep(0.0, 0.8, dist_center));
+comp_239=`    
+comp_240=`    float bass_energy = bass * 3.0 + bass_att * 2.0;
+comp_241=`    energy_ring *= bass_energy * 0.8;
+comp_242=`    
+comp_243=`    combined += float3(1.0, 0.7, 0.3) * energy_ring * 0.6;
+comp_244=`    
+comp_245=`    // Add rhythmic pulsing
+comp_246=`    float pulse = sin(music_time * 4.0) * 0.15 + 1.0;
+comp_247=`    pulse += (bass * 0.4 + mid * 0.2 + treb * 0.1) * .5;
+comp_248=`    combined *= pulse;
+comp_249=`    
+comp_250=`    // Dynamic contrast enhancement
+comp_251=`    float contrast = 1.2 + (bass + mid + treb) * 0.3;
+comp_252=`    combined = (combined - 0.5) * contrast + 0.5;
+comp_253=`    
+comp_254=`    // Vignette with music modulation
+comp_255=`    float vignette = 1.0 - dist_center * 0.7;
+comp_256=`    vignette = pow(vignette, 7.5 - mid * 0.3);
+comp_257=`    combined *= vignette;
+comp_258=`    
+comp_259=`    ret = float4(combined, 1.0);
+comp_260=`}

@@ -1,0 +1,165 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 11/03/2026 at 09:08:21.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=1.000
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`float3 hsv2rgb(float3 c) {
+warp_2=`    float4 K = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+warp_3=`    float3 p = abs(frac(c.xxx + K.xyz) * 6.0 - K.www);
+warp_4=`    return c.z * lerp(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+warp_5=`}
+warp_6=`
+warp_7=`shader_body {
+warp_8=`    float t = time * 0.5;
+warp_9=`    float2 aspect_texsize = float2(1, texsize.y/texsize.x);
+warp_10=`    float2 c_uv = (uv_orig - 0.5) * aspect_texsize;
+warp_11=`
+warp_12=`    // --- ROTATING CAMERA ---
+warp_13=`    float angle = time * 0.2; // Speed of camera rotation
+warp_14=`    float cos_a = cos(angle);
+warp_15=`    float sin_a = sin(angle);
+warp_16=`    c_uv = float2(c_uv.x * cos_a - c_uv.y * sin_a, c_uv.x * sin_a + c_uv.y * cos_a);
+warp_17=`
+warp_18=`    float a = atan2(c_uv.y, c_uv.x);
+warp_19=`    float r = length(c_uv);
+warp_20=`    
+warp_21=`    // 3D Octagon Math
+warp_22=`    float seg = 3.14159265 * 0.25; 
+warp_23=`    float r_oct = r * cos(floor(0.5 + a / seg) * seg - a);
+warp_24=`    
+warp_25=`    // Depth Projection
+warp_26=`    float z = 0.4 / (r_oct + 0.001);
+warp_27=`    
+warp_28=`    // Tunnel Mapping (X = Angle, Y = Depth)
+warp_29=`    float2 tun_uv = float2(a * 1.2732, z + time * 1.2); 
+warp_30=`    
+warp_31=`    // Grid/Panel Logic
+warp_32=`    float2 grid = float2(8.0, 12.0); // 8 sides, 12 depth segments visible
+warp_33=`    float2 id = floor(tun_uv * grid);
+warp_34=`    float2 local = frac(tun_uv * grid);
+warp_35=`    
+warp_36=`    // Fetch FFT based on the wall panel ID
+warp_37=`    float freq = frac(abs(id.x) / 8.0);
+warp_38=`    float fft = get_fft(freq * 0.5 + 0.05);
+warp_39=`    
+warp_40=`    // Panel Borders
+warp_41=`    float border = smoothstep(0.0, 0.1, local.x) * smoothstep(1.0, 0.9, local.x) *
+warp_42=`                   smoothstep(0.0, 0.1, local.y) * smoothstep(1.0, 0.9, local.y);
+warp_43=`    
+warp_44=`    // --- THE 3D EQ EFFECT ---
+warp_45=`    // Instead of simple colors, we make the panels "pulse" in 3D scale
+warp_46=`    float activity = fft * 3.0;
+warp_47=`    float3 wall_color = hsv2rgb(float3(freq + time*0.1, 0.7, 1.0));
+warp_48=`    
+warp_49=`    // Scanning line that travels down the tunnel
+warp_50=`    float scan = smoothstep(0.2, 0.0, abs(frac(z*0.2 - time*0.5) - 0.5));
+warp_51=`    
+warp_52=`    float3 final_rgb = wall_color * border * (0.1 + activity);
+warp_53=`    final_rgb += scan * wall_color * border * 0.5;
+warp_54=`    
+warp_55=`    // Add bright "edges" to the tunnel for wireframe feel
+warp_56=`    float edges = pow(1.0 - border, 8.0);
+warp_57=`    final_rgb += edges * wall_color * 2.0;
+warp_58=`
+warp_59=`    // Distance Fog (prevents aliasing at the center)
+warp_60=`    final_rgb *= smoothstep(15.0, 1.5, z);
+warp_61=`    
+warp_62=`    // Center Core Glow
+warp_63=`    float3 core = float3(1, 1, 1) * (0.02 / r) * get_fft(0.01);
+warp_64=`    
+warp_65=`    // NO SAMPLER_MAIN blending = NO TRAILS
+warp_66=`    ret = final_rgb + core;
+warp_67=`}
+comp_1=`shader_body {
+comp_2=`    uv = 1.0 - uv; // MilkDrop3 Orientation Fix
+comp_3=`    float2 c_uv = uv - 0.5;
+comp_4=`    float d = length(c_uv);
+comp_5=`    
+comp_6=`    // Slight chromatic aberration for a "lens" feel
+comp_7=`    float3 col;
+comp_8=`    float shift = 0.01 * get_fft_hz(60);
+comp_9=`    col.r = tex2D(sampler_main, uv + shift * c_uv).r;
+comp_10=`    col.g = tex2D(sampler_main, uv).g;
+comp_11=`    col.b = tex2D(sampler_main, uv - shift * c_uv).b;
+comp_12=`    
+comp_13=`    // High-End Finish: Vignette and Bloom
+comp_14=`    col *= (1.0 - d * 1.2);
+comp_15=`    ret = col * 1.4; 
+comp_16=`}

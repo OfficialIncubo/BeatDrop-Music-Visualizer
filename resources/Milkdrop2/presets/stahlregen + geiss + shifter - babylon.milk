@@ -459,8 +459,8 @@ per_frame_15=res = beat*(vol+2*diff) + (1-beat)*(res - (diff*0.04 + 0.12)*60/fps
 per_frame_16=res = max(0,res);
 per_frame_17=monitor = res;
 per_frame_18=
-per_frame_19=x = if(beat,rand(60)*0.01 + 0.2,x);
-per_frame_20=y = if(beat,rand(60)*0.01 + 0.2,y);
+per_frame_19=x = if(beat,int(rand(60))*0.01 + 0.2,x);
+per_frame_20=y = if(beat,int(rand(60))*0.01 + 0.2,y);
 per_frame_21=rot = (rot+0.05*(sin(bass)*sin(bass)))*if(above(x,y),1,-1)
 warp_1=`shader_body
 warp_2=`{

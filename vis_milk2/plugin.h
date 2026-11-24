@@ -42,24 +42,42 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "support.h"
 #include "texmgr.h"
 #include "state.h"
+#include "lyrics_editor.h"
+#include "lyrics_manager.h"
+#include "lyrics_renderer.h"
+#include "webcam.h"
+#include "hdr.h"
 #include <vector>
+#include <random>
+#include <mutex>
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 
 //#include <core/sdk/IPlaybackService.h>
 
 extern "C" int (*warand)(void);
 
+extern std::random_device rd;
+extern std::mt19937_64 gen;
+extern int HardcutMode;
+
 typedef enum { TEX_DISK, TEX_VS, TEX_FFT, TEX_WAVE, TEX_BLUR0, TEX_BLUR1, TEX_BLUR2, TEX_BLUR3, TEX_BLUR4, TEX_BLUR5, TEX_BLUR6, TEX_BLUR_LAST } tex_code;
 typedef enum { UI_REGULAR, UI_MENU, UI_LOAD, UI_LOAD_DEL, UI_LOAD_RENAME, UI_SAVEAS, UI_SAVE_OVERWRITE, UI_EDIT_MENU_STRING, UI_CHANGEDIR, UI_IMPORT_WAVE, UI_EXPORT_WAVE, UI_IMPORT_SHAPE, UI_EXPORT_SHAPE, UI_UPGRADE_PIXEL_SHADER, UI_MASHUP } ui_mode;
-typedef struct { float rad; float ang; float a; float c;  } td_vertinfo; // blending: mix = max(0,min(1,a*t + c));
+struct td_vertinfo {
+    float rad, ang;
+    float a, c; // blend weight = clamp(a * progress + c, 0, 1)
+    float warpDecay[3]; // legacy warp RGB multipliers, independent of vertex alpha
+};
 typedef char* CHARPTR;
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+class MediaTexture;
 
-//#define MY_FFT_SAMPLES 512     // for old [pre-vms] milkdrop sound analysis
-#define MY_FFT_SAMPLES 1024
+#define MY_FFT_SAMPLES 512     // for old [pre-vms] milkdrop sound analysis
 #define MY_FFT_WINDOW MY_FFT_SAMPLES*2
+#define MY_FFT_SHADER_SAMPLES 1024
+#define MY_FFT_SHADER_WINDOW MY_FFT_SHADER_SAMPLES*2
 
 HRESULT DetectSampleRate();
+extern int SAMPLE_RATE;
 bool GetCaptureMicFlag();
 
 typedef struct
@@ -83,11 +101,11 @@ typedef struct
 	int		nCursorPos;
 	int		nSelAnchorPos;		// -1 if no selection made
 	int 	bOvertypeMode;
-	wchar_t	szText[48000];
+	wchar_t	szText[MAX_SHADER_TEXT_LEN];
 	wchar_t	szPrompt[512];
 	wchar_t	szToolTip[512];
-	char	szClipboard[48000];
-	wchar_t	szClipboardW[48000];
+	char	szClipboard[MAX_SHADER_EDIT_SCRATCH_LEN];
+	wchar_t	szClipboardW[MAX_SHADER_EDIT_SCRATCH_LEN];
 } td_waitstr;
 
 typedef struct
@@ -147,8 +165,10 @@ typedef struct
 {
 	int 	bRedrawSuperText;	// true if it needs redraw
 	int 	bIsSongTitle;		// false for custom message, true for song title
+	int 	bSongTitleTwoLines;	// true when artist and title are rendered separately
 	//char	szText[256];
 	wchar_t	szTextW[256];
+	wchar_t	szTextLine2W[256];
 	wchar_t	nFontFace[128];
 	int 	bBold;
 	int 	bItal;
@@ -166,16 +186,17 @@ typedef struct
 }
 td_supertext;
 
-typedef struct
+struct TexInfo
 {
-    wchar_t        texname[256];   // ~filename, but without path or extension!
-    LPDIRECT3DBASETEXTURE9 texptr;
-    int                w,h,d;
+    wchar_t        texname[256] = {};   // ~filename, but without path or extension!
+    LPDIRECT3DBASETEXTURE9 texptr = nullptr;
+    MediaTexture*      pMedia = nullptr;
+    int                w = 0,h = 0,d = 0;
     //D3DXHANDLE         texsize_param;
-    bool               bEvictable;
-    int                 nAge;   // only valid if bEvictable is true
-    int                 nSizeInBytes;    // only valid if bEvictable is true
-} TexInfo;
+    bool               bEvictable = false;
+    int                 nAge = 0;   // only valid if bEvictable is true
+    int                 nSizeInBytes = 0;    // only valid if bEvictable is true
+};
 
 typedef struct
 {
@@ -201,6 +222,7 @@ typedef struct
 } ErrorMsg;
 
 typedef std::vector<ErrorMsg> ErrorMsgList;
+class CShaderParams;
 typedef std::vector<CShaderParams*> CShaderParamsList;
 
 class CShaderParams
@@ -227,6 +249,7 @@ public:
     void Clear();
     void CacheParams(LPD3DXCONSTANTTABLE pCT, bool bHardErrors);
     void OnTextureEvict(LPDIRECT3DBASETEXTURE9 texptr);
+    void OnTextureReplace(LPDIRECT3DBASETEXTURE9 oldTexPtr, LPDIRECT3DBASETEXTURE9 newTexPtr);
     CShaderParams();
     ~CShaderParams();
 };
@@ -284,6 +307,29 @@ class CPlugin : public CPluginShell
 {
 public:
 
+    HdrPresenter m_hdr;
+    void SaveHdrSettings();
+    void SendSpoutFrame();
+    bool m_bHdr = false; // intentionally session-only until validated
+    void ToggleHdr(bool notify = true)
+    {
+        m_bHdr = !m_bHdr;
+        if (!m_bHdr) m_hdr.Reset();
+        if (notify) {
+            std::wstring status = m_bHdr ? L"HDR enabled" : L"HDR disabled";
+            AddNotif(status.data());
+        }
+    }
+    BeatDropWebcam m_webcam;
+    void SetWebcamMode(BeatDropWebcam::Mode mode, bool notify = true)
+    {
+        std::wstring status = m_webcam.SetMode(mode, GetDevice());
+        if (notify && !status.empty()) AddNotif(status.data());
+    }
+    float m_fWebcamBurnOpacity = BeatDropWebcam::DefaultBurnOpacity;
+    float m_fWebcamDeepOpacity = BeatDropWebcam::DefaultDeepOpacity;
+    float m_fWebcamTopOpacity = BeatDropWebcam::DefaultTopOpacity;
+
     //====[ 1. members added to create this specific example plugin: ]================================================
 
 	// =========================================================
@@ -307,9 +353,20 @@ public:
 	unsigned int g_Height;
 	HWND g_hwnd;
 	HDC g_hdc;
+    bool m_bDesktopMode = false;
+    bool TranspaMode = false;
+    int OpacityControl = 100;                // Current window opacity in percent.
+    RECT m_desktop_lastRect = { 0 };
+    LONG_PTR m_desktop_lastStyle = 0;
+    LONG_PTR m_desktop_lastStyleEx = 0;
+    void ToggleDesktopMode(HWND hwnd, bool isRefresh = false);
 	wchar_t	m_szSavedSongTitle[512]; // for saving song tile with Spout on or off
 	// =========================================================
 
+	IDirect3DPixelShader9* m_pSpriteColorKeyPS = nullptr;
+	bool m_bSpriteColorKeyPSFailed = false; // don't retry compiling every frame after a failure
+	IDirect3DPixelShader9* EnsureSpriteColorKeyPS();
+	void ReleaseSpriteColorKeyPS();
 	
 	/// CONFIG PANEL SETTINGS THAT WE'VE ADDED (TAB #2)
         bool		m_bFirstRun;
@@ -328,6 +385,9 @@ public:
         int         m_nCanvasStretch;   // 0=Auto, 100=None, 125 = 1.25X, 133, 150, 167, 200, 300, 400 (4X).
         int			m_nTexSizeX;			// -1 = exact match to screen; -2 = nearest power of 2.
         int			m_nTexSizeY;
+        bool        m_bEnableTexSizeSnapping = 1;   // Enable 16x16 block snapping - 0 or 1. Enabled by default.
+        bool        m_bAnisotropicFiltering = 0;        // Enable anisotropic filtering - 0 or 1. Disabled by default.
+        int         m_nMaxAnisotropy = 8;           // Maximum anisotropy - MUST be the power of 2 (2, 4, 8, 16, 32...). Default is 8.
         float       m_fAspectX;
         float       m_fAspectY;
         float       m_fInvAspectX;
@@ -351,6 +411,9 @@ public:
         
         // Revived preset keyboard interaction controls
         bool        m_CtrlLeft = 0, m_CtrlRight = 0, m_CtrlDown = 0, m_CtrlUp = 0;
+
+        // System time variables for init, per-frame and shaders.
+        float       m_year, m_month, m_day, m_weekday, m_hour, m_minute, m_second, m_milliseconds, m_totalSeconds;
         
         bool		m_bShowPressF1ForHelp;
         //char		m_szMonitorName[256];
@@ -393,8 +456,15 @@ public:
         int         m_nMidEnd = 4000;
         int         m_nTrebStart = 4000;
         int         m_nTrebEnd = 20000;
+        float       m_nFFTShaderScaling = .175;
+        float       m_nFFTShaderNoiseFloor = .03;
         bool        m_bCaptureMic = false; // false = default output (speaker), true = default input (microphone)
         bool        m_IsAMD = false;
+
+    	// Applies a hardcut mode selected outside the keyboard handler (for example,
+    	// from the notification-area menu) while keeping its dependent state in sync.
+     	void SetHardcutMode(int mode);
+        void ToggleAutoLockPresetWhenNoMusic(bool showNotification = true);
 
         //bool		m_bAlways3D;
         //float       m_fStereoSep;
@@ -438,6 +508,7 @@ public:
         bool RecompileVShader(const char* szShadersText, VShaderInfo *si, int shaderType, bool bHardErrors, bool bRecompileOnly);
         bool RecompilePShader(const char* szShadersText, PShaderInfo *si, int shaderType, bool bHardErrors, int PSVersion, bool bRecompileOnly);
         bool EvictSomeTexture();
+        void UpdateLiveTextures();
         typedef std::vector<TexInfo> TexInfoList;
         TexInfoList     m_textures;
         bool m_bNeedRescanTexturesDir;
@@ -463,7 +534,7 @@ public:
         CState		*m_pOldState;			// points to previous CState
         CState		*m_pNewState;			// points to the coming CState - we're not yet blending to it b/c we're still compiling the shaders for it!
         int         m_nLoadingPreset;
-        wchar_t     m_szLoadingPreset[MAX_PATH];
+        wchar_t     m_szLoadingPreset[32768];
         float       m_fLoadingPresetBlendTime;
         int         m_nPresetsLoadedTotal; //important for texture eviction age-tracking...
         CState		m_state_DO_NOT_USE[3];	// do not use; use pState and pOldState instead.
@@ -498,7 +569,7 @@ public:
         int			m_nCurrentPreset;	// Index of the currently-RUNNING preset.
 								        //   Note that this is NOT the same as the currently-highlighted preset! (that's m_nPresetListCurPos)
 								        //   Be careful - this can be -1 if the user changed dir. & a new preset hasn't been loaded yet.
-        wchar_t		m_szCurrentPresetFile[512];	// w/o path.  this is always valid (unless no presets were found)
+        wchar_t		m_szCurrentPresetFile[32768];	// full path; supports long preset filenames and paths
         PresetList  m_presets;
 	    void		UpdatePresetList(bool bBackground=false, bool bForce=false, bool bTryReselectCurrentPreset=true);
         wchar_t     m_szUpdatePresetMask[MAX_PATH];
@@ -520,6 +591,9 @@ public:
         FFT            myfft;
         FFT            myfftshader;
         td_mysounddata mysound;
+        bool            m_bFreezeBeatDetection;
+        float           m_frozenBeatDetection[6]; // bass, mid, treb, bass_att, mid_att, treb_att
+        void            ToggleBeatDetectionFreeze(bool showNotification = true);
 
         // stuff for displaying text to user:
         bool		m_bShowFPS;
@@ -529,6 +603,16 @@ public:
         bool		m_bShowSongTitle;
         bool		m_bShowSongTime;
         bool		m_bShowSongLen;
+		int			m_nSongTimeDisplayMode;
+        bool        m_bEnableLyrics;
+        wchar_t     m_szLyricsFontFace[128] = L"Times New Roman";
+        bool        m_bLyricsFontBold = false;
+        bool        m_bLyricsFontItalic = true;
+        int         m_nLyricsFontSize = 48;
+        bool        m_bLyricsFontAA = true;
+        int         m_nLyricsFontColorR = 180;
+        int         m_nLyricsFontColorG = 0;
+        int         m_nLyricsFontColorB = 255;
         float		m_fShowRatingUntilThisTime;
 
         #define ERR_ALL    0
@@ -539,6 +623,7 @@ public:
                               // NOTE: each NOTIFY msg clears all the old NOTIFY messages!
         #define ERR_SCANNING_PRESETS 5
         #define ERR_SHADER_PRECACHE 6
+        std::mutex  m_errorsMutex;
         ErrorMsgList m_errors;
         void        AddNotif(wchar_t* szMsg);
         void        AddNotif(wchar_t* szMsg, float time);
@@ -548,12 +633,21 @@ public:
 
 
         void GetSongTitle(wchar_t *szSongTitle, int nSize);
+		void CycleSongTimeDisplay();
+		bool GetSongTimeText(wchar_t *szSongTime, int nSize);
+        void UpdateLyrics();
+        void ToggleLyrics(bool showNotification = true);
+        void OpenLyricsEditor(HWND owner);
 
         //musik::core::sdk::IPlaybackService* playbackService;
         std::string emulatedWinampSongTitle;
         char		m_szDebugMessage[512];
         wchar_t		m_szSongTitle    [512];
         wchar_t		m_szSongTitlePrev[512];
+        std::wstring m_lastLyricsLine;
+        BeatDropLyricsManager m_lyricsManager;
+        BeatDropLyricsEditor m_lyricsEditor;
+        BeatDropLyricsRenderer m_lyricsRenderer;
 
         // stuff for menu system:
         CMilkMenu	*m_pCurMenu;	// should always be valid!
@@ -580,9 +674,9 @@ public:
         IDirect3DTexture9 *m_lpVS[2];
         IDirect3DTexture9* m_lpFFTTexture = nullptr;  // FFT Samplesx2 R32F FFT spectrum texture (row 0: smoothed, row 1: peak hold)
         IDirect3DTexture9* m_lpWaveTexture = nullptr; // Waveform Samplesx2 R32F Waveform texture (row 0: left, row 1: right)
-        float m_fFFTSmoothed[MY_FFT_SAMPLES] = {};    // smoothed mono FFT buffer
-        float m_fFFTPeak[MY_FFT_SAMPLES] = {};         // peak hold values
-        int   m_nFFTPeakHold[MY_FFT_SAMPLES] = {};    // frames remaining at current peak
+        float m_fFFTSmoothed[MY_FFT_SHADER_SAMPLES] = {};    // smoothed mono FFT buffer
+        float m_fFFTPeak[MY_FFT_SHADER_SAMPLES] = {};         // peak hold values
+        int   m_nFFTPeakHold[MY_FFT_SHADER_SAMPLES] = {};    // frames remaining at current peak
         #define NUM_BLUR_TEX 6
         #if (NUM_BLUR_TEX>0)
 	    IDirect3DTexture9 *m_lpBlur[NUM_BLUR_TEX]; // each is successively 1/2 size of prev.
@@ -628,7 +722,7 @@ public:
 
         int         m_nFramesSinceResize;
 
-        char        m_szShaderIncludeText[32768];     // note: this still has char 13's and 10's in it - it's never edited on screen or loaded/saved with a preset.
+        char        m_szShaderIncludeText[MAX_SHADER_INCLUDE_LEN];     // note: this still has char 13's and 10's in it - it's never edited on screen or loaded/saved with a preset.
         int         m_nShaderIncludeTextLen;          //  # of chars, not including the final NULL.
         char        m_szDefaultWarpVShaderText[32768]; // THIS HAS CHAR 13/10 CONVERTED TO LINEFEED_CONTROL_CHAR
         char        m_szDefaultWarpPShaderText[32768]; // THIS HAS CHAR 13/10 CONVERTED TO LINEFEED_CONTROL_CHAR

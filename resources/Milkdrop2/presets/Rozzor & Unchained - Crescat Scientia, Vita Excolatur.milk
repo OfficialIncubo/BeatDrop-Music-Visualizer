@@ -104,7 +104,7 @@ per_frame_40=
 per_frame_41=beat = if(equal(bres,prev_bass),0,1);
 per_frame_42=prev_bass = bres;
 per_frame_43=ying = if(below(ying,1),1,ying);
-per_frame_44=ying = if (beat,ying + bnot(time*10%3),ying);
+per_frame_44=ying = if (beat,ying + bnot((time*10)%3),ying);
 per_frame_45=yin = ying%2;
 per_frame_46=mytime = pulse*ying;
 per_frame_47=ib_size = 0.02;

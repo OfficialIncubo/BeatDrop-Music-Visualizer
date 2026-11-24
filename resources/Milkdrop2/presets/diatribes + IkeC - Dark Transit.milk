@@ -1,0 +1,92 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+comp_1=// diatribes - Dark Transit / https://www.shadertoy.com/view/WcdczB
+comp_2=// License: MIT (see the shader header)
+comp_3=// Transpiled to HLSL using Milkwave
+comp_4=
+comp_5=// CONV2: guarded length helpers (legacy compiler reports lenv() as division by zero)
+comp_6=float lenv(float2 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_7=float lenv(float3 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_8=
+comp_9=#define T (time*4. + 5. + 5.*sin(time*.3))
+comp_10=#define P(z) float3(12.*cos((z)*.1), 12.*cos((z)*.12), (z))
+comp_11=#define A(F, H, K) abs(dot(sin(F*p*K), H + p - p)) / K
+comp_12=
+comp_13=shader_body {
+comp_14=  // MOUSE: pointer Y zooms - up = zoom in, down = zoom out (0.90x .. 1.30x around the frame centre);
+comp_15=  // pointer X pans the view left/right. Centre + released button give the identity transform, so the
+comp_16=  // untouched frame stays byte-identical.
+comp_17=  float2 mwMouse = (mouse.xy - 0.5) * saturate(mouse.z);
+comp_18=  float mwZoomAmt = mwMouse.y > 0.0 ? 0.6 : 0.2;   // zoom in generously, out carefully
+comp_19=  float mwZoom = 1.0 + mwMouse.y * mwZoomAmt;
+comp_20=  uv = (uv - 0.5) / mwZoom + 0.5 + float2(mwMouse.x * 0.35, 0.0);
+comp_21=  float4 mwDead = float4(0.5, 0.5, 0.0, 0.0);   // superseded: the old mouse code below now reads a centred, released pointer
+comp_22=
+comp_23=  float2 u = float2((uv.x - 0.5)*texsize.x/texsize.y, (0.5 - uv.y));
+comp_24=
+comp_25=  // tunnel radius opens with the low end
+comp_26=  float rbase = 4.;
+comp_27=  #ifdef vis_version
+comp_28=    if ((int)vis_version == 1)      rbase += 0.24*(smoothstep(0, 2, bass_smooth) - 0.5)*vis_intensity + vis_shift;
+comp_29=    else if ((int)vis_version == 2) rbase += 0.36*(smoothstep(0, 2, bass_att) - 0.5)*vis_intensity + vis_shift;
+comp_30=    else                            rbase += 0.0*vis_intensity + vis_shift;
+comp_31=  #else
+comp_32=    rbase += 0.30*(smoothstep(0, 2, bass_att) - 0.5);
+comp_33=  #endif
+comp_34=
+comp_35=  // scale relief deepens with the high end
+comp_36=  float scoop = 0.25;
+comp_37=  #ifdef vis_version
+comp_38=    if ((int)vis_version == 1)      scoop += 0.05*(smoothstep(0, 2, treb_smooth) - 0.5)*vis_intensity + vis_shift;
+comp_39=    else if ((int)vis_version == 2) scoop += 0.07*(smoothstep(0, 2, treb_att) - 0.5)*vis_intensity + vis_shift;
+comp_40=    else                            scoop += 0.0*vis_intensity + vis_shift;
+comp_41=  #else
+comp_42=    scoop += 0.06*(smoothstep(0, 2, treb_att) - 0.5);
+comp_43=  #endif
+comp_44=
+comp_45=  float4 o = 0;
+comp_46=
+comp_47=  float t, s, e, d = 0.;
+comp_48=  float3 c = 0;
+comp_49=
+comp_50=  float3 p = P(T);
+comp_51=  float3 Z = normalize(P(T + 4.) - p);
+comp_52=  float3 X = normalize(float3(Z.z, 0., -Z.x));
+comp_53=  float3 vv = float3(u, 1.);
+comp_54=  float3 D = float3(dot(vv, -X), dot(vv, cross(X, Z)), dot(vv, Z));
+comp_55=  // MOUSE: holding the mouse button looks around - pointer X steers yaw, pointer Y steers pitch.
+comp_56=  // Independent of the audio versions; saturate(mwDead.z) keeps the un-pressed frame identical.
+comp_57=  float mMx = (mwDead.x - 0.5) * saturate(mwDead.z);
+comp_58=  float mMy = (mwDead.y - 0.5) * saturate(mwDead.z);
+comp_59=  float mYaw = mMx * 0.7, mPitch = mMy * 0.45;
+comp_60=  float mCy = cos(mYaw), mSy = sin(mYaw);
+comp_61=  D.xz = mul(transpose(float2x2(mCy, mSy, -mSy, mCy)), D.xz);
+comp_62=  float mCp = cos(mPitch), mSp = sin(mPitch);
+comp_63=  D.yz = mul(transpose(float2x2(mCp, mSp, -mSp, mCp)), D.yz);
+comp_64=
+comp_65=  for (int i = 0; i < 28 && d < 3e1; i++) {
+comp_66=    p += D*s;
+comp_67=
+comp_68=    X = P(p.z);
+comp_69=    t = sin(time);
+comp_70=
+comp_71=    // orb: sphere with xyz offset by t
+comp_72=    e = lenv(p - float3(X.x + t, X.y + t*2., 6. + T + t*2.)) - .01;
+comp_73=
+comp_74=    // tunnel with modulating radius, plus two noise octaves
+comp_75=    s = cos(p.z*.6)*2. + rbase
+comp_76=      - min(lenv(p.xy - X.x - 6.), lenv((p - X).xy))
+comp_77=      + A(4., scoop, .1)
+comp_78=      + A(T + 8., .22, 2.);
+comp_79=
+comp_80=    d += s = min(e, .01 + .3*abs(s));
+comp_81=
+comp_82=    c += 1./s + 1e1*float3(1, 2, 5)/max(e, .6);
+comp_83=  }
+comp_84=
+comp_85=  o.rgb = c*c/1e6;
+comp_86=
+comp_87=  ret = float4(o.rgb, 1.);
+comp_88=}

@@ -1,0 +1,281 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 26/08/2026 at 19:06:40.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=2
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.000
+fDecay=0.980
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.000
+fWaveSmoothing=0.000
+fWaveParam=0.000
+fModWaveAlphaStart=0.000
+fModWaveAlphaEnd=0.000
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`shader_body {
+warp_2=`  ret = float4(0.0, 0.0, 0.0, 1.0);
+warp_3=`}
+comp_1=`float3 H(float a) {
+comp_2=`    return cos(float3(M_PI, M_PI/2, 0.0) + a * M_PI_2) * 0.5 + 0.5;
+comp_3=`}
+comp_4=`
+comp_5=`float hash21(float2 p) {
+comp_6=`    p = frac(p * float2(123.34, 456.21));
+comp_7=`    p += dot(p, p + 45.32);
+comp_8=`    return frac(p.x * p.y);
+comp_9=`}
+comp_10=`
+comp_11=`float truchet(float2 uva) {
+comp_12=`    float2 id = floor(uva);
+comp_13=`    float2 gv = frac(uva) - 0.5;
+comp_14=`    if (hash21(id) < 0.5) gv.x *= -1.0;
+comp_15=`    float d1 = length(gv - float2(0.5, 0.5)) - 0.5;
+comp_16=`    float d2 = length(gv + float2(0.5, 0.5)) - 0.5;
+comp_17=`    return min(abs(d1), abs(d2));
+comp_18=`}
+comp_19=`
+comp_20=`float2 path(float z) {
+comp_21=`    float x = sin(z * 0.08) * 3.5 + cos(z * 0.043) * 2.5;
+comp_22=`    float y = cos(z * 0.07) * 3.5 - sin(z * 0.035) * 2.0;
+comp_23=`    return float2(x, y);
+comp_24=`}
+comp_25=`
+comp_26=`float map_dist(float3 p, float bassF, float time_val) {
+comp_27=`    float3 q = p;
+comp_28=`    q.xy -= path(q.z);
+comp_29=`    float sa = q.z * 0.15 + time_val * 0.2;
+comp_30=`    float cosA = cos(sa), sinA = sin(sa);
+comp_31=`    float2 tempXY = q.xy;
+comp_32=`    q.x = tempXY.x * cosA - tempXY.y * sinA;
+comp_33=`    q.y = tempXY.x * sinA + tempXY.y * cosA;
+comp_34=`    
+comp_35=`    float angle = atan2(q.y, q.x);
+comp_36=`    float radius = length(q.xy);
+comp_37=`    float numTiles = 8.0; 
+comp_38=`    float2 uv_t = float2((angle / M_PI) * (numTiles * 0.5), q.z * 1.2);
+comp_39=`    float t = truchet(uv_t);
+comp_40=`    
+comp_41=`    float tubeThickness = 0.03 + (0.12 * bassF); 
+comp_42=`    float cylDist = abs(radius - 2.5) - 0.15;
+comp_43=`    float patternDist = t - tubeThickness;
+comp_44=`    return max(cylDist, patternDist);
+comp_45=`}
+comp_46=`
+comp_47=`float map(float3 p, float bassF, float trebF, inout float3 neonGlow, float time_val) {
+comp_48=`    float3 q = p;
+comp_49=`    q.xy -= path(q.z);
+comp_50=`    float sa = q.z * 0.15 + time_val * 0.2;
+comp_51=`    float cosA = cos(sa), sinA = sin(sa);
+comp_52=`    float2 tempXY = q.xy;
+comp_53=`    q.x = tempXY.x * cosA - tempXY.y * sinA;
+comp_54=`    q.y = tempXY.x * sinA + tempXY.y * cosA;
+comp_55=`    
+comp_56=`    float angle = atan2(q.y, q.x);
+comp_57=`    float radius = length(q.xy);
+comp_58=`    float numTiles = 8.0; 
+comp_59=`    float2 uv_t = float2((angle / M_PI) * (numTiles * 0.5), q.z * 1.2);
+comp_60=`    float t = truchet(uv_t);
+comp_61=`    
+comp_62=`    float tubeThickness = 0.03 + (0.12 * bassF); 
+comp_63=`    float coreThickness = 0.005 + (0.035 * bassF); 
+comp_64=`    
+comp_65=`    float cylDist = abs(radius - 2.5) - 0.15;
+comp_66=`    float patternDist = t - tubeThickness;
+comp_67=`    float glassTubes = max(cylDist, patternDist);
+comp_68=`    
+comp_69=`    float coreDist = max(abs(radius - 2.5) - 0.02, t - coreThickness);
+comp_70=`    
+comp_71=`    float T = time_val / 300.0;
+comp_72=`    float f = cos(round(radius) * T * M_PI_2) * 0.5 + 0.5;
+comp_73=`    float a = 0.2 - f / 3.0 + T + (p.z * 0.5 + angle) / M_PI_2;
+comp_74=`    float3 k = H(a);
+comp_75=`    float3 color = k * k; 
+comp_76=`    
+comp_77=`    neonGlow += color * (0.003 / (0.0001 + coreDist * coreDist)) * (0.5 + trebF);
+comp_78=`    return glassTubes;
+comp_79=`}
+comp_80=`
+comp_81=`float3 getNormal(float3 p, float bassF, float time_val) {
+comp_82=`    float2 e = float2(0.001, 0.0);
+comp_83=`    float d = map_dist(p, bassF, time_val);
+comp_84=`    float3 n = d - float3(
+comp_85=`        map_dist(p - e.xyy, bassF, time_val),
+comp_86=`        map_dist(p - e.yxy, bassF, time_val),
+comp_87=`        map_dist(p - e.yyx, bassF, time_val)
+comp_88=`    );
+comp_89=`    return normalize(n);
+comp_90=`}
+comp_91=`
+comp_92=`shader_body {
+comp_93=`    uv.y = 1-uv.y;
+comp_94=`    float2 my_uv = uv * 2.0 - 1.0;
+comp_95=`    my_uv.x *= (aspect.x / aspect.y);
+comp_96=`    
+comp_97=`    bass = bass_att/3;
+comp_98=`    bass = smoothstep(0.2, 0.8, bass);
+comp_99=`    float treble = treb_att/3;
+comp_100=`    
+comp_101=`    float caShift = length(my_uv) * 0.015;
+comp_102=`    float2 uvR = my_uv * (1.0 + caShift);
+comp_103=`    float2 uvG = my_uv;
+comp_104=`    float2 uvB = my_uv * (1.0 - caShift);
+comp_105=`    
+comp_106=`    float3 finalColor = float3(0.0, 0.0, 0.0);
+comp_107=`    float3 neonGlow = float3(0.0, 0.0, 0.0);
+comp_108=`    
+comp_109=`    float camTime = time * 2.0;
+comp_110=`    float3 ro = float3(path(camTime), camTime);
+comp_111=`    float3 target = float3(path(camTime + 2.0), camTime + 2.0);
+comp_112=`    
+comp_113=`    float3 fwd = normalize(target - ro);
+comp_114=`    float3 right = normalize(cross(float3(0.0, 1.0, 0.0), fwd));
+comp_115=`    float3 up = cross(fwd, right);
+comp_116=`    
+comp_117=`    float roll = sin(time * 0.5) * 0.2;
+comp_118=`    float cosR = cos(roll), sinR = sin(roll);
+comp_119=`    
+comp_120=`    // Chromatic Aberration loop (R, G, B)
+comp_121=`    for(int i = 0; i < 3; i++) {
+comp_122=`        float2 currentUV = (i == 0) ? uvR : ((i == 1) ? uvG : uvB);
+comp_123=`        
+comp_124=`        // Apply camera rotation matrix manually
+comp_125=`        float2 rotatedUV;
+comp_126=`        rotatedUV.x = currentUV.x * cosR - currentUV.y * sinR;
+comp_127=`        rotatedUV.y = currentUV.x * sinR + currentUV.y * cosR;
+comp_128=`        
+comp_129=`        float3 rd = normalize(rotatedUV.x * right + rotatedUV.y * up + fwd);
+comp_130=`        
+comp_131=`        float d0 = 0.0;
+comp_132=`        float3 p = float3(0.0, 0.0, 0.0);
+comp_133=`        bool hit_or_far = false;
+comp_134=`        
+comp_135=`        // Raymarching without break or continue
+comp_136=`        for(int j = 0; j < 120; j++) {
+comp_137=`            if (!hit_or_far) {
+comp_138=`                p = ro + rd * d0;
+comp_139=`                float dS = map(p, bass, treble, neonGlow, time);
+comp_140=`                d0 += dS * 0.35;
+comp_141=`                
+comp_142=`                if(d0 > 40.0 || abs(dS) < 0.005) {
+comp_143=`                    hit_or_far = true;
+comp_144=`                }
+comp_145=`            }
+comp_146=`        }
+comp_147=`        
+comp_148=`        float3 col = float3(0.0, 0.0, 0.0);
+comp_149=`        if(d0 < 40.0) {
+comp_150=`            float3 n = getNormal(p, bass, time);
+comp_151=`            float3 viewDir = normalize(ro - p);
+comp_152=`            
+comp_153=`            float3 refDir = refract(rd, n, 0.65);
+comp_154=`            float fakeRefraction = map_dist(p + refDir * 0.5, bass, time); 
+comp_155=`            float fresnel = pow(max(1.0 - max(dot(n, viewDir), 0.0), 0.0), 3.0);
+comp_156=`            
+comp_157=`            float3 lightDir = normalize(float3(0.0, 0.0, 1.0));
+comp_158=`            float diff = max(dot(n, lightDir), 0.0) * 0.5 + 0.5;
+comp_159=`            
+comp_160=`            float caustics = sin(p.z * 10.0 + time * 3.0) * sin(atan2(p.y, p.x) * 8.0) * 0.5 + 0.5;
+comp_161=`            caustics = pow(max(caustics, 0.0), 4.0);
+comp_162=`            
+comp_163=`            float3 pRot = p;
+comp_164=`            pRot.xy -= path(pRot.z);
+comp_165=`            float sa = pRot.z * 0.15 + time * 0.2;
+comp_166=`            float cosA = cos(sa), sinA = sin(sa);
+comp_167=`            float2 tempXY = pRot.xy;
+comp_168=`            pRot.x = tempXY.x * cosA - tempXY.y * sinA;
+comp_169=`            pRot.y = tempXY.x * sinA + tempXY.y * cosA;
+comp_170=`            float localAngle = atan2(pRot.y, pRot.x);
+comp_171=`            
+comp_172=`            float T = time / 300.0;
+comp_173=`            float f = cos(round(length(pRot.xy)) * T * M_PI_2) * 0.5 + 0.5;
+comp_174=`            float a = 0.2 - f / 3.0 + T + (p.z * 0.5 + localAngle) / M_PI_2;
+comp_175=`            float3 matColor = H(a);
+comp_176=`            matColor *= matColor;
+comp_177=`            
+comp_178=`            float3 glassBase = matColor * 0.15;
+comp_179=`            col = glassBase * diff;
+comp_180=`            col += fresnel * float3(1.0, 1.0, 1.0) * 0.5;
+comp_181=`            col += caustics * matColor * fresnel * 2.0; 
+comp_182=`            col += fakeRefraction * matColor * 0.5;
+comp_183=`        }
+comp_184=`        
+comp_185=`        if(i == 0) finalColor.r = col.r;
+comp_186=`        else if(i == 1) finalColor.g = col.g;
+comp_187=`        else finalColor.b = col.b;
+comp_188=`    }
+comp_189=`    
+comp_190=`    finalColor += (neonGlow / 3.0) * 0.5;
+comp_191=`    finalColor = lerp(finalColor, float3(0.01, 0.01, 0.02), smoothstep(10.0, 40.0, length(finalColor)));
+comp_192=`    finalColor = finalColor / (1.0 + finalColor);
+comp_193=`    finalColor = pow(max(finalColor, 0.0), float3(0.4545, 0.4545, 0.4545));
+comp_194=`    
+comp_195=`    ret = float4(finalColor, 1.0);
+comp_196=`}

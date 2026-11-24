@@ -612,15 +612,20 @@ SPOUT :
 */
 
 #include "plugin.h"
+#include "portable_dll_loader.h"
+#include <chrono>
 #include "pluginshell.h"
 #include "utility.h"
 #include "support.h"
+#include "MediaTexture.h"
 #include "state.h"
 #include "resource.h"
 #include "defines.h"
 #include "shell_defines.h"
 #include "wasabi.h"
 #include <assert.h>
+#include <algorithm>
+#include <cmath>
 #include <cctype>
 #include <process.h>  // for beginthread, etc.
 #include <shellapi.h>
@@ -633,7 +638,7 @@ SPOUT :
 #include "Milkdrop2PcmVisualizer.h"
 #include "songtitlegetter.h"
 #include "AMDDetection.h"
-#include <random>
+//#include <random> // defined in header
 
 #include <dwmapi.h>  // Link with Dwmapi.lib
 #pragma comment(lib, "dwmapi.lib")
@@ -641,7 +646,7 @@ SPOUT :
 std::random_device rd;
 std::mt19937_64 gen(rd());
 
-#define FRAND ((rand() % 7381)/7380.0f)
+#define FRAND (std::uniform_real_distribution<float>(0.0f, 1.0f)(gen))
 #define clamp(value, min, max) ((value) < (min) ? (min) : ((value) > (max) ? (max) : (value)))
 
 SongTitleGetter songtitlegetter;
@@ -652,20 +657,42 @@ float timetick = 0;
 float timetick2 = 0;
 float TimeToAutoLockPreset = 0;
 int beatcount;
-bool TranspaMode = false;
-int OpacityControl = 10;                 // Default is 100% window opacity.
-int NumTotalPresetsLoaded = 0;
 bool AutoLockedPreset = false;
+
+void CPlugin::SetHardcutMode(int mode)
+{
+    if (mode < 0 || mode > 12)
+        return;
+
+    HardcutMode = mode;
+    m_bHardCutsDisabled = mode != 1;
+    if (mode >= 10)
+        beatcount = -1;
+}
+int NumTotalPresetsLoaded = 0;
 //bool ShowPresetOnTitle = 0;
 
-//For Sample Rate auto-detection
-#include <windows.h>
-#include <mmdeviceapi.h>
-#include <propsys.h>
-#include <functiondiscoverykeys_devpkey.h>
-#pragma comment(lib, "ole32.lib")
-#pragma comment(lib, "propsys.lib")
-//
+void CPlugin::ToggleAutoLockPresetWhenNoMusic(bool showNotification)
+{
+    m_bAutoLockPresetWhenNoMusic = !m_bAutoLockPresetWhenNoMusic;
+
+    // If disabled while silence has already auto-locked the preset, release
+    // that automatic lock immediately.
+    if (!m_bAutoLockPresetWhenNoMusic)
+    {
+        if (AutoLockedPreset)
+            m_bPresetLockedByUser = false;
+        AutoLockedPreset = false;
+        TimeToAutoLockPreset = 0;
+    }
+
+    if (showNotification)
+    {
+        AddNotif(m_bAutoLockPresetWhenNoMusic
+            ? L"Preset auto-lock when silence enabled."
+            : L"Preset auto-lock when silence disabled.");
+    }
+}
 
 void NSEEL_HOSTSTUB_EnterMutex() {}
 void NSEEL_HOSTSTUB_LeaveMutex() {}
@@ -714,6 +741,7 @@ volatile HANDLE g_hThread;  // only r/w from our MAIN thread
 volatile bool g_bThreadAlive; // set true by MAIN thread, and set false upon exit from 2nd thread.
 volatile int  g_bThreadShouldQuit;  // set by MAIN thread to flag 2nd thread that it wants it to exit.
 static CRITICAL_SECTION g_cs;
+static std::mutex g_shaderCompilationMutex;
 
 #define IsAlphabetChar(x) ((x >= 'a' && x <= 'z') || (x >= 'A' && x <= 'Z'))
 #define IsAlphanumericChar(x) ((x >= 'a' && x <= 'z') || (x >= 'A' && x <= 'Z') || (x >= '0' && x <= '9') || x == '.')
@@ -1152,6 +1180,7 @@ void CPlugin::MyPreInitialize()
 	m_bEnableRating			= true;
     //m_bInstaScan            = false;
 	m_bSongTitleAnims		= true;
+	m_bEnableLyrics         = true;
 	m_fSongTitleAnimDuration = 1.7f;
 	m_fTimeBetweenRandomSongTitles = -1.0f;
 	m_fTimeBetweenRandomCustomMsgs = -1.0f;
@@ -1175,9 +1204,9 @@ void CPlugin::MyPreInitialize()
     m_nMaxBytes  = 2000000000;
 
     #ifdef _DEBUG
-        m_dwShaderFlags = D3DXSHADER_DEBUG|(1<<16);
+        m_dwShaderFlags = D3DXSHADER_DEBUG|D3DXSHADER_USE_LEGACY_D3DX9_31_DLL;
     #else
-        m_dwShaderFlags = (1<<16);//D3DXSHADER_SKIPOPTIMIZATION|D3DXSHADER_NO_PRESHADER;
+        m_dwShaderFlags = D3DXSHADER_USE_LEGACY_D3DX9_31_DLL;//D3DXSHADER_SKIPOPTIMIZATION|D3DXSHADER_NO_PRESHADER;
     #endif
     //m_pFragmentLinker = NULL;
     //m_pCompiledFragments = NULL;
@@ -1250,8 +1279,10 @@ void CPlugin::MyPreInitialize()
     //m_nRatingReadProgress = -1;
 
     myfft.Init(MY_FFT_WINDOW, MY_FFT_SAMPLES, -1);
-    myfftshader.Init(MY_FFT_WINDOW, MY_FFT_SAMPLES, 0);
+    myfftshader.Init(MY_FFT_SHADER_WINDOW, MY_FFT_SHADER_SAMPLES, 0);
 	memset(&mysound, 0, sizeof(mysound));
+    m_bFreezeBeatDetection = false;
+    memset(m_frozenBeatDetection, 0, sizeof(m_frozenBeatDetection));
 
     for (int i=0; i<PRESET_HIST_LEN; i++)
         m_presetHistory[i] = L"";
@@ -1268,11 +1299,14 @@ void CPlugin::MyPreInitialize()
 	m_bShowSongTitle	= false;
 	m_bShowSongTime		= false;
 	m_bShowSongLen		= false;
+	m_nSongTimeDisplayMode = 0;
+	m_bEnableLyrics         = true;
 	m_fShowRatingUntilThisTime = -1.0f;
 	ClearErrors();
 	m_szDebugMessage[0]	= 0;
     m_szSongTitle[0]    = 0;
     m_szSongTitlePrev[0] = 0;
+    m_lastLyricsLine.clear();
 
 	m_lpVS[0]				= NULL;
 	m_lpVS[1]				= NULL;
@@ -1353,6 +1387,20 @@ void CPlugin::MyReadConfig()
 	// ======================================
 	// SPOUT - save whether in DirectX11 (true) or DirectX 9 (false) mode, default true
 	bSpoutOut = GetPrivateProfileBoolW(L"settings", L"bSpoutOut", bSpoutOut, pIni);
+    auto readWebcamOpacity = [&](std::wstring key, float fallback) {
+        float value = GetPrivateProfileFloatW(L"settings", key.data(), fallback, pIni);
+        if (!std::isfinite(value)) value = fallback;
+        return (std::max)(0.0f, (std::min)(1.0f, value));
+    };
+    m_fWebcamBurnOpacity = readWebcamOpacity(L"fWebcamBurnOpacity", BeatDropWebcam::DefaultBurnOpacity);
+    m_fWebcamDeepOpacity = readWebcamOpacity(L"fWebcamDeepOpacity", BeatDropWebcam::DefaultDeepOpacity);
+    m_fWebcamTopOpacity = readWebcamOpacity(L"fWebcamTopOpacity", BeatDropWebcam::DefaultTopOpacity);
+    { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrPaperWhiteNits"), 0.0f, pIni); m_hdr.settings.paperWhite=std::isfinite(v)?(std::max)(0.0f,(std::min)(1000.0f,v)):0.0f; }
+    { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrPeakNits"), 0.0f, pIni); m_hdr.settings.peak=std::isfinite(v)?(std::max)(0.0f,(std::min)(10000.0f,v)):0.0f; }
+    { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrHighlightStrength"), 1.0f, pIni); m_hdr.settings.highlights=std::isfinite(v)?(std::max)(0.0f,(std::min)(4.0f,v)):1.0f; }
+    { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrCompression"), 1.0f, pIni); m_hdr.settings.compression=std::isfinite(v)?(std::max)(0.25f,(std::min)(4.0f,v)):1.0f; }
+    { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrTextBrightness"), 1.5f, pIni); m_hdr.settings.titleBrightness=std::isfinite(v)?(std::max)(0.1f,(std::min)(4.0f,v)):1.5f; }
+    { float v=GetPrivateProfileFloatW(L"settings", const_cast<wchar_t*>(L"fHdrLyricsBrightness"), 1.5f, pIni); m_hdr.settings.lyricsBrightness=std::isfinite(v)?(std::max)(0.1f,(std::min)(4.0f,v)):1.5f; }
 	// ======================================
 
 	m_bFirstRun		= !GetPrivateProfileBoolW(L"settings",L"bConfigured" ,false,pIni);
@@ -1371,6 +1419,30 @@ void CPlugin::MyReadConfig()
     m_bEnableSongTitlePoll = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePoll", m_bEnableSongTitlePoll, pIni);
     m_bEnableSongTitlePollExplicit = GetPrivateProfileBoolW(L"settings", L"bEnableSongTitlePollExplicit", m_bEnableSongTitlePollExplicit, pIni);
     #endif
+    m_bEnableLyrics = GetPrivateProfileBoolW(L"settings", L"bEnableLyrics", m_bEnableLyrics, pIni);
+    GetPrivateProfileStringW(L"settings", L"szFontFace6", m_szLyricsFontFace,
+        m_szLyricsFontFace, _countof(m_szLyricsFontFace), pIni);
+    m_bLyricsFontBold = GetPrivateProfileBoolW(L"settings", L"bFontBold6",
+        m_bLyricsFontBold, pIni);
+    m_bLyricsFontItalic = GetPrivateProfileBoolW(L"settings", L"bFontItalic6",
+        m_bLyricsFontItalic, pIni);
+    m_nLyricsFontSize = GetPrivateProfileIntW(L"settings", L"nFontSize6",
+        m_nLyricsFontSize, pIni);
+    m_bLyricsFontAA = GetPrivateProfileBoolW(L"settings", L"bFontAA6",
+        m_bLyricsFontAA, pIni);
+    m_nLyricsFontColorR = GetPrivateProfileIntW(L"settings", L"nFontColorR6",
+        m_nLyricsFontColorR, pIni);
+    m_nLyricsFontColorG = GetPrivateProfileIntW(L"settings", L"nFontColorG6",
+        m_nLyricsFontColorG, pIni);
+    m_nLyricsFontColorB = GetPrivateProfileIntW(L"settings", L"nFontColorB6",
+        m_nLyricsFontColorB, pIni);
+    m_nLyricsFontSize = (std::max)(12, (std::min)(128, m_nLyricsFontSize));
+    m_nLyricsFontColorR = (std::max)(0, (std::min)(255, m_nLyricsFontColorR));
+    m_nLyricsFontColorG = (std::max)(0, (std::min)(255, m_nLyricsFontColorG));
+    m_nLyricsFontColorB = (std::max)(0, (std::min)(255, m_nLyricsFontColorB));
+    m_lyricsRenderer.SetFont(m_szLyricsFontFace, m_bLyricsFontBold,
+        m_bLyricsFontItalic, m_nLyricsFontSize, m_bLyricsFontAA,
+        m_nLyricsFontColorR, m_nLyricsFontColorG, m_nLyricsFontColorB);
     m_bScreenDependentRenderMode = GetPrivateProfileBoolW(L"settings", L"bScreenDependentRenderMode", m_bScreenDependentRenderMode, pIni);
     m_bShaderCaching = GetPrivateProfileBoolW(L"settings", L"bShaderCaching", m_bShaderCaching, pIni);
     m_bShaderPrecachingAtStartup = GetPrivateProfileBoolW(L"settings", L"bShaderPrecachingAtStartup", m_bShaderPrecachingAtStartup, pIni);
@@ -1419,7 +1491,10 @@ void CPlugin::MyReadConfig()
     m_nTexSizeY = -1; //m_nTexSizeX;
 	m_bTexSizeWasAutoPow2   = (m_nTexSizeX == -2);
 	m_bTexSizeWasAutoExact = (m_nTexSizeX == -1);
+    m_bEnableTexSizeSnapping = GetPrivateProfileIntW(L"settings", L"bEnableTexSizeSnapping", m_bEnableTexSizeSnapping, pIni);
 	m_nTexBitsPerCh = GetPrivateProfileIntW(L"settings", L"nTexBitsPerCh", m_nTexBitsPerCh, pIni);
+    m_bAnisotropicFiltering = GetPrivateProfileIntW(L"settings", L"bAnisotropicFiltering", m_bAnisotropicFiltering, pIni);
+    m_nMaxAnisotropy = GetPrivateProfileIntW(L"settings", L"nMaxAnisotropy", m_nMaxAnisotropy, pIni);
 	m_nGridX		= GetPrivateProfileIntW(L"settings",L"nMeshSize"   ,m_nGridX      ,pIni);
 	m_nGridY        = m_nGridX*3/4;
 
@@ -1432,6 +1507,8 @@ void CPlugin::MyReadConfig()
     m_nMidEnd = GetPrivateProfileIntW(L"settings", L"MidEnd", m_nMidEnd, pIni);
     m_nTrebStart = GetPrivateProfileIntW(L"settings", L"TrebStart", m_nTrebStart, pIni);
     m_nTrebEnd = GetPrivateProfileIntW(L"settings", L"TrebEnd", m_nTrebEnd, pIni);
+    m_nFFTShaderScaling = GetPrivateProfileFloatW(L"settings", L"nFFTShaderScaling", m_nFFTShaderScaling, pIni);
+    m_nFFTShaderNoiseFloor = GetPrivateProfileFloatW(L"settings", L"nFFTShaderNoiseFloor", m_nFFTShaderNoiseFloor, pIni);
     m_dTimeVariableResetDelay = GetPrivateProfileIntW(L"settings", L"dTimeVariableResetDelay", m_dTimeVariableResetDelay, pIni);
     m_nTransitionBlendPattern = GetPrivateProfileIntW(L"settings", L"nTransitionBlendPattern", m_nTransitionBlendPattern, pIni);
     m_nAMDMode = GetPrivateProfileIntW(L"settings", L"nAMDMode", m_nAMDMode, pIni);
@@ -1473,6 +1550,17 @@ void CPlugin::MyReadConfig()
 
 //----------------------------------------------------------------------
 
+void CPlugin::SaveHdrSettings()
+{
+    wchar_t* pIni=GetConfigIniFile();
+    WritePrivateProfileFloatW(m_hdr.settings.paperWhite, L"fHdrPaperWhiteNits", pIni, L"settings");
+    WritePrivateProfileFloatW(m_hdr.settings.peak, L"fHdrPeakNits", pIni, L"settings");
+    WritePrivateProfileFloatW(m_hdr.settings.highlights, L"fHdrHighlightStrength", pIni, L"settings");
+    WritePrivateProfileFloatW(m_hdr.settings.compression, L"fHdrCompression", pIni, L"settings");
+    WritePrivateProfileFloatW(m_hdr.settings.titleBrightness, L"fHdrTextBrightness", pIni, L"settings");
+    WritePrivateProfileFloatW(m_hdr.settings.lyricsBrightness, L"fHdrLyricsBrightness", pIni, L"settings");
+}
+
 void CPlugin::MyWriteConfig()
 {
     // Write the user's settings to the .INI file.
@@ -1502,9 +1590,22 @@ void CPlugin::MyWriteConfig()
 	// ================================
 	// SPOUT
 	WritePrivateProfileIntW(bSpoutOut, L"bSpoutOut", pIni, L"settings");
+    WritePrivateProfileFloatW(m_fWebcamBurnOpacity, L"fWebcamBurnOpacity", pIni, L"settings");
+    WritePrivateProfileFloatW(m_fWebcamDeepOpacity, L"fWebcamDeepOpacity", pIni, L"settings");
+    WritePrivateProfileFloatW(m_fWebcamTopOpacity, L"fWebcamTopOpacity", pIni, L"settings");
+    SaveHdrSettings();
 	// ================================
 
 	WritePrivateProfileIntW(m_bSongTitleAnims,		L"bSongTitleAnims",		pIni, L"settings");
+	WritePrivateProfileIntW(m_bEnableLyrics,		L"bEnableLyrics",		pIni, L"settings");
+	WritePrivateProfileStringW(L"settings", L"szFontFace6", m_szLyricsFontFace, pIni);
+	WritePrivateProfileIntW(m_bLyricsFontBold, L"bFontBold6", pIni, L"settings");
+	WritePrivateProfileIntW(m_bLyricsFontItalic, L"bFontItalic6", pIni, L"settings");
+	WritePrivateProfileIntW(m_nLyricsFontSize, L"nFontSize6", pIni, L"settings");
+	WritePrivateProfileIntW(m_bLyricsFontAA, L"bFontAA6", pIni, L"settings");
+	WritePrivateProfileIntW(m_nLyricsFontColorR, L"nFontColorR6", pIni, L"settings");
+	WritePrivateProfileIntW(m_nLyricsFontColorG, L"nFontColorG6", pIni, L"settings");
+	WritePrivateProfileIntW(m_nLyricsFontColorB, L"nFontColorB6", pIni, L"settings");
 	WritePrivateProfileIntW(m_bHardCutsDisabled,	    L"bHardCutsDisabled",	pIni, L"settings");
 	WritePrivateProfileIntW(m_bEnableRating,		    L"bEnableRating",		pIni, L"settings");
 	//WritePrivateProfileIntW(m_bInstaScan,            "bInstaScan",		    pIni, "settings");
@@ -1526,7 +1627,8 @@ void CPlugin::MyWriteConfig()
 	    WritePrivateProfileIntW(m_bAlwaysOnTop,		    L"bAlwaysOnTop",			pIni, L"settings");
 	//WritePrivateProfileIntW(m_bWarningsDisabled,	    "bWarningsDisabled",	pIni, "settings");
 	WritePrivateProfileIntW(m_bWarningsDisabled2,	L"bWarningsDisabled2",	pIni, L"settings");
-	//WritePrivateProfileIntW(m_bAnisotropicFiltering,	"bAnisotropicFiltering",pIni, "settings");
+	WritePrivateProfileIntW(m_bAnisotropicFiltering,L"bAnisotropicFiltering",pIni, L"settings");
+    WritePrivateProfileIntW(m_nMaxAnisotropy,       L"nMaxAnisotropy", pIni, L"settings");
     WritePrivateProfileIntW(m_bPresetLockOnAtStartup,L"bPresetLockOnAtStartup",pIni,L"settings");
 	WritePrivateProfileIntW(m_bPreventScollLockHandling,L"m_bPreventScollLockHandling",pIni,L"settings");
     // note: this is also written @ exit of the visualizer
@@ -1535,6 +1637,7 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_bScreenDependentRenderMode, L"bScreenDependentRenderMode", pIni, L"settings");
     WritePrivateProfileIntW(m_nCanvasStretch,        L"nCanvasStretch",   	pIni, L"settings");
     //WritePrivateProfileIntW(m_nTexSizeX,			    L"nTexSize",				pIni, L"settings");
+    WritePrivateProfileIntW(m_bEnableTexSizeSnapping, L"bEnableTexSizeSnapping", pIni, L"settings");
 	WritePrivateProfileIntW(m_nTexBitsPerCh,         L"nTexBitsPerCh",        pIni, L"settings");
 	WritePrivateProfileIntW(m_nGridX, 				L"nMeshSize",			pIni, L"settings");
 	WritePrivateProfileIntW(m_nMaxPSVersion_ConfigPanel, L"MaxPSVersion",  	pIni, L"settings");
@@ -1546,6 +1649,8 @@ void CPlugin::MyWriteConfig()
     WritePrivateProfileIntW(m_nMidEnd, L"MidEnd", pIni, L"settings");
     WritePrivateProfileIntW(m_nTrebStart, L"TrebStart", pIni, L"settings");
     WritePrivateProfileIntW(m_nTrebEnd, L"TrebEnd", pIni, L"settings");
+    WritePrivateProfileFloatW(m_nFFTShaderScaling, L"nFFTShaderScaling", pIni, L"settings");
+    WritePrivateProfileFloatW(m_nFFTShaderNoiseFloor, L"nFFTShaderNoiseFloor", pIni, L"settings");
     WritePrivateProfileIntW(m_dTimeVariableResetDelay, L"dTimeVariableResetDelay", pIni, L"settings");
     WritePrivateProfileIntW(m_nAMDMode, L"nAMDMode", pIni, L"settings");
     WritePrivateProfileIntW(m_bShaderCaching, L"bShaderCaching", pIni, L"settings");
@@ -1743,6 +1848,7 @@ void CancelThread(int max_wait_time_ms)
 
 void CPlugin::CleanUpMyNonDx9Stuff()
 {
+    m_webcam.Stop();
     // This gets called only once, when your plugin exits.
     // Be sure to clean up any objects here that were
     //   created/initialized in AllocateMyNonDx9Stuff.
@@ -2170,9 +2276,12 @@ int CPlugin::AllocateMyDX9Stuff()
 			m_nTexSizeY = log2texsize;
 	    }
 
-        // snap to 16x16 blocks
-        m_nTexSizeX = ((m_nTexSizeX+15)/16)*16;
-        m_nTexSizeY = ((m_nTexSizeY+15)/16)*16;
+        // asks if the setting from .ini file is enabled, snap to 16x16 blocks
+        if (m_bEnableTexSizeSnapping)
+        {
+            m_nTexSizeX = ((m_nTexSizeX + 15) / 16) * 16;
+            m_nTexSizeY = ((m_nTexSizeY + 15) / 16) * 16;
+        }
 
 		// determine format for VS1/VS2
 		D3DFORMAT fmt;
@@ -2324,7 +2433,7 @@ int CPlugin::AllocateMyDX9Stuff()
     m_fInvAspectY = 1.0f/m_fAspectY;
 
     // Create FFT spectrum texture (FFT Samplesx2, R32F: row0=smoothed, row1=peak hold, updated each frame)
-    GetDevice()->CreateTexture(MY_FFT_SAMPLES, 2, 1, D3DUSAGE_DYNAMIC, D3DFMT_R32F, D3DPOOL_DEFAULT, &m_lpFFTTexture, NULL);
+    GetDevice()->CreateTexture(MY_FFT_SHADER_SAMPLES, 2, 1, D3DUSAGE_DYNAMIC, D3DFMT_R32F, D3DPOOL_DEFAULT, &m_lpFFTTexture, NULL);
 
     // Create Waveform texture (Waveform Samplesx2, R32F: row0=left, row1=right, updated each frame)
     GetDevice()->CreateTexture(NUM_WAVEFORM_SAMPLES, 2, 1, D3DUSAGE_DYNAMIC, D3DFMT_R32F, D3DPOOL_DEFAULT, &m_lpWaveTexture, NULL);
@@ -2577,10 +2686,10 @@ int CPlugin::AllocateMyDX9Stuff()
 			m_verts[nVert].z = 0.0f;
 
 			// precompute rad, ang, being conscious of aspect ratio
-			            if (m_bScreenDependentRenderMode)
-            m_vertinfo[nVert].rad = sqrtf(m_verts[nVert].x * m_verts[nVert].x + m_verts[nVert].y * m_verts[nVert].y);
+			if (m_bScreenDependentRenderMode)
+                m_vertinfo[nVert].rad = sqrtf(m_verts[nVert].x * m_verts[nVert].x + m_verts[nVert].y * m_verts[nVert].y);
             else
-            m_vertinfo[nVert].rad = sqrtf(m_verts[nVert].x * m_verts[nVert].x * m_fAspectX * m_fAspectX + m_verts[nVert].y * m_verts[nVert].y * m_fAspectY * m_fAspectY);
+                m_vertinfo[nVert].rad = sqrtf(m_verts[nVert].x * m_verts[nVert].x * m_fAspectX * m_fAspectX + m_verts[nVert].y * m_verts[nVert].y * m_fAspectY * m_fAspectY);
 			if (y==m_nGridY/2 && x==m_nGridX/2)
 				m_vertinfo[nVert].ang = 0.0f;
 			else
@@ -3061,6 +3170,16 @@ void CShaderParams::OnTextureEvict(LPDIRECT3DBASETEXTURE9 texptr)
             m_texture_bindings[i].texptr = NULL;
 }
 
+void CShaderParams::OnTextureReplace(LPDIRECT3DBASETEXTURE9 oldTexPtr, LPDIRECT3DBASETEXTURE9 newTexPtr)
+{
+    if (!oldTexPtr || !newTexPtr || oldTexPtr == newTexPtr)
+        return;
+
+    for (int i=0; i<sizeof(m_texture_bindings)/sizeof(m_texture_bindings[0]); i++)
+        if (m_texture_bindings[i].texptr == oldTexPtr)
+            m_texture_bindings[i].texptr = newTexPtr;
+}
+
 void CShaderParams::Clear()
 {
     // float4 handles:
@@ -3078,6 +3197,26 @@ void CShaderParams::Clear()
         m_texture_bindings[i].texptr = NULL;
         m_texcode[i] = TEX_DISK;
     }
+}
+
+static bool IsTextureBoundToAnyShaderParams(LPDIRECT3DBASETEXTURE9 texptr)
+{
+    if (!texptr)
+        return false;
+
+    size_t count = global_CShaderParams_master_list.size();
+    for (size_t i = 0; i < count; i++)
+    {
+        CShaderParams* params = global_CShaderParams_master_list[i];
+        if (!params)
+            continue;
+
+        for (int stage = 0; stage < sizeof(params->m_texture_bindings) / sizeof(params->m_texture_bindings[0]); stage++)
+            if (params->m_texture_bindings[stage].texptr == texptr)
+                return true;
+    }
+
+    return false;
 }
 
 bool CPlugin::EvictSomeTexture()
@@ -3146,14 +3285,80 @@ bool CPlugin::EvictSomeTexture()
         global_CShaderParams_master_list[i]->OnTextureEvict( m_textures[biggest_index].texptr );
 
     // 2. erase the texture itself
-    SafeRelease(m_textures[biggest_index].texptr);
+    if (m_textures[biggest_index].pMedia)
+    {
+        delete m_textures[biggest_index].pMedia;
+        m_textures[biggest_index].pMedia = nullptr;
+        m_textures[biggest_index].texptr = nullptr;
+    }
+    else
+    {
+        SafeRelease(m_textures[biggest_index].texptr);
+    }
     m_textures.erase(m_textures.begin() + biggest_index);
 
     return true;
 }
 
-std::wstring texture_exts[] = { L"jpg", L"jpeg", L"jfif", L"dds", L"png", L"tga", L"bmp", L"dib"};
-const wchar_t szExtsWithSlashes[] = L".jpg|.png|.dds|etc.";
+void CPlugin::UpdateLiveTextures()
+{
+    for (size_t i = 0; i < m_textures.size(); )
+    {
+        TexInfo& tex = m_textures[i];
+        if (!tex.pMedia)
+        {
+            i++;
+            continue;
+        }
+
+        LPDIRECT3DBASETEXTURE9 oldTexPtr = tex.texptr;
+        if (!IsTextureBoundToAnyShaderParams(oldTexPtr))
+        {
+            delete tex.pMedia;
+            m_textures.erase(m_textures.begin() + i);
+            continue;
+        }
+
+        bool shouldKill = false;
+        tex.pMedia->Update(GetTime(), &shouldKill);
+        tex.texptr = tex.pMedia->GetTexture();
+        tex.w = tex.pMedia->GetWidth();
+        tex.h = tex.pMedia->GetHeight();
+        tex.d = 1;
+
+        if (tex.texptr && oldTexPtr && tex.texptr != oldTexPtr)
+        {
+            size_t N = global_CShaderParams_master_list.size();
+            for (size_t j = 0; j < N; j++)
+                global_CShaderParams_master_list[j]->OnTextureReplace(oldTexPtr, tex.texptr);
+        }
+
+        if (shouldKill || !tex.texptr)
+        {
+            size_t N = global_CShaderParams_master_list.size();
+            for (size_t j = 0; j < N; j++)
+                global_CShaderParams_master_list[j]->OnTextureEvict(oldTexPtr);
+            if (tex.texptr && tex.texptr != oldTexPtr)
+                for (size_t j = 0; j < N; j++)
+                    global_CShaderParams_master_list[j]->OnTextureEvict(tex.texptr);
+
+            delete tex.pMedia;
+            m_textures.erase(m_textures.begin() + i);
+            continue;
+        }
+
+        i++;
+    }
+}
+
+std::wstring texture_exts[] = {
+    L"jpg", L"jpeg", L"jfif", L"dds", L"png", L"webp", L"tga", L"bmp", L"dib", L"gif",
+    L"webm", L"mkv", L"flv", L"vob", L"ogv", L"mng", L"avi", L"mts", L"m2ts", L"ts",
+    L"mov", L"qt", L"wmv", L"yuv", L"rm", L"rmvb", L"viv", L"asf", L"amv", L"mp4",
+    L"m4p", L"mp2", L"mpe", L"mpv", L"mpg", L"mpeg", L"m2v", L"m4v", L"svi", L"3gp",
+    L"3g2", L"mxf", L"roq", L"nsv", L"f4v", L"f4p", L"f4a", L"f4b"
+};
+const wchar_t szExtsWithSlashes[] = L".jpg|.png|.webp|.dds|.tga|.gif|.webm|.mkv|.mp4|.avi|.mov|etc.";
 typedef std::vector<std::wstring> StringVec;
 bool PickRandomTexture(const wchar_t* prefix, wchar_t* szRetTextureFilename)  //should be MAX_PATH chars
 {
@@ -3492,6 +3697,23 @@ void CShaderParams::CacheParams(LPD3DXCONSTANTTABLE pCT, bool bHardErrors)
                         }
                         D3DXIMAGE_INFO desc;
 
+                        if (MediaTexture::IsSupportedFile(szFilename))
+                        {
+                            x.pMedia = MediaTexture::Create(g_plugin.GetDevice(), szFilename, 0, false);
+                            if (x.pMedia)
+                            {
+                                x.texptr = x.pMedia->GetTexture();
+                                x.w = x.pMedia->GetWidth();
+                                x.h = x.pMedia->GetHeight();
+                                x.d = 1;
+                                x.bEvictable = true;
+                                x.nAge = g_plugin.m_nPresetsLoadedTotal;
+                                x.nSizeInBytes = x.w * x.h * 4 + 16384;
+                                break;
+                            }
+                            continue;
+                        }
+
                         // keep trying to load it - if it fails due to memory, evict something and try again.
                         while (1)
                         {
@@ -3825,9 +4047,38 @@ bool CPlugin::LoadShaderFromFile( char* szFile, char* szFn, char* szProfile,
 }
 */
 
+// A shader crash guard, modified as a drop-in replacement of D3DXCompileShader - made by seethrew (seethrew777)
+// Original desc:
+// Microsoft's shader compiler can crash outright on some shaders (an access violation
+// inside D3DXCompileShader, in the legacy d3dx9_31 compiler: a Pixel Life preset with an exact
+// 0.000 colour did it every time, 2026-10-30). In a plugin that takes the DAW down with it. Caught
+// here (SEH, so no C++ objects in this function) and reported as a failed compile instead.
+static HRESULT D3DXCompileShaderNoCrash(LPCSTR text, UINT len, CONST D3DXMACRO* defines, LPD3DXINCLUDE include, LPCSTR fn, LPCSTR profile, DWORD flags,
+    LPD3DXBUFFER* code, LPD3DXBUFFER* errors,
+    LPD3DXCONSTANTTABLE* table, bool* crashed)
+{
+    *crashed = false;
+    __try
+    {
+        return D3DXCompileShader(text, len, defines, include, fn, profile, flags, code, errors, table);
+    }
+    __except (GetExceptionCode() == EXCEPTION_ACCESS_VIOLATION || GetExceptionCode() == EXCEPTION_STACK_OVERFLOW
+        || GetExceptionCode() == EXCEPTION_INT_DIVIDE_BY_ZERO ? EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+    {
+        *crashed = true;
+        *code = NULL; *errors = NULL; *table = NULL; // whatever it had half-made is abandoned 
+        return E_FAIL;
+    }
+}
+
 bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, char* szProfile,
                                     LPD3DXCONSTANTTABLE* ppConstTable, void** ppShader, int shaderType, bool bHardErrors, bool bCompileOnly)
 {
+    // The precache worker and render thread share compiler diagnostics and
+    // shader-cache files. Serialize accesses so compiler state is not reused
+    // concurrently and presets never read a cache file mid-write.
+    std::lock_guard<std::mutex> shaderLock(g_shaderCompilationMutex);
+
     const char szWarpDefines[] = "#define rad _rad_ang.x\n"
                                  "#define ang _rad_ang.y\n"
                                  "#define uv _uv.xy\n"
@@ -3858,8 +4109,17 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
     *ppShader = NULL;
     *ppConstTable = NULL;
 
-    char szShaderText[128000];
-    char temp[128000];
+    // Internal LCC separators can expand to two CR/LF bytes each. Include
+    // the shared header, defines and generated entry-point wrapper as well.
+    const size_t inputLength = strlen(szOrigShaderText);
+    if (inputLength >= MAX_SHADER_TEXT_LEN || static_cast<size_t>(m_nShaderIncludeTextLen) + 2 * inputLength + 2048 >= MAX_SHADER_COMPILER_TEXT_LEN) {
+        AddError(L"Shader source exceeds the compiler text buffer.", 6.0f, ERR_PRESET, true);
+        return false;
+    }
+    std::vector<char> shaderStorage(MAX_SHADER_COMPILER_TEXT_LEN, 0);
+    std::vector<char> tempStorage(MAX_SHADER_COMPILER_TEXT_LEN, 0);
+    char* szShaderText = shaderStorage.data();
+    char* temp = tempStorage.data();
     int writePos = 0;
 
     // paste the universal #include
@@ -4017,7 +4277,9 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
 
     if (!bLoadedFromCache)
     {
-        HRESULT hresult = D3DXCompileShader(
+        // guarded (D3DXCompileShaderNoCrash): a compiler crash is a failed compile.
+        bool crashed = false;
+        HRESULT hresult = D3DXCompileShaderNoCrash(
             szShaderText,
             len,
             NULL,//CONST D3DXMACRO* pDefines,
@@ -4027,18 +4289,34 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
             m_dwShaderFlags,
             &pShaderByteCode,
             &m_pShaderCompileErrors,
-            ppConstTable);
+            ppConstTable,
+            &crashed);
 
+        // if the legacy (d3dx9_31) compiler crashed, try once with the newer d3dx9_43 one.
+        if (crashed && (m_dwShaderFlags & D3DXSHADER_USE_LEGACY_D3DX9_31_DLL))
+        {
+            hresult = D3DXCompileShaderNoCrash(szShaderText, len, NULL, NULL, szFn, szProfile,
+                m_dwShaderFlags & ~D3DXSHADER_USE_LEGACY_D3DX9_31_DLL,
+                &pShaderByteCode, &m_pShaderCompileErrors, ppConstTable, &crashed);
+            dumpmsg(crashed ? L"Shader compiler crashed twice; the shader is skipped."
+                : L"Shader compiler crashed; compiled with d3dx9_43 instead");
+            // said on screen too, the crashed-twice case gets the usual compile error below.
+            if (!crashed && SUCCEEDED(hresult))
+            {
+                wchar_t note[] = L"Shader compiler crashed; compiled with the newer one instead";
+                AddErrorNotif(note);
+            }
+        }
         if (D3D_OK != hresult)
         {
             failed = true;
         }
         // before we totally fail, let's try using ps_2_b instead of ps_2_a
-        if (failed && !strcmp(szProfile, "ps_2_a"))
+        if (failed && !crashed && !strcmp(szProfile, "ps_2_a"))
         {
             SafeRelease(m_pShaderCompileErrors);
-            if (D3D_OK == D3DXCompileShader(szShaderText, len, NULL, NULL, szFn,
-                "ps_2_b", m_dwShaderFlags, &pShaderByteCode, &m_pShaderCompileErrors, ppConstTable))
+            if (D3D_OK == D3DXCompileShaderNoCrash(szShaderText, len, NULL, NULL, szFn,
+                "ps_2_b", m_dwShaderFlags, &pShaderByteCode, &m_pShaderCompileErrors, ppConstTable, &crashed))
             {
                 failed = false;
             }
@@ -4048,7 +4326,7 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
         {
             wchar_t temp[1024];
             swprintf(temp, wasabiApiLangString(IDS_ERROR_COMPILING_X_X_SHADER), szProfile, szWhichShader);
-            if (m_pShaderCompileErrors && m_pShaderCompileErrors->GetBufferSize() < sizeof(temp) - 256)
+            if (m_pShaderCompileErrors && m_pShaderCompileErrors->GetBufferSize() < MAX_SHADER_COMPILER_TEXT_LEN - 256)
             {
                 lstrcatW(temp, L"\n\n");
                 lstrcatW(temp, AutoWide((char*)m_pShaderCompileErrors->GetBufferPointer()));
@@ -4085,8 +4363,14 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
             SafeRelease(pShaderByteCode);
             if (*ppConstTable) { (*ppConstTable)->Release(); *ppConstTable = NULL; }
             *ppShader = nullptr;
-            HRESULT compileResult = D3DXCompileShader(szShaderText, len, NULL, NULL, szFn, szProfile,
-                m_dwShaderFlags, &pShaderByteCode, &m_pShaderCompileErrors, ppConstTable);
+            // guarded here too, with the same d3dx9_43 retry as the first compile.
+            bool recompileCrashed = false;
+            HRESULT compileResult = D3DXCompileShaderNoCrash(szShaderText, len, NULL, NULL, szFn, szProfile,
+                m_dwShaderFlags, &pShaderByteCode, &m_pShaderCompileErrors, ppConstTable, &recompileCrashed);
+            if (recompileCrashed && (m_dwShaderFlags & D3DXSHADER_USE_LEGACY_D3DX9_31_DLL))
+                compileResult = D3DXCompileShaderNoCrash(szShaderText, len, NULL, NULL, szFn, szProfile,
+                    m_dwShaderFlags & ~D3DXSHADER_USE_LEGACY_D3DX9_31_DLL,
+                    &pShaderByteCode, &m_pShaderCompileErrors, ppConstTable, &recompileCrashed);
             if (D3D_OK == compileResult) {
                 hr = 1;
                 if (szProfile[0] == 'v')
@@ -4101,7 +4385,7 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
         if (hr != D3D_OK)
         {
             wchar_t temp[512];
-            wasabiApiLangString(IDS_ERROR_CREATING_SHADER, temp, sizeof(temp));
+            wasabiApiLangString(IDS_ERROR_CREATING_SHADER, temp, MAX_SHADER_COMPILER_TEXT_LEN);
             //dumpmsg(temp);
             if (bHardErrors)
                 MessageBoxW(GetPluginWindow(), temp, wasabiApiLangString(IDS_MILKDROP_ERROR, title, 64), MB_OK | MB_SETFOREGROUND | MB_TOPMOST);
@@ -4122,6 +4406,12 @@ bool CPlugin::LoadShaderFromMemory( const char* szOrigShaderText, char* szFn, ch
 
 void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
 {
+    m_hdr.Reset();
+    if (final_cleanup)
+        m_webcam.Stop();
+    else
+        m_webcam.ReleaseDeviceResources();
+
     // Clean up all your DX9 and D3DX textures, fonts, buffers, etc. here.
     // EVERYTHING CREATED IN ALLOCATEMYDX9STUFF() SHOULD BE CLEANED UP HERE.
     // The input parameter, 'final_cleanup', will be 0 if this is
@@ -4161,6 +4451,19 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
     m_pState->m_bBlending = false;
 
 
+    if (GetDevice())
+    {
+        for (DWORD stage = 0; stage < 16; stage++)
+            GetDevice()->SetTexture(stage, NULL);
+    }
+
+    m_texmgr.Finish();
+
+    if (bInitialized)
+    {
+        spoutsender.ReleaseDX9sender();
+        bInitialized = false;
+    }
 
     for (size_t i=0; i<m_textures.size(); i++)
         if (m_textures[i].texptr)
@@ -4170,7 +4473,16 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
             for (size_t j=0; j<N; j++)
                 global_CShaderParams_master_list[j]->OnTextureEvict( m_textures[i].texptr );
 
-            SafeRelease(m_textures[i].texptr);
+            if (m_textures[i].pMedia)
+            {
+                delete m_textures[i].pMedia;
+                m_textures[i].pMedia = nullptr;
+                m_textures[i].texptr = nullptr;
+            }
+            else
+            {
+                SafeRelease(m_textures[i].texptr);
+            }
         }
     m_textures.clear();
 
@@ -4205,6 +4517,7 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
     m_BlurShaders[0].ps.Clear();
     m_BlurShaders[1].vs.Clear();
     m_BlurShaders[1].ps.Clear();
+    ReleaseSpriteColorKeyPS();
     /*
     SafeRelease( m_shaders.comp.ptr );
     SafeRelease( m_shaders.warp.ptr );
@@ -4217,18 +4530,21 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
     SafeRelease( m_fallbackShaders_vs.warp.ptr );
     SafeRelease( m_fallbackShaders_ps.warp.ptr );
     */
-    SafeRelease( m_pShaderCompileErrors );
+    {
+        std::lock_guard<std::mutex> shaderLock(g_shaderCompilationMutex);
+        SafeRelease(m_pShaderCompileErrors);
+    }
     //SafeRelease( m_pCompiledFragments );
     //SafeRelease( m_pFragmentLinker );
 
     // 2. release stuff
     SafeRelease(m_lpFFTTexture);
     SafeRelease(m_lpWaveTexture);
-    memset(m_fFFTSmoothed, 0, sizeof(m_fFFTSmoothed));
     SafeRelease(m_lpVS[0]);
     SafeRelease(m_lpVS[1]);
     SafeRelease(m_lpDDSTitle);
     SafeRelease(m_d3dx_title_font_doublesize);
+    m_lyricsRenderer.OnDeviceLost();
 
     // NOTE: THIS CODE IS IN THE RIGHT PLACE.
     if (m_gdi_title_font_doublesize)
@@ -4236,8 +4552,6 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
         DeleteObject(m_gdi_title_font_doublesize);
         m_gdi_title_font_doublesize = NULL;
     }
-
-    m_texmgr.Finish();
 
 	if (m_verts != NULL)
 	{
@@ -4550,12 +4864,47 @@ void CPlugin::MyRenderFn(int redraw)
         m_mouseY = -1;
     }
 
+    if (m_bDesktopMode)
+    {
+        bool isLDown = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
+        bool isRDown = (GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0;
+
+        if ((isLDown || isRDown) && !m_mouseDown) {
+            m_mouseDown = 1;
+            m_mouseClicked = 2;
+            m_lastMouseX = m_mouseX;
+            m_lastMouseY = -m_mouseY + 1;
+        }
+        else if (!isLDown && !isRDown && m_mouseDown) {
+            m_mouseDown = 0;
+        }
+    }
+
 	//Duration of the click called from WM_LBUTTONDOWN
     if (m_mouseClicked > 0)
     {
         m_mouseClicked--;
     }
     //END
+
+    //Getting the system time and total seconds, in real-time.
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+    float totalSeconds = (float)st.wHour * 3600.0f + (float)st.wMinute * 60.0f + (float)st.wSecond + (float)st.wMilliseconds * .001f; // Use double for accurate floating point
+
+    /*
+    Now ready to pass vars from headers, then ready to use on init, per-frame and shaders.
+    SYSTEMTIME has WORD data type, which is a 16-bit unsigned integer.
+    */
+    m_year = st.wYear;
+    m_month = st.wMonth;
+    m_day = st.wDay;
+    m_weekday = (st.wDayOfWeek == 0 ? 7 : st.wDayOfWeek);
+    m_hour = st.wHour;
+    m_minute = st.wMinute;
+    m_second = st.wSecond;
+    m_milliseconds = st.wMilliseconds;
+    m_totalSeconds = totalSeconds;
 
     //Don't show the help message again when the "Press F1 for help" message is finished.
     //Useful when I press CTRL + T or when it reaches 250000 seconds, it shows the message again, so I did.
@@ -4594,6 +4943,7 @@ void CPlugin::MyRenderFn(int redraw)
             if (m_bSongTitleAnims)
                 LaunchSongTitleAnim();
         }
+        UpdateLyrics();
     }
 
     // 2. Clear the background:
@@ -4727,6 +5077,7 @@ void CPlugin::AddError(wchar_t* szMsg, float fDuration, int category, bool bBold
         ClearErrors(category);
 
     assert(category != ERR_ALL);
+    std::lock_guard<std::mutex> lock(m_errorsMutex);
     ErrorMsg x;
     x.msg = szMsg;
     x.birthTime = GetTime();
@@ -4738,6 +5089,7 @@ void CPlugin::AddError(wchar_t* szMsg, float fDuration, int category, bool bBold
 
 void CPlugin::ClearErrors(int category)  // 0=all categories
 {
+    std::lock_guard<std::mutex> lock(m_errorsMutex);
     int N = m_errors.size();
     for (int i=0; i<N; i++)
     if (category==ERR_ALL || m_errors[i].category == category)
@@ -4801,20 +5153,19 @@ void CPlugin::MyRenderUI(
             SelectFont(DECORATIVE_FONT);
             swprintf(
                 buf,
-                L"%s Current preset: %s ",
+                L"%s Current preset: %s",
                 (m_bPresetLockedByUser || m_bPresetLockedByCode) ? L"\xD83D\xDD12" : L"",
                 (m_nLoadingPreset != 0) ? m_pNewState->m_szDesc : m_pState->m_szDesc);
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
             SelectFont(SIMPLE_FONT);
             swprintf(
                 buf,
-                L"%s Preset used: %s ",
-                (m_bPresetLockedByUser || m_bPresetLockedByCode) ? L"" : L"",
+                L"Preset used: %s",
                 (m_nLoadingPreset != 0) ? m_pState->m_szDesc : m_pOldState->m_szDesc);
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-            swprintf(buf, L" %s: %d / %d", L"Current preset position", (int)(m_nCurrentPreset - (m_nDirs - 1)), (int)(m_nPresets - m_nDirs));
+            swprintf(buf, L"%s: %d / %d", L"Current preset position", (int)(m_nCurrentPreset - (m_nDirs - 1)), (int)(m_nPresets - m_nDirs));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-            swprintf(buf, L" %s: %d ", L"Total presets loaded", (int)(NumTotalPresetsLoaded));
+            swprintf(buf, L"%s: %d", L"Total presets loaded", (int)(NumTotalPresetsLoaded));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
 		}
 
@@ -4832,7 +5183,7 @@ void CPlugin::MyRenderUI(
         if (m_bShowFPS)
         {
             SelectFont(DECORATIVE_FONT);
-            swprintf(buf, L"%s: %4.2f ", wasabiApiLangString(IDS_FPS), GetFps()); // leave extra space @ end, so italicized fonts don't get clipped
+            swprintf(buf, L"%s: %4.2f", wasabiApiLangString(IDS_FPS), GetFps()); // leave extra space @ end, so italicized fonts don't get clipped
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
         }
 
@@ -4840,15 +5191,13 @@ void CPlugin::MyRenderUI(
         if (m_bShowDebugInfo == 1) // Page 1
         {
             SelectFont(SIMPLE_FONT);
-            swprintf(buf, L" %s: %6.4f ", wasabiApiLangString(IDS_PF_MONITOR), (float)(*m_pState->var_pf_monitor));
+            swprintf(buf, L" %s: %6.4f", wasabiApiLangString(IDS_PF_MONITOR), (float)(*m_pState->var_pf_monitor));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-            swprintf(buf, L"%s %s %6.4f ", ((double)mysound.imm_rel[0] >= 1.3) ? L"+" : L" ", L"bass:", (float)(*m_pState->var_pf_bass));
+            swprintf(buf, L"%s %s %6.4f", ((double)mysound.imm_rel[0] >= 1.3) ? L"+" : L" ", L"bass:", (float)(*m_pState->var_pf_bass));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-            swprintf(buf, L"%s %s %6.4f ", ((double)mysound.imm_rel[1] >= 1.3) ? L"+" : L" ", L"mid:", (float)(*m_pState->var_pf_mid));
+            swprintf(buf, L"%s %s %6.4f", ((double)mysound.imm_rel[1] >= 1.3) ? L"+" : L" ", L"mid:", (float)(*m_pState->var_pf_mid));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-            swprintf(buf, L"%s %s %6.4f ", ((double)mysound.imm_rel[2] >= 1.3) ? L"+" : L" ", L"treb:", (float)(*m_pState->var_pf_treb));
-            MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
-            swprintf(buf, L"");
+            swprintf(buf, L"%s %s %6.4f", ((double)mysound.imm_rel[2] >= 1.3) ? L"+" : L" ", L"treb:", (float)(*m_pState->var_pf_treb));
             MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
         }
         if (m_bShowDebugInfo == 2) // Page 2
@@ -4856,15 +5205,13 @@ void CPlugin::MyRenderUI(
             for (int i = 0; i < NUM_Q_VAR; i++)
             {
                 SelectFont(SIMPLE_FONT);
-                swprintf(buf, L"q%d: %6.4f ", i + 1, (float)(*m_pState->var_pf_q[i]));
+                swprintf(buf, L"q%d: %6.4f", i + 1, (float)(*m_pState->var_pf_q[i]));
                 MyTextOut_Shadow(buf, MTO_UPPER_RIGHT);
             }
         }
         if (m_bShowDebugInfo) //If show debug info is enabled, it entirely shows it, else it's hidden.
         {
-            swprintf(buf, L"BeatDrop v1.5 Developer Preview 1");
-            MyTextOut_Shadow(buf, MTO_LOWER_RIGHT);
-            swprintf(buf, L"%s %d ", L"Time (s):", (int)(GetTime()));
+            swprintf(buf, L"%s %d", L"Time (s):", (int)(GetTime()));
             MyTextOut_Shadow(buf, MTO_LOWER_RIGHT);
         }
         // NOTE: custom timed msg comes at the end!!
@@ -4884,47 +5231,37 @@ void CPlugin::MyRenderUI(
         wchar_t buf2[512] = {0};
         wchar_t buf3[512+1] = {0}; // add two extra spaces to end, so italicized fonts don't get clipped
 
+        // Render time first so the title is stacked immediately above it.
+        #if SUPPORT_SMTC
+        if (m_nSongTimeDisplayMode != 0)
+        {
+            wchar_t songTime[128] = {0};
+            SelectFont(DECORATIVE_FONT);
+            if (GetSongTimeText(songTime, _countof(songTime)))
+                MyTextOut_Shadow(songTime, MTO_LOWER_LEFT);
+        }
+        #endif
+
         // render song title in lower-left corner:
         #if SUPPORT_SMTC
         if (m_bShowSongTitle)
         {
-			wchar_t buf4[512] = {0};
+            wchar_t buf4[512] = {0};
             SelectFont(DECORATIVE_FONT);
-            GetSongTitle(buf4, sizeof(buf4)); // defined in utility.h/cpp
+            GetSongTitle(buf4, sizeof(buf4));
             MyTextOut_Shadow(buf4, MTO_LOWER_LEFT);
         }
         #endif
-
-        // render song time & len above that:
-        if (m_bShowSongTime || m_bShowSongLen)
-        {
-            /*if (playbackService) {
-                FormatSongTime(playbackService->GetPosition(), buf); // defined in utility.h/cpp
-                FormatSongTime(playbackService->GetDuration(), buf2); // defined in utility.h/cpp
-                if (m_bShowSongTime && m_bShowSongLen)
-                {
-                    // only show playing position and track length if it is playing (buffer is valid)
-                    if (buf[0])
-                        swprintf(buf3, L"%s / %s ", buf, buf2);
-                    else
-                        lstrcpynW(buf3, buf2, 512);
-                }
-                else if (m_bShowSongTime)
-                    lstrcpynW(buf3, buf, 512);
-                else
-                    lstrcpynW(buf3, buf2, 512);
-
-                SelectFont(DECORATIVE_FONT);
-                MyTextOut_Shadow(buf3, MTO_LOWER_LEFT);
-            }*/
-        }
     }
 
     // 4. render text in upper-left corner
     {
-		wchar_t buf[64000] = {0};  // must fit the longest strings (code strings are 32768 chars)
-								   // AND leave extra space for &->&&, and [,[,& insertion
-		char bufA[64000] = {0};
+		// Escape expansion and cursor markers need more than the raw code size.
+        // Keep these large display buffers off the render thread's stack.
+        std::vector<wchar_t> displayWide(MAX_SHADER_EDIT_SCRATCH_LEN, 0);
+        std::vector<char> displayNarrow(MAX_SHADER_EDIT_SCRATCH_LEN, 0);
+        wchar_t* buf = displayWide.data();
+        char* bufA = displayNarrow.data();
 
         SelectFont(SIMPLE_FONT);
 
@@ -5419,10 +5756,9 @@ void CPlugin::MyRenderUI(
 							case 4: ApplyFlags = STATE_COMP; break;
                         }
 
-                        wchar_t szFile[MAX_PATH];
-                        swprintf(szFile, L"%s%s", m_szPresetDir, m_presets[m_nMashPreset[mash]].szFilename.c_str());
+                        std::wstring szFile = std::wstring(m_szPresetDir) + m_presets[m_nMashPreset[mash]].szFilename;
 
-                        m_pState->Import(szFile, GetTime(), m_pState, ApplyFlags);
+                        m_pState->Import(szFile.c_str(), GetTime(), m_pState, ApplyFlags);
 
                         if (ApplyFlags & STATE_WARP)
                             SafeRelease( m_shaders.warp.ptr );
@@ -5778,15 +6114,16 @@ void CPlugin::MyRenderUI(
 		// e) custom timed message:
 		if (!m_bWarningsDisabled2)
 		{
-			wchar_t buf[512] = {0};
+            wchar_t buf[512] = {0};
             SelectFont(SIMPLE_FONT);
             float t = GetTime();
+            std::lock_guard<std::mutex> lock(m_errorsMutex);
             int N = m_errors.size();
             for (int i=0; i<N; i++)
             {
                 if (t >= m_errors[i].birthTime && t < m_errors[i].expireTime)
                 {
-			        swprintf(buf, L"%s ", m_errors[i].msg.c_str());
+			        lstrcpynW(buf, m_errors[i].msg.c_str(), _countof(buf));
                     float age_rel = (t - m_errors[i].birthTime) / (m_errors[i].expireTime - m_errors[i].birthTime);
                     DWORD cr = (DWORD)(200 - 199*powf(age_rel,4));
                     DWORD cg = 0;//(DWORD)(136 - 135*powf(age_rel,1));
@@ -5834,104 +6171,53 @@ void ToggleTransparency(HWND hwnd)
 
     LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
 
-    // Enable the layered window attribute without affecting other styles
-    exStyle |= WS_EX_LAYERED;
-    SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
-
     SetWindowPos(hwnd, NULL, 0, 0, 0, 0, SWP_DRAWFRAME | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED); // Redraws the window to fix the transparency mode issue for Windows 7, 8 and 8.1.
-    if (TranspaMode)
+    if (g_plugin.TranspaMode)
     {
         if (dwmEnabled)
             DwmEnableComposition(DWM_EC_DISABLECOMPOSITION); //Disable Aero Composition
-        //SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
+        // Enable the layered window attribute without affecting other styles
+        exStyle |= WS_EX_LAYERED;
+        SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
         SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, LWA_COLORKEY);
-        OpacityControl = 10; //Reverts the window opacity back to 100%
+        g_plugin.OpacityControl = 100; //Transparency starts from a fully opaque alpha state.
         DragAcceptFiles(hwnd, TRUE);
     }
     else
     {
         if (!dwmEnabled)
             DwmEnableComposition(DWM_EC_ENABLECOMPOSITION); //Reenable Aero Composition
-        //SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, LWA_ALPHA);
+        // Disable layered style
+        exStyle &= ~WS_EX_LAYERED;
+        SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
         DragAcceptFiles(hwnd, TRUE);
     }
 }
 
 void ToggleWindowOpacity(HWND hwnd)
 {
-    RECT rect;
-    GetWindowRect(hwnd, &rect);
-    int x = rect.left;
-    int y = rect.top;
-    int width = rect.right - rect.left;
-    int height = rect.bottom - rect.top;
+    if (!hwnd || !IsWindow(hwnd))
+        return;
+    if (g_plugin.OpacityControl < 5)
+        g_plugin.OpacityControl = 5;
+    else if (g_plugin.OpacityControl > 100)
+        g_plugin.OpacityControl = 100;
 
-    if (OpacityControl >= 11)
-        OpacityControl = 10;
-    else if (OpacityControl == 10)
+    if (g_plugin.TranspaMode)
     {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 255, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
+        // Leave color-key transparency cleanly before switching to alpha.
+        g_plugin.TranspaMode = false;
+        ToggleTransparency(hwnd);
     }
-    else if (OpacityControl == 9)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 230, LWA_ALPHA);
-        TranspaMode = false; //Automatically turns off the transparency mode when you are toggling the window opacity!
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (OpacityControl == 8)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 205, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (OpacityControl == 7)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 179, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (OpacityControl == 6)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 154, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (OpacityControl == 5)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 128, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (OpacityControl == 4)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 102, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (OpacityControl == 3)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 77, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (OpacityControl == 2)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 51, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (OpacityControl == 1)
-    {
-        SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_LAYERED);
-        SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), 26, LWA_ALPHA);
-        DragAcceptFiles(hwnd, TRUE);
-    }
-    else if (OpacityControl <= 0)
-        OpacityControl = 1;
+    g_plugin.TranspaMode = false;
+    LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+    SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED);
+    SetWindowPos(hwnd, NULL, 0, 0, 0, 0,
+        SWP_DRAWFRAME | SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
+    const BYTE alpha = static_cast<BYTE>((g_plugin.OpacityControl * 255 + 50) / 100);
+    SetLayeredWindowAttributes(hwnd, RGB(0, 0, 0), alpha, LWA_ALPHA);
+    DragAcceptFiles(hwnd, TRUE);
+    return;
 }
 
 void LoadPresetFilesViaDragAndDrop(WPARAM wParam)
@@ -6292,6 +6578,11 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 		}
 		else	// normal handling of a simple key (all non-virtual-key hotkeys end up here)
 		{
+            // One webcam mode per physical press, even if W is held down.
+            // Text editing and preset-list searches retain their key repeats.
+            if (m_UI_mode != UI_LOAD && (wParam == 'w' || wParam == 'W') &&
+                (lParam & (static_cast<LPARAM>(1) << 30)))
+                return 0;
 			if (HandleRegularKey(wParam)==0)
                 return 0;
 		}
@@ -6335,13 +6626,27 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
          break;
 
      case WM_LBUTTONUP:
-         m_mouseDown = 0;
+         m_mouseDown = (wParam & (MK_LBUTTON | MK_RBUTTON)) != 0;
          break;
      case WM_RBUTTONUP:
+         m_mouseDown = (wParam & (MK_LBUTTON | MK_RBUTTON)) != 0;
+         break;
+     case WM_CANCELMODE:
+     case WM_CAPTURECHANGED:
+         // A modal menu or another window can take capture before the matching
+         // button-up arrives. Do not leave preset mouse state stuck in that case.
          m_mouseDown = 0;
          break;
 
     case WM_KEYDOWN:    // virtual-key codes
+        if (wParam == 'H' && m_UI_mode == UI_REGULAR &&
+            (GetKeyState(VK_CONTROL) & 0x8000) && !(GetKeyState(VK_MENU) & 0x8000) &&
+            !(GetKeyState(VK_SHIFT) & 0x8000))
+        {
+            if (!(lParam & (static_cast<LPARAM>(1) << 30))) ToggleHdr();
+            return 0;
+        }
+
 
         // Note that some keys will never reach this point, since they are
         //   intercepted by the plugin shell (see PluginShellWindowProc(),
@@ -6349,6 +6654,17 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
         // For a complete list of virtual-key codes, look up the keyphrase
         //   "virtual-key codes [win32]" in the msdn help.
         nRepeat = LOWORD(lParam);
+
+        if (bCtrlHeldDown && (wParam == 'L' || wParam == 'l'))
+        {
+            ToggleLyrics();
+            return 0;
+        }
+        if (bCtrlHeldDown && bShiftHeldDown && (wParam == 'E' || wParam == 'e'))
+        {
+            OpenLyricsEditor(hWnd);
+            return 0;
+        }
 
 		// SPOUT DEBUG
 		// Special case for F1 help display in pluginshell
@@ -6458,16 +6774,19 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
             #endif
             return 0; // we processed (or absorbed) the key
         case VK_F12:
-            TranspaMode = !TranspaMode;
-        if (TranspaMode)
+            if (!m_bDesktopMode) // Prevent transparency mode on desktop mode.
             {
-                ToggleTransparency(hWnd);
-                AddNotif(L"Transparency Mode ON");
-            }
-        else
-            {
-                ToggleTransparency(hWnd);
-                AddNotif(L"Transparency Mode OFF");
+                g_plugin.TranspaMode = !g_plugin.TranspaMode;
+                if (g_plugin.TranspaMode)
+                {
+                    ToggleTransparency(hWnd);
+                    AddNotif(L"Transparency Mode ON");
+                }
+                else
+                {
+                    ToggleTransparency(hWnd);
+                    AddNotif(L"Transparency Mode OFF");
+                }
             }
         return 0; // we processed (or absorbed) the key
         //case VK_F2:
@@ -7094,7 +7413,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 				// Don't close if esc pressed when vj window has focus
 				if (GetFocus() == GetPluginWindow()) {
 					// SPOUT - MessageBox to make sure
-					if (MessageBoxA(GetPluginWindow(), "Are you sure you want to exit BeatDrop?", "BeatDrop Music Visualizer", MB_YESNO | MB_TOPMOST) == IDYES) {
+					if (MessageBoxW(GetPluginWindow(), L"Are you sure you want to exit BeatDrop?", L"BeatDrop Music Visualizer", MB_YESNO | MB_TOPMOST) == IDYES) {
 						PostMessage(hWnd, WM_CLOSE, 0, 0);
 					}
 					return 0;
@@ -7129,68 +7448,74 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 			}
             else if (bShiftHeldDown)
             {
-                OpacityControl++;
-                if (OpacityControl == 10)
+                if (g_plugin.OpacityControl < 100)
+                    ++g_plugin.OpacityControl;
+#if 0
+                if (g_plugin.OpacityControl == 10)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 100%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 9)
+                else if (g_plugin.OpacityControl == 9)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 90%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 8)
+                else if (g_plugin.OpacityControl == 8)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 80%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 7)
+                else if (g_plugin.OpacityControl == 7)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 70%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 6)
+                else if (g_plugin.OpacityControl == 6)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 60%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 5)
+                else if (g_plugin.OpacityControl == 5)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 50%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 4)
+                else if (g_plugin.OpacityControl == 4)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 40%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 3)
+                else if (g_plugin.OpacityControl == 3)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 30%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 2)
+                else if (g_plugin.OpacityControl == 2)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 20%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 1)
+                else if (g_plugin.OpacityControl == 1)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 10%%", tmp, 64);
                     AddNotif(buf);
                 }
+#endif
                 ToggleWindowOpacity(hWnd);
+                wchar_t opacityMessage[64];
+                swprintf_s(opacityMessage, L"Window Opacity: %d%%", g_plugin.OpacityControl);
+                AddNotif(opacityMessage);
             }
             else if (bCtrlHeldDown)
             {
@@ -7231,68 +7556,74 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 			}
             else if (bShiftHeldDown)
             {
-                OpacityControl--;
-                if (OpacityControl == 10)
+                if (g_plugin.OpacityControl > 5)
+                    --g_plugin.OpacityControl;
+#if 0
+                if (g_plugin.OpacityControl == 10)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 100%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 9)
+                else if (g_plugin.OpacityControl == 9)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 90%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 8)
+                else if (g_plugin.OpacityControl == 8)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 80%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 7)
+                else if (g_plugin.OpacityControl == 7)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 70%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 6)
+                else if (g_plugin.OpacityControl == 6)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 60%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 5)
+                else if (g_plugin.OpacityControl == 5)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 50%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 4)
+                else if (g_plugin.OpacityControl == 4)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 40%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 3)
+                else if (g_plugin.OpacityControl == 3)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 30%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 2)
+                else if (g_plugin.OpacityControl == 2)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 20%%", tmp, 64);
                     AddNotif(buf);
                 }
-                else if (OpacityControl == 1)
+                else if (g_plugin.OpacityControl == 1)
                 {
                     wchar_t buf[1024], tmp[64];
                     swprintf(buf, L"Window Opacity: 10%%", tmp, 64);
                     AddNotif(buf);
                 }
+#endif
                 ToggleWindowOpacity(hWnd);
+                wchar_t opacityMessage[64];
+                swprintf_s(opacityMessage, L"Window Opacity: %d%%", g_plugin.OpacityControl);
+                AddNotif(opacityMessage);
             }
             else if (bCtrlHeldDown)
             {
@@ -7567,13 +7898,12 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 					m_nCurrentPreset = m_nPresetListCurPos;
 
 					// first take the filename and prepend the path.  (already has extension)
-					wchar_t s[MAX_PATH];
-					lstrcpyW(s, GetPresetDir());	// note: m_szPresetDir always ends with '\'
-					lstrcatW(s, m_presets[m_nCurrentPreset].szFilename.c_str());
+					std::wstring s;
+					s = std::wstring(GetPresetDir()) + m_presets[m_nCurrentPreset].szFilename;
 
 					// now load (and blend to) the new preset
                     m_presetHistoryPos = (m_presetHistoryPos+1) % PRESET_HIST_LEN;
-                    LoadPreset(s, (wParam==VK_SPACE) ? m_fBlendTimeUser : 0);
+                    LoadPreset(s.c_str(), (wParam==VK_SPACE) ? m_fBlendTimeUser : 0);
 				}
 				return 0; // we processed (or absorbed) the key
 			}
@@ -7623,11 +7953,14 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
 		break;
 
         case 'Q':
-            m_nAudioSensitivity = 1.0f;
-            g_fAudioSensitivity = m_nAudioSensitivity;
-            wchar_t buf[128];
-            swprintf(buf, 128, L"Audio Sensitivity: Reset to %.2f", m_nAudioSensitivity);
-            AddNotif(buf);
+            if (m_UI_mode == UI_REGULAR)
+            {
+                m_nAudioSensitivity = 1.0f;
+                g_fAudioSensitivity = m_nAudioSensitivity;
+                wchar_t buf[128];
+                swprintf(buf, 128, L"Audio Sensitivity: Reset to %.2f", m_nAudioSensitivity);
+                AddNotif(buf);
+            }
         break;
 
 		//case 'T':
@@ -7767,10 +8100,17 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
 	case 'w':
 		//m_pState->m_nWaveMode++;
 		//if (m_pState->m_nWaveMode >= NUM_WAVES) m_pState->m_nWaveMode = 0;
-		return 0; // we processed (or absorbed) the key
+		//return 0; // we processed (or absorbed) the key
 	case 'W':
 		//m_pState->m_nWaveMode--;
 		//if (m_pState->m_nWaveMode < 0) m_pState->m_nWaveMode = NUM_WAVES - 1;
+		if ((GetKeyState(VK_CONTROL) & 0x8000) || (GetKeyState(VK_MENU) & 0x8000))
+			return 1; // Let the shell handle Ctrl+W / Ctrl+Shift+W shortcuts.
+        {
+            std::wstring webcamStatus = (GetKeyState(VK_SHIFT) & 0x8000)
+                ? m_webcam.NextCamera() : m_webcam.Cycle(GetDevice());
+            if (!webcamStatus.empty()) AddNotif(webcamStatus.data());
+        }
 		return 0; // we processed (or absorbed) the key
 	case 'e':
 		//m_pState->m_fWaveAlpha -= 0.1f;
@@ -7812,8 +8152,9 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
 		return 0; // we processed (or absorbed) the key
 	
 	case 'u':	//m_pState->m_fWarpScale /= 1.1f;			
-        return 0; // we processed (or absorbed) the key
+        //return 0; // we processed (or absorbed) the key
 	case 'U':	//m_pState->m_fWarpScale *= 1.1f;			
+        ToggleBeatDetectionFreeze();
         return 0; // we processed (or absorbed) the key
 	case 'b':	//m_pState->m_fWarpAnimSpeed /= 1.1f;		
         return 0; // we processed (or absorbed) the key
@@ -7824,21 +8165,20 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
 	case 'T':
 		LaunchSongTitleAnim();
 		return 0; // we processed (or absorbed) the key
-	case 'o':	//m_pState->m_fWarpAmount /= 1.1f;	
-        return 0; // we processed (or absorbed) the key
-	case 'O':	//m_pState->m_fWarpAmount *= 1.1f;	
-        return 0; // we processed (or absorbed) the key
+	case 'o':
+	case 'O':
+		ToggleAutoLockPresetWhenNoMusic();
+		return 0; // we processed (or absorbed) the key
 
     case '!':
         // randomize warp shader
         {
             bool bWarpLock = m_bWarpShaderLock;
-            wchar_t szOldPreset[MAX_PATH];
-		    lstrcpyW(szOldPreset, m_szCurrentPresetFile);
+            std::wstring szOldPreset = m_szCurrentPresetFile;
             m_bWarpShaderLock = false;
             LoadRandomPreset(0.0f);
             m_bWarpShaderLock = true;
-            LoadPreset(szOldPreset, 0.0f);
+            LoadPreset(szOldPreset.c_str(), 0.0f);
             m_bWarpShaderLock = bWarpLock;
         }
         break;
@@ -7846,12 +8186,11 @@ int CPlugin::HandleRegularKey(WPARAM wParam)
         // randomize comp shader
         {
             bool bCompLock = m_bCompShaderLock;
-            wchar_t szOldPreset[MAX_PATH];
-		    lstrcpyW(szOldPreset, m_szCurrentPresetFile);
+            std::wstring szOldPreset = m_szCurrentPresetFile;
             m_bCompShaderLock = false;
             LoadRandomPreset(0.0f);
             m_bCompShaderLock = true;
-            LoadPreset(szOldPreset, 0.0f);
+            LoadPreset(szOldPreset.c_str(), 0.0f);
             m_bCompShaderLock = bCompLock;
         }
         break;
@@ -8438,11 +8777,9 @@ void CPlugin::PrevPreset(float fBlendTime)
         if (m_nCurrentPreset >= m_nPresets) // just in case
 			m_nCurrentPreset = m_nDirs;
 
-        wchar_t szFile[MAX_PATH];
-        lstrcpyW(szFile, m_szPresetDir);	// note: m_szPresetDir always ends with '\'
-        lstrcatW(szFile, m_presets[m_nCurrentPreset].szFilename.c_str());
+        std::wstring szFile = std::wstring(m_szPresetDir) + m_presets[m_nCurrentPreset].szFilename;
 
-    	LoadPreset(szFile, fBlendTime);
+    	LoadPreset(szFile.c_str(), fBlendTime);
     }
     else
     {
@@ -8570,14 +8907,12 @@ void CPlugin::LoadRandomPreset(float fBlendTime)
 
 	// m_pPresetAddr[m_nCurrentPreset] points to the preset file to load (w/o the path);
 	// first prepend the path, then load section [preset00] within that file
-	wchar_t szFile[MAX_PATH] = {0};
-	lstrcpyW(szFile, m_szPresetDir);	// note: m_szPresetDir always ends with '\'
-	lstrcatW(szFile, m_presets[m_nCurrentPreset].szFilename.c_str());
+	std::wstring szFile = std::wstring(m_szPresetDir) + m_presets[m_nCurrentPreset].szFilename;
 
     if (!bHistoryEmpty)
         m_presetHistoryPos = (m_presetHistoryPos+1) % PRESET_HIST_LEN;
 
-	LoadPreset(szFile, fBlendTime);
+	LoadPreset(szFile.c_str(), fBlendTime);
 }
 
 void CPlugin::RandomizeBlendPattern()
@@ -9770,13 +10105,27 @@ void CPlugin::CompilePresetShadersToFile(wchar_t* sPresetFile) {
 
 void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
 {
+    if (!szPresetFilename || !szPresetFilename[0])
+        return;
+
+    // Use the extended Windows path form for presets beyond MAX_PATH.
+    std::wstring presetPath(szPresetFilename);
+    if (presetPath.size() >= MAX_PATH && presetPath.rfind(L"\\\\?\\", 0) != 0)
+    {
+        if (presetPath.rfind(L"\\\\", 0) == 0)
+            presetPath = L"\\\\?\\UNC\\" + presetPath.substr(2);
+        else
+            presetPath = L"\\\\?\\" + presetPath;
+    }
+    const wchar_t *loadPresetFilename = presetPath.c_str();
+
     // clear old error msg...
     if (m_nFramesSinceResize > 4)
     	ClearErrors(ERR_PRESET);
 
     // make sure preset still exists.  (might not if they are using the "back"/fwd buttons
     //  in RANDOM preset order and a file was renamed or deleted!)
-    if (GetFileAttributesW(szPresetFilename) == 0xFFFFFFFF)
+    if (GetFileAttributesW(loadPresetFilename) == 0xFFFFFFFF)
     {
         const wchar_t *p = wcsrchr(szPresetFilename, L'\\');
         p = (p) ? p+1 : szPresetFilename;
@@ -9792,7 +10141,7 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
         if ( m_presetHistoryFwdFence == m_presetHistoryPos )
         {
             // we're at the forward frontier; add to history
-            m_presetHistory[m_presetHistoryPos] = szPresetFilename;
+            m_presetHistory[m_presetHistoryPos] = loadPresetFilename;
             m_presetHistoryFwdFence = (m_presetHistoryFwdFence+1) % PRESET_HIST_LEN;
 
             // don't let the two fences touch
@@ -9813,8 +10162,8 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
     if (fBlendTime == 0)
     {
         // do it all NOW!
-	    if (szPresetFilename != m_szCurrentPresetFile) //[sic]
-		    lstrcpyW(m_szCurrentPresetFile, szPresetFilename);
+	    if (wcscmp(loadPresetFilename, m_szCurrentPresetFile) != 0) //[sic]
+		    StringCchCopyW(m_szCurrentPresetFile, _countof(m_szCurrentPresetFile), loadPresetFilename);
 
 	    CState *temp = m_pState;
 	    m_pState = m_pOldState;
@@ -9824,13 +10173,12 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
         ApplyFlags ^= (m_bWarpShaderLock ? STATE_WARP : 0);
         ApplyFlags ^= (m_bCompShaderLock ? STATE_COMP : 0);
 
-        m_pState->Import(m_szCurrentPresetFile, GetTime(), m_pOldState, ApplyFlags);
+        m_pState->Import(loadPresetFilename, GetTime(), m_pOldState, ApplyFlags);
 
-	    if (fBlendTime >= 0.001f)
-        {
-            RandomizeBlendPattern();
-		    m_pState->StartBlendFrom(m_pOldState, GetTime(), fBlendTime);
-        }
+        RandomizeBlendPattern();
+
+	    //if (fBlendTime >= 0.001f)
+		m_pState->StartBlendFrom(m_pOldState, GetTime(), fBlendTime);
 
 	    m_fPresetStartTime = GetTime();
 	    m_fNextPresetTime = -1.0f;		// flags UpdateTime() to recompute this
@@ -9844,6 +10192,8 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
         ZeroMemory(&m_shaders, sizeof(PShaderSet));
 
         LoadShaders(&m_shaders, m_pState, false, false);
+        m_OldShaders.comp.Clear();
+        m_OldShaders.warp.Clear();
         NumTotalPresetsLoaded++;
         OnFinishedLoadingPreset();
     }
@@ -9858,12 +10208,15 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
         ApplyFlags ^= (m_bWarpShaderLock ? STATE_WARP : 0);
         ApplyFlags ^= (m_bCompShaderLock ? STATE_COMP : 0);
 
-        m_pNewState->Import(szPresetFilename, GetTime(), m_pOldState, ApplyFlags);
+        // Import locked/omitted sections from the preset currently on screen.
+        // m_pOldState is the spare state here and may belong to an earlier
+        // preset, which makes soft cuts inherit stale code and parameters.
+        m_pNewState->Import(loadPresetFilename, GetTime(), m_pState, ApplyFlags);
 
         m_nLoadingPreset = 1;   // this will cause LoadPresetTick() to get called over the next few frames...
 
         m_fLoadingPresetBlendTime = fBlendTime;
-        lstrcpyW(m_szLoadingPreset, szPresetFilename);
+        StringCchCopyW(m_szLoadingPreset, _countof(m_szLoadingPreset), loadPresetFilename);
         NumTotalPresetsLoaded++;
     }
 }
@@ -9900,10 +10253,11 @@ void CPlugin::LoadPresetTick()
 	    m_pState = m_pNewState;
 	    m_pNewState = temp;
 
-        RandomizeBlendPattern();
-
-	    //if (fBlendTime >= 0.001f)
+        if (m_fLoadingPresetBlendTime >= 0.001f)
+        {
+            RandomizeBlendPattern();
 		    m_pState->StartBlendFrom(m_pOldState, GetTime(), m_fLoadingPresetBlendTime);
+        }
 
 	    m_fPresetStartTime = GetTime();
 	    m_fNextPresetTime = -1.0f;		// flags UpdateTime() to recompute this
@@ -9984,11 +10338,60 @@ char* NextLine(char* p)
     return s;
 }
 
+static std::wstring GetExtendedPath(const std::wstring& path)
+{
+    if (path.size() < MAX_PATH || path.compare(0, 4, L"\\\\?\\") == 0)
+        return path;
+
+    if (path.size() >= 2 && path[0] == L'\\' && path[1] == L'\\')
+        return L"\\\\?\\UNC\\" + path.substr(2);
+
+    return L"\\\\?\\" + path;
+}
+
+static FILE* OpenPresetFileForRead(const std::wstring& path)
+{
+    FILE* f = _wfopen(path.c_str(), L"r");
+    if (!f && path.size() >= MAX_PATH)
+    {
+        const std::wstring extendedPath = GetExtendedPath(path);
+        f = _wfopen(extendedPath.c_str(), L"r");
+    }
+    return f;
+}
+
+static bool ReadPresetRatingFromFile(FILE* f, float* rating)
+{
+    if (!f || !rating || fseek(f, 0, SEEK_SET) != 0)
+        return false;
+
+    char line[4096];
+    bool inPreset00 = false;
+    while (fgets(line, sizeof(line), f))
+    {
+        char* p = line;
+        while (*p && isspace(static_cast<unsigned char>(*p)))
+            p++;
+
+        if (*p == '[')
+        {
+            inPreset00 = (_strnicmp(p, "[preset00]", 10) == 0);
+            continue;
+        }
+
+        if (inPreset00 && _strnicmp(p, "fRating=", 8) == 0)
+            return _sscanf_l(p + 8, "%f", g_use_C_locale, rating) == 1;
+    }
+
+    return false;
+}
+
 static unsigned int WINAPI __UpdatePresetList(void* lpVoid)
 {
     // NOTE - this is run in a separate thread!!!
 
-    DWORD flags = (DWORD)lpVoid;
+    ULONG_PTR flagsPtr = reinterpret_cast<ULONG_PTR>(lpVoid);
+    DWORD flags = static_cast<DWORD>(flagsPtr);
     bool bForce = (flags & 1) ? true : false;
     bool bTryReselectCurrentPreset = (flags & 2) ? true : false;
 
@@ -10061,7 +10464,6 @@ retry:
         return 0;
     }
 
-    int  nMaxPSVersion = g_plugin.m_nMaxPSVersion;
     wchar_t szPresetDir[MAX_PATH];
     lstrcpyW(szPresetDir, g_plugin.m_szPresetDir);
 
@@ -10099,17 +10501,16 @@ retry:
 			if (len < 5 || wcsicmp(fd.cFileName + len - 5, L".milk") != 0)
 				bSkip = true;
 
-            // if it is .milk, make sure we know how to run its pixel shaders -
-            // otherwise we don't want to show it in the preset list!
+            // If it is .milk, read its header and rating before adding it to
+            // the list. Renderer capability is validated when the preset loads.
             if (!bSkip)
             {
                 // If the first line of the file is not "MILKDROP_PRESET_VERSION XXX",
                 //   then it's a MilkDrop 1 era preset, so it is definitely runnable. (no shaders)
                 // Otherwise, check for the value "PSVERSION".  It will be 0, 2, or 3.
                 //   If missing, assume it is 2.
-                wchar_t szFullPath[MAX_PATH];
-                swprintf(szFullPath, L"%s%s", szPresetDir, fd.cFileName);
-                FILE* f = _wfopen(szFullPath, L"r");
+                std::wstring szFullPath = std::wstring(szPresetDir) + fd.cFileName;
+                FILE* f = OpenPresetFileForRead(szFullPath);
                 if (!f)
                     bSkip = true;
                 else {
@@ -10142,13 +10543,14 @@ retry:
                         if (p && !strncmp(p, "PSVERSION", 9))
                         {
                             sscanf(&p[10], "%d", &ps_version);
-                            if (ps_version > nMaxPSVersion)
-                                bSkip = true;
-                            else
-                            {
-                                p = NextLine(p);//fgets(p, sizeof(p)-1, f);
-                                bScanForPreset00AndRating = true;
-                            }
+                            // Keep reading the shader version here, but do not use the
+                            // renderer's capability as a directory-listing filter. The
+                            // x86 and x64 builds can report different capabilities even
+                            // though they scan the same preset directory. Loading the
+                            // selected preset still performs the normal shader validation.
+                            (void)ps_version;
+                            p = NextLine(p);//fgets(p, sizeof(p)-1, f);
+                            bScanForPreset00AndRating = true;
                         }
                     }
                     else
@@ -10175,10 +10577,20 @@ retry:
                         p = NextLine(p);
                     }
 
-                    fclose(f);
-
                     if (!bRatingKnown)
-		                fRating = GetPrivateProfileFloatW(L"preset00", L"fRating", 3.0f, szFullPath);
+                    {
+                        if (szFullPath.size() >= MAX_PATH)
+                        {
+                            if (!ReadPresetRatingFromFile(f, &fRating))
+                                fRating = 3.0f;
+                        }
+                        else
+                        {
+                            std::wstring profilePath = szFullPath;
+		                    fRating = GetPrivateProfileFloatW(L"preset00", L"fRating", 3.0f, &profilePath[0]);
+                        }
+                    }
+                    fclose(f);
                     fRating = max(0.0f, min(5.0f, fRating));
                 }
             }
@@ -10330,7 +10742,7 @@ void CPlugin::UpdatePresetList(bool bBackground, bool bForce, bool bTryReselectC
     DWORD flags = (bForce ? 1 : 0) | (bTryReselectCurrentPreset ? 2 : 0);
     g_bThreadShouldQuit = false;
     g_bThreadAlive = true;
-    g_hThread = (HANDLE)_beginthreadex(NULL,0,__UpdatePresetList,(void*)flags,0,0);
+    g_hThread = (HANDLE)_beginthreadex(NULL, 0, __UpdatePresetList, reinterpret_cast<void*>(static_cast<ULONG_PTR>(flags)), 0, 0); // Safe: ULONG_PTR → void*
 
     if (!bBackground)
     {
@@ -10382,72 +10794,21 @@ void CPlugin::UpdatePresetList(bool bBackground, bool bForce, bool bTryReselectC
 
 void CPlugin::MergeSortPresets(int left, int right)
 {
-	// note: left..right range is inclusive
-	int nItems = right-left+1;
+	// Keep directories (the entries prefixed with '*') before files while
+	// sorting the whole list in O(n log n). The old in-place merge moved every
+	// item one position at a time and could become quadratic for large packs.
+	if (left < 0 || right <= left)
+		return;
 
-	if (nItems > 2)
-	{
-		// recurse to sort 2 halves (but don't actually recurse on a half if it only has 1 element)
-		int mid = (left+right)/2;
-		/*if (mid   != left) */ MergeSortPresets(left, mid);
-		/*if (mid+1 != right)*/ MergeSortPresets(mid+1, right);
-
-		// then merge results
-		int a = left;
-		int b = mid + 1;
-		while (a <= mid && b <= right)
+	std::stable_sort(m_presets.begin() + left, m_presets.begin() + right + 1,
+		[](const PresetInfo& a, const PresetInfo& b)
 		{
-			bool bSwap;
-
-			// merge the sorted arrays; give preference to strings that start with a '*' character
-			int nSpecial = 0;
-			if (m_presets[a].szFilename.c_str()[0] == '*') nSpecial++;
-			if (m_presets[b].szFilename.c_str()[0] == '*') nSpecial++;
-
-			if (nSpecial == 1)
-			{
-				bSwap = (m_presets[b].szFilename.c_str()[0] == '*');
-			}
-			else
-			{
-				bSwap = (mystrcmpiW(m_presets[a].szFilename.c_str(), m_presets[b].szFilename.c_str()) > 0);
-			}
-
-			if (bSwap)
-			{
-				PresetInfo temp = m_presets[b];
-				for (int k=b; k>a; k--)
-					m_presets[k] = m_presets[k-1];
-				m_presets[a] = temp;
-				mid++;
-				b++;
-			}
-			a++;
-		}
-	}
-	else if (nItems == 2)
-	{
-		// sort 2 items; give preference to 'special' strings that start with a '*' character
-		int nSpecial = 0;
-		if (m_presets[left].szFilename.c_str()[0] == '*') nSpecial++;
-		if (m_presets[right].szFilename.c_str()[0] == '*') nSpecial++;
-
-		if (nSpecial == 1)
-		{
-			if (m_presets[right].szFilename.c_str()[0] == '*')
-			{
-                PresetInfo temp = m_presets[left];
-				m_presets[left] = m_presets[right];
-				m_presets[right] = temp;
-			}
-		}
-		else if (mystrcmpiW(m_presets[left].szFilename.c_str(), m_presets[right].szFilename.c_str()) > 0)
-		{
-            PresetInfo temp = m_presets[left];
-			m_presets[left] = m_presets[right];
-			m_presets[right] = temp;
-		}
-	}
+			const bool aIsDirectory = !a.szFilename.empty() && a.szFilename[0] == L'*';
+			const bool bIsDirectory = !b.szFilename.empty() && b.szFilename[0] == L'*';
+			if (aIsDirectory != bIsDirectory)
+				return aIsDirectory;
+			return mystrcmpiW(a.szFilename.c_str(), b.szFilename.c_str()) < 0;
+		});
 }
 
 void CPlugin::WaitString_NukeSelection()
@@ -10507,7 +10868,8 @@ void CPlugin::WaitString_Copy()
 				m_waitstring.szClipboard[i] = *(ptr + start + i);
 			m_waitstring.szClipboard[chars_to_copy] = 0;
 
-			char tmp[64000];
+			std::vector<char> tmpStorage(MAX_SHADER_EDIT_SCRATCH_LEN, 0);
+            char* tmp = tmpStorage.data();
 			ConvertLFCToCRsA(m_waitstring.szClipboard, tmp);
 			copyStringToClipboardA(tmp);
 		}
@@ -10517,7 +10879,8 @@ void CPlugin::WaitString_Copy()
 				m_waitstring.szClipboardW[i] = m_waitstring.szText[start + i];
 			m_waitstring.szClipboardW[chars_to_copy] = 0;
 
-			wchar_t tmp[64000];
+			std::vector<wchar_t> tmpStorage(MAX_SHADER_EDIT_SCRATCH_LEN, 0);
+            wchar_t* tmp = tmpStorage.data();
 			ConvertLFCToCRsW(m_waitstring.szClipboardW, tmp);
 			copyStringToClipboardW(tmp);
 		}
@@ -10534,14 +10897,16 @@ void CPlugin::WaitString_Paste()
 
 		if (m_waitstring.bDisplayAsCode)
 		{
-	        char tmp[64000];
-		    lstrcpyA(tmp, getStringFromClipboardA());
+	        std::vector<char> tmpStorage(MAX_SHADER_EDIT_SCRATCH_LEN, 0);
+            char* tmp = tmpStorage.data();
+		    lstrcpynA(tmp, getStringFromClipboardA(), MAX_SHADER_EDIT_SCRATCH_LEN);
 			ConvertCRsToLFCA(tmp, m_waitstring.szClipboard);
 		}
 		else
 		{
-	        wchar_t tmp[64000];
-		    lstrcpyW(tmp, getStringFromClipboardW());
+	        std::vector<wchar_t> tmpStorage(MAX_SHADER_EDIT_SCRATCH_LEN, 0);
+            wchar_t* tmp = tmpStorage.data();
+		    lstrcpynW(tmp, getStringFromClipboardW(), MAX_SHADER_EDIT_SCRATCH_LEN);
 			ConvertCRsToLFCW(tmp, m_waitstring.szClipboardW);
 		}
 
@@ -11066,6 +11431,8 @@ void CPlugin::LaunchCustomMessage(int nMsgNum)
 
 	m_supertext.bRedrawSuperText = true;
 	m_supertext.bIsSongTitle = false;
+	m_supertext.bSongTitleTwoLines = false;
+	m_supertext.szTextLine2W[0] = L'\0';
 	lstrcpyW(m_supertext.szTextW, m_CustomMessage[nMsgNum].szText);
 
 	// regular properties:
@@ -11123,7 +11490,27 @@ void CPlugin::LaunchSongTitleAnim()
 {
 	m_supertext.bRedrawSuperText = true;
 	m_supertext.bIsSongTitle = true;
-	lstrcpyW(m_supertext.szTextW, m_szSongTitle);
+	m_supertext.bSongTitleTwoLines = false;
+	m_supertext.szTextLine2W[0] = L'\0';
+
+	// MilkDrop 3 presents long track metadata as two centered lines.  Keep the
+	// established one-line animation for short titles and for sources that only
+	// provide a combined title string.
+	#if SUPPORT_SMTC
+	const std::wstring& artist = songtitlegetter.currentArtist;
+	const std::wstring& title = songtitlegetter.currentTitle;
+	if (wcslen(m_szSongTitle) > 20 && !artist.empty() && !title.empty())
+	{
+		lstrcpynW(m_supertext.szTextW, artist.c_str(), _countof(m_supertext.szTextW));
+		lstrcpynW(m_supertext.szTextLine2W, title.c_str(), _countof(m_supertext.szTextLine2W));
+		m_supertext.bSongTitleTwoLines =
+			m_supertext.szTextW[0] != L'\0' && m_supertext.szTextLine2W[0] != L'\0';
+	}
+	else
+	#endif
+	{
+		lstrcpynW(m_supertext.szTextW, m_szSongTitle, _countof(m_supertext.szTextW));
+	}
 	//lstrcpy(m_supertext.szText, " ");
 	lstrcpyW(m_supertext.nFontFace, m_fontinfo[SONGTITLE_FONT].szFace);
 	m_supertext.fFontSize   = (float)m_fontinfo[SONGTITLE_FONT].nSize;
@@ -11162,7 +11549,7 @@ bool CPlugin::LaunchSprite(int nSpriteNum, int nSlot)
 		return false;
 	}
 
-	if (img[1] != L':')// || img[2] != '\\')
+	if (img[1] != L':' && !MediaTexture::IsSpoutPath(img))// || img[2] != '\\')
 	{
 		// it's not in the form "x:\blah\billy.jpg" so prepend plugin dir path.
 		wchar_t temp[512];
@@ -11276,8 +11663,20 @@ bool CPlugin::LaunchSprite(int nSpriteNum, int nSlot)
 	case TEXMGR_ERR_CORRUPT_JPEG:           sprintf(m_szUserMessage, "sprite #%d error: jpeg is corrupt", nSpriteNum); break;
     */
     case TEXMGR_ERR_BADFILE:
-        swprintf(buf, wasabiApiLangString(IDS_SPRITE_X_ERROR_IMAGE_FILE_MISSING_OR_CORRUPT), nSpriteNum);
-        AddError(buf, 6.0f, ERR_MISC, true);
+        if (MediaTexture::IsSpoutPath(img))
+        {
+            const wchar_t* senderName = img + 6;
+            if (!senderName[0])
+                swprintf(buf, L"sprite #%02d error: attempted to invoke a Spout sprite with an empty sender name. Set img=Spout\\<active sender name> or img=Spout/<active sender name> in beatdrop_img.ini.", nSpriteNum);
+            else
+                swprintf(buf, L"sprite #%02d error: Spout prefix detected, but sender \"%ls\" was not found. Try modifying the sender name from beatdrop_img.ini to exactly match the active Spout sender name.", nSpriteNum, senderName);
+            AddError(buf, 7.0f, ERR_MISC, false);
+        }
+        else
+        {
+            swprintf(buf, wasabiApiLangString(IDS_SPRITE_X_ERROR_IMAGE_FILE_MISSING_OR_CORRUPT), nSpriteNum);
+            AddError(buf, 6.0f, ERR_MISC, true);
+        }
         break;
     case TEXMGR_ERR_OUTOFMEM:
         swprintf(buf, wasabiApiLangString(IDS_SPRITE_X_ERROR_OUT_OF_MEM), nSpriteNum);
@@ -11291,67 +11690,6 @@ bool CPlugin::LaunchSprite(int nSpriteNum, int nSlot)
 void CPlugin::KillSprite(int iSlot)
 {
     m_texmgr.KillTex(iSlot);
-}
-
-int SAMPLE_RATE = 44100; //Initialize sample rate globally, 44100hz is the default sample rate for MilkDrop
-
-HRESULT DetectSampleRate()
-{
-    HRESULT hr = S_OK;
-    IMMDeviceEnumerator* pEnumerator = NULL;
-    IMMDevice* pDevice = NULL;
-    IPropertyStore* pProps = NULL;
-    PROPVARIANT var;
-    PropVariantInit(&var);
-
-    // Initialize COM
-    // Use existing COM instance if already initialized
-    bool coInitialized = false;
-    hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
-    if (SUCCEEDED(hr)) {
-        coInitialized = true;
-    }
-    else if (hr == RPC_E_CHANGED_MODE) {
-        // COM already initialized with different mode, continue anyway
-        hr = S_OK;
-    }
-
-    // Create device enumerator
-    hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL,
-        CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
-        (void**)&pEnumerator);
-    if (FAILED(hr)) goto Cleanup;
-
-    // Get default audio endpoint
-    hr = pEnumerator->GetDefaultAudioEndpoint(GetCaptureMicFlag() ? eCapture : eRender, eConsole, &pDevice);
-    if (FAILED(hr)) goto Cleanup;
-
-    // Open property store
-    hr = pDevice->OpenPropertyStore(STGM_READ, &pProps);
-    if (FAILED(hr)) goto Cleanup;
-
-    // Get the format property
-    hr = pProps->GetValue(PKEY_AudioEngine_DeviceFormat, &var);
-    if (SUCCEEDED(hr) && var.vt == VT_BLOB && var.blob.pBlobData)
-    {
-        WAVEFORMATEX* pwfx = (WAVEFORMATEX*)var.blob.pBlobData;
-        if (pwfx != NULL)
-        {
-            SAMPLE_RATE = pwfx->nSamplesPerSec;
-        }
-    }
-
-Cleanup:
-    // Clean up
-    PropVariantClear(&var);
-    if (pProps) pProps->Release();
-    if (pDevice) pDevice->Release();
-    if (pEnumerator) pEnumerator->Release();
-    if (coInitialized) {
-        CoUninitialize();
-    }
-
-    return hr;
 }
 
 void CPlugin::DoCustomSoundAnalysis()
@@ -11373,18 +11711,28 @@ void CPlugin::DoCustomSoundAnalysis()
     // Beat Detection Configuration
     // Look at the start of line 10566 for the new beat detection splitting algorithm.
     
-    memcpy(mysound.fWave[0], m_sound.fWaveform[0], sizeof(float)*MY_FFT_WINDOW);
-    memcpy(mysound.fWave[1], m_sound.fWaveform[1], sizeof(float)*MY_FFT_WINDOW);
+    // The simple-wave renderer exposes the captured 576-sample waveform.
+    // Keep that buffer bounded; the FFT below uses a larger zero-padded window.
+    memcpy(mysound.fWave[0], m_sound.fWaveform[0], sizeof(mysound.fWave[0]));
+    memcpy(mysound.fWave[1], m_sound.fWaveform[1], sizeof(mysound.fWave[1]));
 
     // do our own [UN-NORMALIZED] fft
-    float fWaveLeft[MY_FFT_WINDOW];
-    float fWaveRight[MY_FFT_WINDOW];
+    // m_sound.fWaveform contains 576 samples, while MY_FFT_WINDOW is 1024.
+    // Zero-padding the tail preserves the existing FFT size without reading
+    // beyond the captured waveform and avoids corrupting simple waveforms.
+    float fWaveLeft[MY_FFT_WINDOW] = {};
+    float fWaveRight[MY_FFT_WINDOW] = {};
+    memcpy(fWaveLeft, m_sound.fWaveform[0], sizeof(m_sound.fWaveform[0]));
+    memcpy(fWaveRight, m_sound.fWaveform[1], sizeof(m_sound.fWaveform[1]));
 
-    for (int i = 0; i < MY_FFT_WINDOW; i++)
-    {
-        fWaveLeft[i] = m_sound.fWaveform[0][i]; //left channel
-        fWaveRight[i] = m_sound.fWaveform[1][i]; //right channel
-    }
+    //float fWaveLeft[MY_FFT_WINDOW];
+    //float fWaveRight[MY_FFT_WINDOW];
+    //GetAudioBufFloat(fWaveLeft, fWaveRight, MY_FFT_WINDOW);
+    //for (int i = 0; i < MY_FFT_WINDOW; i++)
+    //{
+    //    fWaveLeft[i] *= g_fAudioSensitivity;
+    //    fWaveRight[i] *= g_fAudioSensitivity;
+    //}
 
 	memset(mysound.fSpecLeft, 0, sizeof(float)*MY_FFT_SAMPLES);
     memset(mysound.fSpecRight, 0, sizeof(float)*MY_FFT_SAMPLES);
@@ -11393,78 +11741,98 @@ void CPlugin::DoCustomSoundAnalysis()
     myfft.time_to_frequency_domain(fWaveRight, mysound.fSpecRight);
 	//for (i=0; i<MY_FFT_SAMPLES; i++) fSpecLeft[i] = sqrtf(fSpecLeft[i]*fSpecLeft[i] + fSpecTemp[i]*fSpecTemp[i]);
 
-      // Apply FFT smoothing and upload to GPU texture for get_fft()/get_fft_hz() shader functions
-      // Compute clean (un-equalized) FFT for get_fft()/get_fft_hz() shader functions
-    float fShaderSpecLeft[MY_FFT_SAMPLES];
-    float fShaderSpecRight[MY_FFT_SAMPLES];
-    memset(fShaderSpecLeft, 0, sizeof(float) * MY_FFT_SAMPLES);
-    memset(fShaderSpecRight, 0, sizeof(float) * MY_FFT_SAMPLES);
-    myfftshader.time_to_frequency_domain(fWaveLeft, fShaderSpecLeft);
-    myfftshader.time_to_frequency_domain(fWaveRight, fShaderSpecRight);
+    float fWaveLargeLeft[MY_FFT_SHADER_WINDOW];
+    float fWaveLargeRight[MY_FFT_SHADER_WINDOW];
+    GetAudioBufFloat(fWaveLargeLeft, fWaveLargeRight, MY_FFT_SHADER_WINDOW);
+    // for (int i = 0; i < MY_FFT_SHADER_WINDOW; i++)
+    // {
+    //     fWaveLargeLeft[i] *= g_fAudioSensitivity;
+    //     fWaveLargeRight[i] *= g_fAudioSensitivity;
+    // }
 
-    float fftScaling = 0.000425f;
-    float frameSum = 0;
-    for (int i = 0; i < MY_FFT_SAMPLES; i++)
-        frameSum += (fShaderSpecLeft[i] + fShaderSpecRight[i]) * 0.5f;
-    float frameAvg = (frameSum / MY_FFT_SAMPLES) * fftScaling;
-    static float s_fFFTAvgLoudness = 0.05f;
-    float l_speed = (frameAvg > s_fFFTAvgLoudness) ? 0.10f : 0.02f;
-    s_fFFTAvgLoudness += (frameAvg - s_fFFTAvgLoudness) * l_speed;
-    float dynamicGain = 0.07f / (s_fFFTAvgLoudness + 0.001f);
-    if (dynamicGain > 10.0) dynamicGain = 10.0f;
-    if (dynamicGain < 0.2f) dynamicGain = 0.2f;
+    // Apply FFT smoothing and upload to GPU texture for get_fft()/get_fft_hz() shader functions
+    // Compute clean (un-equalized) FFT for get_fft()/get_fft_hz() shader functions
+    float fShaderSpecLeft[MY_FFT_SHADER_SAMPLES];
+    float fShaderSpecRight[MY_FFT_SHADER_SAMPLES];
+    memset(fShaderSpecLeft, 0, sizeof(float) * MY_FFT_SHADER_SAMPLES);
+    memset(fShaderSpecRight, 0, sizeof(float) * MY_FFT_SHADER_SAMPLES);
+    myfftshader.time_to_frequency_domain(fWaveLargeLeft, fShaderSpecLeft);
+    myfftshader.time_to_frequency_domain(fWaveLargeRight, fShaderSpecRight);
+
+    // RMS normalization
+    // Sum all the bins and take a square mono calculated FFT.
+    float fftSumSq = 0;
+    for (int i = 0; i < MY_FFT_SHADER_SAMPLES; i++)
+    {
+        float mono = (fShaderSpecLeft[i] + fShaderSpecRight[i]) * .5f;
+        fftSumSq += mono * mono;
+    }
+    float fftRMS = sqrtf(fftSumSq / MY_FFT_SHADER_SAMPLES);    // Calculate RMS from square mono calculated FFT.
+    if (fftRMS < 1e-5f) fftRMS = 1e-5f; // PREVENT DIVISION BY ZERO ERROR, is it neccesary?
+
+    // Smoothing RMS with simple low-pass
+    static float s_fftRMS = .1f; // Initialize with a sensible default
+    float fps = GetFps();
+    if (fps < 1e-8f) fps = 1e-8f;   // PREVENT DIVISION BY ZERO ERROR
+    float tauRMS; // smoothing time constant
+    if (fftRMS > s_fftRMS)
+        tauRMS = 2; // Fast adaption for loud environment
+    else tauRMS = 5; // Slowly decreases for quiet parts
+    float RMSDecay = expf(-1 / GetFps() / tauRMS);
+    s_fftRMS = s_fftRMS * RMSDecay + fftRMS * (1-RMSDecay);
+    
+    float fftScaling = m_nFFTShaderScaling;   // FFT scaling is now controlled via .ini setting file.
 
     // Apply FFT smoothing and upload to GPU texture
     {
         float attack = m_pState->m_fFFTAttack.eval(GetTime());  // Reads FFT Attack from state
         float decay  = m_pState->m_fFFTDecay.eval(GetTime());   // Reads FFT Decay from state
-        const float kNoiseFloor = 0.025f;
-        //const float kVisibleFloor = 0.001f;
-        for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)
+        float decayFactor = (1.0f - decay) * (1.0f - decay);
+
+        // FPS-independent: scale both coefficients relative to 60fps reference
+        float attackPerFrame = 1.0f - powf(1.0f - attack,      60.0f / fps);
+        float decayPerFrame  = 1.0f - powf(1.0f - decayFactor, 60.0f / fps);
+        const float kVisibleFloor = 5e-8f;
+        for (int fi = 0; fi < MY_FFT_SHADER_SAMPLES; fi++)
         {
             float mono = (fShaderSpecLeft[fi] + fShaderSpecRight[fi]) * 0.5f;
-            // Normalize: apply sqrt compression and scale so values land near [0..1]
-            // Raw FFT magnitudes are proportional to FFT size; 0.017f empirically tuned
-            // to match MilkDrop3's get_fft() range at typical listening volumes.
-            mono = mono * fftScaling * dynamicGain;
+            // Normalize FFT with RMS.
+            mono = (mono / s_fftRMS) * fftScaling;
 
-            mono -= kNoiseFloor;
+            mono -= m_nFFTShaderNoiseFloor;
             if (mono < 0.0f) mono = 0.0f;
             // Attenuate low-frequency bins to reduce bass over-accentuation.
-            // Bins below ~215 Hz (bin ~5) are progressively reduced.
-            // The curve ramps from 0.15 at bin 0 to 1.0 at bin 5.
-            if (fi < 5)
+            // Bins below ~2000 Hz (bin ~24) are progressively reduced.
+            // The curve ramps from 0.15 at bin 0 to 1.0 at bin 24.
+            const int kBassRampEnd = 24;
+            if (fi < kBassRampEnd)
             {
-                float t = fi / 5.0f;
+                float t = (float)fi / (float)kBassRampEnd;
                 float lowcut = 0.15f + 0.85f * (t*t);
                 mono *= lowcut;
             }
             if (mono > m_fFFTSmoothed[fi])
-                m_fFFTSmoothed[fi] += (mono - m_fFFTSmoothed[fi]) * attack;
+                m_fFFTSmoothed[fi] += (mono - m_fFFTSmoothed[fi]) * attackPerFrame;
             else
-            {
-                float decayFactor = (1.0f - decay) * (1.0f - decay);
-                m_fFFTSmoothed[fi] += (mono - m_fFFTSmoothed[fi]) * decayFactor;
-            }
-            /*
+                m_fFFTSmoothed[fi] += (mono - m_fFFTSmoothed[fi]) * decayPerFrame;
             if (m_fFFTSmoothed[fi] < kVisibleFloor)
                 m_fFFTSmoothed[fi] = 0.0f;
-            */
         }
-        // Update peak hold: hold for ~0.5 seconds then decay
-        for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)
+        // Update peak hold: hold for 1 second then decay
+        for (int fi = 0; fi < MY_FFT_SHADER_SAMPLES; fi++)
         {
             if (m_fFFTSmoothed[fi] >= m_fFFTPeak[fi])
             {
                 m_fFFTPeak[fi] = m_fFFTSmoothed[fi];
-                m_nFFTPeakHold[fi] = GetFps(); // FPS-independent; peaks starting to fall after 1 second
+                m_nFFTPeakHold[fi] = GetFps() * (.25 + (decay*.75)); // FPS-independent; decay-controllable peak falling
             }
             else if (m_nFFTPeakHold[fi] > 0)
                 m_nFFTPeakHold[fi]--;
             else
             {
-                m_fFFTPeak[fi] *= 0.97f; // ~3% drop per frame, creates that smooth gravity-fall effect
+                m_fFFTPeak[fi] *= exp(-1/fps/.3); // ~3% drop per frame, creates that smooth gravity-fall effect, FPS independent
                 //if (m_fFFTPeak[fi] < kVisibleFloor) m_fFFTPeak[fi] = 0.0f;
+                if (m_fFFTPeak[fi] < 0.0f) m_fFFTPeak[fi] = 0.0f;
             }
         }
         if (m_lpFFTTexture)
@@ -11474,7 +11842,7 @@ void CPlugin::DoCustomSoundAnalysis()
             {
                 float* row0 = (float*)r.pBits;
                 float* row1 = (float*)((BYTE*)r.pBits + r.Pitch);
-                for (int fi = 0; fi < MY_FFT_SAMPLES; fi++)
+                for (int fi = 0; fi < MY_FFT_SHADER_SAMPLES; fi++)
                 {
                     row0[fi] = m_fFFTSmoothed[fi];
                     row1[fi] = m_fFFTPeak[fi];
@@ -11523,7 +11891,7 @@ void CPlugin::DoCustomSoundAnalysis()
     for (int i = 0; i < 3; i++)
     {
         // Process each frequency band
-        float freq_min, freq_max;
+        int freq_min, freq_max;
 
         switch (i) {
         case 0: // Bass
@@ -11588,6 +11956,38 @@ void CPlugin::DoCustomSoundAnalysis()
         else
             mysound.avg_rel[i] = mysound.avg[i] / mysound.long_avg[i];
 	}
+
+    // Keep every consumer of the six public beat variables on the same frozen
+    // sample. The raw spectrum and waveform remain live while frozen.
+    if (m_bFreezeBeatDetection)
+    {
+        for (i = 0; i < 3; i++)
+        {
+            mysound.imm_rel[i] = m_frozenBeatDetection[i];
+            mysound.avg_rel[i] = m_frozenBeatDetection[i + 3];
+        }
+    }
+}
+
+void CPlugin::ToggleBeatDetectionFreeze(bool showNotification)
+{
+    m_bFreezeBeatDetection = !m_bFreezeBeatDetection;
+
+    if (m_bFreezeBeatDetection)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            m_frozenBeatDetection[i] = mysound.imm_rel[i];
+            m_frozenBeatDetection[i + 3] = mysound.avg_rel[i];
+        }
+        if (showNotification)
+            AddNotif(L"Beat detection frozen");
+    }
+    else
+    {
+        if (showNotification)
+            AddNotif(L"Beat detection unfrozen");
+    }
 }
 
 void CPlugin::GenWarpPShaderText(char *szShaderText, float decay, float decay_r, float decay_g, float decay_b, bool bWrap)
@@ -11669,19 +12069,23 @@ void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
     szSongTitle[0] = 0;
 
     #if SUPPORT_SMTC
-    if (m_bEnableSongTitlePoll || m_bEnableSongTitlePollExplicit)
+    if (m_bEnableSongTitlePoll || m_bEnableSongTitlePollExplicit ||
+        m_nSongTimeDisplayMode != 0 || m_bEnableLyrics)
     {
         // Static variables maintain state between calls
         static std::wstring cachedTitle;
-        static double lastPollTime = -1.0;
-        constexpr double POLL_INTERVAL = 0.5; // Poll twice per second
+        static std::chrono::steady_clock::time_point lastPollTime;
+        static bool hasLastPollTime = false;
+        constexpr auto POLL_INTERVAL = std::chrono::milliseconds(100);
 
-        // Initialize on first run or when time resets
-        double currentTime = GetTime();
-        if (currentTime <= 0.1 || lastPollTime < 0)
+        // Use monotonic wall time so media polling keeps a stable cadence even
+        // when the render animation clock is paused or the window loses focus.
+        const auto currentTime = std::chrono::steady_clock::now();
+        if (!hasLastPollTime)
         {
             songtitlegetter.Init();
-            lastPollTime = currentTime;
+            lastPollTime = currentTime - POLL_INTERVAL;
+            hasLastPollTime = true;
         }
 
         // Always ensure null-terminated output
@@ -11718,6 +12122,10 @@ void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
                     cachedTitle = artist + L" - " + title;
                 }
 
+                if (m_bEnableLyrics)
+                    m_lyricsManager.UpdateTrack(artist, title, songtitlegetter.currentAlbum,
+                        songtitlegetter.GetDurationMilliseconds() / 1000.0);
+
                 songtitlegetter.updated = false;
             }
 
@@ -11732,6 +12140,120 @@ void CPlugin::GetSongTitle(wchar_t *szSongTitle, int nSize)
         }
     }
     #endif
+}
+
+void CPlugin::CycleSongTimeDisplay()
+{
+    m_nSongTimeDisplayMode = (m_nSongTimeDisplayMode + 1) % 3;
+}
+
+static void FormatSongClock(int64_t milliseconds, bool includeCentiseconds, wchar_t* output, int capacity)
+{
+    if (capacity <= 0) return;
+    if (milliseconds < 0) { output[0] = L'\0'; return; }
+
+    const int64_t totalSeconds = milliseconds / 1000;
+    const int seconds = static_cast<int>(totalSeconds % 60);
+    const int minutes = static_cast<int>((totalSeconds / 60) % 60);
+    const int hours = static_cast<int>(totalSeconds / 3600);
+    const int centiseconds = static_cast<int>((milliseconds % 1000) / 10);
+
+    if (hours > 0)
+        swprintf_s(output, capacity, includeCentiseconds ? L"%02d:%02d:%02d.%02d" : L"%02d:%02d:%02d", hours, minutes, seconds, centiseconds);
+    else
+        swprintf_s(output, capacity, includeCentiseconds ? L"%d:%02d.%02d" : L"%d:%02d", minutes, seconds, centiseconds);
+}
+
+bool CPlugin::GetSongTimeText(wchar_t *szSongTime, int nSize)
+{
+    if (!szSongTime || nSize <= 0) return false;
+    szSongTime[0] = L'\0';
+
+#if SUPPORT_SMTC
+    // Title and time share one throttled SMTC poll.
+    wchar_t ignoredTitle[2] = {0};
+    GetSongTitle(ignoredTitle, _countof(ignoredTitle));
+
+    const int64_t duration = songtitlegetter.GetDurationMilliseconds();
+    const int64_t position = songtitlegetter.GetPositionMilliseconds();
+    if (duration <= 0 || position < 0) return false;
+
+    const bool remainingMode = m_nSongTimeDisplayMode == 2;
+    const int64_t displayedTime = remainingMode ? duration - position : position;
+    wchar_t current[64] = {0};
+    wchar_t total[64] = {0};
+    FormatSongClock(displayedTime, true, current, _countof(current));
+    FormatSongClock(duration, false, total, _countof(total));
+    swprintf_s(szSongTime, nSize, remainingMode ? L"-%s / %s" : L"%s / %s", current, total);
+    return szSongTime[0] != L'\0';
+#else
+    return false;
+#endif
+}
+
+void CPlugin::UpdateLyrics()
+{
+    if (!m_bEnableLyrics)
+        return;
+
+#if SUPPORT_SMTC
+    const int64_t positionMilliseconds = songtitlegetter.GetPositionMilliseconds();
+    if (positionMilliseconds < 0)
+    {
+        if (!m_lastLyricsLine.empty())
+        {
+            m_lastLyricsLine.clear();
+            m_lyricsRenderer.Clear(GetTime());
+        }
+        return;
+    }
+    const std::wstring line = m_lyricsManager.CurrentLine(positionMilliseconds / 1000.0);
+    if (line != m_lastLyricsLine)
+    {
+        m_lastLyricsLine = line;
+        m_lyricsRenderer.SetLine(line, GetTime());
+    }
+#endif
+}
+
+void CPlugin::ToggleLyrics(bool showNotification)
+{
+    m_bEnableLyrics = !m_bEnableLyrics;
+    m_lastLyricsLine.clear();
+    if (m_bEnableLyrics)
+    {
+#if SUPPORT_SMTC
+        m_lyricsManager.UpdateTrack(songtitlegetter.currentArtist, songtitlegetter.currentTitle,
+            songtitlegetter.currentAlbum, songtitlegetter.GetDurationMilliseconds() / 1000.0);
+#endif
+        if (showNotification)
+            AddNotif(L"Lyrics enabled");
+    }
+    else
+    {
+        m_lyricsRenderer.Clear(GetTime());
+        if (showNotification)
+            AddNotif(L"Lyrics disabled");
+    }
+    WritePrivateProfileIntW(m_bEnableLyrics, L"bEnableLyrics", GetConfigIniFile(), L"settings");
+}
+
+void CPlugin::OpenLyricsEditor(HWND owner)
+{
+#if SUPPORT_SMTC
+    // Opening the editor is an explicit request to retrieve lyrics, even when
+    // on-screen lyrics are disabled.  This allows plain LRCLIB text to be
+    // timestamped and uploaded without enabling the renderer.
+    if (!songtitlegetter.currentTitle.empty())
+    {
+        m_lyricsManager.UpdateTrack(songtitlegetter.currentArtist,
+            songtitlegetter.currentTitle, songtitlegetter.currentAlbum,
+            songtitlegetter.GetDurationMilliseconds() / 1000.0);
+        m_lyricsManager.Refresh();
+    }
+#endif
+    m_lyricsEditor.Open(owner, &m_lyricsManager, songtitlegetter.currentArtist,
+        songtitlegetter.currentTitle);
 }
 
 // =========================================================
@@ -11764,6 +12286,68 @@ bool CPlugin::OpenSender(unsigned int width, unsigned int height)
 	return true;
 
 } // end OpenSender
+
+IDirect3DPixelShader9* CPlugin::EnsureSpriteColorKeyPS()
+{
+    if (m_pSpriteColorKeyPS)
+        return m_pSpriteColorKeyPS;
+
+    if (m_bSpriteColorKeyPSFailed || !GetDevice())
+        return nullptr;
+
+    static const char* szSrc =
+        "sampler2D texSampler : register(s0);\n"
+        "float4 colorKey : register(c0);\n" // .rgb = key color (0..1), .a = squared-distance threshold
+        "float4 main(float2 uv : TEXCOORD0, float4 diffuse : COLOR0) : COLOR0\n"
+        "{\n"
+        "    float4 tex = tex2D(texSampler, uv);\n"
+        "    float3 diff = tex.rgb - colorKey.rgb;\n"
+        "    float dist2 = dot(diff, diff);\n"
+        "    float keep = step(colorKey.a, dist2);\n" // 0 if close to colorKey (keyed out), else 1
+        "    return float4(tex.rgb * diffuse.rgb, tex.a * diffuse.a * keep);\n"
+        "}\n";
+
+    ID3DXBuffer* pShaderByteCode = nullptr;
+    ID3DXBuffer* pErrors = nullptr;
+    HRESULT hr = D3DXCompileShader(
+        szSrc,
+        (UINT)strlen(szSrc),
+        NULL,
+        NULL,
+        "main",
+        "ps_2_0",
+        0,
+        &pShaderByteCode,
+        &pErrors,
+        NULL);
+
+    SafeRelease(pErrors);
+
+    if (FAILED(hr) || !pShaderByteCode)
+    {
+        SafeRelease(pShaderByteCode);
+        m_bSpriteColorKeyPSFailed = true; // fall back to the old (texture-alpha-only) behavior
+        return nullptr;
+    }
+
+    HRESULT hrCreate = GetDevice()->CreatePixelShader((DWORD*)pShaderByteCode->GetBufferPointer(), &m_pSpriteColorKeyPS);
+    SafeRelease(pShaderByteCode);
+
+    if (FAILED(hrCreate))
+    {
+        m_pSpriteColorKeyPS = nullptr;
+        m_bSpriteColorKeyPSFailed = true;
+        return nullptr;
+    }
+
+    return m_pSpriteColorKeyPS;
+}
+
+void CPlugin::ReleaseSpriteColorKeyPS()
+{
+    SafeRelease(m_pSpriteColorKeyPS);
+    m_bSpriteColorKeyPSFailed = false; // device was (or is about to be) reset; ok to try compiling again
+}
 
 // SET AMD FLAG
 // A setting for forcing, non-forcing or auto-checking AMD mode for PS4 presets.
@@ -11847,13 +12431,11 @@ uint32_t CPlugin::crc32(const char* data, size_t length) {
 // DIRECTX 9 CHECKING
 // Checks for DirectX 9 whenever it's available or not.
 bool CPlugin::CheckDX9DLL() {
-    // Try to load the DLL manually
-
-    HMODULE hD3DX = LoadLibrary(TEXT("D3DX9_43.dll"));
-
-    if (!hD3DX) {
+    // The portable DirectX helper is loaded once at startup and stays loaded
+    // for the visualizer lifetime, before any sprite or texture can use it.
+    if (!BeatDropPortableDll::PreloadD3DX9()) {
         if (MessageBoxA(GetPluginWindow(),
-            "Failed to initialize DirectX 9.\n\nPlease install the DirectX End-User Runtimes.\n\nDo you want to open the DirectX download page?",
+            "Failed to load d3dx9_43.dll.\n\nOn Wine, Winlator, or Lutris, restore the matching portable DLL in BeatDrop Resources\\dlls.\n\nOn Windows, install the DirectX End-User Runtimes.\n\nDo you want to open the DirectX download page?",
             "BeatDrop Music Visualizer", MB_YESNO | MB_SETFOREGROUND | MB_TOPMOST) == IDYES) {
             // open website in browser
             ShellExecuteA(NULL, "open", "https://www.microsoft.com/en-us/download/details.aspx?id=35", NULL, NULL, SW_SHOWNORMAL);
@@ -11861,11 +12443,6 @@ bool CPlugin::CheckDX9DLL() {
         return false;
     }
 
-    // If successful, free the DLL (optional if you're linking statically)
-    FreeLibrary(hD3DX);
-
-    // Continue with your app
-    // ...
     return true;
 }
 
@@ -11887,6 +12464,12 @@ void CPlugin::RemoveAngleBrackets(wchar_t* str) {
 //
 // Registry method only works for DirectX 9 and lower but that is OK
 bool CPlugin::CheckForDirectX9c() {
+
+    // A portable package supplies D3DX9 itself.  d3d9.dll remains part of
+    // Windows, so do not require the legacy DirectX 9c registry value when
+    // the required helper library is already available in the package.
+    if (BeatDropPortableDll::IsD3DX9Available())
+        return true;
 
     // HKLM\Software\Microsoft\DirectX\Version should be 4.09.00.0904
     // handy information : http://en.wikipedia.org/wiki/DirectX
@@ -11930,6 +12513,8 @@ void CPlugin::ShowMissingDirectXMessage()
     }
 }
 
+// Audio capture remains owned by the plugin settings; the audio module calls
+// this lightweight accessor when choosing the default render/capture device.
 bool GetCaptureMicFlag()
 {
     return g_plugin.m_bCaptureMic;
@@ -11951,16 +12536,21 @@ bool CPlugin::CaptureScreenshotWithFilename(wchar_t* outFilename, size_t outFile
     // interfering with our render target while we generate the capture.
     EnterCriticalSection(&g_cs);
 
-    // Redraw the current visualizer frame strictly without any UI.
-    // This cleanly isolates the renderer output on the render target.
-    PrepareFor2DDrawing(pDevice);
-    RenderFrame(1);
-
     IDirect3DSurface9* pRenderTarget = nullptr;
-    HRESULT hr = pDevice->GetRenderTarget(0, &pRenderTarget);
+    HRESULT hr=S_OK;
+    if (m_hdr.Active()) {
+        // Use the completed, UI-free SDR conversion. Replaying a frame here
+        // would advance preset feedback just to take a screenshot.
+        if (!m_hdr.GetSdrExport(&pRenderTarget)) hr=E_FAIL;
+    } else {
+        PrepareFor2DDrawing(pDevice);
+        RenderFrame(1);
+        hr=pDevice->GetRenderTarget(0,&pRenderTarget);
+    }
     if (FAILED(hr) || !pRenderTarget) {
         wchar_t msg[256];
         swprintf_s(msg, 256, L"CaptureScreenshot: Failed to get render target (HRESULT 0x%08X)", hr);
+        LeaveCriticalSection(&g_cs);
         return false;
     }
 
@@ -12043,6 +12633,141 @@ bool CPlugin::CaptureScreenshotWithFilename(wchar_t* outFilename, size_t outFile
         OutputDebugStringW(errorMsg);
 
         return false;
+    }
+}
+
+extern void UpdateTrayIconForDesktopMode();
+extern void UpdateTrayIconForShownWindow();
+HWND g_hWorkerW = NULL;
+
+BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
+    HWND hShellDefView = FindWindowExW(hwnd, NULL, L"SHELLDLL_DefView", NULL);
+    if (hShellDefView == NULL)
+        return TRUE;
+
+    g_hWorkerW = FindWindowExW(NULL, hwnd, L"WorkerW", NULL);
+
+    if (g_hWorkerW == NULL)
+        g_hWorkerW = FindWindowExW(hwnd, NULL, L"WorkerW", NULL);
+    return FALSE;
+}
+
+void CPlugin::ToggleDesktopMode(HWND hwnd, bool isRefresh /*= false*/)
+{
+    if (!m_bDesktopMode || isRefresh)
+    {
+        if (!isRefresh)
+        {
+            // Auto-exit full-screen or stretch mode after entering desktop mode.
+            if (fullscreen) ToggleFullScreen(hwnd);
+            if (stretch) ToggleStretch(hwnd);
+
+            // Revert transparency mode and opacity control to its normal state.
+            // g_plugin.TranspaMode = false;
+            // int OpacityControl = 10;
+
+            // Save current window state ONLY on first toggle, not on refresh
+            GetWindowRect(hwnd, &m_desktop_lastRect);
+            m_desktop_lastStyle = GetWindowLongPtr(hwnd, GWL_STYLE);
+            m_desktop_lastStyleEx = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+        }
+
+        // Send the undocumented message to Progman to spawn/refresh WorkerW
+        HWND progman = FindWindowW(L"Progman", NULL);
+        if (progman)
+        {
+            SendMessageTimeout(progman, 0x052C, 0xD, 0x1, SMTO_NORMAL, 1000, NULL);
+            SendMessageTimeout(progman, 0x052C, 0xD, 0x0, SMTO_NORMAL, 1000, NULL);
+            SendMessageTimeout(progman, 0x052C, 0, 0, SMTO_NORMAL, 1000, NULL);
+        }
+
+        // Find the active background WorkerW
+        g_hWorkerW = NULL;
+        EnumWindows(EnumWindowsProc, 0);
+
+        if (g_hWorkerW == NULL)
+        {
+            OutputDebugStringW(L"ToggleDesktopMode: WorkerW not found.\n");
+            if (!isRefresh) {
+                AddErrorNotif(L"Error: Failed to initialize Desktop Mode.");
+            }
+            return;
+        }
+
+        // Keep the stable renderer path: Direct3D presents directly to the
+        // WorkerW child, beneath Explorer's icon view.
+        const LONG_PTR newStyle = WS_VISIBLE | WS_CHILD | WS_CLIPSIBLINGS;
+        const LONG_PTR newStyleEx = WS_EX_TRANSPARENT | WS_EX_NOACTIVATE | WS_EX_LAYERED;
+        SetWindowLongPtr(hwnd, GWL_STYLE, newStyle);
+        SetWindowLongPtr(hwnd, GWL_EXSTYLE, newStyleEx);
+        SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
+        SetParent(hwnd, g_hWorkerW);
+
+        const int x = GetSystemMetrics(SM_XVIRTUALSCREEN);
+        const int y = GetSystemMetrics(SM_YVIRTUALSCREEN);
+        const int cx = GetSystemMetrics(SM_CXVIRTUALSCREEN);
+        const int cy = GetSystemMetrics(SM_CYVIRTUALSCREEN);
+        POINT origin = { x, y };
+        ScreenToClient(g_hWorkerW, &origin);
+        SetWindowPos(hwnd, HWND_TOP, origin.x, origin.y, cx, cy,
+            SWP_FRAMECHANGED | SWP_NOACTIVATE | SWP_SHOWWINDOW);
+
+        // Find the desktop icon view so it can be repainted above the renderer.
+        HWND hShellDefView = NULL;
+        if (progman)
+            hShellDefView = FindWindowExW(progman, NULL, L"SHELLDLL_DefView", NULL);
+
+        if (!hShellDefView)
+        {
+            EnumWindows([](HWND h, LPARAM lp) -> BOOL {
+                HWND dv = FindWindowExW(h, NULL, L"SHELLDLL_DefView", NULL);
+                if (dv) { *reinterpret_cast<HWND*>(lp) = dv; return FALSE; }
+                return TRUE;
+                }, reinterpret_cast<LPARAM>(&hShellDefView));
+        }
+
+        // Force the icon list-view to repaint itself on top.
+        if (hShellDefView)
+        {
+            HWND hListView = FindWindowExW(hShellDefView, NULL, L"SysListView32", NULL);
+            if (hListView)
+            {
+                LRESULT itemCount = SendMessage(hListView, LVM_GETITEMCOUNT, 0, 0);
+                if (itemCount > 0)
+                    PostMessage(hListView, LVM_REDRAWITEMS, 0, itemCount - 1);
+            }
+            InvalidateRect(hShellDefView, NULL, TRUE);
+            UpdateWindow(hShellDefView);
+        }
+
+        m_bDesktopMode = true;
+
+        if (!isRefresh) {
+            UpdateTrayIconForDesktopMode();
+            // AddNotif(L"Desktop Mode ON");
+        }
+    }
+    else
+    {
+        // Exit Desktop Mode: un-parent and restore saved state.
+        SetParent(hwnd, NULL);
+
+        SetWindowLongPtr(hwnd, GWL_STYLE, m_desktop_lastStyle);
+        SetWindowLongPtr(hwnd, GWL_EXSTYLE, m_desktop_lastStyleEx);
+
+        int w = m_desktop_lastRect.right - m_desktop_lastRect.left;
+        int h = m_desktop_lastRect.bottom - m_desktop_lastRect.top;
+
+        SetWindowPos(hwnd, HWND_TOP, m_desktop_lastRect.left, m_desktop_lastRect.top, w, h, SWP_FRAMECHANGED | SWP_SHOWWINDOW);
+        SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
+
+        m_bDesktopMode = false;
+        RestoreRenderWindowIcon(hwnd);
+        UpdateTrayIconForShownWindow();
+        // AddNotif(L"Desktop Mode OFF");
+
+        // Force the wallpaper/desktop to refresh
+        SystemParametersInfoW(SPI_SETDESKWALLPAPER, 0, NULL, SPIF_SENDCHANGE);
     }
 }
 

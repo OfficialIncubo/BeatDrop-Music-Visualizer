@@ -54,7 +54,8 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_PLUGIN_ICON         ICON                    "plugin_icon.ico"
+IDI_PLUGIN_ICON         ICON                    "beatdrop_icon.ico"
+IDI_LYRICS_EDITOR_ICON  ICON                    "beatdrop_lyrics_editor_icon.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -74,8 +75,8 @@ IDR_TEXT1               TEXT                    "text1.bin"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,5,0,0
- PRODUCTVERSION 1,5,0,0
+ FILEVERSION 1,5,1,0
+ PRODUCTVERSION 1,5,1,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -92,12 +93,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Maxim Volskiy & Incubo_"
             VALUE "FileDescription", "BeatDrop Music Visualizer"
-            VALUE "FileVersion", "1.5dev1"
+            VALUE "FileVersion", "1.5.1"
             VALUE "InternalName", "BeatDrop"
             VALUE "LegalCopyright", "Copyright © 2026 BeatDrop development team"
             VALUE "OriginalFilename", "BeatDrop.exe"
             VALUE "ProductName", "BeatDrop"
-            VALUE "ProductVersion", "1.5dev1"
+            VALUE "ProductVersion", "1.5.1"
         END
     END
     BLOCK "VarFileInfo"
@@ -138,8 +139,8 @@ BEGIN
     IDS_USE_UP_DOWN_ARROW_KEYS 
                             "(use up/down arrow keys, PGUP, PGDN to change value)"
     IDS_CURRENT_VALUE_OF_X  "Current value of %s:"
-    IDS_LOAD_FROM_FILE      "Load from file:  [note: preset's wave scaling, as well as q1-q8, will not be imported]"
-    IDS_SAVE_TO_FILE        "Save to file:  [note: preset's wave scaling, as well as q1-q8, will not be exported]"
+    IDS_LOAD_FROM_FILE      "Load from file:  [note: preset's wave scaling, as well as q1-q64, will not be imported]"
+    IDS_SAVE_TO_FILE        "Save to file:  [note: preset's wave scaling, as well as q1-q64, will not be exported]"
     IDS_ENTER_THE_NEW_STRING 
                             "Enter the new string; hit CTRL+ENTER to apply or ESC to cancel."
     IDS_MILKDROP_ERROR      "BEATDROP ERROR"
@@ -240,7 +241,7 @@ BEGIN
     IDS_ERROR_CREATING_DOUBLE_SIZED_D3DX_TITLE_FONT 
                             "Error creating double-sized d3dx title font"
     IDS_RATING              "Rating"
-    IDS_DISABLED            "[disabled] "
+    IDS_DISABLED            "[disabled]"
     IDS_ARE_YOU_SURE_YOU_WANT_TO_DELETE_PRESET 
                             "Are you SURE you want to delete this preset? [y/N]"
     IDS_PRESET_TO_DELETE    "(preset to delete: %s)"
@@ -462,10 +463,10 @@ BEGIN
     IDS_CUSTOM_SHAPE_X      "--custom shape %d"
     IDS_MENU_EDIT_PRESET_INIT_CODE "[ edit preset initialization code ]"
     IDS_MENU_EDIT_PRESET_INIT_CODE_TT 
-                            "read-only: zoom, rot, warp, cx, cy, dx, dy, sx, sy; decay[_r|_g|_b], gamma;\n           echo_zoom, echo_scale, echo_orient;\n           ib_{size|r|g|b|a}, ob_{size|r|g|b|a}, mv_{x|y|dx|dy|l|r|g|b|a};\n           wave_{r|g|b|a|x|y|mode|mystery|usedots|thick|additive|brighten};\n           darken_center, wrap; invert, brighten, darken, solarize\n           time, fps, frame, progress;\n           mousex, mousey, mousedown, mouseclick;\n           ctrllt, ctrlrt, ctrldn, ctrlup; {bass|mid|treb}[_att]\nwrite:     q1-q8, monitor"
+                            "read-only: zoom, rot, warp, cx, cy, dx, dy, sx, sy; decay, decay_r, decay_g, decay_b, gamma;\n           echo_zoom, echo_scale, echo_orient;\n           ib_{size|r|g|b|a}, ob_{size|r|g|b|a}, mv_{x|y|dx|dy|l|r|g|b|a};\n           wave_{r|g|b|a|x|y|mode|mystery|usedots|thick|additive|brighten};\n           darken_center, wrap; invert, brighten, darken, solarize\n           time, fps, frame, progress;\n           mousex, mousey, mousedown, mouseclick;\n           ctrllt, ctrlrt, ctrldn, ctrlup, year, month, day, weekday;\n           hour, minute, second, milliseconds, totalseconds;\n           {bass|mid|treb}[_att]\nwrite:     q1-q64, monitor"
     IDS_MENU_EDIT_PER_FRAME_EQUATIONS "[ edit per_frame equations ]"
     IDS_MENU_EDIT_PER_FRAME_EQUATIONS_TT 
-                            "read-only:  time, fps, frame, progress;\nmousex, mousey, mousedown, mouseclick;\nctrllt, ctrlrt, ctrldn, ctrlup; {bass|mid|treb}[_att]\nread/write: zoom, rot, warp, cx, cy, dx, dy, sx, sy; q1-q8; monitor\n            mv_{x|y|dx|dy|l|r|g|b|a}, ib_{size|r|g|b|a}, ob_{size|r|g|b|a};\n            wave_{r|g|b|a|x|y|mode|mystery|usedots|thick|additive|brighten};\n            darken_center, wrap; invert, brighten, darken, solarize\n            decay[_r|_g|_b], gamma, echo_zoom, echo_alpha, echo_orient"
+                            "read-only:  time, fps, frame, progress;\nmousex, mousey, mousedown, mouseclick;\nctrllt, ctrlrt, ctrldn, ctrlup, year, month, day, weekday;\nhour, minute, second, milliseconds, totalseconds;\n{bass|mid|treb}[_att]\nread/write: zoom, rot, warp, cx, cy, dx, dy, sx, sy; q1-q64; monitor\n            mv_{x|y|dx|dy|l|r|g|b|a}, ib_{size|r|g|b|a}, ob_{size|r|g|b|a};\n            wave_{r|g|b|a|x|y|mode|mystery|usedots|thick|additive|brighten};\n            darken_center, wrap; invert, brighten, darken, solarize\n            decay, decay_r, decay_g, decay_b, gamma, echo_zoom, echo_alpha, echo_orient"
 END
 
 STRINGTABLE
@@ -667,7 +668,7 @@ BEGIN
                             "narrowing these to just the color range you need will greatly increase color fidelity in the blurred images.  MUST BE SUBSET OF BLUR1, BLUR2 RANGES."
     IDS_MENU_EDIT_PER_VERTEX_EQUATIONS "[ edit per_vertex equations ]"
     IDS_MENU_EDIT_PER_VERTEX_EQUATIONS_TT 
-                            "read-only:  x, y, rad, ang; time, fps, frame, progress;\nmousex, mousey, mousedown, mouseclick;\nctrllt, ctrlrt, ctrldn, ctrlup; {bass|mid|treb}[_att]; decay[_r|_g|_b]\nread/write: dx, dy, zoom, rot, warp, cx, cy, sx, sy, q1-q8"
+                            "read-only:  x, y, rad, ang; time, fps, frame, progress;\nmousex, mousey, mousedown, mouseclick;\nctrllt, ctrlrt, ctrldn, ctrlup; {bass|mid|treb}[_att]\nread/write: dx, dy, zoom, rot, warp, cx, cy, sx, sy, q1-q64; decay_r, decay_g, decay_b"
     IDS_MENU_EDIT_WARP_SHADER_TT 
                             "This pixel shader drives the warping, color, etc. of the internal image each frame.\n"
     IDS_MENU_EDIT_COMPOSITE_SHADER_TT 
@@ -683,11 +684,11 @@ BEGIN
     IDS_MENU_NUMBER_OF_INSTANCES_TT 
                             "the number of times (num_inst) to draw this shape.  Each instance will have a different value for 'instance' in the per-frame eqs (0,1,2...)"
     IDS_MENU_EDIT_INIT_CODE_SHAPE_TT 
-                            "IN: time, frame, fps, progress; q1-q8 (from preset init); x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured\nOUT: t1-t8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured"
+                            "IN: time, frame, fps, progress; q1-q64 (from preset init); x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured\nOUT: t1-t8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured"
     IDS_MENU_EDIT_PER_FRAME_INSTANCE_CODE 
                             "[ edit per-frame(/per-instance) code ]"
     IDS_MENU_EDIT_PER_FRAME_INSTANCE_CODE_TT 
-                            "IN: instance, num_inst, time, frame, fps, progress; q1-q8 (from preset init); x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured\nOUT: t1-t8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured"
+                            "IN: instance, num_inst, time, frame, fps, progress; q1-q64 (from preset init); x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured\nOUT: t1-t8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured"
 END
 
 STRINGTABLE
@@ -711,10 +712,10 @@ BEGIN
                             "import settings for a custom waveform from a file on disk"
     IDS_MENU_EDIT_INIT_CODE "[ edit initialization code ]"
     IDS_MENU_EDIT_INIT_CODE_TT 
-                            "IN: time, frame, fps, progress; samples; q1-q8 (from preset init) / OUT: t1-t8"
+                            "IN: time, frame, fps, progress; samples; q1-q64 (from preset init) / OUT: t1-t8"
     IDS_MENU_EDIT_PER_FRAME_CODE "[ edit per-frame code ]"
     IDS_MENU_EDIT_PER_FRAME_CODE_TT 
-                            "IN: time, frame, fps, progress; samples; q1-q8, t1-t8; r,g,b,a; {bass|mid|treb}[_att] / OUT: r,g,b,a; samples; t1-t8"
+                            "IN: time, frame, fps, progress; samples; q1-q64, t1-t8; r,g,b,a; {bass|mid|treb}[_att] / OUT: r,g,b,a; samples; t1-t8"
     IDS_MENU_EDIT_PER_POINT_CODE "[ edit per-point code ]"
     IDS_MENU_EDIT_PER_POINT_CODE_TT 
                             "IN: sample [0..1]; value1 [left ch], value2 [right ch], plus all vars for per-frame code / OUT: x,y; r,g,b,a; t1-t8"
@@ -866,7 +867,7 @@ BEGIN
     IDS_CONFIG_PANEL_BUTTON_8 " "
     IDS_EXTRA_FONT_1_NAME   "Tooltips"
     IDS_EXTRA_FONT_2_NAME   "Animated Songtitles"
-	IDS_PRESS_F1_MSG        "Press F1 for Help "
+	IDS_PRESS_F1_MSG        "Press F1 for Help"
     IDS_GRAPHICS_SUBSYSTEM_IS_TEMPORARILY_UNSTABLE 
                             "One or more fullscreen display adapters are behaving strangely and will not\nreport a list of display modes.  It's quite possible that your graphics subsystem\nis temporarily unstable.\n\nSUGGESTED ACTION: If you have modified your multimon setup or Windows,\ndisplay settings, or have updated any display drivers or installed\nany new programs, you should probably REBOOT YOUR COMPUTER before\ntrying to configure (or run) the plug-in again."
 END
@@ -1078,15 +1079,15 @@ STRINGTABLE
 BEGIN
     IDS_STRING624           "           float  rad;       //radius [0..1]"
     IDS_STRING625           "           float  ang;       //angle [0..PI*2]"
-    IDS_STRING626           "           // + texsize, aspect, time, fps, rand_frame, rand_preset,"
-    IDS_STRING627           "           //   q1-q32/_qa-_qh, bass, treb_att, vol... - see docs"
+    IDS_STRING626           "           // + texsize, aspect, aspect_sd, time, fps, rand_frame, rand_preset,"
+    IDS_STRING627           "           //   q1-q64/_qa-_qp, bass, treb_att, vol... - see docs"
     IDS_STRING628           " output:   float3 ret;       //the new pixel color (r,g,b)"
     IDS_STRING629           " inputs:   float2 uv;          //UV coordinates [0..1]"
     IDS_STRING630           "           float  rad;         //radius [0..1]"
     IDS_STRING631           "           float  ang;         //angle [0..PI*2]"
     IDS_STRING632           "           float3 hue_shader   //for MilkDrop 1 compatibility"
-    IDS_STRING633           "           // + texsize, aspect, time, fps, rand_frame, rand_preset,"
-    IDS_STRING634           "           //   q1-q32/_qa-_qh, bass, treb_att, vol... - see docs"
+    IDS_STRING633           "           // + texsize, aspect, aspect_sd, time, fps, rand_frame, rand_preset,"
+    IDS_STRING634           "           //   q1-q64/_qa-_qp, bass, treb_att, vol... - see docs"
     IDS_STRING635           " output:   float3 ret;         //display pixel color (r,g,b)"
     IDS_UPGRADE_SHADERS_TO_USE_PS2X 
                             "Do you want to upgrade all shaders to use (at least) pixel shader 2.X?  [y/N]"
@@ -1118,3 +1119,52 @@ END
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 
+
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+IDD_WEBCAM_OPACITY DIALOGEX 0, 0, 224, 124
+STYLE DS_SETFONT | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Webcam mode opacities"
+FONT 9, "Segoe UI"
+BEGIN
+    LTEXT "Deep (no burn)", -1, 8, 7, 170, 12
+    PUSHBUTTON "Reset", IDC_WEBCAM_DEEP_RESET, 178, 5, 38, 14
+    CONTROL "", IDC_WEBCAM_DEEP_SLIDER, "msctls_trackbar32", TBS_HORZ | WS_TABSTOP, 6, 20, 176, 18
+    EDITTEXT IDC_WEBCAM_DEEP_VALUE, 187, 21, 32, 14, ES_AUTOHSCROLL
+    LTEXT "Deep (with burn)", -1, 8, 39, 170, 12
+    PUSHBUTTON "Reset", IDC_WEBCAM_BURN_RESET, 178, 37, 38, 14
+    CONTROL "", IDC_WEBCAM_BURN_SLIDER, "msctls_trackbar32", TBS_HORZ | WS_TABSTOP, 6, 52, 176, 18
+    EDITTEXT IDC_WEBCAM_BURN_VALUE, 187, 53, 32, 14, ES_AUTOHSCROLL
+    LTEXT "Top", -1, 8, 71, 170, 12
+    PUSHBUTTON "Reset", IDC_WEBCAM_TOP_RESET, 178, 69, 38, 14
+    CONTROL "", IDC_WEBCAM_TOP_SLIDER, "msctls_trackbar32", TBS_HORZ | WS_TABSTOP, 6, 84, 176, 18
+    EDITTEXT IDC_WEBCAM_TOP_VALUE, 187, 85, 32, 14, ES_AUTOHSCROLL
+    DEFPUSHBUTTON "Close", IDOK, 162, 104, 54, 15
+END
+
+IDD_HDR_CALIBRATION DIALOGEX 0, 0, 300, 260
+STYLE DS_SETFONT | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "HDR calibration"
+FONT 9, "Segoe UI"
+BEGIN
+    LTEXT "Reference white (nits; 0 = Windows)", -1, 8, 8, 284, 12
+    CONTROL "", 6120, "msctls_trackbar32", TBS_HORZ | WS_TABSTOP, 6, 20, 222, 18
+    EDITTEXT 6101, 236, 21, 56, 14, ES_AUTOHSCROLL
+    LTEXT "Display peak (nits; 0 = automatic)", -1, 8, 44, 284, 12
+    CONTROL "", 6121, "msctls_trackbar32", TBS_HORZ | WS_TABSTOP, 6, 56, 222, 18
+    EDITTEXT 6102, 236, 57, 56, 14, ES_AUTOHSCROLL
+    LTEXT "Highlight strength (0 to 4)", -1, 8, 80, 284, 12
+    CONTROL "", 6122, "msctls_trackbar32", TBS_HORZ | WS_TABSTOP, 6, 92, 222, 18
+    EDITTEXT 6103, 236, 93, 56, 14, ES_AUTOHSCROLL
+    LTEXT "Highlight compression (0.25 to 4)", -1, 8, 116, 284, 12
+    CONTROL "", 6123, "msctls_trackbar32", TBS_HORZ | WS_TABSTOP, 6, 128, 222, 18
+    EDITTEXT 6104, 236, 129, 56, 14, ES_AUTOHSCROLL
+    LTEXT "Title/Custom message/Text brightness (0.1 to 4)", -1, 8, 152, 284, 12
+    CONTROL "", 6124, "msctls_trackbar32", TBS_HORZ | WS_TABSTOP, 6, 164, 222, 18
+    EDITTEXT 6105, 236, 165, 56, 14, ES_AUTOHSCROLL
+    LTEXT "Lyrics brightness (0.1 to 4)", -1, 8, 188, 284, 12
+    CONTROL "", 6125, "msctls_trackbar32", TBS_HORZ | WS_TABSTOP, 6, 200, 222, 18
+    EDITTEXT 6106, 236, 201, 56, 14, ES_AUTOHSCROLL
+    PUSHBUTTON "Reset defaults", IDC_HDR_RESET, 8, 237, 76, 16
+    DEFPUSHBUTTON "Apply", IDC_HDR_APPLY, 170, 237, 60, 16
+    PUSHBUTTON "Close", IDCANCEL, 237, 237, 55, 16
+END

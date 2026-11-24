@@ -1,0 +1,234 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 29/06/2026 at 20:56:00.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.900
+fDecay=0.970
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.630
+fWaveParam=-1.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=q1=0.0;
+per_frame_init_2=q2=40.0;
+per_frame_init_3=q5=0.0;
+per_frame_init_4=q6=0.0;
+per_frame_init_5=time_delay=0.0;
+per_frame_init_6=rand_laser = rand(100);
+per_frame_1=time_delay = if(time_delay >= .35 && (bass+mid+treb)*.5 > 1.8, 0, time_delay += 1/fps);
+per_frame_2=rand_laser = if(time_delay == 0, rand(100), rand_laser); // Random seed from 0 to 100
+per_frame_3=
+per_frame_4=// We MUST assign these to Q variables so the comp shader can communicate with them
+per_frame_5=q1 = rand_laser; // Tells the shader which pattern/color to use
+per_frame_6=q2 = time_delay; // Tells the shader when a beat triggers (0 = beat)
+per_frame_7=q3 = bass;       // Used for smooth, non-seizure brightness pulsing
+warp_1=`shader_body{}
+comp_1=`sampler2D sampler_rand42;
+comp_2=`
+comp_3=`// Math function to draw a glowing 2D laser beam
+comp_4=`// Notice the new 'focus' parameter to control beam width dynamically
+comp_5=`float3 GetLaser(float2 uva, float2 origin, float angle, float3 color_vec, float focus) {
+comp_6=`    float2 p = uva - origin;
+comp_7=`    
+comp_8=`    float2 dir = float2(cos(angle), sin(angle));
+comp_9=`    float2 n = float2(-dir.y, dir.x);
+comp_10=`    
+comp_11=`    float line_dist = abs(dot(p, n));
+comp_12=`    float along = dot(p, dir);
+comp_13=`    
+comp_14=`    // Core becomes tighter when 'focus' is higher
+comp_15=`    float core = exp(-line_dist * (4000.0 * focus));
+comp_16=`    float glow = 0.0015 / (line_dist + 0.0005);
+comp_17=`    
+comp_18=`    float intensity = (core + glow) * smoothstep(-0.02, 0.1, along);
+comp_19=`    return color_vec * intensity;
+comp_20=`}
+comp_21=`
+comp_22=`shader_body
+comp_23=`{
+comp_24=`    // 1. DYNAMIC COLOR & PATTERN SELECTION
+comp_25=`    float seed = q1; 
+comp_26=`    float f_mode = fmod(seed, 4.0);
+comp_27=`    float col_sel = fmod(seed * 3.14, 4.0); 
+comp_28=`    
+comp_29=`    float3 col1, col2;
+comp_30=`    if (col_sel < 1.0) {
+comp_31=`        col1 = float3(1.0, 0.0, 0.5); // Synth Pink
+comp_32=`        col2 = float3(0.0, 1.0, 0.8); // Miami Cyan
+comp_33=`    } else if (col_sel < 2.0) {
+comp_34=`        col1 = float3(0.5, 1.0, 0.0); // Toxic Lime
+comp_35=`        col2 = float3(1.0, 0.3, 0.0); // Flare Orange
+comp_36=`    } else if (col_sel < 3.0) {
+comp_37=`        col1 = float3(0.4, 0.0, 1.0); // Deep Violet
+comp_38=`        col2 = float3(0.1, 0.4, 1.0); // Plasma Blue
+comp_39=`    } else {
+comp_40=`        col1 = float3(1.0, 0.8, 0.2); // Golden Light
+comp_41=`        col2 = float3(1.0, 1.0, 1.0); // Pure White
+comp_42=`    }
+comp_43=`
+comp_44=`    // 2. ADVANCED BEAT REACTIVITY
+comp_45=`    float beat_strike = exp(-q2 * 4.0); // Sharp transient (1.0 on beat, decays toward 0)
+comp_46=`    float slow_pulse = 0.7 + 0.3 * sin(time * 3.0 + q3 * 0.4);
+comp_47=`    float beam_focus = 1.0 + beat_strike * 3.0; 
+comp_48=`
+comp_49=`    // 3. HOLOGRAPHIC TEXTURE FETCH & CHROMATIC ABERRATION
+comp_50=`    // Slowly rotate the UV space for the random texture
+comp_51=`    float2 tex_uv = uv - 0.5;
+comp_52=`    float angle_tex = time * 0.1;
+comp_53=`    float2x2 rot_tex = float2x2(cos(angle_tex), -sin(angle_tex), sin(angle_tex), cos(angle_tex));
+comp_54=`    tex_uv = mul(tex_uv, rot_tex) + 0.5;
+comp_55=`
+comp_56=`    // Offset RGB channels based on the beat_strike for a digital glitch effect
+comp_57=`    float3 r_tex;
+comp_58=`    float glitch = 0.08 * beat_strike;
+comp_59=`    r_tex.r = tex2D(sampler_rand42, tex_uv + float2(glitch, 0)).r;
+comp_60=`    r_tex.g = tex2D(sampler_rand42, tex_uv).g;
+comp_61=`    r_tex.b = tex2D(sampler_rand42, tex_uv - float2(glitch, 0)).b;
+comp_62=`
+comp_63=`    // 4. BACKGROUND & SMOKE
+comp_64=`    float grid = abs(frac(uv.y * 10.0 + time * 0.5) - 0.5) + abs(frac(uv.x * 10.0 + time * 0.3) - 0.5);
+comp_65=`    float3 bg = (r_tex * 0.15) / (grid + 0.15);
+comp_66=`    
+comp_67=`    // Tint the MilkDrop blur smoke using the random texture's colors
+comp_68=`    float3 smoke = GetBlur2(uv).rgb * 0.8;
+comp_69=`    bg = lerp(bg, smoke * col2 * (r_tex + 0.2), 0.6) * 0.5;
+comp_70=`
+comp_71=`    // 5. LASER RENDERER
+comp_72=`    float3 lasers = float3(0, 0, 0);
+comp_73=`
+comp_74=`    if (f_mode < 1.0) {
+comp_75=`        for (int i = 0; i < 8; i++) {
+comp_76=`            float f = i / 7.0;
+comp_77=`            float y_pos = 0.1 + f * 0.8;
+comp_78=`            float2 o_L = float2(0.0, y_pos);
+comp_79=`            float a_L = 0.0 + sin(time * 2.0 + i) * 0.2 + beat_strike * 0.1;
+comp_80=`            lasers += GetLaser(uv, o_L, a_L, col1, beam_focus);
+comp_81=`            float2 o_R = float2(1.0, y_pos);
+comp_82=`            float a_R = 3.14 + sin(time * 2.1 - i) * 0.2 - beat_strike * 0.1;
+comp_83=`            lasers += GetLaser(uv, o_R, a_R, col2, beam_focus);
+comp_84=`        }
+comp_85=`    } 
+comp_86=`    else if (f_mode < 2.0) {
+comp_87=`        float2 o_T = float2(0.5, 0.9);
+comp_88=`        float2 o_BL = float2(0.1, 0.1);
+comp_89=`        float2 o_BR = float2(0.9, 0.1);
+comp_90=`        for(int i = 0; i < 6; i++) {
+comp_91=`            float f = i / 5.0;
+comp_92=`            float sweep = sin(time * 1.5 + f * 3.14);
+comp_93=`            lasers += GetLaser(uv, o_T, -1.57 + sweep * 0.8, col1, beam_focus);
+comp_94=`            lasers += GetLaser(uv, o_BL, 0.5 + sweep * 0.5, col2, beam_focus);
+comp_95=`            lasers += GetLaser(uv, o_BR, 2.64 - sweep * 0.5, lerp(col1, col2, 0.5), beam_focus);
+comp_96=`        }
+comp_97=`    }
+comp_98=`    else if (f_mode < 3.0) {
+comp_99=`        for(int i = 0; i < 16; i++) {
+comp_100=`            float f = i / 15.0;
+comp_101=`            float offset = sin(time * 2.0 + f * 6.28) * 0.3;
+comp_102=`            float2 origin1 = float2(0.5 + offset, -0.1);
+comp_103=`            float2 origin2 = float2(0.5 - offset, 1.1);
+comp_104=`            float angle1 = 1.57 + sin(time + i * 0.2) * 0.3;
+comp_105=`            float angle2 = -1.57 + cos(time + i * 0.2) * 0.3;
+comp_106=`            lasers += GetLaser(uv, origin1, angle1, col1, beam_focus);
+comp_107=`            lasers += GetLaser(uv, origin2, angle2, col2, beam_focus);
+comp_108=`        }
+comp_109=`    }
+comp_110=`    else {
+comp_111=`        for(int i = 0; i < 10; i++) {
+comp_112=`            float f = i / 9.0;
+comp_113=`            float x_pos = 0.2 + f * 0.6;
+comp_114=`            float2 o_Top = float2(x_pos, 1.0);
+comp_115=`            float2 o_Bot = float2(x_pos, 0.0);
+comp_116=`            float ang_T = -1.57 + sin(time * 4.0 + i) * 1.2 * beat_strike;
+comp_117=`            float ang_B = 1.57 + cos(time * 4.0 - i) * 1.2 * beat_strike;
+comp_118=`            lasers += GetLaser(uv, o_Top, ang_T, col1, beam_focus);
+comp_119=`            lasers += GetLaser(uv, o_Bot, ang_B, col2, beam_focus);
+comp_120=`        }
+comp_121=`    }
+comp_122=`
+comp_123=`    // 6. VOLUMETRIC TEXTURE MASKING
+comp_124=`    // Calculate the luminance of the random texture and use it to mask the lasers.
+comp_125=`    // This forces the beams to inherit the physical characteristics of the random image.
+comp_126=`    float tex_luma = dot(r_tex, float3(0.299, 0.587, 0.114));
+comp_127=`    lasers *= (tex_luma * 2.0 + 0.1); // +0.1 baseline so the beams never entirely disappear
+comp_128=`    
+comp_129=`    lasers *= slow_pulse;
+comp_130=`
+comp_131=`    // 7. CENTER FLARE WITH TEXTURE INFLUENCE
+comp_132=`    float center_flare = 0.02 / (length(uv - float2(0.5, 0.5)) + 0.01);
+comp_133=`    // Multiply the flare by the texture to create a shattered light effect
+comp_134=`    float3 flare = center_flare * col1 * beat_strike * 0.5 * (r_tex + 0.5);
+comp_135=`
+comp_136=`    // Final Composition
+comp_137=`    ret = bg + lasers + flare;
+comp_138=`}

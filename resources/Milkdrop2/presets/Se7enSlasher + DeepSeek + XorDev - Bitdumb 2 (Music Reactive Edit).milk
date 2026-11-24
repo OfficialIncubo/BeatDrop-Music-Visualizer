@@ -1,0 +1,157 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=2
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=zoom_dec = 1;
+per_frame_init_2=rot_shader_dec = 0;
+per_frame_init_3=rot_shader = 0;
+per_frame_init_4=time_beat = 0;
+per_frame_init_5=rand_zoom = 1;
+per_frame_init_6=rand_rot = 0;
+per_frame_init_7=chaos_rand = 0;
+per_frame_init_8=//---DON'T TOUCH THIS ABOVE---
+per_frame_init_9=
+per_frame_init_10=beat_trigger = 1.5;
+per_frame_init_11=time_delay = .25;
+per_frame_init_12=speed = 5;
+per_frame_init_13=chaos_val = 100;
+per_frame_1=dec = speed/fps;
+per_frame_2=time_beat += 1/fps;
+per_frame_3=//---DON'T MODIFY ABOVE---
+per_frame_4=
+per_frame_5=if ((bass+treb)/2 > beat_trigger && time_beat > time_delay, beat=1; time_beat = 0, beat=0);
+per_frame_6=
+per_frame_7=rand_zoom = if(beat, .25 + abs(rand(2)-.25), rand_zoom);
+per_frame_8=rand_rot = if(beat, $pi/4 - abs(rand(2)-0.4292), rand_rot);
+per_frame_9=chaos_neg_rand = if(beat, int(rand(2)), chaos_neg_rand);
+per_frame_10=chaos_neg = if (chaos_neg_rand, -1, 1);
+per_frame_11=chaos_rand = if(beat, rand(chaos_val)*chaos_neg, chaos_rand);
+per_frame_12=
+per_frame_13=beat_smoothfall = if(beat, (bass+treb)/2, beat_smoothfall*=0.98);
+per_frame_14=
+per_frame_15=//If these values are changes, it automatically smooths.
+per_frame_16=zoom = rand_zoom;
+per_frame_17=//rot = rand_rot;
+per_frame_18=rot_h = rand_rot;
+per_frame_19=//------------------------------------------------------
+per_frame_20=
+per_frame_21=//Using Nitorami (martin)'s skills (smoothing).
+per_frame_22=zoom_dec = zoom_dec * (1-dec) + zoom * dec;
+per_frame_23=zoom = zoom_dec;
+per_frame_24=//rot_dec = rot_dec * (1-dec) + rot * dec;
+per_frame_25=rot_h_dec = rot_h_dec * (1-dec) + rot_h * dec;
+per_frame_26=//rot = rot_h_dec;
+per_frame_27=
+per_frame_28=q1 = rot_h_dec;
+per_frame_29=q2 = chaos_rand;
+per_frame_30=q3 = beat_smoothfall*3.75;
+warp_1=`//Original code: https://x.com/XorDev/status/1981733290626240632
+warp_2=`//by Xor (XorDev)
+warp_3=`//Converted to MilkDrop (HLSL) by DeepSeek: https://www.deepseek.com
+warp_4=`//Modified by Se7enSlasher
+warp_5=`
+warp_6=`float2x2 rot_mat(float angle)
+warp_7=`{
+warp_8=`    float s = sin(angle);
+warp_9=`    float c = cos(angle);
+warp_10=`    return transpose(float2x2(c, -s, s, c));
+warp_11=`}
+warp_12=`
+warp_13=`shader_body
+warp_14=`{
+warp_15=`    //float2 r = 1; //We use texsize aspect correcting instead.
+warp_16=`    float2 aspect_ts = float2(1, texsize.y/texsize.x); //Self-made texsize aspect-correcting
+warp_17=`    float2 p = ((uv - .5) * aspect_ts) / aspect_ts.y; //Then pass it to uv calculation.
+warp_18=`    p = mul(p, rot_mat(q1));
+warp_19=`    p.y = -p.y; //Y uv flipping is necessary
+warp_20=`    float4 o = 0;
+warp_21=`    
+warp_22=`    for (float i = 1; i <= 20; i++)
+warp_23=`    {
+warp_24=`        float2 abs_val = .03 / abs(frac(p) - .5);
+warp_25=`        float time_component = frac((time+q2) * .2 + length(round(p) + i) / i);
+warp_26=`        
+warp_27=`        float4 color_add = float4(abs_val.x, abs_val.y, abs_val.x, time_component) * (1 - o.a);
+warp_28=`        o += color_add;
+warp_29=`
+warp_30=`        p += float2(p.y, -p.x);
+warp_31=`    }
+warp_32=`    
+warp_33=`    //XorDev - told me to replace tanh(x) with 1-exp(-x), which it works.
+warp_34=`    float3 result = (o * o) * (1+q3) + dot(o, o) / 1e2; //Make this as a separate result.
+warp_35=`    ret = 1-exp(-result); //Then output tonemapping without thresholding.
+warp_36=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`   ret = GetPixel(uv);
+comp_4=`}

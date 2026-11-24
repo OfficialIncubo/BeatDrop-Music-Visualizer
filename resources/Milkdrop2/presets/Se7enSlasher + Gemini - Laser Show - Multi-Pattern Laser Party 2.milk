@@ -1,0 +1,226 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 29/06/2026 at 21:03:37.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.900
+fDecay=0.970
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.630
+fWaveParam=-1.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=q1=0.0;
+per_frame_init_2=q2=40.0;
+per_frame_init_3=q5=0.0;
+per_frame_init_4=q6=0.0;
+per_frame_init_5=time_delay=0.0;
+per_frame_init_6=rand_laser = rand(100);
+per_frame_1=time_delay = if(time_delay >= .35 && (bass+mid+treb)*.5 > 1.8, 0, time_delay += 1/fps);
+per_frame_2=rand_laser = if(time_delay == 0, rand(100), rand_laser); // Random seed from 0 to 100
+per_frame_3=
+per_frame_4=// We MUST assign these to Q variables so the comp shader can communicate with them
+per_frame_5=q1 = rand_laser; // Tells the shader which pattern/color to use
+per_frame_6=q2 = time_delay; // Tells the shader when a beat triggers (0 = beat)
+per_frame_7=q3 = bass;       // Used for smooth, non-seizure brightness pulsing
+warp_1=`shader_body{}
+comp_1=`// Math function to draw a glowing 2D laser beam
+comp_2=`// Now includes a 'flicker' parameter to simulate unstable diode energy
+comp_3=`float3 GetLaser(float2 uva, float2 origin, float angle, float3 color_vec, float focus, float flicker) {
+comp_4=`    float2 p = uva - origin;
+comp_5=`    
+comp_6=`    float2 dir = float2(cos(angle), sin(angle));
+comp_7=`    float2 n = float2(-dir.y, dir.x);
+comp_8=`    
+comp_9=`    float line_dist = abs(dot(p, n));
+comp_10=`    float along = dot(p, dir);
+comp_11=`    
+comp_12=`    // Dynamic core tightness
+comp_13=`    float core = exp(-line_dist * (5000.0 * focus));
+comp_14=`    
+comp_15=`    // Soft volumetric outer glow mixed with high-frequency flicker
+comp_16=`    float glow = (0.0015 * flicker) / (line_dist + 0.0005);
+comp_17=`    
+comp_18=`    float intensity = (core + glow) * smoothstep(-0.02, 0.1, along);
+comp_19=`    return color_vec * intensity;
+comp_20=`}
+comp_21=`
+comp_22=`shader_body
+comp_23=`{
+comp_24=`    // 1. DYNAMIC COLOR & PATTERN SELECTION
+comp_25=`    float seed = q1; 
+comp_26=`    float f_mode = fmod(seed, 4.0);
+comp_27=`    float col_sel = fmod(seed * 8.9, 4.0); 
+comp_28=`    
+comp_29=`    float3 col1, col2;
+comp_30=`    if (col_sel < 1.0) {
+comp_31=`        col1 = float3(1.0, 0.1, 0.1); // Arasaka Red
+comp_32=`        col2 = float3(1.0, 1.0, 1.0); // Pure White Contrast
+comp_33=`    } else if (col_sel < 2.0) {
+comp_34=`        col1 = float3(0.0, 1.0, 0.8); // Kiroshi Optic Cyan
+comp_35=`        col2 = float3(0.8, 0.0, 1.0); // Deep Purple
+comp_36=`    } else if (col_sel < 3.0) {
+comp_37=`        col1 = float3(1.0, 0.9, 0.0); // Cyber Yellow
+comp_38=`        col2 = float3(0.0, 0.5, 1.0); // Night City Blue
+comp_39=`    } else {
+comp_40=`        col1 = float3(0.0, 1.0, 0.2); // Netrunner Green
+comp_41=`        col2 = float3(0.0, 0.4, 0.1); // Dark Matrix Green
+comp_42=`    }
+comp_43=`
+comp_44=`    // 2. BEAT REACTIVITY & CYBER-GLITCH
+comp_45=`    float beat_strike = exp(-q2 * 6.0); // Extremely snappy transient response
+comp_46=`    float diode_flicker = 0.8 + 0.2 * sin(time * 60.0); // Simulates electrical hum
+comp_47=`    float beam_focus = 1.0 + beat_strike * 4.0; 
+comp_48=`    
+comp_49=`    // Distort the UV space on the beat to create a VHS/CRT screen tear effect
+comp_50=`    float2 glitch_uv = uv;
+comp_51=`    glitch_uv.x += sin(uv.y * 40.0 + time * 15.0) * 0.015 * beat_strike;
+comp_52=`
+comp_53=`    // 3. BACKGROUND & HOLOGRAPHIC DUST
+comp_54=`    // Create a subtle dot-matrix background common in sci-fi HUDs
+comp_55=`    float2 grid_uv = glitch_uv * 15.0;
+comp_56=`    float dots = exp(-length(frac(grid_uv) - 0.5) * 20.0);
+comp_57=`    float3 bg = float3(dots, dots, dots) * 0.05 * (sin(time * 0.5 + glitch_uv.y * 5.0) * 0.5 + 0.5);
+comp_58=`    
+comp_59=`    // Mix in the blur buffers for a thick, smoggy atmosphere
+comp_60=`    float3 smoke = GetBlur3(glitch_uv).rgb * 0.9 + GetBlur1(glitch_uv).rgb * 0.2;
+comp_61=`    bg = lerp(bg, smoke * col1, 0.4) * 0.5;
+comp_62=`
+comp_63=`    // 4. LASER RENDERER (Using the glitched UVs)
+comp_64=`    float3 lasers = float3(0, 0, 0);
+comp_65=`
+comp_66=`    if (f_mode < 1.0) {
+comp_67=`        // MODE 0: Pendulum Array (Hanging from ceiling, swinging left/right)
+comp_68=`        for (int i = 0; i < 12; i++) {
+comp_69=`            float f = i / 11.0;
+comp_70=`            float2 o = float2(0.05 + f * 0.9, 1.1); 
+comp_71=`            
+comp_72=`            // Base angle is -1.57 (pointing straight down), plus a swinging sine wave
+comp_73=`            float swing = sin(time * 2.0 + f * 3.14) * (0.4 + beat_strike * 0.6);
+comp_74=`            lasers += GetLaser(glitch_uv, o, -1.57 + swing, lerp(col1, col2, f), beam_focus, diode_flicker);
+comp_75=`        }
+comp_76=`    } 
+comp_77=`    else if (f_mode < 2.0) {
+comp_78=`        // MODE 1: Security Grid (X-Y sliding cage)
+comp_79=`        for(int i = 0; i < 6; i++) {
+comp_80=`            float f = i / 5.0;
+comp_81=`            // Horizontal lasers sliding vertically
+comp_82=`            float y_pos = 0.5 + sin(time * 0.8 + i) * 0.4;
+comp_83=`            lasers += GetLaser(glitch_uv, float2(0.0, y_pos), 0.0, col1, beam_focus, diode_flicker);
+comp_84=`            
+comp_85=`            // Vertical lasers sliding horizontally
+comp_86=`            float x_pos = 0.5 + cos(time * 0.9 + i) * 0.4;
+comp_87=`            lasers += GetLaser(glitch_uv, float2(x_pos, 0.0), 1.57, col2, beam_focus, diode_flicker);
+comp_88=`        }
+comp_89=`    }
+comp_90=`    else if (f_mode < 3.0) {
+comp_91=`        // MODE 2: Hyperspace Burst (Radial explosion from center)
+comp_92=`        float2 o_C = float2(0.5, 0.5);
+comp_93=`        for(int i = 0; i < 18; i++) {
+comp_94=`            float f = i / 17.0;
+comp_95=`            // Angles rotate smoothly, but violently offset on the beat
+comp_96=`            float a = f * 6.28 + time * 0.2 + beat_strike * 1.5 * (fmod((float)i, 2.0) < 1.0 ? 1.0 : -1.0);
+comp_97=`            
+comp_98=`            // Emitters push outward from the center during a beat
+comp_99=`            float2 o_Dyn = o_C + float2(cos(a), sin(a)) * beat_strike * 0.15;
+comp_100=`            lasers += GetLaser(glitch_uv, o_Dyn, a, lerp(col1, col2, f), beam_focus, diode_flicker);
+comp_101=`        }
+comp_102=`    }
+comp_103=`    else {
+comp_104=`        // MODE 3: Targeting Intersects (Beams tracking moving points)
+comp_105=`        for(int i = 0; i < 8; i++) {
+comp_106=`            float f = i / 7.0;
+comp_107=`            // Origins sliding along the left and right walls
+comp_108=`            float2 o_L = float2(0.0, 0.5 + sin(time * 1.1 + i) * 0.4);
+comp_109=`            float2 o_R = float2(1.0, 0.5 + cos(time * 1.3 - i) * 0.4);
+comp_110=`            
+comp_111=`            // Target points sliding along the ceiling and floor
+comp_112=`            float2 t_T = float2(0.5 + sin(time * 1.5 - i) * 0.5, 1.0);
+comp_113=`            float2 t_B = float2(0.5 + cos(time * 1.7 + i) * 0.5, 0.0);
+comp_114=`            
+comp_115=`            // Calculate exact angles to aim the lasers at the moving targets
+comp_116=`            float a_L = atan2(t_T.y - o_L.y, t_T.x - o_L.x);
+comp_117=`            float a_R = atan2(t_B.y - o_R.y, t_B.x - o_R.x);
+comp_118=`            
+comp_119=`            lasers += GetLaser(glitch_uv, o_L, a_L, col1, beam_focus, diode_flicker);
+comp_120=`            lasers += GetLaser(glitch_uv, o_R, a_R, col2, beam_focus, diode_flicker);
+comp_121=`        }
+comp_122=`    }
+comp_123=`
+comp_124=`    // 5. CAMERA FLASH ILLUMINATION
+comp_125=`    // Simulates a global club strobe strictly tied to the bass transient
+comp_126=`    float strobe = beat_strike * 0.25 * (q3 / 3.0); 
+comp_127=`
+comp_128=`    // Final Composition
+comp_129=`    ret = bg + lasers + float3(strobe, strobe, strobe);
+comp_130=`}

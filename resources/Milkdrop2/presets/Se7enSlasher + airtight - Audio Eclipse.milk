@@ -1,0 +1,133 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 18/05/2026 at 11:19:00.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=2
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+FFTAttack=0.300
+FFTDecay=0.750
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=0.010
+fWarpScale=0.010
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.235
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`/*
+warp_2=`Audio Eclipse by airtight
+warp_3=`Converted from ShaderToy to MilkDrop by me (No AI, hand-written)
+warp_4=`Original ShaderToy shader link: https://www.shadertoy.com/view/MdsXWM
+warp_5=`*/
+warp_6=`
+warp_7=`//convert HSV to RGB
+warp_8=`float3 hsv2rgb(float3 c){
+warp_9=`    float4 K = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+warp_10=`    float3 p = abs(frac(c.xxx + K.xyz) * 6.0 - K.www);
+warp_11=`    return c.z * lerp(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+warp_12=`}
+warp_13=`	
+warp_14=`shader_body
+warp_15=`{
+warp_16=`const float dots = 40; //number of lights
+warp_17=`const float radius = .25; //radius of light ring
+warp_18=`const float brightness = .02;
+warp_19=`
+warp_20=`    
+warp_21=`    float2 p = (uv*2-1) * aspect.xy;
+warp_22=`    float3 c=float3(0,0,0.1); //background color
+warp_23=`	
+warp_24=`    for(float i=0; i<dots; i++){
+warp_25=`    
+warp_26=`	//read frequency for this dot from audio input channel 
+warp_27=`	//based on its index in the circle
+warp_28=`	float volFFT =  get_fft(i/dots); //texture(iChannel0, vec2(i/dots, 0.0)).x;
+warp_29=`	float b = volFFT * brightness;
+warp_30=`	
+warp_31=`	//get location of dot
+warp_32=`        float x = radius*cos(2.*M_PI*float(i)/dots);
+warp_33=`        float y = radius*sin(2.*M_PI*float(i)/dots);
+warp_34=`        float2 o = float2(x,y);
+warp_35=`        
+warp_36=`	//get color of dot based on its index in the 
+warp_37=`	//circle + time to rotate colors
+warp_38=`	float3 dotCol = hsv2rgb(float3((i + time*10.)/dots,1.,1.0));
+warp_39=`        
+warp_40=`        //get brightness of this pixel based on distance to dot
+warp_41=`	c += b/(length(p-o))*dotCol;
+warp_42=`    }
+warp_43=`    
+warp_44=`    //black circle overlay	   
+warp_45=`    float dist = distance(p , float2(0,0));  
+warp_46=`    c = c * smoothstep(0.26, 0.28, dist);
+warp_47=`     
+warp_48=`    ret = float4(c, 1);
+warp_49=`}
+comp_1=`shader_body
+comp_2=`{ ret = GetPixel(uv); }

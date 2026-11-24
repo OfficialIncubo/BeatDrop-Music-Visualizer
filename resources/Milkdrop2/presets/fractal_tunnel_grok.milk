@@ -1,0 +1,207 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 21/05/2026 at 14:23:34.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=3.000
+fGammaAdj=2.000
+fDecay=1.000
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=2.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.800
+fWaveScale=1.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=1
+wavecode_0_samples=96
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.55000
+wavecode_0_r=0.380
+wavecode_0_g=0.580
+wavecode_0_b=0.960
+wavecode_0_a=0.220
+shapecode_0_enabled=1
+shapecode_0_sides=8
+shapecode_0_additive=1
+shapecode_0_thickOutline=0
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.08500
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=1.00000
+shapecode_0_r=0.920
+shapecode_0_g=0.820
+shapecode_0_b=1.000
+shapecode_0_a=0.620
+shapecode_0_r2=0.000
+shapecode_0_g2=1.000
+shapecode_0_b2=0.000
+shapecode_0_a2=0.000
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=0.100
+per_frame_1=q1=0.85*q1+0.15*bass;
+per_frame_2=q2=0.85*q2+0.15*mid;
+per_frame_3=q3=0.85*q3+0.15*treb;
+per_frame_4=q4=0.90*q4+0.10*(bass+mid+treb)*0.3333;
+per_frame_5=q5=time;
+per_frame_6=q6=0.93*q6+0.07*sin(time*0.22);
+per_frame_7=q7=0.80*q7+0.20*bass_att;
+per_frame_8=q8=0.5+0.5*sin(time*0.18+q3*1.8);
+warp_1=`shader_body
+warp_2=`{
+warp_3=`float2 uvc = uv - 0.5;
+warp_4=`float r = length(uvc);
+warp_5=`float a = atan2(uvc.y, uvc.x);
+warp_6=`float pi = 3.14159265;
+warp_7=`float folds = 8.0;
+warp_8=`float sector = 6.2831853 / folds;
+warp_9=`a = a + pi;
+warp_10=`a = a - floor(a / sector) * sector;
+warp_11=`a = abs(a - 3.14159265 / folds);
+warp_12=`uvc = float2(cos(a), sin(a)) * r;
+warp_13=`float pulse = 0.012 * q1 * sin(a * 6.0 + q5 * 2.0 + r * 4.0);
+warp_14=`r = r + pulse;
+warp_15=`uvc = normalize(uvc) * r;
+warp_16=`float zoom = 1.018 + 0.032 * q1;
+warp_17=`uvc = uvc * zoom;
+warp_18=`float rot = q5 * (0.007 + 0.015 * q2) + q6 * 0.15;
+warp_19=`float c = cos(rot);
+warp_20=`float s = sin(rot);
+warp_21=`uvc = float2(uvc.x * c - uvc.y * s, uvc.x * s + uvc.y * c);
+warp_22=`float echo_amp = 0.006 * (0.4 + 0.6 * q1);
+warp_23=`float echo = echo_amp * sin(r * 30.0 + a * 3.5 + q5 * 4.0);
+warp_24=`uvc += echo * float2(cos(a + 0.5), sin(a + 1.5));
+warp_25=`uvc += 0.5;
+warp_26=`ret = tex2D(sampler_main, uvc).xyz;
+warp_27=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`float2 d = uv - 0.5;
+comp_4=`float r = length(d);
+comp_5=`float a = atan2(d.y, d.x);
+comp_6=`float2 ca = 0.0025 * float2(sin(q5*0.9), cos(q5*0.75)) * (0.3 + 0.7*q3);
+comp_7=`float3 col;
+comp_8=`col.r = tex2D(sampler_main, uv + ca).r;
+comp_9=`col.g = tex2D(sampler_main, uv).g;
+comp_10=`col.b = tex2D(sampler_main, uv - ca*0.8).b;
+comp_11=`float3 glow = float3(0,0,0);
+comp_12=`float2 off = 0.0018 * (1.0 + 3.0 * q1);
+comp_13=`glow += tex2D(sampler_main, uv + float2(off.x, 0)).xyz;
+comp_14=`glow += tex2D(sampler_main, uv - float2(off.x, 0)).xyz;
+comp_15=`glow += tex2D(sampler_main, uv + float2(0, off.y)).xyz;
+comp_16=`glow += tex2D(sampler_main, uv - float2(0, off.y)).xyz;
+comp_17=`glow *= 0.25;
+comp_18=`float glow_str = 0.22 + 0.45 * q2;
+comp_19=`col += glow * glow_str;
+comp_20=`col *= 1.12 + 0.65 * q3;
+comp_21=`col = pow(col, float3(0.90, 0.92, 0.88));
+comp_22=`float ring_b = 0.55 + 0.45 * q1;
+comp_23=`float thick = 0.007 + 0.003 * q2;
+comp_24=`float cc = q8;
+comp_25=`float rr = 0.13 + 0.015*sin(q5*0.35);
+comp_26=`float rc = max(0.0, thick - abs(r - rr)) / thick;
+comp_27=`float3 rcol = float3(0.65+0.35*sin(cc), 0.75+0.25*cos(cc*1.1), 0.95);
+comp_28=`col += rcol * rc * ring_b * 0.65;
+comp_29=`rr = 0.24 + 0.018*sin(q5*0.42 + 1.0);
+comp_30=`rc = max(0.0, thick - abs(r - rr)) / thick;
+comp_31=`rcol = float3(0.70+0.30*sin(cc+1.5), 0.80+0.20*cos(cc*0.8), 0.90+0.10*sin(cc*1.4));
+comp_32=`col += rcol * rc * ring_b * 0.60;
+comp_33=`rr = 0.36 + 0.012*sin(q5*0.28 + 2.0);
+comp_34=`rc = max(0.0, thick - abs(r - rr)) / thick;
+comp_35=`rcol = float3(0.60+0.40*sin(cc*1.2), 0.85+0.15*cos(cc), 1.00);
+comp_36=`col += rcol * rc * ring_b * 0.55;
+comp_37=`rr = 0.48 + 0.020*sin(q5*0.50 + 3.0);
+comp_38=`rc = max(0.0, thick - abs(r - rr)) / thick;
+comp_39=`rcol = float3(0.75+0.25*sin(cc*0.9), 0.70+0.30*cos(cc*1.3), 0.85+0.15*sin(cc));
+comp_40=`col += rcol * rc * ring_b * 0.50;
+comp_41=`rr = 0.61 + 0.016*sin(q5*0.33 + 4.0);
+comp_42=`rc = max(0.0, thick - abs(r - rr)) / thick;
+comp_43=`rcol = float3(0.55+0.45*sin(cc*1.5), 0.90+0.10*cos(cc*0.6), 0.95+0.05*sin(cc*1.1));
+comp_44=`col += rcol * rc * ring_b * 0.45;
+comp_45=`float sn = 12.0;
+comp_46=`float st = pow(abs(sin(a * sn + q5 * 0.6)), 22.0);
+comp_47=`float st_int = 0.18 + 0.32 * q3;
+comp_48=`float3 st_col = float3(1.0, 0.82, 0.55);
+comp_49=`col += st_col * st * st_int * (0.5 + 0.5 * sin(r*6.0 + q5*2.0));
+comp_50=`float vig = smoothstep(0.65, 0.25, r);
+comp_51=`col *= 0.65 + 0.35 * vig;
+comp_52=`ret = col;
+comp_53=`}

@@ -1,0 +1,510 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=0
+PSVERSION_COMP=4
+[preset00]
+fRating=3.0
+fWaveScale=1.0
+fWaveSmoothing=0.0
+fWarpAnimSpeed=1.0
+fWarpScale=1.0
+fShader=0.0
+bModWaveAlphaByVolume=0
+bRedBlueStereo=0
+fModWaveAlphaStart=0
+fModWaveAlphaEnd=1
+zoom=1
+fZoomExponent=1
+rot=0
+warp=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+sx=1
+sy=1
+fDecay=0
+nWaveMode=0
+wave_r=1
+wave_g=1
+wave_b=1
+fWaveAlpha=0
+wave_x=0.5
+wave_y=0.5
+fWaveParam=0
+bWaveDots=0
+bWaveThick=0
+bAdditiveWaves=0
+bMaximizeWaveColor=1
+ob_size=0.01
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0.01
+ib_r=0.25
+ib_g=0.25
+ib_b=0.25
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+fGammaAdj=1
+bInvert=0
+bSolarize=0
+bBrighten=0
+bDarken=0
+bDarkenCenter=0
+bTexWrap=1
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+per_frame_init_1=ms_first=1;ms_frame=-1;ms_time=0;ms_lastbeat=-1;
+per_frame_init_2=n1 = 6; n2 = 8; mx = 0; ni = 1; tm = 0; ro = 0; rv = 0; dr = 0; hu = 0; kr = 2; ka = 0; sg = 1; cd = 0;
+per_frame_init_3=gmegabuf(1041536)=0;
+per_frame_init_4=gmegabuf(1041537)=0;
+per_frame_init_5=gmegabuf(1041538)=min(1,pixelsx/pixelsy);
+per_frame_init_6=gmegabuf(1041539)=min(1,pixelsy/pixelsx);
+per_frame_init_7=gmegabuf(1041540)=pixelsx;
+per_frame_init_8=gmegabuf(1041541)=pixelsy;
+per_frame_init_9=gmegabuf(1041542)=0;
+per_frame_init_10=gmegabuf(1041543)=0;
+per_frame_init_11=gmegabuf(1041544)=aspectx;
+per_frame_init_12=gmegabuf(1041545)=aspecty;
+per_frame_init_13=ms_acc=0;ms_due=0;ms_last_render=0;ms_keep_q1=q1;ms_keep_q2=q2;ms_keep_q3=q3;ms_keep_q4=q4;ms_keep_q5=q5;ms_keep_q6=q6;ms_keep_q7=q7;ms_keep_q8=q8;ms_keep_q9=q9;ms_keep_q10=q10;ms_keep_q11=q11;ms_keep_q12=q12;ms_keep_q13=q13;ms_keep_q14=q14;ms_keep_q15=q15;ms_keep_q16=q16;ms_keep_q17=q17;ms_keep_q18=q18;ms_keep_q19=q19;ms_keep_q20=q20;ms_keep_q21=q21;ms_keep_q22=q22;ms_keep_q23=q23;ms_keep_q24=q24;ms_keep_q25=q25;ms_keep_q26=q26;ms_keep_q27=q27;ms_keep_q28=q28;ms_keep_q29=q29;ms_keep_q30=q30;ms_keep_q31=q31;ms_keep_q32=q32;gmegabuf(1041546)=0;
+per_frame_1=ms_default_zoom=zoom;ms_default_zoomexp=zoomexp;ms_default_rot=rot;ms_default_warp=warp;ms_default_cx=cx;ms_default_cy=cy;ms_default_dx=dx;ms_default_dy=dy;ms_default_sx=sx;ms_default_sy=sy;ms_default_decay=decay;ms_default_wave_mode=wave_mode;ms_default_wave_r=wave_r;ms_default_wave_g=wave_g;ms_default_wave_b=wave_b;ms_default_wave_a=wave_a;ms_default_wave_x=wave_x;ms_default_wave_y=wave_y;ms_default_wave_mystery=wave_mystery;ms_default_wave_usedots=wave_usedots;ms_default_wave_thick=wave_thick;ms_default_wave_additive=wave_additive;ms_default_wave_brighten=wave_brighten;ms_default_ob_size=ob_size;ms_default_ob_r=ob_r;ms_default_ob_g=ob_g;ms_default_ob_b=ob_b;ms_default_ob_a=ob_a;ms_default_ib_size=ib_size;ms_default_ib_r=ib_r;ms_default_ib_g=ib_g;ms_default_ib_b=ib_b;ms_default_ib_a=ib_a;ms_default_mv_x=mv_x;ms_default_mv_y=mv_y;ms_default_mv_dx=mv_dx;ms_default_mv_dy=mv_dy;ms_default_mv_l=mv_l;ms_default_mv_r=mv_r;ms_default_mv_g=mv_g;ms_default_mv_b=mv_b;ms_default_mv_a=mv_a;ms_default_echo_zoom=echo_zoom;ms_default_echo_alpha=echo_alpha;ms_default_echo_orient=echo_orient;ms_default_gamma=gamma;ms_default_invert=invert;ms_default_solarize=solarize;ms_default_brighten=brighten;ms_default_darken=darken;ms_default_darken_center=darken_center;ms_default_texture_wrap=texture_wrap;ms_default_b1n=b1n;ms_default_b2n=b2n;ms_default_b3n=b3n;ms_default_b1x=b1x;ms_default_b2x=b2x;ms_default_b3x=b3x;ms_default_b1ed=b1ed;ms_default_q1=q1;ms_default_q2=q2;ms_default_q3=q3;ms_default_q4=q4;ms_default_q5=q5;ms_default_q6=q6;ms_default_q7=q7;ms_default_q8=q8;ms_default_q9=q9;ms_default_q10=q10;ms_default_q11=q11;ms_default_q12=q12;ms_default_q13=q13;ms_default_q14=q14;ms_default_q15=q15;ms_default_q16=q16;ms_default_q17=q17;ms_default_q18=q18;ms_default_q19=q19;ms_default_q20=q20;ms_default_q21=q21;ms_default_q22=q22;ms_default_q23=q23;ms_default_q24=q24;ms_default_q25=q25;ms_default_q26=q26;ms_default_q27=q27;ms_default_q28=q28;ms_default_q29=q29;ms_default_q30=q30;ms_default_q31=q31;ms_default_q32=q32;
+per_frame_2=ms_elapsed=if(ms_first,0,max(0,time-ms_last_render));
+per_frame_3=ms_last_render=time;ms_acc=ms_acc+ms_elapsed*60;
+per_frame_4=ms_due=if(ms_first,1,min(4,floor(ms_acc+0.000001)));
+per_frame_5=ms_acc=max(0,ms_acc-floor(ms_acc+0.000001));ms_first=0;
+per_frame_6=
+per_frame_7=if(above(ms_due,0),loop(ms_due,
+per_frame_8=zoom=ms_default_zoom;zoomexp=ms_default_zoomexp;rot=ms_default_rot;warp=ms_default_warp;cx=ms_default_cx;cy=ms_default_cy;dx=ms_default_dx;dy=ms_default_dy;sx=ms_default_sx;sy=ms_default_sy;decay=ms_default_decay;wave_mode=ms_default_wave_mode;wave_r=ms_default_wave_r;wave_g=ms_default_wave_g;wave_b=ms_default_wave_b;wave_a=ms_default_wave_a;wave_x=ms_default_wave_x;wave_y=ms_default_wave_y;wave_mystery=ms_default_wave_mystery;wave_usedots=ms_default_wave_usedots;wave_thick=ms_default_wave_thick;wave_additive=ms_default_wave_additive;wave_brighten=ms_default_wave_brighten;ob_size=ms_default_ob_size;ob_r=ms_default_ob_r;ob_g=ms_default_ob_g;ob_b=ms_default_ob_b;ob_a=ms_default_ob_a;ib_size=ms_default_ib_size;ib_r=ms_default_ib_r;ib_g=ms_default_ib_g;ib_b=ms_default_ib_b;ib_a=ms_default_ib_a;mv_x=ms_default_mv_x;mv_y=ms_default_mv_y;mv_dx=ms_default_mv_dx;mv_dy=ms_default_mv_dy;mv_l=ms_default_mv_l;mv_r=ms_default_mv_r;mv_g=ms_default_mv_g;mv_b=ms_default_mv_b;mv_a=ms_default_mv_a;echo_zoom=ms_default_echo_zoom;echo_alpha=ms_default_echo_alpha;echo_orient=ms_default_echo_orient;gamma=ms_default_gamma;invert=ms_default_invert;solarize=ms_default_solarize;brighten=ms_default_brighten;darken=ms_default_darken;darken_center=ms_default_darken_center;texture_wrap=ms_default_texture_wrap;b1n=ms_default_b1n;b2n=ms_default_b2n;b3n=ms_default_b3n;b1x=ms_default_b1x;b2x=ms_default_b2x;b3x=ms_default_b3x;b1ed=ms_default_b1ed;q1=ms_default_q1;q2=ms_default_q2;q3=ms_default_q3;q4=ms_default_q4;q5=ms_default_q5;q6=ms_default_q6;q7=ms_default_q7;q8=ms_default_q8;q9=ms_default_q9;q10=ms_default_q10;q11=ms_default_q11;q12=ms_default_q12;q13=ms_default_q13;q14=ms_default_q14;q15=ms_default_q15;q16=ms_default_q16;q17=ms_default_q17;q18=ms_default_q18;q19=ms_default_q19;q20=ms_default_q20;q21=ms_default_q21;q22=ms_default_q22;q23=ms_default_q23;q24=ms_default_q24;q25=ms_default_q25;q26=ms_default_q26;q27=ms_default_q27;q28=ms_default_q28;q29=ms_default_q29;q30=ms_default_q30;q31=ms_default_q31;q32=ms_default_q32;
+per_frame_9=ms_frame=ms_frame+1;ms_time=ms_frame/60;
+per_frame_10=beat=above(bass,bass_att*1.25)*above(ms_time-ms_lastbeat,0.15);
+per_frame_11=ms_lastbeat=if(beat,ms_time,ms_lastbeat);
+per_frame_12=beat_strength=max(0,bass-bass_att);
+per_frame_13=sb = sb + (min(bass_att, 2.5) - sb) * 0.03;
+per_frame_14=
+per_frame_15=xb = max(bass - 1, 0); xb = xb / (1 + 0.5 * xb);
+per_frame_16=ob = pb;
+per_frame_17=pb = pb + (xb - pb) * if(xb > pb, 0.6, 0.1);
+per_frame_18=xm = max(mid - 1, 0); xm = xm / (1 + 0.5 * xm);
+per_frame_19=pm = pm + (xm - pm) * if(xm > pm, 0.6, 0.1);
+per_frame_20=xt = max(treb - 1, 0); xt = xt / (1 + 0.5 * xt);
+per_frame_21=pt = pt + (xt - pt) * if(xt > pt, 0.6, 0.1);
+per_frame_22=kk = max(pb - ob, 0);
+per_frame_23=
+per_frame_24=
+per_frame_25=rv = rv * 0.82 + 0.16 * kk * sg;
+per_frame_26=ro = ro + 0.0025 * sg + rv;
+per_frame_27=ro = ro - 6.2831853 * floor(ro / 6.2831853);
+per_frame_28=
+per_frame_29=dr = dr + 0.004 + 0.035 * pb + 0.006 * pm;
+per_frame_30=dr = dr - 1024 * floor(dr / 1024);
+per_frame_31=hu = hu + 0.0003 + 0.005 * pm; hu = hu - floor(hu);
+per_frame_32=
+per_frame_33=cd = cd + 1;
+per_frame_34=if(kk > 0.12 && cd > 10, cd = 0; kr = 0; ka = min(pb, 1.5), 0);
+per_frame_35=
+per_frame_36=if(kr < 0.06, ka = max(ka, min(pb, 1.5)), 0);
+per_frame_37=kr = min(kr + 0.014, 2); ka = ka * 0.955;
+per_frame_38=
+per_frame_39=
+per_frame_40=tm = tm + (1 + 3 * pb) / 60;
+per_frame_41=if(mx == 0 && tm > 8,
+per_frame_42=  tm = 0; ni = (ni + 1) % 7;
+per_frame_43=  n2 = if(ni == 0, 6, if(ni == 1, 8, if(ni == 2, 10, if(ni == 3, 12, if(ni == 4, 5, if(ni == 5, 7, 9))))));
+per_frame_44=  mx = 0.001; sg = -sg,
+per_frame_45=  0);
+per_frame_46=if(mx > 0, mx = mx + 0.025, 0);
+per_frame_47=if(mx >= 1, mx = 0; n1 = n2, 0);
+per_frame_48=q1 = ro; q2 = dr; q3 = n1; q4 = n2;
+per_frame_49=q5 = mx; q6 = hu; q7 = pb; q8 = pm;
+per_frame_50=q9 = pt; q10 = sb; q11 = kr; q12 = ka;
+per_frame_51=wave_r=min(1,max(0,wave_r))/1;wave_g=min(1,max(0,wave_g))/1;wave_b=min(1,max(0,wave_b))/1;wave_a=min(1,max(0,wave_a));
+per_frame_52=gmegabuf(1041536)=ms_time;
+per_frame_53=gmegabuf(1041537)=ms_frame;
+per_frame_54=gmegabuf(1041538)=min(1,pixelsx/pixelsy);
+per_frame_55=gmegabuf(1041539)=min(1,pixelsy/pixelsx);
+per_frame_56=gmegabuf(1041540)=pixelsx;
+per_frame_57=gmegabuf(1041541)=pixelsy;
+per_frame_58=gmegabuf(1041542)=beat;
+per_frame_59=gmegabuf(1041543)=beat_strength;
+per_frame_60=gmegabuf(1041544)=aspectx;
+per_frame_61=gmegabuf(1041545)=aspecty;
+per_frame_62=ms_keep_q1=q1;ms_keep_q2=q2;ms_keep_q3=q3;ms_keep_q4=q4;ms_keep_q5=q5;ms_keep_q6=q6;ms_keep_q7=q7;ms_keep_q8=q8;ms_keep_q9=q9;ms_keep_q10=q10;ms_keep_q11=q11;ms_keep_q12=q12;ms_keep_q13=q13;ms_keep_q14=q14;ms_keep_q15=q15;ms_keep_q16=q16;ms_keep_q17=q17;ms_keep_q18=q18;ms_keep_q19=q19;ms_keep_q20=q20;ms_keep_q21=q21;ms_keep_q22=q22;ms_keep_q23=q23;ms_keep_q24=q24;ms_keep_q25=q25;ms_keep_q26=q26;ms_keep_q27=q27;ms_keep_q28=q28;ms_keep_q29=q29;ms_keep_q30=q30;ms_keep_q31=q31;ms_keep_q32=q32;
+per_frame_63=),
+per_frame_64=q1=ms_keep_q1;q2=ms_keep_q2;q3=ms_keep_q3;q4=ms_keep_q4;q5=ms_keep_q5;q6=ms_keep_q6;q7=ms_keep_q7;q8=ms_keep_q8;q9=ms_keep_q9;q10=ms_keep_q10;q11=ms_keep_q11;q12=ms_keep_q12;q13=ms_keep_q13;q14=ms_keep_q14;q15=ms_keep_q15;q16=ms_keep_q16;q17=ms_keep_q17;q18=ms_keep_q18;q19=ms_keep_q19;q20=ms_keep_q20;q21=ms_keep_q21;q22=ms_keep_q22;q23=ms_keep_q23;q24=ms_keep_q24;q25=ms_keep_q25;q26=ms_keep_q26;q27=ms_keep_q27;q28=ms_keep_q28;q29=ms_keep_q29;q30=ms_keep_q30;q31=ms_keep_q31;q32=ms_keep_q32;
+per_frame_65=);
+per_frame_66=gmegabuf(1041546)=ms_due;
+per_frame_67=if(above(ms_due,0),0,zoom=1;zoomexp=1;rot=0;warp=0;dx=0;dy=0;sx=1;sy=1;cx=0.5;cy=0.5;decay=1;wave_a=0;ob_a=0;ib_a=0;mv_a=0);
+comp_1=`// MILKSPLAT PORT CREDIT BEGIN
+comp_2=`// Original preset: Kaleido Spin by Milksplat.
+comp_3=`// Copyright (c) 2026 Milksplat contributors.
+comp_4=`// Original license: MIT OR Apache-2.0; see bundled licenses.
+comp_5=`// Source: https://github.com/delphium226/milksplat/blob/dc87fd6a854f544b0a20bfd801055e4850e1e328/presets/kaleido-spin.splat
+comp_6=`// Adapted to MilkDrop 2 / BeatDrop HLSL (Shader Model 3, 8-bit feedback).
+comp_7=`// MILKSPLAT PORT CREDIT END
+comp_8=`float ms_dot(float2 a,float2 b) {
+comp_9=`return a.x*b.x+a.y*b.y+0.00000001;
+comp_10=`}
+comp_11=`float ms_length(float2 a) {
+comp_12=`return sqrt(a.x*a.x+a.y*a.y+0.00000001);
+comp_13=`}
+comp_14=`float2 ms_normalize(float2 a) {
+comp_15=`return a/ms_length(a);
+comp_16=`}
+comp_17=`
+comp_18=`float ms_dot(float3 a,float3 b) {
+comp_19=`return a.x*b.x+a.y*b.y+a.z*b.z+0.00000001;
+comp_20=`}
+comp_21=`float ms_length(float3 a) {
+comp_22=`return sqrt(a.x*a.x+a.y*a.y+a.z*a.z+0.00000001);
+comp_23=`}
+comp_24=`float3 ms_normalize(float3 a) {
+comp_25=`return a/ms_length(a);
+comp_26=`}
+comp_27=`
+comp_28=`float ms_dot(float4 a,float4 b) {
+comp_29=`return a.x*b.x+a.y*b.y+a.z*b.z+a.w*b.w+0.00000001;
+comp_30=`}
+comp_31=`float ms_length(float4 a) {
+comp_32=`return sqrt(a.x*a.x+a.y*a.y+a.z*a.z+a.w*a.w+0.00000001);
+comp_33=`}
+comp_34=`float4 ms_normalize(float4 a) {
+comp_35=`return a/ms_length(a);
+comp_36=`}
+comp_37=`
+comp_38=`sampler2D sampler_pc_milksplat_byte_xor;
+comp_39=`float4 ms_u32_from(float v)
+comp_40=`{
+comp_41=`float q = floor(v);
+comp_42=`float a_4 = floor((q / 256.0));
+comp_43=`float b_3 = floor((a_4 / 256.0));
+comp_44=`float c = floor((b_3 / 256.0));
+comp_45=`return float4((q - (a_4 * 256.0)), (a_4 - (b_3 * 256.0)), (b_3 - (c * 256.0)), (c - (floor((c / 256.0)) * 256.0)));
+comp_46=`}
+comp_47=`
+comp_48=`float4 ms_u32_add(float4 a, float4 b)
+comp_49=`{
+comp_50=`float x = (a.x + b.x);
+comp_51=`float y = ((a.y + b.y) + floor((x / 256.0)));
+comp_52=`float z = ((a.z + b.z) + floor((y / 256.0)));
+comp_53=`float w = ((a.w + b.w) + floor((z / 256.0)));
+comp_54=`return float4((x - (floor((x / 256.0)) * 256.0)), (y - (floor((y / 256.0)) * 256.0)), (z - (floor((z / 256.0)) * 256.0)), (w - (floor((w / 256.0)) * 256.0)));
+comp_55=`}
+comp_56=`
+comp_57=`float4 ms_u32_mul(float4 a_1, float4 b_1)
+comp_58=`{
+comp_59=`float x_1 = (a_1.x * b_1.x);
+comp_60=`float y_1 = (((a_1.y * b_1.x) + (a_1.x * b_1.y)) + floor((x_1 / 256.0)));
+comp_61=`float z_1 = ((((a_1.z * b_1.x) + (a_1.y * b_1.y)) + (a_1.x * b_1.z)) + floor((y_1 / 256.0)));
+comp_62=`float w_1 = (((((a_1.w * b_1.x) + (a_1.z * b_1.y)) + (a_1.y * b_1.z)) + (a_1.x * b_1.w)) + floor((z_1 / 256.0)));
+comp_63=`return float4((x_1 - (floor((x_1 / 256.0)) * 256.0)), (y_1 - (floor((y_1 / 256.0)) * 256.0)), (z_1 - (floor((z_1 / 256.0)) * 256.0)), (w_1 - (floor((w_1 / 256.0)) * 256.0)));
+comp_64=`}
+comp_65=`
+comp_66=`float4 ms_u32_xor(float4 a_2, float4 b_2)
+comp_67=`{
+comp_68=`float4 _e14 = tex2Dlod(sampler_pc_milksplat_byte_xor,float4(((float2(a_2.x, b_2.x) + (0.5).xx) / (256.0).xx),0.0,0.0));
+comp_69=`float4 _e28 = tex2Dlod(sampler_pc_milksplat_byte_xor,float4(((float2(a_2.y, b_2.y) + (0.5).xx) / (256.0).xx),0.0,0.0));
+comp_70=`float4 _e42 = tex2Dlod(sampler_pc_milksplat_byte_xor,float4(((float2(a_2.z, b_2.z) + (0.5).xx) / (256.0).xx),0.0,0.0));
+comp_71=`float4 _e56 = tex2Dlod(sampler_pc_milksplat_byte_xor,float4(((float2(a_2.w, b_2.w) + (0.5).xx) / (256.0).xx),0.0,0.0));
+comp_72=`return round((float4(_e14.x, _e28.x, _e42.x, _e56.x) * 255.0));
+comp_73=`}
+comp_74=`
+comp_75=`float ms_u32_byte(float4 v_1, float i)
+comp_76=`{
+comp_77=`return ((i == 0.0) ? v_1.x : ((i == 1.0) ? v_1.y : ((i == 2.0) ? v_1.z : ((i == 3.0) ? v_1.w : 0.0))));
+comp_78=`}
+comp_79=`
+comp_80=`float4 ms_u32_shr(float4 v_2, float n)
+comp_81=`{
+comp_82=`float offset = floor((n / 8.0));
+comp_83=`float scale = exp2((n - (offset * 8.0)));
+comp_84=`const float _e9 = ms_u32_byte(v_2, offset);
+comp_85=`const float _e12 = ms_u32_byte(v_2, (offset + 1.0));
+comp_86=`const float _e15 = ms_u32_byte(v_2, (offset + 2.0));
+comp_87=`const float _e18 = ms_u32_byte(v_2, (offset + 3.0));
+comp_88=`float4 a_5 = float4(_e9, _e12, _e15, _e18);
+comp_89=`const float _e25 = ms_u32_byte(v_2, (offset + 4.0));
+comp_90=`float4 b_4 = float4(a_5.y, a_5.z, a_5.w, _e25);
+comp_91=`return (floor((a_5 / (scale).xxxx)) + ((b_4 - (floor((b_4 / (scale).xxxx)) * scale)) * (256.0 / scale)));
+comp_92=`}
+comp_93=`
+comp_94=`float ms_u32_unit(float4 v_3)
+comp_95=`{
+comp_96=`return ((((v_3.x / 4294967300.0) + (v_3.y / 16777216.0)) + (v_3.z / 65536.0)) + (v_3.w / 256.0));
+comp_97=`}
+comp_98=`
+comp_99=`float ms_field_28_4_(float4 v_4)
+comp_100=`{
+comp_101=`float p = v_4.w;
+comp_102=`return floor((p / 16.0));
+comp_103=`}
+comp_104=`
+comp_105=`float4 ms_u32_pcg_word(float4 seed)
+comp_106=`{
+comp_107=`const float4 _e6 = ms_u32_mul(seed, float4(181.0, 119.0, 146.0, 44.0));
+comp_108=`const float4 _e12 = ms_u32_add(_e6, float4(5.0, 75.0, 86.0, 172.0));
+comp_109=`const float _e13 = ms_field_28_4_(_e12);
+comp_110=`const float4 _e16 = ms_u32_shr(_e12, (_e13 + 4.0));
+comp_111=`const float4 _e17 = ms_u32_xor(_e16, _e12);
+comp_112=`const float4 _e23 = ms_u32_mul(_e17, float4(217.0, 242.0, 142.0, 16.0));
+comp_113=`return _e23;
+comp_114=`}
+comp_115=`
+comp_116=`float ms_field_0_10_(float4 v_5)
+comp_117=`{
+comp_118=`float p_1 = (v_5.x + (v_5.y * 256.0));
+comp_119=`return (p_1 - (floor((p_1 / 1024.0)) * 1024.0));
+comp_120=`}
+comp_121=`
+comp_122=`float ms_field_10_10_(float4 v_6)
+comp_123=`{
+comp_124=`float p_2 = (v_6.y + (v_6.z * 256.0));
+comp_125=`return (floor((p_2 / 4.0)) - (floor((p_2 / 4096.0)) * 1024.0));
+comp_126=`}
+comp_127=`
+comp_128=`float ms_field_20_10_(float4 v_7)
+comp_129=`{
+comp_130=`float p_3 = (v_7.z + (v_7.w * 256.0));
+comp_131=`return (floor((p_3 / 16.0)) - (floor((p_3 / 16384.0)) * 1024.0));
+comp_132=`}
+comp_133=`
+comp_134=`float ms_field_4_8_(float4 v_8)
+comp_135=`{
+comp_136=`float p_4 = (v_8.x + (v_8.y * 256.0));
+comp_137=`return (floor((p_4 / 16.0)) - (floor((p_4 / 4096.0)) * 256.0));
+comp_138=`}
+comp_139=`
+comp_140=`int naga_mod(int lhs,int rhs) {
+comp_141=`return lhs - (lhs / rhs) * rhs;
+comp_142=`}
+comp_143=`
+comp_144=`int naga_div(int lhs,int rhs) {
+comp_145=`return lhs / rhs;
+comp_146=`}
+comp_147=`
+comp_148=`int naga_f2i32(float value) {
+comp_149=`return int(clamp(value, -2147483600.0, 2147483500.0));
+comp_150=`}
+comp_151=`
+comp_152=`float naga_f2u32(float value) {
+comp_153=`return floor(float(clamp(value, 0.0, 4294967000.0)));
+comp_154=`}
+comp_155=`
+comp_156=`float3 ms_user(float2 ms_local_uv, float2 ms_local_uv_orig, float ms_local_rad, float ms_local_ang, float3 ms_local_hue_shader)
+comp_157=`{
+comp_158=`float3 col = (0.0).xxx;
+comp_159=`float rays = 0.0;
+comp_160=`int s = int(0);
+comp_161=`float a_3 = (float)0;
+comp_162=`float f1_ = (float)0;
+comp_163=`float f2_ = (float)0;
+comp_164=`float2 s1_ = (float2)0;
+comp_165=`float hid = (float)0;
+comp_166=`float4 ms_bits_hid = (float4)0;
+comp_167=`int k = (int)0;
+comp_168=`float3 jc = (float3)0;
+comp_169=`float3 shard = (float3)0;
+comp_170=`float4 _e7 = (texsize);
+comp_171=`float2 sz = _e7.xy;
+comp_172=`float asp = (sz.x / sz.y);
+comp_173=`float px = (1.0 / sz.y);
+comp_174=`float lw = max(0.5, (sz.y / 540.0));
+comp_175=`float ro = _qa.x;
+comp_176=`float dr = _qa.y;
+comp_177=`float mx = _qb.x;
+comp_178=`float hu = _qb.y;
+comp_179=`float kq = min(1.0, (sz.y / 135.0));
+comp_180=`float _e49 = _qb.z;
+comp_181=`float pb = (_e49 * kq);
+comp_182=`float _e55 = _qb.w;
+comp_183=`float pm = (_e55 * kq);
+comp_184=`float _e61 = _qc.x;
+comp_185=`float pt = (_e61 * kq);
+comp_186=`float _e67 = _qc.y;
+comp_187=`float sb = (min(_e67, 2.0) * 0.5);
+comp_188=`float kr = _qc.z;
+comp_189=`float _e81 = _qc.w;
+comp_190=`float ka = (_e81 * kq);
+comp_191=`float2 p_5 = float2(((ms_local_uv.x - 0.5) * asp), (ms_local_uv.y - 0.5));
+comp_192=`float r = ms_length(p_5);
+comp_193=`float a0_ = (atan2(p_5.y, p_5.x) + ro);
+comp_194=`float dens = (8.0 / (1.0 + (0.08 * pb)));
+comp_195=`float cpx = (sz.y / dens);
+comp_196=`bool loop_init = true;
+comp_197=`bool ms_loop_skip_0=false;
+comp_198=`
+comp_199=`for(;(s < int(2));s=((s) + (int(1)))) {
+comp_200=`ms_loop_skip_0=false;
+comp_201=`{
+comp_202=`{
+comp_203=`int _e116 = s;
+comp_204=`float w_2 = ((_e116 == int(1)) ? mx : (1.0 - mx));
+comp_205=`if((w_2 <= 0.0)) {
+comp_206=`{
+comp_207=`ms_loop_skip_0=true;
+comp_208=`}
+comp_209=`}
+comp_210=`if(!ms_loop_skip_0) {
+comp_211=`float _e126 = _qa.z;
+comp_212=`float _e131 = _qa.w;
+comp_213=`int _e132 = s;
+comp_214=`float n_1 = ((_e132 == int(1)) ? _e131 : _e126);
+comp_215=`float wedge = (6.2831855 / n_1);
+comp_216=`a_3 = (a0_ - (wedge * floor((a0_ / wedge))));
+comp_217=`float _e143 = a_3;
+comp_218=`float _e144 = a_3;
+comp_219=`a_3 = min(_e143, (wedge - _e144));
+comp_220=`float _e147 = a_3;
+comp_221=`float _e149 = a_3;
+comp_222=`float2 q_1 = (float2(cos(_e147), sin(_e149)) * r);
+comp_223=`float _e153 = a_3;
+comp_224=`float d1_ = (r * sin(_e153));
+comp_225=`float _e158 = a_3;
+comp_226=`float d2_ = (r * sin(((wedge * 0.5) - _e158)));
+comp_227=`float rw = ((px * lw) * 1.3);
+comp_228=`float _e179 = rays;
+comp_229=`rays = (_e179 + (w_2 * (exp(((-(d1_) * d1_) / (rw * rw))) + (0.6 * exp(((-(d2_) * d2_) / (rw * rw)))))));
+comp_230=`float2 g = (((q_1 * dens) - float2(dr, 0.0)) + float2(31.0, 17.0));
+comp_231=`float2 ip = floor(g);
+comp_232=`f1_ = 9.0;
+comp_233=`f2_ = 9.0;
+comp_234=`s1_ = (0.0).xx;
+comp_235=`hid = 0.0;
+comp_236=`ms_bits_hid = (0.0).xxxx;
+comp_237=`k = int(0);
+comp_238=`bool loop_init_1 = true;
+comp_239=`
+comp_240=`for(;(k < int(9));k=((k) + (int(1)))) {
+comp_241=`{
+comp_242=`{
+comp_243=`int _e207 = k;
+comp_244=`int _e213 = k;
+comp_245=`float2 c_1 = (ip + float2((float(naga_mod(_e207, int(3))) - 1.0), (float(naga_div(_e213, int(3))) - 1.0)));
+comp_246=`const float4 _e224 = ms_u32_from(float(naga_f2i32(c_1.x)));
+comp_247=`const float4 _e230 = ms_u32_mul(_e224, float4(181.0, 7.0, 0.0, 0.0));
+comp_248=`const float4 _e234 = ms_u32_from(float(naga_f2i32(c_1.y)));
+comp_249=`const float4 _e240 = ms_u32_mul(_e234, float4(61.0, 36.0, 0.0, 0.0));
+comp_250=`const float4 _e241 = ms_u32_add(_e230, _e240);
+comp_251=`const float4 _e247 = ms_u32_add(_e241, float4(101.0, 0.0, 0.0, 0.0));
+comp_252=`const float4 _e248 = ms_u32_pcg_word(_e247);
+comp_253=`const float _e249 = ms_u32_unit(_e248);
+comp_254=`float h = naga_f2u32((_e249 * 4294967000.0));
+comp_255=`const float _e256 = ms_field_0_10_(_e248);
+comp_256=`const float _e259 = ms_field_10_10_(_e248);
+comp_257=`float2 sd = ((c_1 + (0.12).xx) + ((float2(float(naga_f2u32(_e256)), float(naga_f2u32(_e259))) / (1023.0).xx) * 0.76));
+comp_258=`float d = ms_length((g - sd));
+comp_259=`float _e271 = f1_;
+comp_260=`if((d < _e271)) {
+comp_261=`{
+comp_262=`float _e273 = f1_;
+comp_263=`f2_ = _e273;
+comp_264=`f1_ = d;
+comp_265=`s1_ = sd;
+comp_266=`hid = h;
+comp_267=`ms_bits_hid = _e248;
+comp_268=`}
+comp_269=`} else {
+comp_270=`{
+comp_271=`float _e274 = f2_;
+comp_272=`if((d < _e274)) {
+comp_273=`{
+comp_274=`f2_ = d;
+comp_275=`}
+comp_276=`}
+comp_277=`}
+comp_278=`}
+comp_279=`}
+comp_280=`}
+comp_281=`}
+comp_282=`float4 _e279 = ms_bits_hid;
+comp_283=`const float _e280 = ms_field_20_10_(_e279);
+comp_284=`float hc = (float(naga_f2u32(_e280)) / 1023.0);
+comp_285=`float4 _e285 = ms_bits_hid;
+comp_286=`const float _e286 = ms_field_4_8_(_e285);
+comp_287=`float hb = (float(naga_f2u32(_e286)) / 255.0);
+comp_288=`float _e291 = f2_;
+comp_289=`float _e292 = f1_;
+comp_290=`float ed = ((((_e291 - _e292) * 0.5) * cpx) / lw);
+comp_291=`float glass = smoothstep(2.6, 3.8, ed);
+comp_292=`float hh = (6.2831855 * (((floor((hc * 6.0)) / 6.0) + (0.06 * sin((hc * 40.0)))) + hu));
+comp_293=`jc = ((0.5).xxx + (0.5 * cos(float3(hh, (hh - 2.0944), (hh + 2.0944)))));
+comp_294=`float3 _e327 = jc;
+comp_295=`float3 _e328 = jc;
+comp_296=`float3 _e330 = jc;
+comp_297=`jc = ((_e327 * _e328) * _e330);
+comp_298=`float3 _e332 = jc;
+comp_299=`float _e334 = jc.x;
+comp_300=`float _e336 = jc.y;
+comp_301=`float _e339 = jc.z;
+comp_302=`jc = ((_e332 / (max(max(_e334, _e336), max(_e339, 0.001))).xxx) * 1.1);
+comp_303=`float2 _e347 = s1_;
+comp_304=`float2 dv = (g - _e347);
+comp_305=`float la = (hb * 6.2831855);
+comp_306=`float facet = (0.5 + (0.5 * ms_dot(ms_normalize((dv + (0.0001).xx)), float2(cos(la), sin(la)))));
+comp_307=`float _e363 = f1_;
+comp_308=`float _e365 = f1_;
+comp_309=`float heart = exp(((-(_e363) * _e365) * 3.0));
+comp_310=`float3 _e370 = jc;
+comp_311=`shard = ((_e370 * ((0.25 + (0.55 * facet)) + (0.5 * heart))) * (0.75 + (0.35 * sb)));
+comp_312=`float rim = (exp(((-((ed - 4.0)) * (ed - 4.0)) / 3.0)) * glass);
+comp_313=`float3 _e395 = jc;
+comp_314=`float3 _e406 = shard;
+comp_315=`shard = (_e406 + ((lerp(_e395, (1.0).xxx, 0.5) * rim) * (0.25 + (0.9 * pm))));
+comp_316=`float3 _e413 = shard;
+comp_317=`shard = (_e413 * ((hb < 0.3) ? 0.04 : 1.0));
+comp_318=`float sx = ((abs(dv.x) * cpx) / lw);
+comp_319=`float sy = ((abs(dv.y) * cpx) / lw);
+comp_320=`float star = (((exp((-(sx) * 0.35)) * exp((-(sy) * 0.05))) + (exp((-(sy) * 0.35)) * exp((-(sx) * 0.05)))) * step(0.7, frac((hb * 13.0))));
+comp_321=`float3 _e458 = shard;
+comp_322=`shard = (_e458 + ((float3(1.0, 0.95, 0.8) * star) * (0.35 + (1.4 * pt))));
+comp_323=`float3 _e460 = shard;
+comp_324=`float3 _e463 = col;
+comp_325=`col = (_e463 + ((w_2 * _e460) * glass));
+comp_326=`}
+comp_327=`}
+comp_328=`}
+comp_329=`}
+comp_330=`float3 _e473 = col;
+comp_331=`col = (_e473 * (1.0 - smoothstep(0.45, 1.0, r)));
+comp_332=`float reach = (0.22 + (0.25 * pb));
+comp_333=`float _e483 = rays;
+comp_334=`float3 _e494 = col;
+comp_335=`col = (_e494 + (((float3(1.0, 0.8, 0.45) * _e483) * exp((-(r) / reach))) * (0.6 + (0.8 * pb))));
+comp_336=`float3 _e521 = col;
+comp_337=`col = (_e521 + (float3(1.0, 0.85, 0.6) * ((exp((-(r) / (0.03 + (0.02 * pb)))) * (0.6 + (1.0 * pb))) + ((exp((-(r) / 0.15)) * 0.1) * pb))));
+comp_338=`float rg = exp(((-((r - kr)) * (r - kr)) / 0.0012));
+comp_339=`float3 _e535 = col;
+comp_340=`col = (_e535 * (1.0 + ((1.6 * ka) * rg)));
+comp_341=`float3 _e556 = col;
+comp_342=`col = (_e556 + (((float3(1.0, 0.9, 0.75) * ka) * exp(((-((r - kr)) * (r - kr)) / ((((px * px) * lw) * lw) * 4.0)))) * 0.5));
+comp_343=`float3 _e558 = col;
+comp_344=`float lm = ms_dot(_e558, float3(0.3, 0.5, 0.2));
+comp_345=`float3 _e565 = col;
+comp_346=`col = max(((lm).xxx + ((_e565 - (lm).xxx) * 1.15)), (0.0).xxx);
+comp_347=`float3 _e574 = col;
+comp_348=`float3 _e575 = col;
+comp_349=`return (_e574 / ((1.0).xxx + (0.4 * _e575)));
+comp_350=`}
+comp_351=`
+comp_352=`shader_body
+comp_353=`{
+comp_354=`    ret = ms_user(uv,uv_orig,rad,ang,hue_shader);
+comp_355=`    ret=float3((abs(ret.x)<3.4e38?clamp(ret.x,0.00000001,64.0):0.00000001),(abs(ret.y)<3.4e38?clamp(ret.y,0.00000001,64.0):0.00000001),(abs(ret.z)<3.4e38?clamp(ret.z,0.00000001,64.0):0.00000001));
+comp_356=`}

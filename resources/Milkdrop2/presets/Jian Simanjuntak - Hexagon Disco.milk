@@ -1,0 +1,347 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=2
+PSVERSION_COMP=4
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.005
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.98990
+rot=-0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=0.99990
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+wavecode_0_enabled=0
+wavecode_0_samples=120
+wavecode_0_sep=38
+wavecode_0_bSpectrum=1
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=2.15542
+wavecode_0_smoothing=0.10000
+wavecode_0_r=1.000
+wavecode_0_g=0.000
+wavecode_0_b=0.000
+wavecode_0_a=0.500
+wavecode_1_enabled=0
+wavecode_1_samples=120
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=0
+wavecode_1_scaling=0.89152
+wavecode_1_smoothing=0.82000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=0.000
+wavecode_1_a=0.500
+wavecode_2_enabled=0
+wavecode_2_samples=120
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=5.34537
+wavecode_2_smoothing=0.82000
+wavecode_2_r=0.000
+wavecode_2_g=0.600
+wavecode_2_b=1.000
+wavecode_2_a=0.500
+wavecode_3_enabled=0
+wavecode_3_samples=40
+wavecode_3_sep=0
+wavecode_3_bSpectrum=1
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=1
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=0.600
+shapecode_0_enabled=1
+shapecode_0_sides=100
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=1
+shapecode_0_num_inst=4
+shapecode_0_x=0.840
+shapecode_0_y=0.720
+shapecode_0_rad=0.09820
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=2.45030
+shapecode_0_tex_zoom=1.05048
+shapecode_0_r=1.000
+shapecode_0_g=1.000
+shapecode_0_b=1.000
+shapecode_0_a=1.000
+shapecode_0_r2=1.000
+shapecode_0_g2=1.000
+shapecode_0_b2=1.000
+shapecode_0_a2=0.000
+shapecode_0_border_r=0.000
+shapecode_0_border_g=0.000
+shapecode_0_border_b=0.000
+shapecode_0_border_a=0.000
+shape_0_per_frame1=// Mengatur posisi X untuk keempat bentuk
+shape_0_per_frame2=x = (equal(instance, 0) * 0.840) + 
+shape_0_per_frame3=    (equal(instance, 1) * 0.840) + 
+shape_0_per_frame4=    (equal(instance, 2) * 0.150) + 
+shape_0_per_frame5=    (equal(instance, 3) * 0.150);
+shape_0_per_frame6=
+shape_0_per_frame7=// Mengatur posisi Y untuk keempat bentuk
+shape_0_per_frame8=y = (equal(instance, 0) * 0.720) + 
+shape_0_per_frame9=    (equal(instance, 1) * 0.300) + 
+shape_0_per_frame10=    (equal(instance, 2) * 0.720) + 
+shape_0_per_frame11=    (equal(instance, 3) * 0.300);
+shape_0_per_frame12=
+shape_0_per_frame13=// Mengatur rotasi yang berbeda untuk setiap putaran bentuk
+shape_0_per_frame14=ang = (equal(instance, 0) * (ang + (time * q6))) + 
+shape_0_per_frame15=      (equal(instance, 1) * (ang + (time * q7))) + 
+shape_0_per_frame16=      (equal(instance, 2) * (ang + (time * q8))) + 
+shape_0_per_frame17=      (equal(instance, 3) * (ang + (time * q9)));
+shape_0_per_frame18=
+shape_0_per_frame19=sides = q5;
+shape_0_per_frame20=rad = q4;
+shapecode_1_enabled=0
+shapecode_1_sides=100
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_num_inst=1
+shapecode_1_x=0.840
+shapecode_1_y=0.300
+shapecode_1_rad=0.09820
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=2.45030
+shapecode_1_tex_zoom=1.05048
+shapecode_1_r=1.000
+shapecode_1_g=1.000
+shapecode_1_b=1.000
+shapecode_1_a=1.000
+shapecode_1_r2=1.000
+shapecode_1_g2=1.000
+shapecode_1_b2=1.000
+shapecode_1_a2=1.000
+shapecode_1_border_r=0.000
+shapecode_1_border_g=0.000
+shapecode_1_border_b=0.000
+shapecode_1_border_a=0.000
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=1
+shapecode_2_thickOutline=1
+shapecode_2_textured=0
+shapecode_2_num_inst=21
+shapecode_2_x=0.950
+shapecode_2_y=0.900
+shapecode_2_rad=0.06386
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=0.73678
+shapecode_2_r=1.000
+shapecode_2_g=0.600
+shapecode_2_b=1.000
+shapecode_2_a=1.000
+shapecode_2_r2=0.000
+shapecode_2_g2=0.700
+shapecode_2_b2=1.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=0.000
+shapecode_2_border_a=0.000
+shape_2_per_frame1=sides = q5;
+shape_2_per_frame2=rad = q4;
+shape_2_per_frame3=ang = ang + (time*2);
+shapecode_3_enabled=1
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=1
+shapecode_3_textured=0
+shapecode_3_num_inst=2
+shapecode_3_x=0.600
+shapecode_3_y=0.650
+shapecode_3_rad=0.04910
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=0.34933
+shapecode_3_r=1.000
+shapecode_3_g=1.000
+shapecode_3_b=1.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=0.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=0.200
+shapecode_3_border_g=0.700
+shapecode_3_border_b=0.500
+shapecode_3_border_a=0.000
+shape_3_per_frame1=// Menentukan bentuk poligon
+shape_3_per_frame2=sides = 6;
+shape_3_per_frame3=
+shape_3_per_frame4=// Membuat bentuk bergerak memantul ke kiri-kanan dan atas-bawah mengikuti waktu
+shape_3_per_frame5=x = 0.5 + 0.17 * sin(time * 2.5);
+shape_3_per_frame6=y = 0.5 + 0.1 * cos(time * 1.5) + (bass * 0.05);
+shape_3_per_frame7=
+shape_3_per_frame8=// Membuat ukuran bentuk membesar setiap kali ada hentakan treble
+shape_3_per_frame9=rad = 0.25;
+shape_3_per_frame10=
+shape_3_per_frame11=// Membuat bentuk berputar secara dinamis merespons frekuensi 'mid'
+shape_3_per_frame12=ang = ang + 0.2 * mid;
+shape_3_per_frame13=
+shape_3_per_frame14=// Warna acak
+shape_3_per_frame15=r = q1;
+shape_3_per_frame16=g = q2;
+shape_3_per_frame17=b = q3;
+shape_3_per_frame18=r2 = q1;
+shape_3_per_frame19=g2 = q2;
+shape_3_per_frame20=b2 = q3;
+per_frame_1=// *************** SHAPECODE PER_FRAME ***************
+per_frame_2=
+per_frame_3=// ------ BAGIAN 1
+per_frame_4=// Membuat variabel kustom untuk warna
+per_frame_5=my_red = (bass / 1.3);
+per_frame_6=my_green = (mid / 1.3);
+per_frame_7=my_blue = (treb / 1.3);
+per_frame_8=
+per_frame_9=// Mengaplikasikan variabel kustom ke gelombang suara
+per_frame_10=q1 = my_red;
+per_frame_11=q2 = my_green;
+per_frame_12=q3 = my_blue;
+per_frame_13=
+per_frame_14=// ------ BAGIAN 2
+per_frame_15=q4 = 0.415; // Memperbesar 
+per_frame_16=q5 = 100; // Memperbentuk
+per_frame_17=
+per_frame_18=// Kecepatan rotasi betuk
+per_frame_19=q6 = -4; // ------------------------------- Bentuk pertama
+per_frame_20=q7 = 4; // ------------------------------- Bentuk kedua
+per_frame_21=q8 = 4; // ------------------------------- Bentuk ketiga
+per_frame_22=q9 = -4; // ------------------------------- Bentuk Keempat
+per_frame_23=
+per_frame_24=// *************** SETELAN DARI PER_VERTEX ***************
+per_frame_25=q10 = 0.052; // Piksel X
+per_frame_26=q11 = 0.053; // Piksel Y
+per_pixel_1=// Menghitung koordinat dasar yang disesuaikan dengan ukuran piksel layar
+per_pixel_2=zz_x = x * pixelsx * q10;
+per_pixel_3=zz_y = y * pixelsy * q11;
+per_pixel_4=
+per_pixel_5=// Menghitung faktor distorsi menggunakan gelombang trigonometri dan variabel Q
+per_pixel_6=h1 = cos(zz_y * 0.8) * sin(-zz_y);
+per_pixel_7=h2 = sin(zz_x) * cos(zz_y * 0.9);
+per_pixel_8=
+per_pixel_9=// Mengaplikasikan pergerakan ke variabel dx dan dy
+per_pixel_10=// Dibagi dengan pixelsx dan pixelsy sebagai ekuivalen dari texsize.zw (1/texsize.xy)
+per_pixel_11=dx = (h1 * 5) / pixelsx;
+per_pixel_12=dy = (h2 * 5) / pixelsy;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // sample previous frame
+warp_4=`   float3 pre = tex2D( sampler_main, uv_orig);
+warp_5=`   float3 warped = tex2D( sampler_main, uv -floor(uv));
+warp_6=`    
+warp_7=`  ret = lerp( pre, warped, 0.5);
+warp_8=`    // darken (decay) over time
+warp_9=`    ret *= 0.98; //or try: ret -= 0.004;
+warp_10=`}
+comp_1=`//shining shader by martin
+comp_2=`
+comp_3=`#define sat saturate
+comp_4=`float z, z0, radi;
+comp_5=`float2 uv1, uv2, uva, dz;
+comp_6=`static const int anz = 95;
+comp_7=`static float beat = (q5 + q6 + q7)/3;
+comp_8=`static const float2 hor = texsize.zw*float2(1,0);
+comp_9=`static const float2 ver = texsize.zw*float2(1,0).yx;
+comp_10=`float3 Get1 (float2 uvi, float par)
+comp_11=`{return lerp(GetBlur1(uvi), GetPixel(uvi), 0*saturate(par/2))*par;}
+comp_12=`
+comp_13=`shader_body {
+comp_14=`float sunx =  q31*0.5 +0.55, suny = q32*0.5 + 0.34;
+comp_15=`//if(sqrt(pow(uv.x - q31*0.5 -0.55 ,2) + pow(uv.y-q32*0.5 - 0.34,2))<0.05) {ret = 1;}
+comp_16=`float2 sunpos = float2(0.5,0.5);
+comp_17=`uva = (uv-0.5)*aspect.xy+0.5;
+comp_18=`float sun = (.01 / length (uva-sunpos));
+comp_19=`
+comp_20=`dz.x = lum(GetPixel(uv-hor)) - lum(GetPixel(uv+hor));
+comp_21=`dz.y = lum(GetPixel(uv-ver)) - lum(GetPixel(uv+ver));
+comp_22=`
+comp_23=`float3 shine = GetPixel(uv); 
+comp_24=`
+comp_25=`radi = 1;
+comp_26=`for (int n=1; n <= anz; n++)
+comp_27=`{
+comp_28=`  shine += (1 + 2*q2)/anz*Get1((uv-sunpos)*radi+sunpos,radi);
+comp_29=`  radi -= 0.75/anz;;
+comp_30=`}
+comp_31=`ret += max(shine,0*GetPixel(uv));
+comp_32=`//ret = shine+GetPixel(uv);
+comp_33=`
+comp_34=`}

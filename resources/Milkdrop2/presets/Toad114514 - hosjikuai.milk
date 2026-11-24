@@ -1,0 +1,93 @@
+[preset00]
+fRating=3
+fGammaAdj=1.994
+fDecay=0.98
+fVideoEchoZoom=2
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=2
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.42
+fWaveScale=0.691358
+fWaveSmoothing=0.4
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=0.888
+fShader=1
+zoom=0.99971
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=1.66
+sx=1
+sy=1
+wave_r=0.65
+wave_g=0.16
+wave_b=0.65
+wave_x=0.5
+wave_y=0.1
+ob_size=0.01
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0.01
+ib_r=0.25
+ib_g=0.25
+ib_b=0.25
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+
+bars_mode=5
+
+bars_thr = 0.5
+bars_thr_color_t=0xFFffc5fc
+bars_thr_color_b=0xFF45edaf
+bars_color_t=0xFF016791
+bars_color_b=0xFFffffff
+
+bars_x=0.0
+bars_y=0.0
+bars_rot=0
+bars_sx = 0.16
+bars_sy = 1
+bars_num_x = 15
+bars_num_y = 15
+bars_smooth = 0.5
+bars_sensitivity = 0.56
+bars_bass_sensitivity = 0.7
+bars_spacing_y = 0.1
+bars_spacing_x = 0.293
+
+per_frame_1=wave_r = wave_r + 0.350*( 0.60*sin(0.742*time) + 0.40*sin(1.021*time) );
+per_frame_2=wave_g = wave_g + 0.350*( 0.60*sin(0.703*time) + 0.40*sin(0.969*time) );
+per_frame_3=wave_b = cx - rot + 0.350*( 0.60*sin(1.090*time) + 0.40*sin(0.963*time) );
+per_frame_4=rot = rot + 0.999*( 0.60*sin(bass*time) + 0.40*cos(0.19-6*bass-mid*time) );
+per_frame_5=cx = cx + 0.110*( 0.60*sin(0.374*time) + cx*sin(cx*time) );
+per_frame_6=cy = cy + 1.5 - cos(61.2);
+per_pixel_1=dr = 0.01 - time * cy + max(ang,time)*min(max(bass_att-1,0.0), 0.5)*sin(rad*15);
+per_pixel_2=dx = dx + dr*cos(ang)*0.75;

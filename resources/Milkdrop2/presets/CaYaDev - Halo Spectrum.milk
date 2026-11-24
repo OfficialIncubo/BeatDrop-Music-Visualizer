@@ -1,0 +1,176 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=1
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1
+wavecode_0_smoothing=0.3
+wavecode_0_r=1
+wavecode_0_g=1
+wavecode_0_b=1
+wavecode_0_a=1
+wave_0_per_frame1=a = 1;
+wave_0_per_point1=x = 0.5 + (sample - 0.5)*0.9/q31;
+wave_0_per_point2=y = 0.5 + 0.488/q32;
+wave_0_per_point3=h = min(1, sqrt(max(0, value1 - 0.012)*2.2*(1 + sample*6)));
+wave_0_per_point4=r = h;
+wave_0_per_point5=g = h;
+wave_0_per_point6=b = h;
+per_frame_init_1=last = 0;
+per_frame_init_2=ring = 1;
+per_frame_init_3=pulse = 0;
+per_frame_init_4=sw = 0;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=beat = (bass > 1.3)*((time - last) > 0.3);
+per_frame_5=last = if(beat, time, last);
+per_frame_6=ring = if(beat, 0, min(ring + 0.9/fps, 1));
+per_frame_7=pulse = max(pulse*pow(0.85, q30), beat);
+per_frame_8=sw = sw + (0.12 + 0.25*mid_att)/fps;
+per_frame_9=q1 = min(bass_att, 2.5);
+per_frame_10=q2 = pulse;
+per_frame_11=q3 = sw;
+per_frame_12=q4 = ring;
+per_frame_13=q5 = min(treb_att, 2.5);
+per_frame_14=q6 = time*0.25;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  float2 p = (uv - 0.5) * aspect.xy;
+warp_4=`  float r = length(p);
+warp_5=`  float a = atan2(p.x, -p.y);
+warp_6=`  float t = abs(a) * 0.31831;
+warp_7=`  float tb = (floor(t * 48.0) + 0.5) / 48.0;
+warp_8=`  float h = tex2D(sampler_main, float2(0.05 + 0.9 * pow(tb, 1.6), 0.028)).x;
+warp_9=`  float R0 = 0.112 + 0.01 * q1;
+warp_10=`  float tip = R0 + 0.012 + 0.006 + 0.11 * h;
+warp_11=`  float cs = cos(0.0025 * q30);
+warp_12=`  float sn = sin(0.0025 * q30);
+warp_13=`  float2 p2 = float2(p.x * cs - p.y * sn, p.x * sn + p.y * cs) * (1.0 - 0.0045 * q30 * (1.0 + q1));
+warp_14=`  float3 fb = tex2D(sampler_main, 0.5 + p2 / aspect.xy).xyz;
+warp_15=`  fb = max(fb * pow(0.955, q30) - 0.002 * max(q30, 1.0), 0.0);
+warp_16=`  float2 cell = floor(uv * texsize.xy * 0.5);
+warp_17=`  float4 n = tex2D(sampler_noise_lq, (cell + floor(frac(float2(time * 0.731, time * 0.419)) * 256.0)) / 256.0);
+warp_18=`  float zone = exp(-pow((r - tip) * 90.0, 2.0)) * saturate(h * 1.6 - 0.15);
+warp_19=`  float born = step(1.0 - 0.12 * zone * (0.6 + 0.5 * q5), n.x) * step(n.y, q30);
+warp_20=`  float3 c = 0.5 + 0.5 * cos(6.28318 * (float3(0.0, 0.33, 0.67) + tb * 0.8 + q3));
+warp_21=`  fb += c * born * (0.8 + 0.4 * n.z);
+warp_22=`  // the data row is read at its centre and one texel either side: MilkDrop 2 lands the line ~1 px lower
+warp_23=`  float dy = 1.0 / texsize.y;
+warp_24=`  float cur = max(tex2D(sampler_main, float2(uv.x, 0.012)).x, max(tex2D(sampler_main, float2(uv.x, 0.012 + dy)).x, tex2D(sampler_main, float2(uv.x, 0.012 - dy)).x));
+warp_25=`  float hold = max(tex2D(sampler_main, uv).x - 0.012 * q30, cur);
+warp_26=`  ret = fb * step(0.04, uv.y);
+warp_27=`  ret = lerp(ret, hold.xxx, step(abs(uv.y - 0.028), 0.006));
+warp_28=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`  float2 p = (uv - 0.5) * aspect.xy;
+comp_4=`  float r = length(p);
+comp_5=`  float a = atan2(p.x, -p.y);
+comp_6=`  float t = abs(a) * 0.31831;
+comp_7=`  float nb = 48.0;
+comp_8=`  float fk = frac(t * nb);
+comp_9=`  float tb = (floor(t * nb) + 0.5) / nb;
+comp_10=`  float h = tex2D(sampler_main, float2(0.05 + 0.9 * pow(tb, 1.6), 0.028)).x;
+comp_11=`  float R0 = 0.112 + 0.01 * q1;
+comp_12=`  float len = 0.006 + 0.11 * h;
+comp_13=`  float px = 1.0 / texsize.x;
+comp_14=`  float side = smoothstep(0.1, 0.1 + 0.05, fk) * (1.0 - smoothstep(0.85, 0.9, fk));
+comp_15=`  float along = (r - R0 - 0.012) / len;
+comp_16=`  float bar = side * smoothstep(-px, px, r - R0 - 0.012) * (1.0 - smoothstep(len - px, len + px, r - R0 - 0.012));
+comp_17=`  float3 pal = 0.5 + 0.5 * cos(6.28318 * (float3(0.0, 0.33, 0.67) + tb * 0.8 + q3));
+comp_18=`  pal = pow(pal, 1.6);
+comp_19=`  float3 col = pal * bar * (0.75 + 0.6 * saturate(along)) + bar * pow(saturate(along), 6.0) * 0.4;
+comp_20=`  col += pal * side * exp(-max(r - R0 - 0.012 - len, 0.0) * 120.0) * step(R0 + 0.012, r) * 0.25 * (0.3 + h);
+comp_21=`  float disc = 1.0 - smoothstep(R0 - 1.5 * px, R0, r);
+comp_22=`  float spin = a + q6;
+comp_23=`  float3 c1 = 0.5 + 0.5 * cos(6.28318 * (float3(0.0, 0.33, 0.67) + q3 + 0.5));
+comp_24=`  float3 core = lerp(c1 * 0.25, pal * 0.5, 0.5 + 0.5 * sin(spin * 2.0));
+comp_25=`  core *= 0.65 + 0.35 * sin(r * 520.0) * 0.5 + 0.35 * exp(-r * 30.0);
+comp_26=`  core += float3(1.0, 0.95, 0.9) * exp(-r * r * 900.0) * (0.25 + 0.5 * q2);
+comp_27=`  col = lerp(col, core, disc);
+comp_28=`  col += lerp(pal, float3(1.0, 1.0, 1.0), 0.5) * exp(-pow((r - R0) * 700.0, 2.0)) * (0.5 + 0.6 * q2);
+comp_29=`  float sr = R0 + 0.2 * q4;
+comp_30=`  col += pal * exp(-pow((r - sr) * 160.0, 2.0)) * (1.0 - q4) * 0.5;
+comp_31=`  float3 dust = tex2D(sampler_main, uv).xyz + GetBlur1(uv) * 0.6 + GetBlur2(uv) * 0.5;
+comp_32=`  col += dust * smoothstep(0.05, 0.09, uv.y);
+comp_33=`  col += float3(0.02, 0.015, 0.04) * (1.0 - r * 1.5);
+comp_34=`  col *= 1.0 - dot(uv - 0.5, uv - 0.5) * 0.7;
+comp_35=`  ret = 1.0 - exp(-col * 1.6);
+comp_36=`}

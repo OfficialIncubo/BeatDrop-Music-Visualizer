@@ -1,0 +1,296 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=3
+PSVERSION_COMP=4
+[preset00]
+FFTAttack=0.500
+FFTDecay=0.700
+fRating=3.000
+fGammaAdj=1.000
+fDecay=1.000
+fVideoEchoZoom=0.997
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=1
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=0.010
+fWaveSmoothing=0.270
+fWaveParam=-0.380
+fModWaveAlphaStart=0.710
+fModWaveAlphaEnd=1.300
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99951
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.500
+ob_r=0.010
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=1.000
+ib_g=1.000
+ib_b=1.000
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+shapecode_0_enabled=1
+shapecode_0_sides=4
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.15803
+shapecode_0_ang=1.59814
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=1.00000
+shapecode_0_r=1.000
+shapecode_0_g=1.000
+shapecode_0_b=1.000
+shapecode_0_a=1.000
+shapecode_0_r2=1.000
+shapecode_0_g2=1.000
+shapecode_0_b2=1.000
+shapecode_0_a2=1.000
+shapecode_0_border_r=0.000
+shapecode_0_border_g=0.000
+shapecode_0_border_b=0.000
+shapecode_0_border_a=0.000
+shape_0_per_frame1=rad = .158;
+shape_0_per_frame2=ang = 1.571;
+shape_0_per_frame3=x = (0|(int(rand(16))))*.066;
+shape_0_per_frame4=y = (0|(int(rand(10))))*.116;
+shape_0_per_frame5=
+shape_0_per_frame6=r = int(rand(100))*.01;
+shape_0_per_frame7=g = int(rand(100))*.01;
+shape_0_per_frame8=b = int(rand(100))*.01;
+shape_0_per_frame9=r2 = g;
+shape_0_per_frame10=g2 = b;
+shape_0_per_frame11=b2 = r;
+shapecode_1_enabled=1
+shapecode_1_sides=4
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_num_inst=1
+shapecode_1_x=0.500
+shapecode_1_y=0.500
+shapecode_1_rad=0.15774
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=1.00000
+shapecode_1_r=1.000
+shapecode_1_g=1.000
+shapecode_1_b=1.000
+shapecode_1_a=1.000
+shapecode_1_r2=1.000
+shapecode_1_g2=1.000
+shapecode_1_b2=1.000
+shapecode_1_a2=1.000
+shapecode_1_border_r=1.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=1.000
+shapecode_1_border_a=0.000
+shape_1_per_frame1=rad = .158;
+shape_1_per_frame2=ang = 1.571;
+shape_1_per_frame3=x = (0|(int(rand(16))))*.066;
+shape_1_per_frame4=y = (0|(int(rand(10))))*.116;
+shape_1_per_frame5=
+shape_1_per_frame6=r = int(rand(100))*.01;
+shape_1_per_frame7=g = int(rand(100))*.01;
+shape_1_per_frame8=b = int(rand(100))*.01;
+shape_1_per_frame9=r2 = g;
+shape_1_per_frame10=g2 = b;
+shape_1_per_frame11=b2 = r;
+shapecode_2_enabled=1
+shapecode_2_sides=4
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_num_inst=1
+shapecode_2_x=0.500
+shapecode_2_y=0.500
+shapecode_2_rad=0.15736
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=1.00000
+shapecode_2_r=0.840
+shapecode_2_g=0.000
+shapecode_2_b=0.000
+shapecode_2_a=1.000
+shapecode_2_r2=1.000
+shapecode_2_g2=0.580
+shapecode_2_b2=0.000
+shapecode_2_a2=1.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=1.000
+shapecode_2_border_a=0.000
+shape_2_per_frame1=rad = .158;
+shape_2_per_frame2=ang = 1.571;
+shape_2_per_frame3=x = (0|(int(rand(16))))*.066;
+shape_2_per_frame4=y = (0|(int(rand(10))))*.116;
+shape_2_per_frame5=
+shape_2_per_frame6=r = int(rand(100))*.01;
+shape_2_per_frame7=g = int(rand(100))*.01;
+shape_2_per_frame8=b = int(rand(100))*.01;
+shape_2_per_frame9=r2 = g;
+shape_2_per_frame10=g2 = b;
+shape_2_per_frame11=b2 = r;
+shapecode_3_enabled=1
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=1
+shapecode_3_x=0.500
+shapecode_3_y=0.500
+shapecode_3_rad=0.10000
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.00000
+shapecode_3_r=1.000
+shapecode_3_g=0.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=1.000
+shapecode_3_b2=0.000
+shapecode_3_a2=1.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=1.000
+shapecode_3_border_b=1.000
+shapecode_3_border_a=0.100
+shape_3_per_frame1=rad = .158;
+shape_3_per_frame2=ang = 1.571;
+shape_3_per_frame3=x = (0|(int(rand(16))))*.066;
+shape_3_per_frame4=y = (0|(int(rand(10))))*.116;
+shape_3_per_frame5=
+shape_3_per_frame6=r = int(rand(100))*.01;
+shape_3_per_frame7=g = int(rand(100))*.01;
+shape_3_per_frame8=b = int(rand(100))*.01;
+shape_3_per_frame9=r2 = g;
+shape_3_per_frame10=g2 = b;
+shape_3_per_frame11=b2 = r;
+per_frame_1=warp = 0;
+per_frame_2=zoom = 1;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // sample previous frame
+warp_4=`    ret = tex2D( sampler_main, uv ).xyz;
+warp_5=`    float ret2 = tex2D( sampler_main, uv).xyz;
+warp_6=`    ret = lerp(ret,ret2,ret*.2); 
+warp_7=`    // darken (decay) over time
+warp_8=`    ret *= .999;
+warp_9=`    ret -= .002;
+warp_10=`}
+comp_1=`shader_body {
+comp_2=`    float2 uv_base = uv;
+comp_3=`    float wall_start = 0.45 + (bass_att * 0.02);
+comp_4=`    float3 final_color = float3(0.0, 0.0, 0.0);
+comp_5=`
+comp_6=`    float wall_x = (uv_base.x - wall_start) / (1.0 + 0.1 * sin(time * 0.145) - wall_start);
+comp_7=`    float z_depth = 1.0 / (max(0.001, 1.0 - wall_x));
+comp_8=`    float wall_y = (uv_base.y - 0.5) * z_depth + 0.5;
+comp_9=`
+comp_10=`    float2 grid_uv;
+comp_11=`    grid_uv.x = (z_depth - 1.0 + time * (0.66 + (q6 * 0.00001))) * 0.5;
+comp_12=`    grid_uv.y = wall_y + (q7 * 0.02) + sin(time * 0.2);
+comp_13=`
+comp_14=`    float extrude_strength = 0.22 + (0.1 * mid_att);
+comp_15=`    float2 view_dir = float2(0.35, (uv_base.y - 0.5) * 0.8) * extrude_strength;
+comp_16=`
+comp_17=`    float2 curr_uv = grid_uv;
+comp_18=`    float layer_depth = 1.0;
+comp_19=`    float step_size = 1.0 / 24.0;
+comp_20=`    float hit_height = 0.0;
+comp_21=`    float is_side_wall = 0.0;
+comp_22=`
+comp_23=`    float block_scale = 5;
+comp_24=`
+comp_25=`    for (int i = 0; i < 24; i++) {
+comp_26=`        if (layer_depth > hit_height) {
+comp_27=`            float2 cell_id = floor(curr_uv * block_scale);
+comp_28=`            float rand_h = frac(sin(dot(cell_id, float2(12.9898, 78.233))) * 43758.5453);
+comp_29=`            hit_height = rand_h * saturate(0.65 + treb_att * 0.25);
+comp_30=`
+comp_31=`            if (layer_depth > hit_height) {
+comp_32=`                curr_uv += view_dir * step_size;
+comp_33=`                layer_depth -= step_size;
+comp_34=`                is_side_wall = 1.0;
+comp_35=`            }
+comp_36=`        }
+comp_37=`    }
+comp_38=`
+comp_39=`    float screen_tile_scale = 1.75;
+comp_40=`    float2 uv_wall = frac(curr_uv * screen_tile_scale);
+comp_41=`
+comp_42=`    float fog_factor = pow(saturate(1.0 - wall_x), 2.2 + abs(mid_att - 1.0) * 0.15);
+comp_43=`
+comp_44=`    float3 sharp_tex = tex2D(sampler_main, uv_wall).xyz;
+comp_45=`    float3 med_blur  = GetBlur1(uv_wall);
+comp_46=`    float3 heavy_blur = GetBlur3(uv_wall);
+comp_47=`
+comp_48=`    float blur_mix = 1.0 - fog_factor;
+comp_49=`    float3 wall_tex = lerp(sharp_tex, med_blur, smoothstep(0.0, 0.5, blur_mix));
+comp_50=`    wall_tex = lerp(wall_tex, heavy_blur, smoothstep(0.4, 1.0, blur_mix));
+comp_51=`
+comp_52=`    float side_shade = lerp(1.0, 0.5, is_side_wall);
+comp_53=`    float depth_ao = 0.65 + 0.35 * hit_height;
+comp_54=`
+comp_55=`    float2 cell_uv = frac(curr_uv * block_scale);
+comp_56=`    float2 dist_to_edge = min(cell_uv, 1.0 - cell_uv);
+comp_57=`    float min_edge_dist = min(dist_to_edge.x, dist_to_edge.y);
+comp_58=`
+comp_59=`    float edge_width = 0.02 + blur_mix * 0.08;
+comp_60=`    float edge_glow = smoothstep(edge_width, 0.0, min_edge_dist) * fog_factor;
+comp_61=`    float3 glow_color = (wall_tex + float3(0.15, 0.35, 0.5)) * edge_glow * (0.2 + treb_att * 0.1);
+comp_62=`
+comp_63=`    final_color = ((wall_tex * side_shade * depth_ao) + glow_color * 0.25) * fog_factor;
+comp_64=`
+comp_65=`    ret = final_color;
+comp_66=`    ret *= 4.50; // gamma
+comp_67=`    ret -= abs((ret-1)*.03);
+comp_68=`}

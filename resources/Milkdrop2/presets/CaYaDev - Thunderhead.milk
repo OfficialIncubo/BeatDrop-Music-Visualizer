@@ -1,0 +1,137 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+per_frame_init_1=last = 0;
+per_frame_init_2=flash = 0;
+per_frame_init_3=fx = 0.5;
+per_frame_init_4=wind = 0;
+per_frame_init_5=seed = 1;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=beat = (bass > 1.3)*((time - last) > 0.45);
+per_frame_5=last = if(beat, time, last);
+per_frame_6=flash = max(flash*pow(0.86, q30), beat);
+per_frame_7=fx = if(beat, 0.2 + rand(600)*0.001, fx);
+per_frame_8=seed = if(beat, rand(1000)*0.01, seed);
+per_frame_9=wind = wind + (0.0025 + 0.005*min(mid_att, 2))/fps;
+per_frame_10=q1 = flash;
+per_frame_11=q2 = fx;
+per_frame_12=q3 = wind;
+per_frame_13=q4 = min(bass_att, 2);
+per_frame_14=q5 = min(treb_att, 2);
+per_frame_15=q6 = seed;
+per_frame_16=q7 = time;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  ret = tex2D(sampler_main, uv).xyz * pow(0.7, q30);
+warp_4=`}
+comp_1=`float cloud(float2 p)
+comp_2=`{
+comp_3=`  float n = tex2D(sampler_noise_lq, p).x * 0.5;
+comp_4=`  n += tex2D(sampler_noise_lq, p * 2.03 + 0.31).x * 0.25;
+comp_5=`  n += tex2D(sampler_noise_lq, p * 4.01 + 0.67).x * 0.125;
+comp_6=`  n += tex2D(sampler_noise_lq, p * 8.05 + 0.13).x * 0.0625;
+comp_7=`  return n / 0.9375;
+comp_8=`}
+comp_9=`shader_body
+comp_10=`{
+comp_11=`  float2 p = float2((uv.x - 0.5) * aspect.x, uv.y);
+comp_12=`  float2 w = float2(q3, 0.0);
+comp_13=`  float c1 = cloud(p * float2(0.55, 0.9) * 0.045 + w);
+comp_14=`  float c2 = cloud(p * float2(0.8, 1.3) * 0.07 - w * 1.7 + 0.4);
+comp_15=`  float dens = saturate((c1 * 0.65 + c2 * 0.35 - 0.36 + q4 * 0.03) * 2.6);
+comp_16=`  dens *= smoothstep(0.92, 0.45, uv.y);
+comp_17=`  float3 sky = lerp(float3(0.012, 0.016, 0.035), float3(0.03, 0.04, 0.07), uv.y);
+comp_18=`  float edge = saturate(dens * (1.0 - dens) * 4.0);
+comp_19=`  float3 cl = float3(0.05, 0.06, 0.09) * dens + float3(0.12, 0.14, 0.2) * edge * 0.6;
+comp_20=`  float2 fp = float2((q2 - 0.5) * aspect.x, 0.3);
+comp_21=`  float fl = q1 * (0.75 + 0.25 * sin(q7 * 70.0));
+comp_22=`  float inner = exp(-dot(p - fp, p - fp) * 5.0);
+comp_23=`  cl += float3(0.75, 0.8, 1.0) * dens * inner * fl * 1.6;
+comp_24=`  cl += float3(0.5, 0.55, 0.8) * dens * fl * 0.25;
+comp_25=`  float3 col = lerp(sky, cl, saturate(dens * 1.4));
+comp_26=`  float jag = tex2D(sampler_noise_lq, float2(uv.y * 0.05 + q6, q6 * 0.37)).x - 0.5;
+comp_27=`  jag += (tex2D(sampler_noise_lq, float2(uv.y * 0.22 + q6, q6 * 0.71)).x - 0.5) * 0.35;
+comp_28=`  float bx = fp.x + jag * 0.22 * smoothstep(0.25, 0.6, uv.y);
+comp_29=`  float bolt = exp(-abs(p.x - bx) * 320.0) * smoothstep(0.26, 0.34, uv.y) * smoothstep(0.98, 0.9, uv.y);
+comp_30=`  col += float3(0.85, 0.9, 1.0) * bolt * fl * 2.2;
+comp_31=`  col += float3(0.35, 0.4, 0.6) * exp(-abs(p.x - bx) * 14.0) * fl * 0.35 * smoothstep(0.26, 0.5, uv.y);
+comp_32=`  float2 rp = float2(uv.x * aspect.x * 6.0 + uv.y * 0.9, uv.y * 2.4 - q7 * 1.6);
+comp_33=`  float rain = tex2D(sampler_noise_lq, rp * float2(1.0, 0.05)).x;
+comp_34=`  col += float3(0.5, 0.55, 0.7) * smoothstep(0.78, 0.98, rain) * (0.04 + 0.1 * q5) * (0.5 + fl);
+comp_35=`  float ground = smoothstep(0.93, 0.96, uv.y + cloud(float2(uv.x * 0.08, 0.2)) * 0.05);
+comp_36=`  col = lerp(col, float3(0.004, 0.006, 0.01) + float3(0.1, 0.11, 0.16) * fl * 0.2, ground);
+comp_37=`  ret = 1.0 - exp(-col * 1.8);
+comp_38=`}

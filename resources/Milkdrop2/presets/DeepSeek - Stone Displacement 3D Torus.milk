@@ -1,0 +1,245 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=col1 = rand(1);
+per_frame_init_2=col2 = rand(1);
+per_frame_init_3=col3 = rand(1);
+per_frame_init_4=col4 = rand(1);
+per_frame_init_5=col5 = rand(1);
+per_frame_init_6=col6 = rand(1);
+per_frame_1=myvol = (bass_att+mid_att+treb_att)*0.333;
+per_frame_2=smooth_vol = if(myvol > smooth_vol, myvol, smooth_vol *= 0.98);
+per_frame_3=voltime1 = voltime1 + (smooth_vol*0.0240);
+per_frame_4=voltime2 = voltime2 + (smooth_vol*0.01729);
+per_frame_5=q1 = voltime1; q2 = voltime2;
+per_frame_6=q3 = col1; q4 = col2; q5 = col3;
+per_frame_7=q6 = col4; q7 = col5; q8 = col6;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`sampler sampler_rand00;
+comp_2=`
+comp_3=`// Shader parameters
+comp_4=`#define MAX_STEPS 48  // Reduced for performance
+comp_5=`#define MAX_DIST 15.0
+comp_6=`#define SURF_DIST 0.002
+comp_7=`
+comp_8=`// Helper functions
+comp_9=`float2 rotate(float2 p, float a) {
+comp_10=`    float s = sin(a);
+comp_11=`    float c = cos(a);
+comp_12=`    return float2(p.x*c - p.y*s, p.x*s + p.y*c);
+comp_13=`}
+comp_14=`
+comp_15=`// Torus SDF
+comp_16=`float sdTorus(float3 p, float2 t) {
+comp_17=`    float2 q = float2(length(p.xz) - t.x, p.y);
+comp_18=`    return length(q) - t.y;
+comp_19=`}
+comp_20=`
+comp_21=`// Scene SDF - simplified for MilkDrop compatibility
+comp_22=`float getDist(float3 p) {
+comp_23=`    // Animate position with music
+comp_24=`    float bassEffect = bass_att * 0.3;
+comp_25=`    float midEffect = mid_att * 0.2;
+comp_26=`    
+comp_27=`    // Rotate based on music
+comp_28=`    p.xz = rotate(p.xz, sin(time * 0.15)*2 + cos(q1)*2);
+comp_29=`    p.xy = rotate(p.xy, sin(time * 0.1)*2 + cos(q2)*2);
+comp_30=`    
+comp_31=`    // Create torus with music reactivity
+comp_32=`    float torusSize = 1.0 + bass * 0.14;
+comp_33=`    float tubeSize = 0.2 + mid * 0.175;
+comp_34=`    float torus = sdTorus(p, float2(torusSize, tubeSize));
+comp_35=`    
+comp_36=`    // Simple noise from random texture (MilkDrop compatible)
+comp_37=`    float2 texUV = p.xy * 0.15 + time * 0.05;
+comp_38=`    float noise = tex2D(sampler_rand00, texUV).x;
+comp_39=`    noise = noise * 2.0 - 1.0;
+comp_40=`    
+comp_41=`    // Music-reactive displacement
+comp_42=`    float displacement = noise * (0.08 + treb_att * 0.15);
+comp_43=`    
+comp_44=`    return torus + displacement;
+comp_45=`}
+comp_46=`
+comp_47=`// Simple raymarching for MilkDrop
+comp_48=`float rayMarch(float3 ro, float3 rd) {
+comp_49=`    float dO = 0.0;
+comp_50=`    float hit = 0.0;
+comp_51=`    
+comp_52=`    for (int i = 0; i < MAX_STEPS; i++) {
+comp_53=`        if (hit < 0.5 && dO < MAX_DIST) {
+comp_54=`            float3 p = ro + rd * dO;
+comp_55=`            float dS = getDist(p);
+comp_56=`            dO += dS * 0.8; // Slightly faster stepping
+comp_57=`            
+comp_58=`            if (dS < SURF_DIST) {
+comp_59=`                hit = 1.0;
+comp_60=`            }
+comp_61=`        }
+comp_62=`    }
+comp_63=`    
+comp_64=`    // Return distance, or MAX_DIST if we didn't hit
+comp_65=`    return (hit > 0.5) ? dO : MAX_DIST;
+comp_66=`}
+comp_67=`
+comp_68=`// Simple normal calculation
+comp_69=`float3 getNormal(float3 p) {
+comp_70=`    float d = getDist(p);
+comp_71=`    float eps = 0.002;
+comp_72=`    
+comp_73=`    return normalize(float3(
+comp_74=`        getDist(p + float3(eps, 0, 0)) - d,
+comp_75=`        getDist(p + float3(0, eps, 0)) - d,
+comp_76=`        getDist(p + float3(0, 0, eps)) - d
+comp_77=`    ));
+comp_78=`}
+comp_79=`
+comp_80=`shader_body {
+comp_81=`    // MilkDrop provides uv and time variables
+comp_82=`    float2 aspect_texsize = float2(1, texsize.y/texsize.x);
+comp_83=`    float2 uv_norm = (uv-.5) * aspect_texsize * 2.5;
+comp_84=`    //uv_norm.x *= aspect.x;
+comp_85=`    
+comp_86=`    // Camera setup - simpler for MilkDrop
+comp_87=`    float3 ro = float3(0.0, 0.0, -2.5);
+comp_88=`    float3 rd = normalize(float3(uv_norm, 1.2));
+comp_89=`    
+comp_90=`    // Music-based camera movement (subtle)
+comp_91=`    float musicMove = sin(time * 0.7) * 0.15;
+comp_92=`    ro.x += musicMove * 0.3;
+comp_93=`    ro.y += sin(time * 0.5) * 0.1;
+comp_94=`    
+comp_95=`    // Raymarching
+comp_96=`    float d = rayMarch(ro, rd);
+comp_97=`    
+comp_98=`    // Initialize color to dark
+comp_99=`    float3 col = float3(0.05, 0.05, 0.08);
+comp_100=`    
+comp_101=`    // Check if we hit something
+comp_102=`    if (d < MAX_DIST - 0.5) {
+comp_103=`        float3 p = ro + rd * d;
+comp_104=`        float3 n = getNormal(p);
+comp_105=`        
+comp_106=`        // Simple lighting
+comp_107=`        float3 lightDir = normalize(float3(1.0, 2.0, -1.0));
+comp_108=`        float diff = max(0.2, dot(n, lightDir));
+comp_109=`        
+comp_110=`        // Music-reactive colors
+comp_111=`        float3 baseColor;
+comp_112=`        baseColor.r = q3 + bass * 0.1;
+comp_113=`        baseColor.g = q4 + mid * 0.1;
+comp_114=`        baseColor.b = q5 + treb * 0.1;
+comp_115=`        
+comp_116=`        // Add some texture variation
+comp_117=`        float2 texUV = p.xy * 0.3;
+comp_118=`        float texVal = tex2D(sampler_rand00, texUV).x;
+comp_119=`        baseColor *= 0.9 + 0.2 * texVal;
+comp_120=`        
+comp_121=`        // Basic color with lighting
+comp_122=`        col = baseColor * diff;
+comp_123=`        
+comp_124=`        // Simple glow effect based on distance and music
+comp_125=`        float glow = 1.0 - smoothstep(0.0, 0.3, d / MAX_DIST);
+comp_126=`        float3 glowColor = float3(q6, q7, q8) * (0.4 + bass_att * 0.6);
+comp_127=`        col += glowColor * glow * (0.2 + treb * 0.2);
+comp_128=`        
+comp_129=`        // Distance fog
+comp_130=`        float fog = exp(-d * 0.15);
+comp_131=`        col = lerp(float3(0.1, 0.1, 0.15), col, fog);
+comp_132=`    }
+comp_133=`    
+comp_134=`    // Add subtle music-reactive particles (very simple)
+comp_135=`    for (int i = 0; i < 3; i++) {
+comp_136=`        float angle = time * 0.8 + i * 2.094; // 120 degree increments
+comp_137=`        float2 particlePos = float2(sin(angle), cos(angle)) * 0.6;
+comp_138=`        float dist = length(uv_norm - particlePos);
+comp_139=`        float size = 0.015 + treb * 0.01;
+comp_140=`        float particle = smoothstep(size, 0.0, dist);
+comp_141=`        col += float3(0.4, 0.7, 1.0) * particle * mid_att * 0.5;
+comp_142=`    }
+comp_143=`    
+comp_144=`    // Vignette for anti-seizure
+comp_145=`    float vignette = 1.0 - length(uv_norm * 0.8) * 0.4;
+comp_146=`    vignette = smoothstep(0.0, 1.0, vignette);
+comp_147=`    col *= vignette;
+comp_148=`    
+comp_149=`    // Gamma correction
+comp_150=`    col = pow(col, 0.4545);
+comp_151=`    
+comp_152=`    // Output
+comp_153=`    ret = float4(col, 1.0);
+comp_154=`}

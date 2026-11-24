@@ -1,27 +1,54 @@
+[![Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build.yml)
+[![Alternate Build Status](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_alt.yml/badge.svg?branch=master)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/actions/workflows/build_alt.yml)
+[![vcpkg Version](https://img.shields.io/github/v/release/microsoft/vcpkg?label=vcpkg&color=blue)](https://github.com/microsoft/vcpkg)
+[![CMake Version](https://img.shields.io/github/v/release/Kitware/CMake?label=CMake&color=blue)](https://cmake.org)
+[![projectM-eval Version](https://img.shields.io/github/v/release/projectM-visualizer/projectm-eval?label=projectM-eval&color=blue)](https://github.com/projectM-visualizer/projectm-eval)
+[![FFmpeg Version](https://img.shields.io/github/v/tag/FFmpeg/FFmpeg?label=FFmpeg&color=blue)](https://ffmpeg.org)
+
 ![Discord Shield](https://discord.com/api/guilds/1041603212798599168/widget.png?style=shield) [Chat with us on Discord!](https://discord.gg/rp5cBDtGuM)
 
 [![Twitter](https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/20px-Logo_of_Twitter.svg.png)](https://twitter.com/BeatDropVis) [@BeatDropVis](https://twitter.com/BeatDropVis)
 
 ![BeatDrop Logo](https://github.com/OfficialIncubo/The-Improved-and-Modified-Version-of-BeatDrop-Music-Visualizer/raw/master/Logos/BeatDrop%20New%20Logo%20GitGub%20ver.png) (logo design by Incubo_)
 
+[![BeatDrop Version](https://img.shields.io/github/v/release/OfficialIncubo/BeatDrop-Music-Visualizer?label=BeatDrop%20Version&color=8A2BE2)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/releases/latest)
+[![Latest Release Downloads](https://img.shields.io/github/downloads/OfficialIncubo/BeatDrop-Music-Visualizer/latest/total?label=Latest%20Release%20Downloads&color=8A2BE2)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/releases/latest)
+[![Total Downloads](https://img.shields.io/github/downloads/OfficialIncubo/BeatDrop-Music-Visualizer/total?label=Total%20Downloads&color=8A2BE2)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/releases)
+[![License](https://img.shields.io/github/license/OfficialIncubo/BeatDrop-Music-Visualizer?label=License&color=8A2BE2)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/blob/master/LICENSE)
+[![Total Stars](https://img.shields.io/github/stars/OfficialIncubo/BeatDrop-Music-Visualizer?style=flat&label=Stars&color=yellow)](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/stargazers)
+[![Support my hard work on Ko-fi!](https://img.shields.io/badge/Ko--fi-Support-8A2BE2?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/officialincubo_)
+
 # BeatDrop Music Visualizer
 
-BeatDrop Music Visualizer is a continued development of the [original inactive repository fork](https://github.com/mvsoft74/BeatDrop), a standalone music visualization based of the [Original MilkDrop2 Plug-in](https://www.geisswerks.com/milkdrop/) for [Winamp](https://winamp.com) that aims to add better features and bug fixes/optimizations for versatility, usability and amazing. This is also considered as an improvement of it.
+BeatDrop Music Visualizer is a continued development of the [original inactive repository fork](https://github.com/mvsoft74/BeatDrop), a nostalgia-modern fused standalone music visualization based of the [custom MilkDrop2 engine](https://www.geisswerks.com/milkdrop/) for [Winamp](https://winamp.com) that aims to add better features and bug fixes/optimizations for versatility, usability and amazing. This is also considered as an improvement of it.
 
 Highlights:
 - Based of the [Original MilkDrop2 Plug-in](https://www.geisswerks.com/milkdrop/), compatible with all the MilkDrop presets (.milk).
+- 10k+ bundled presets - nostalgic and modern!
 - Perfectly adjusted beat detection for better audio reaction (also configurable)
 - New waveforms and transitions
 - 16 custom shapes and waves limit
 - Drag, Drop & Load MilkDrop preset
 - Shader Precaching or Caching for Instant Preset Loading
 - Fully supported Pixel Shader 4 (Shader Model 3) presets for AMD/ATI processor/graphic cards
+- FFT and Wave functions accessible via shaders!
+- Real-time system time and date variables/functions
+- Real-time song information and time
+- Desktop Mode (SHIFT + W)
+- 32-bit and 64-bit architecture support
+- 100% portable: no DirectX runtime installation needed. Required DirectX and FFmpeg DLLs stay in `BeatDrop Resources\dlls`, not beside the executable.
 - [Spout](https://spout.zeal.co) integration
+- Webcam support
+- HDR support
 - [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library integration
+- 64 shared q variables (`q1`-`q64`) for preset, wave, shape and shader code; shader banks `_qa`-`_qp`.
 - Toggleable Speaker and Microphone Audio Source Modes
-- Our modified [loopback-capture](https://matthewvaneerde.wordpress.com/2008/12/16/sample-wasapi-loopback-capture-record-what-you-hear/) code, called BeatDrop-loopback, with above 92kHz sample rate (Hi-Res) support, intelligent default audio change and anti-stutter
+- Synchronized LRC lyrics with a built-in timestamp editor, local cache and smooth line transitions
+- [BeatDrop-loopback](https://matthewvaneerde.wordpress.com/2008/12/16/sample-wasapi-loopback-capture-record-what-you-hear/), our enhanced loopback-capture implementation, supports Hi-Res sample rates above 92 kHz, intelligently follows default audio-device changes, recovers safely from endpoint or format changes (including DAWs), and prevents stale or stuttering audio reactions.
 - Interact presets with Mouse and Keyboard (CTRL + Arrow Keys)
+- GIF, Video and [Spout](https://spout.zeal.co) Input support for sprites and textures
 - Extended preset, texture, transition and noise generation randomization limit using [Mersenne Twister Pseudo-Random Number Generator](https://www.math.sci.hiroshima-u.ac.jp/m-mat/MT/emt.html)
+- Engine fixes: preset state, custom wave samples, etc.
 - Hard Cut Modes, Transparency Mode, Playback Controls, Startup Preset etc.
 - And so much more!
 
@@ -51,6 +78,35 @@ Now you can send the BeatDrop's Visual Renderer via Spout to [OBS](https://obspr
 List of available apps here: https://spout.zeal.co
 
 ![BeatDropSpoutDemo](https://github.com/user-attachments/assets/5abf19b8-d064-4a4f-b756-d1936fdc88dc) ![BeatDropSpoutResolumeArenaDemo](https://github.com/user-attachments/assets/63ef3d28-4244-40d7-88a4-848cd3751cf3)
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+## GIF, VIDEO AND SPOUT INPUT SUPPORT FOR SPRITE AND TEXTURES
+
+### GIF and Video sprites
+
+The sprite handler is now smart and can hybridly invoke GIF, Video and Image sprites. Simply open the image ini file (beatdrop_img.ini), find an empty digit slot or modify the existing one, easily pass an image, video or GIF path and write some code! Then in a visualizer, press K to change to sprite mode, type 2 digits corresponding to your image ini file you have provided, then you'll see some magic.
+
+<video controls autoplay loop muted playsinline src="https://github.com/user-attachments/assets/eea26915-fc52-48c7-af66-77ed30825f7b" alt="BeatDrop GIF and Video Sprite Support Demo" width="100%" height="auto"></video>
+
+### GIF and Video textures
+
+Presets can now load GIF, video and image textures in a simple way. It detects a file name from sampler and then hybridly shows static or animated textures.
+
+<video controls autoplay loop muted playsinline src="https://github.com/user-attachments/assets/6dd2d72a-008f-4fa1-91d9-c3ce35107b57" alt="BeatDrop GIF and Video Sprite Support Demo" width="100%" height="auto"></video>
+
+Supported animated/static media formats: gif, webp, webm, mkv, flv, vob, ogv, mng, avi, mts, m2ts, ts, mov, qt, wmv, yuv, rm, rmvb, viv, asf, amv, mp4, m4p, mp2, mpe, mpv, mpg, mpeg, m2v, m4v, svi, 3gp, 3g2, mxf, roq, nsv, f4v, f4p, f4a, f4b
+
+### Spout Input Sprites
+
+You can also invoke sprites using [Spout](https://spout.zeal.co)! It's the same steps, but you need to pass `Spout\` or `Spout/` prefixes and the Spout receiver name to your image path.
+
+An example of how it invoked: OBS's Browser Source with [Spout Plug-in as sender filter](https://github.com/Off-World-Live/obs-spout2-plugin) and invoked a Spout sprite with `Spout/SpoutSB` with digit noº 18.
+
+<video controls autoplay loop muted playsinline src="https://github.com/user-attachments/assets/ff60f37a-9fda-47a5-a03b-e621799b562c" alt="BeatDrop Spout Input Sprite Demo" width="100%" height="auto"></video>
+
+You can also do some epic/crazy feedback by self-invoking the visual renderer using a Spout Input sprite. Pass `Spout/BeatDrop`, write some sprite code and enjoy beautiful feedback effects!
+
+<video controls autoplay loop muted playsinline src="https://github.com/user-attachments/assets/8f1abd9c-4bfc-49a8-bf90-541b882e56a6" alt="BeatDrop Spout Input Feedback Tricks Demo" width="100%" height="auto"></video>
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## SCREEN-DEPENDENT RENDER MODE & PRESET PATCH FIXES
@@ -89,10 +145,38 @@ After 20 years of the bug when using any Pixel Shader Version 4 presets that cau
 ![hi-res-audio-sound-waves](https://github.com/user-attachments/assets/7b80210c-a7c4-4c84-9cb4-8bfbc3eca8ea)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
-## CONTROL PRESETS BY USING A MOUSE
+## FFT AND WAVE AUDIO DATA SHADER VARIABLES
+
+[MilkDrop3](https://milkdrop3.com) introduced FFT shader variables months ago, which I was very excited about. Firstly, ported to [Milkwave](https://github.com/IkeC/Milkwave) and then ported to this visualizer itself with some hard-tweaks, RMS normalization (thanks, martin a.k.a. Nitorami, the preset legend), smooth decay/attack transition and a high-quality full-range audio processing by me.
+
+I've also made support for Wave shader functions, but maybe the it should support for [MilkDrop3]((https://milkdrop3.com)) in the next version too ;)
+
+Please refer the [new functions/variables documentation](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/blob/master/resources/Milkdrop2/docs/ADDED%20SHADER%20VARIABLES%20AND%20FUNCTIONS.txt) how to use them.
+
+![BeatDropFFTWaveShaderVarsDemo](https://github.com/user-attachments/assets/c2a4b761-3eb2-448e-ae51-25db77500cc7)
+
+You can also adjust FFT shader's attack or decay via preset editor! Press "M" and you'll see `fft shader attack/decay` option. Both attack and decay ranges from 0 to 1.
+
+![BeatDropFFTAttackDecaySettings](https://github.com/user-attachments/assets/5d6185a2-3cf9-4b28-b063-4e23cc6ffe00)
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+## SYSTEM TIME AND DATE VARIABLES
+
+Now you can use system time and date variables on init, per-frame or in shaders. Some presets can see what time is it in real-time!
+
+For use in init or in per-frame code: some new variables are written when you open the preset editor (`M`) and you hover the cursor (it should see in right-down corner). Some variables added: year, month, day, weekday, hour, minute, second, milliseconds, totalseconds.
+
+For shaders: Please refer [new functions/variables documentation](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer/blob/master/resources/Milkdrop2/docs/ADDED%20SHADER%20VARIABLES%20AND%20FUNCTIONS.txt) in `System time shader variables` section.
+
+https://github.com/user-attachments/assets/abcfadf4-282a-429e-87d6-10233db1d210
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+## CONTROL PRESETS BY USING A MOUSE AND A KEYBOARD
 To make BeatDrop more and more interactive, Me & [MilkDrop2077/Serge Blanc](https://x.com/MilkDrop2077) have made support for controlling presets by just using a mouse! Preset authors can now use the mouse variables in a simple way. Just pass them to init, per-frame, per-vertex or shaders, use a mouse and look how it goes! For more information about this, you can read it from docs folder.
 
-![BeatDropMouseSupportDemo](https://github.com/user-attachments/assets/5184e575-26cf-4dc9-a2cb-22fa59656c8e)
+Oh, and you can also control presets with CTRL + arrow keys, but you need to pass `ctrllt`, `ctrlrt`, `ctrlup` and `ctrldn` in order to do that.
+
+![BeatDropMouseSupportDemo](https://github.com/user-attachments/assets/8ebc5843-7100-49c0-91e6-aa9182d03319)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## REAL-TIME SONG INFORMATION
@@ -100,7 +184,107 @@ Now it can get the song information from any media players using SMTC, sending i
 
 ![BeatDropRealTimeSongInfoDemo](https://github.com/user-attachments/assets/6cc5cb3d-f82e-4526-b686-94670e3483b8)
 
-Note that it only works for Windows 10 or Windows 11. For Windows Vista, 7, 8 and 8.1 users, please run BeatDrop_OldOS.exe, which it doesn't use this feature and makes it better support for old Windows OS.
+## SYNCHRONIZED LYRICS
+
+![BeatDropLyricsDemo](https://github.com/user-attachments/assets/15221da4-d6ca-4c6f-8a3c-b96cbc577259)
+
+### Overview
+
+Press `CTRL + L` to enable or disable lyrics. On the standard Windows 10+ build, BeatDrop uses the same [SMTC](https://learn.microsoft.com/en-us/uwp/api/windows.media.systemmediatransportcontrols) playback position, seek state and duration shown by the song-time overlay to select the active `.lrc` line. Matching synchronized lyrics are fetched in the background from [LRCLIB](https://lrclib.net), then cached under `%LOCALAPPDATA%\BeatDrop\Lyrics` as `Artist - Title.lrc`. Cached files include BeatDrop's LRC metadata header and remain available locally.
+
+![BeatDropLyricsEditorScreenshot](https://github.com/user-attachments/assets/17ed5ef7-16b8-4fab-9fae-7144f6975654)
+
+Press `CTRL + SHIFT + E` to open the timed lyrics editor. It supports importing an LRC, capturing the current playback timestamp (`Space`), seeking to a selected line, inserting silence, line reordering, and a 100-step undo/redo history. It also features lyrics cache clear if you want to free some memory. Local cached lyrics are stored offline. Doing this cannot be undone.
+
+Hotkeys:
+- `Ctrl + Shift + E` — Open Lyrics Editor
+- `Space` — Capture the current playback timestamp for the selected lyric line, then move to the next line
+- `Delete` — Remove the timestamp from the selected parsed line
+- `Ctrl + Z` — Undo
+- `Ctrl + Y` — Redo
+
+### LRCLIB upload
+
+Click `Upload to LRCLIB` to publish plain lyrics, synchronized lyrics, or a mixture of both. Review the artist, title, album and duration in the confirmation dialog first. For mixed lyrics, all lines are included as plain text; only timestamped lines are included as synchronized lyrics. LRC metadata tags supply track details and are excluded from the lyric text.
+
+The upload runs in a separate background process using the confirmed lyrics and metadata. Changing tracks, closing the editor, closing the music player or exiting BeatDrop does not stop it. A result popup appears even when the editor or visualizer is closed. Success popups include the track and artist; the editor status reads `Lyrics uploaded to LRCLIB`.
+
+While BeatDrop prepares the upload and solves [LRCLIB](https://lrclib.net)'s publishing challenge, the button reads `Cancel upload`. Cancellation may wait for the current network request to finish, but prevents the lyrics from being submitted. Once the final request starts, the button reads `Publishing...` and cannot be cancelled: LRCLIB may already be accepting the submission. The button returns to `Upload to LRCLIB` when the job finishes or cancellation completes.
+
+Cancellation before publishing submits no partial lyrics. A connection failure during publishing can leave the outcome unknown, so check [LRCLIB](https://lrclib.net) before retrying. Closing the editor is not a cancellation; while BeatDrop is still running, reopen the editor to cancel a job still in preparation. Windows shutdown or forcibly ending the upload process can interrupt it. Uploads are public and cannot be retracted with the Cancel button.
+
+### Customization
+
+The lyric overlay is font-only: its default is `Times New Roman`, Italic in `RGB(180, 0, 255)`, independent from the song-title renderer. Customize it in `beatdrop.ini` with `szFontFace6`, `bFontBold6`, `bFontItalic6`, `nFontSize6`, `bFontAA6`, plus `nFontColorR6`, `nFontColorG6`, and `nFontColorB6` (each color channel is clamped to `0`–`255`).
+
+### Compatibility
+
+The `Release_OldOS` builds remain compatible with Windows Vista through Windows 11: the editor, local LRC cache, and independent Direct3D 9 renderer are retained without WinRT. The post-install launcher uses the standard executable on Windows 10 and later, and prefers it on Windows 8.1 when that executable is included in the package; otherwise, it uses the OldOS build. BeatDrop currently uses `GlobalSystemMediaTransportControlsSessionManager` for system now-playing metadata, playback position and seeking; Microsoft lists that global-session API as Windows 10, version 1809 or later. Windows 8.1 has the earlier system media controls API, but it is not the global-session API BeatDrop uses.
+For Windows Vista, 7 and 8, use the matching `BeatDrop_OldOS_x86.exe` or `BeatDrop_OldOS_x64.exe` build. Automatic global SMTC metadata, timeline and seek support requires Windows 10 version 1809 or later.
+
+## WEBCAM
+
+*[webcam feature screenshot coming soon...]*
+
+Press `W` in the visualizer to cycle through **Deep (without burn)**, **Deep (with burn)**, **Top**, and **Off**. Press `Shift + W` to select the next camera in Windows' list, wrapping back to the first after the last. Switching an active camera keeps the selected rendering mode; when capture is off, the shortcut selects the camera to use next without opening it. The camera image fills the visualizer while keeping its aspect ratio; edges are cropped to fit.
+
+After selecting a camera, the notification reads `Changed webcam: {device_name}`. Capture control responds to Windows events without a polling timer. Supported frame sizes are checked against the camera's reported format, the current graphics device's texture capabilities, and the sample/container size limits; there is no fixed camera resolution or application memory cap.
+
+Both deep modes reveal the camera through the preset's black background while retaining bright visual details. Deep without burn sends the live camera through a separate warp pass and then the preset's composite shader, keeping it out of persistent feedback. This uses two extra textures at the preset's render resolution, allocated when needed and released on mode changes or device reset. Deep with burn adds the camera before warp into persistent feedback, so its imagery can leave trails. Top blends the camera over the finished preset, before sprites are drawn. Sprites, song titles, lyrics and on-screen controls remain above the camera, and Spout receives the combined visual.
+
+The visual-window and tray context menus include **Webcam/camera devices**, **Webcam modes (layers)**, and **Webcam mode opacities** after the first separator. Select a camera by name, choose Deep (no burn), Deep (with burn), Top, or Disabled, and open all three opacity controls with one click on **Webcam mode opacities...**. Menu selections do not show success notifications over the visualizer; keyboard shortcuts retain their notifications. The opacity window stays open independently, so both visualizer and tray context menus remain available. Selecting the opacity entry again brings the existing window forward. Each layer has a **Reset** button that sets its opacity to 0.5. The three sliders preview changes live from 0 to 1 (0.001 increments); their values are saved to the existing INI settings on exit. Selecting a device while Disabled keeps capture off.
+
+Each mode has its own opacity setting. Close BeatDrop, edit these keys under `[settings]` in `beatdrop.ini`, then restart:
+
+```ini
+fWebcamDeepOpacity=0.500000
+fWebcamBurnOpacity=0.500000
+fWebcamTopOpacity=0.500000
+```
+
+Values range from `0` (no camera contribution) to `1` (full strength), with defaults of 100% for deep without burn, 5% for deep with burn, and 50% for top. Deep opacity scales the camera before its warp pass; top opacity controls alpha blending. Burn mode blends continuously on every render frame, including between camera deliveries, with its contribution weighted by render time and the camera's measured cadence. It does not alternate between injection and skipped frames. Try burn opacity `0.02` for softer trails or `0.10` for a stronger camera contribution. Preset shaders and decay can still amplify feedback, so an exact MilkDrop 3 match is not guaranteed.
+
+Resizing, changing presets, switching fullscreen or monitor stretch, and entering Desktop Mode keep capture active. Cycling to Off or exiting BeatDrop releases the camera. Webcam capture starts disabled each time BeatDrop opens. If the camera cannot be opened or is disconnected, a message appears and capture turns off; press `W` to retry after checking the device and Windows camera permissions.
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+## HDR output
+
+Press **Ctrl+H** or select **HDR output** in either context menu. HDR is session-only and starts disabled. Menu toggles are silent; Ctrl+H displays the enabled/disabled notification. Errors and fallback messages remain visible. HDR presentation follows the player device's VSync/presentation interval instead of forcing unsynchronized output. The existing FPS limiter remains shared by HDR and SDR; explicitly unsynchronized device modes are still supported. Enable Windows HDR first on a compatible display. Unsupported systems, disabled HDR, unsupported modes, or GPU failures fall back to SDR.
+
+HDR uses an FP16 scRGB display swap chain. **Warp feedback and blur textures retain their original formats in both modes.** Enabling HDR does not replace those textures, reset their history, or change the preset's feedback clipping. Preset shader source is not rewritten or injected. Shader-only final composites render into an FP16 display target, preserving over-range values without feeding them back into the preset. Legacy fixed-function composites use a private temporary target with the original SDR backbuffer format; gamma/echo and Brighten, Darken, Solarize and Invert retain their original per-pass clamping and rounding. During a mixed classic/shader transition, only the classic pass uses that normalized target; it is copied back to FP16 before the shader pass blends into it. This preserves native shader highlight headroom in both transition directions instead of clamping the entire transition to SDR. The completed legacy image is copied to the HDR display target before webcam top mode, sprites, animated titles and lyrics. The temporary target is never used as preset feedback or a blur input. Legacy composite operations retain their normalized color range and original filter behavior. After those operations, the display transfer can expand bright highlights into HDR; it does not recover clipped detail.
+
+A separate display shader decodes the legacy renderer's sRGB-range colors, matches Windows SDR reference white, and compresses over-white highlights towards the display's reported peak without a fixed 1000-nit cap. Over-range legacy colors use a continuous linear extension of the sRGB decode curve; this avoids exponentiating large artistic shader values into extreme highlights. Negative and non-finite color channels are discarded. The mapping preserves linear RGB ratios through the highlight shoulder, with no automatic exposure. After webcam top mode and user sprites, before titles, lyrics and information overlays, display-only highlight expansion lifts bright preset luminance smoothly above SDR white. This works for classic presets and normalized shader composites as well as over-range shaders. Linear luminance at or below 0.5 is unchanged, and a common RGB gain preserves linear color ratios. The existing highlight-strength setting controls expansion; zero disables it, and it is bypassed when the display has no headroom. Classic-only composites fuse this operation into their existing transfer unless top webcam mode or sprite slots are active; mixed classic/shader transitions defer expansion until both passes have been blended; those layers defer expansion until after camera and sprite blending so the displayed image is processed once; sprite burn-in retains its original feedback path; shader composites use a reusable FP16 temporary and two full-screen copies. That additional display work can reduce FPS.
+
+Animated song titles and lyrics use a dedicated glyph shader while HDR is active. Glyph RGB is decoded before applying the separately configured title or lyric brightness multiplier (default 1.5), then passed through the bounded HDR output mapping. Fade alpha and the title shadow pass are not brightened. The animated title uses an explicit HDR vertex shader for its XYZ mesh, preserving the existing world/view/projection transforms and supplying glyph color/UV coordinates directly; graphics state is restored after the title draw. The binding checks the active display surface, so title burn-in and preset feedback retain their original rendering. With HDR disabled, both renderers retain their original SDR path. Top webcam mode and user sprites share the preset highlight expansion, applied once after their display blending. Information overlays remain at Windows reference white; titles and lyrics use their separate brightness controls. Disabling HDR restores ordinary SDR presentation. HDR screenshots and Spout use a cached SDR conversion captured after sprites/titles/lyrics and before informational UI. The conversion preserves shadows/midtones and smoothly compresses highlights into SDR white instead of clipping channels. HDR screenshots do not replay the preset or advance its feedback history. These SDR exports cannot represent actual HDR luminance. No pixel-comparison mask is used to guess which pixels are text.
+
+This is real floating-point HDR **presentation**, with native highlight headroom where the final composite supplies it. A legacy preset that already clips its colors, or generates everything in its normalized warp/feedback stage, can have its displayed highlights expanded but does not acquire new highlight detail or a wider gamut. Preserving those presets' feedback behavior takes priority over forcing all internal render targets to float. The final composite may reveal previously clipped highlights, and legacy blending still follows the preset's existing color conventions; this is not a complete scene-linear rewrite of MilkDrop. GPU sharing and the FP16 display target can lower FPS. Visual verification on an HDR display is still required.
+
+Implementation guidance: [Microsoft: Advanced Color and HDR](https://learn.microsoft.com/en-us/windows/win32/direct3darticles/high-dynamic-range) (scRGB, SDR reference white, display capability changes and tone mapping). Display changes invalidate the presenter and restore SDR; GPU transfer queries and the copy shader are reused while the presenter is active.
+
+Initial supported scope: ordinary windowed/borderless presentation on one HDR monitor. Cropped/stretch canvases, VJ text-window mode, transparency, and exclusive fullscreen fall back to SDR. Monitor/HDR changes fall back to SDR; re-enable after moving to a suitable monitor. The existing SDR path remains available on Windows 7/8/8.1. This does not add Windows HDR output to those systems.
+
+### Portable DirectX helpers
+
+MSBuild extracts `d3dx9_31.dll` and `d3dx9_43.dll` directly from the installed legacy DirectX SDK's `Redist` CAB files into the matching `BeatDrop Resources/dlls/x86` or `dlls/x64` folder. `DXSDK_DIR` selects the SDK. Inline post-build commands use Windows expand.exe to select each DLL and CPU architecture without depending on CAB release-date prefixes. Missing CABs, failed extraction, or missing extracted DLLs fail the build; no helper script is used. It does not copy these helpers from System32 or rely on pre-extracted files in the package's Redist directory. These are fixed legacy D3DX API versions, not an automatic update to newer DirectX APIs.
+
+### Portable HDR dependencies
+
+HDR loads `d3d11.dll` and `dxgi.dll` from Windows only. These core runtime DLLs are not bundled or overridden. The shader compiler is loaded from Windows first; if unavailable, BeatDrop tries `BeatDrop Resources/dlls/x86/d3dcompiler_47.dll` or `dlls/x64/d3dcompiler_47.dll`, matching the executable. MSBuild's portable packaging step copies this optional compiler from the installed Windows SDK's `Redist/D3D` folder when available. Use that redistributable, not a copy from System32. No new startup imports are added; missing graphics components leave HDR unavailable and preserve the SDR fallback. This does not add HDR output to Windows 7, 8 or 8.1. Cross-version runtime compatibility still requires testing on those systems.
+
+### HDR calibration
+
+Open **HDR calibration...** from either context menu. Each setting has a slider and an editable number box. Dragging a slider updates its number; entering a valid number updates the slider without rounding the typed value. Brightness/curve sliders use 0.001 steps; luminance sliders use 1-nit steps, while the number boxes also accept fractional nits. The modeless window allows normal rendering and menus to continue. Valid slider and number-box changes preview immediately. **Apply** validates all boxes and saves; **Close** saves the last accepted preview values. Incomplete/out-of-range typing and inconsistent reference-white/peak pairs do not affect rendering. **Reset defaults** immediately restores and saves defaults.
+
+| Control | Default | Meaning |
+|---|---|---|
+| Reference white | 0 (automatic) | Windows reference white; override in nits, up to 1000 |
+| Display peak | 0 (automatic) | Reported monitor peak; override up to 10000 nits, at least reference white |
+| Highlight strength | 1 | 0-4; expands bright preset luminance and controls over-white highlights (0 disables expansion) |
+| Highlight compression | 1 | 0.25-4; higher values compress highlights more strongly |
+| Title brightness | 1.5 | 0.1-4 linear RGB multiplier for visible title glyphs |
+| Lyrics brightness | 1.5 | 0.1-4 linear RGB multiplier for lyric glyphs |
+
+The corresponding `[settings]` INI entries are `fHdrPaperWhiteNits`, `fHdrPeakNits`, `fHdrHighlightStrength`, `fHdrCompression`, `fHdrTitleBrightness`, and `fHdrLyricsBrightness`. No automatic scene exposure is used. The settings affect display conversion and SDR exports only; HDR-off rendering, preset shader source, feedback/blur formats, and title burn-in retain their existing paths. Defaults follow Windows and monitor metadata; a peak override is a calibration choice, not a measurement of the display.
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 ## INTEGRATED WITH [PROJECTM-EVAL](https://github.com/projectM-visualizer/projectm-eval) FOR OPTIMIZATION
@@ -131,16 +315,45 @@ BeatDrop now uses [projectM-eval](https://github.com/projectM-visualizer/project
 
 Steps on how to compile BeatDrop with [projectM-eval](https://github.com/projectM-visualizer/projectm-eval) library:
 
+## Known-good build steps for video support
+
+BeatDrop's video support uses FFmpeg through vcpkg. These steps are the shortest reproducible path for a working executable.
+
+1. Install Visual Studio 2022 or higher with the Desktop development with C++ workload, CMake tools, the Windows 10/11 SDK, and the [DirectX SDK June 2010](https://www.microsoft.com/en-us/download/details.aspx?id=6812).
+2. Make sure the `vcpkg package manager` is checked on any workflows.
+3. Vcpkg's manifest mode is enabled by default. Install dependencies for the architecture you are building: `vcpkg install --triplet x86-windows` or `vcpkg install --triplet x64-windows`.
+4. Make sure `lib\projectM_eval.lib` and `lib\projectM_ns-eel2.lib` exist. If they are missing, build/copy them using the projectM-eval steps below.
+5. Open `BeatDrop.sln` in Visual Studio and select one of these configurations:
+
+   | Configuration | Platform | Executable |
+   | --- | --- | --- |
+   | `Release_x86` | `Win32` | `BeatDrop_x86.exe` |
+   | `Release_OldOS_x86` | `Win32` | `BeatDrop_OldOS_x86.exe` |
+   | `Release_x64` | `x64` | `BeatDrop_x64.exe` |
+   | `Release_OldOS_x64` | `x64` | `BeatDrop_OldOS_x64.exe` |
+
+   Or build from a Developer PowerShell:
+```
+msbuild BeatDrop.sln /m /p:Configuration=Release_x86 /p:Platform=Win32
+msbuild BeatDrop.sln /m /p:Configuration=Release_OldOS_x86 /p:Platform=Win32
+msbuild BeatDrop.sln /m /p:Configuration=Release_x64 /p:Platform=x64
+msbuild BeatDrop.sln /m /p:Configuration=Release_OldOS_x64 /p:Platform=x64
+```
+6. Each configuration writes to its own directory under `vis_milk2`, then copies its executable to `BeatDrop`. Required DLLs are placed in `BeatDrop Resources\dlls\x86` or `BeatDrop Resources\dlls\x64`. Build and run one architecture at a time locally. GitHub Actions produces separate, self-contained artifacts for each architecture.
+7. Run the matching executable from the `BeatDrop` folder. It automatically loads the DLLs for its own architecture from `BeatDrop Resources\dlls`.
+
+⚠️  Please note that disabling vcpkg manifest mode will give you some errors or missing libraries, so you need to manually install libraries with the command line.
+
 ## First method: Using [vcpkg](https://vcpkg.io)
 
 1. Vcpkg options from the project configuration are enabled by default. If you want to disable them for building as local files, look at the second method.
 2. First update your baseline by clicking View -> Terminal, then type vcpkg x-update-baseline.
 3. Compile your code. Vcpkg automatically generates the projectM-eval library using CMake.
 4. It will receive an error about one of the libraries: `Invalid or corrupt file: cannot read at 0x536E` (projectM_ns-eel2.lib).
-5. The generated files are in vcpkg_installed folder. Copy both libraries from vcpkg_installed\x86-windows-static\x86-windows-static\lib, then paste them to lib folder from the main source code folder.
+5. The generated files are in `vcpkg_installed\<triplet>\lib`. Copy both libraries for the architecture you are building, then paste them into the `lib` folder from the main source code folder.
 6. (Optional) Copy the ns-eel header from the same step from 5., but in include\projectm-eval\ns-eel2, then paste it to ns-eel-shim folder, still from the main source code folder.
-7. Now build/compile the code and you are ready to go. If you see that your output gives "1 up to date", just delete BeatDrop.exe from vis_milk2 -> Release folder. Compile it again.
-8. Check your generated .exe file in vis_milk2/Release/BeatDrop.exe, then copy it in your BeatDrop folder.
+7. Now build/compile the code and you are ready to go. If you see that your output gives "1 up to date", clean the selected configuration and compile it again.
+8. Check the generated executable in its matching `vis_milk2\Release_*` directory; the post-build step copies it into the `BeatDrop` folder.
 
 ## Second method: Using [CMake](https://cmake.org) (for latest version build)
 
@@ -166,6 +379,7 @@ For example: `option(BUILD_NS_EEL_SHIM "Build and install the ns-eel2 compatibil
 mkdir your_build_folder
 cd your_build_folder
 cmake -A Win32 ..
+# Use `cmake -A x64 ..` when building the x64 projectM-eval libraries.
 cmake --build . --config "Release" --parallel
 cmake --install . --prefix your-installation-folder-name-here.
 ```
@@ -176,7 +390,7 @@ If you have problems, ask me on Discord, Twitter or Instagram.
 
 # BEFORE YOU RUN BEATDROP
 
-Please download and install [DirectX End-User Runtime Web](https://www.microsoft.com/en-us/download/details.aspx?id=35) first.
+Release packages include the required DirectX helper DLL, so the DirectX End-User Runtime is not needed just to run BeatDrop. The DirectX SDK is still required when building from source. Optionally install [DirectX End-User Runtime Web](https://www.microsoft.com/en-us/download/details.aspx?id=35)
 
 Microsoft Visual C++ 2015-2022 Redistributable is also required to run. You can get it from [system requirements](https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer#system-requirements) category.
 
@@ -205,10 +419,8 @@ If you want to have all the MilkDrop presets in your own, just download [this Me
 [![Softpedia](https://upload.wikimedia.org/wikipedia/commons/f/f4/Softpedia_logo.svg)](https://www.softpedia.com/get/Multimedia/Audio/Other-AUDIO-Tools/BeatDrop-Music-Visualizer.shtml)
 
 [![AlternativeTo](https://alternativeto.net/static/icons/a2/org-icon.png)](https://alternativeto.net/software/beatdrop/about/)
-
 [<img src="https://vjun.io/uploads/organization/profile_image/1/aa1adb2e-fff9-4492-9544-7f15dd17152e.png" alt="VJ Union" style="width:20%; height:auto;">](https://vjun.io/vdmo/beatdrop-music-visualiser-with-spout-1hof)
-
-[<img src="https://www.topdownload.club/img/logo.png" alt="TopDownload.Club" style="width:30%; height:auto;">](https://win.topdownload.club/beatdrop-music-visualizer-free-download-download.html)
+[![iTechGuides](https://www.itechguides.com/wp-content/themes/itg-prime/assets/favicon-192.png)](https://www.itechguides.com/products/beatdrop-music-visualizer/)
 
 [The Audio File](https://audio-file.org/2023/10/13/beatdrop-music-visualizer/)
 
@@ -222,6 +434,24 @@ If you want to have all the MilkDrop presets in your own, just download [this Me
 
 [<img src="https://static.vecteezy.com/system/resources/previews/042/148/611/non_2x/new-twitter-x-logo-twitter-icon-x-social-media-icon-free-png.png" alt="X" style="width:10%; height:75%;">](https://x.com/BeatDropVis)
 [<img src="https://static.vecteezy.com/system/resources/previews/018/930/718/non_2x/discord-logo-discord-icon-transparent-free-png.png" alt="Discord (Join server)" style="width:10%; height:75%;">](https://discord.gg/rp5cBDtGuM)
+
+# STAR HISTORY
+
+<a href="https://star-history.dera.page/#OfficialIncubo/BeatDrop-Music-Visualizer&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=OfficialIncubo/BeatDrop-Music-Visualizer&type=date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=OfficialIncubo/BeatDrop-Music-Visualizer&type=date" />
+   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=OfficialIncubo/BeatDrop-Music-Visualizer&type=date" />
+ </picture>
+</a>
+
+# ☕ SUPPORT THE DEVELOPMENT
+
+BeatDrop Music Visualizer is free and open-source software built with dedication and hard work. If you find this project useful, consider supporting its ongoing maintenance, performance optimizations, and future feature development on Ko-fi!
+
+[![Support my hard work on Ko-fi!](https://img.shields.io/badge/Ko--fi-Support%20me!-8A2BE2?style=flat&logo=ko-fi&logoColor=white)](https://ko-fi.com/officialincubo_)
+
+*Every contribution helps keep the project active and continuously updated.*
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -249,12 +479,12 @@ Use BeatDrop with your favourite:
   ...
 
 # System Requirements
-* For building without SMTC (old OS build): Windows Vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11
-* For building with SMTC (normal build): Windows 10, Windows 11
+* OldOS build (without SMTC): Windows Vista, Windows 7, Windows 8, Windows 8.1, Windows 10, Windows 11
+* Normal build: Windows 8.1, Windows 10, Windows 11; automatic global SMTC session features require Windows 10 version 1809 or later
 * Minimum 2GB of RAM required
 * WASAPI - compatible sound card
-* DirectX 9 or higher - compatible GPU
-* DirectX End-User [Runtimes](https://www.microsoft.com/en-us/download/details.aspx?id=8109) (also included in the installer) contains the required 32-bit helper libraries d3dx9_43.dll and d3dx9_31.dll
+* [DXVK](https://github.com/doitsujin/dxvk) for Vulkan, DirectX 9 or higher - compatible GPU
+* Windows includes Direct3D 9. BeatDrop packages required DirectX helpers beside its resources, so the DirectX End-User Runtime is not required or optional to install.
 * [Microsoft Visual C++ 2015-2022 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=52685) ([Mirror](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)) or [Microsoft Visual C++ Redistributable All-in-One](https://www-techpowerup-com.cdn.ampproject.org/v/s/www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/?amp=&amp_gsa=1&amp_js_v=a9&usqp=mq331AQIUAKwASCAAgM%3D#amp_tf=De%20la%20%251%24s&aoh=17542342520002&referrer=https%3A%2F%2Fwww.google.com&ampshare=https%3A%2F%2Fwww.techpowerup.com%2Fdownload%2Fvisual-c-redistributable-runtime-package-all-in-one%2F) (optional)
 
 # Acknowledgements
@@ -268,8 +498,10 @@ Special thanks to:
 * Lynn Jarvis ([@leadedge](https://github.com/leadedge)) - [BeatDrop for Spout](https://github.com/leadedge/BeatDrop), [Spout](https://spout.zeal.co), contributor
 * Patrick Pomerleau @ Nest Immersion ([@nestdome](https://www.instagram.com/nestdome)) - helper, contributor, feature integrations to NestDrop
 * [IkeC](https://github.com/IkeC) - contributor, [Milkwave](https://github.com/IkeC/Milkwave) Developer
-* [MilkDrop2077](https://github.com/milkdrop2077) - contributor
-* Me, [u/Decent-Tangerine4998](https://www.reddit.com/user/Decent-Tangerine4998) - Tester
+* [MilkDrop2077](https://github.com/milkdrop2077) - contributor and much inspiration from him, [MilkDrop 3](https://milkdrop3.com) developer
+* [thnikkaman (Goury on Discord)](https://github.com/thnikkaman), very good guy, contributor
+* Me, [u/Decent-Tangerine4998](https://www.reddit.com/user/Decent-Tangerine4998) and [martin (Nitorami)](https://forums.winamp.com/member/252823-nitorami) - Tester
+* [martin (Nitorami)](https://forums.winamp.com/member/252823-nitorami), the preset legend, tested the FFT shader audio processing and suggested me with a helpful RMS normalization & self-implemented to it
 * ...and all the preset authors and contributors!
 
 # License

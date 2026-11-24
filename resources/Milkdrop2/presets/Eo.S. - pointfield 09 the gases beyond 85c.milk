@@ -349,7 +349,7 @@ shapecode_1_border_g=1.000000
 shapecode_1_border_b=1.000000
 shapecode_1_border_a=0.000000
 shape_1_per_frame1=xp = 1 - abs( sin(time*100) );
-shape_1_per_frame2=xsign = rand(2)*2 - 1;
+shape_1_per_frame2=xsign = int(rand(2))*2 - 1;
 shape_1_per_frame3=
 shape_1_per_frame4=a=a * (1-xp);
 shape_1_per_frame5=

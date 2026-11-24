@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="library">
@@ -37,6 +37,9 @@
     <ClCompile Include="textmgr.cpp">
       <Filter>library\sources</Filter>
     </ClCompile>
+    <ClCompile Include="webcam.cpp">
+      <Filter>library\sources</Filter>
+    </ClCompile>
     <ClCompile Include="texmgr.cpp">
       <Filter>library\sources</Filter>
     </ClCompile>
@@ -53,6 +56,9 @@
       <Filter>library\sources</Filter>
     </ClCompile>
     <ClCompile Include="menu.cpp">
+      <Filter>library\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="MediaTexture.cpp">
       <Filter>library\sources</Filter>
     </ClCompile>
     <ClCompile Include="pluginshell.cpp">
@@ -115,9 +121,24 @@
     <ClCompile Include="Milkdrop2PcmVisualizer.cpp">
       <Filter>library\sources</Filter>
     </ClCompile>
+    <ClCompile Include="lyrics_editor.cpp">
+      <Filter>library\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="lyrics_manager.cpp">
+      <Filter>library\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="lyrics_renderer.cpp">
+      <Filter>library\sources</Filter>
+    </ClCompile>
+    <ClCompile Include="portable_dll_loader.cpp">
+      <Filter>library\audio</Filter>
+    </ClCompile>
+    <ClCompile Include="hdr.cpp">
+      <Filter>library\sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="plugin_icon.ico">
+    <Image Include="beatdrop_icon.ico">
       <Filter>library\resources</Filter>
     </Image>
   </ItemGroup>
@@ -140,6 +161,21 @@
     <ClInclude Include="fft.h">
       <Filter>library\headers</Filter>
     </ClInclude>
+    <ClInclude Include="lyrics_editor.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="lyrics_lrc.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="lyrics_manager.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="lyrics_renderer.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="unicode_text.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
     <ClInclude Include="dxcontext.h">
       <Filter>library\headers</Filter>
     </ClInclude>
@@ -150,6 +186,12 @@
       <Filter>library\headers</Filter>
     </ClInclude>
     <ClInclude Include="menu.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="webcam.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="MediaTexture.h">
       <Filter>library\headers</Filter>
     </ClInclude>
     <ClInclude Include="plugin.h">
@@ -226,6 +268,12 @@
     </ClInclude>
     <ClInclude Include="..\audio\audiodevicehandler.h">
       <Filter>library\audio-headers</Filter>
+    </ClInclude>
+    <ClInclude Include="hdr.h">
+      <Filter>library\headers</Filter>
+    </ClInclude>
+    <ClInclude Include="portable_dll_loader.h">
+      <Filter>library\headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

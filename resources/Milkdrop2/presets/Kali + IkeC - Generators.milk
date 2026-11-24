@@ -1,0 +1,377 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+comp_1=// Generators by Kali (Shadertoy Xtf3Rn) / https://www.shadertoy.com/view/Xtf3Rn
+comp_2=// CC BY-NC-SA 3.0
+comp_3=// Transpiled to HLSL using Milkwave
+comp_4=
+comp_5=#define tx (sin(time)*0.5+1)
+comp_6=
+comp_7=// CONV: setting iChannel samplers to default noise texture
+comp_8=#define iChannel0 sampler_noise_lq
+comp_9=
+comp_10=// CONV: adding helper functions
+comp_11=float mod_conv(float x, float y) { return x - y * floor(x / y); }
+comp_12=float2 mod_conv(float2 x, float2 y) { return x - y * floor(x / y); }
+comp_13=float3 mod_conv(float3 x, float3 y) { return x - y * floor(x / y); }
+comp_14=float4 mod_conv(float4 x, float4 y) { return x - y * floor(x / y); }
+comp_15=
+comp_16=#define ENABLE_HARD_SHADOWS
+comp_17=// turn off to enable faster AO soft shadows
+comp_18=#define ENABLE_POSTPROCESS
+comp_19=// Works better on window view rather than full screen
+comp_20=
+comp_21=#define RAY_STEPS 70
+comp_22=#define SHADOW_STEPS 50
+comp_23=#define LIGHT_COLOR float3(.85,.9,1.)
+comp_24=#define AMBIENT_COLOR float3(.8,.83,1.)
+comp_25=#define FLOOR_COLOR float3(1.,.7,.9)
+comp_26=#define ENERGY_COLOR float3(1.,.7,.4)
+comp_27=#define BRIGHTNESS .9
+comp_28=#define GAMMA 1.3
+comp_29=#define SATURATION .85
+comp_30=
+comp_31=#define detail .00005
+comp_32=#define t time*.25
+comp_33=
+comp_34=static float lenv2(float2 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_35=float lenv3(float3 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_36=static float3 lightdir=normalize(float3(0.5,-0.3,-1.));
+comp_37=static float3 ambdir=normalize(float3(0.,0.,1.));
+comp_38=static const float3 origin=float3(0.,3.11,0.);
+comp_39=static float3 energy=float3(0.01, 0.01, 0.01);
+comp_40=#ifdef ENABLE_VIBRATION
+comp_41=static float vibration=sin(time*60.)*.0013;
+comp_42=#else
+comp_43=static float vibration=0.;
+comp_44=#endif
+comp_45=static float det=0.0;
+comp_46=static float3 pth1;
+comp_47=// AUDIO: the yellow energy lights at the pillars flare with the level (both neutral at version 3+)
+comp_48=static float aEnergy = 1.0;
+comp_49=static float aTint = 0.0;
+comp_50=// AUDIO: radius scale of the energy orb (1.0 at version 3+)
+comp_51=static float aOrb = 1.0;
+comp_52=
+comp_53=float2x2 rot(float a) {
+comp_54=  return float2x2(cos(a),sin(a),-sin(a),cos(a));
+comp_55=}
+comp_56=
+comp_57=float3 path(float ti) {
+comp_58=  return float3(sin(ti),.3-sin(ti*.632)*.3,cos(ti*.5))*.5;
+comp_59=}
+comp_60=
+comp_61=float Sphere(float3 p, float3 rd, float r){
+comp_62=// A RAY TRACED SPHERE
+comp_63=float b = dot( -p, rd );
+comp_64=float inner = b * b - dot( p, p ) + r * r;
+comp_65=float sres = -1.0;
+comp_66=if( inner >= 0.0 ) sres = b - sqrt( max(inner, 0.0) );
+comp_67=return sres;
+comp_68=}
+comp_69=
+comp_70=float2 de(float3 pos) {
+comp_71=  float hid=0.;
+comp_72=  float3 tpos=pos;
+comp_73=  tpos.xz=abs(.5-mod_conv(tpos.xz,1.));
+comp_74=  float4 p=float4(tpos,1.);
+comp_75=  float y=max(0.,.35-abs(pos.y-3.35))/.35;
+comp_76=  for (int i=0; i<7; i++) {
+comp_77=  // LOWERED THE ITERS
+comp_78=  p.xyz = abs(p.xyz)-float3(-0.02,1.98,-0.02);
+comp_79=  p=p*(2.0+vibration*y)/clamp(dot(p.xyz,p.xyz),.4,1.)-float4(0.5,1.,0.4,0.);
+comp_80=  p.xz = mul(p.xz, transpose(float2x2(-0.416,-0.91,0.91,-0.416)));
+comp_81=}
+comp_82=
+comp_83=float fl=pos.y-3.013;
+comp_84=float fr=(length(max(abs(p.xyz)-float3(0.1,5.0,0.1),float3(0.0,0.0,0.0)))-0.05)/p.w;
+comp_85=// RETURN A RRECT
+comp_86=float d=min(fl,fr);
+comp_87=d=min(d,-pos.y+3.95);
+comp_88=if (abs(d-fl)<.001) hid=1.;
+comp_89=return float2(d,hid);
+comp_90=}
+comp_91=
+comp_92=float3 normal(float3 p) {
+comp_93=  float3 e = float3(0.0,det,0.0);
+comp_94=
+comp_95=  return normalize(float3(
+comp_96=  de(p+e.yxx).x-de(p-e.yxx).x,
+comp_97=  de(p+e.xyx).x-de(p-e.xyx).x,
+comp_98=  de(p+e.xxy).x-de(p-e.xxy).x
+comp_99=  )
+comp_100=  );
+comp_101=}
+comp_102=
+comp_103=float shadow(float3 pos, float3 sdir) {
+comp_104=// THIS ONLY RUNS WHEN WITH HARD SHADOWS
+comp_105=float sh=1.0;
+comp_106=float totdist =2.0*det;
+comp_107=float dist=10.;
+comp_108=float t1=Sphere((pos-.005*sdir)-pth1,-sdir,0.015*aOrb);
+comp_109=if (t1>0. && t1<.5) {
+comp_110=  float3 sphglowNorm=normalize(pos-t1*sdir-pth1);
+comp_111=  sh=1.-pow(max(.0,dot(sphglowNorm,sdir))*1.2,3.);
+comp_112=}
+comp_113=
+comp_114=for (int steps=min(frame,0); steps<SHADOW_STEPS; steps++) {
+comp_115=  if (totdist<.6 && dist>detail) {
+comp_116=    float3 p = pos - totdist * sdir;
+comp_117=    dist = de(p).x;
+comp_118=    sh = min( sh, max(50.*dist/totdist,0.0) );
+comp_119=    totdist += max(.01,dist);
+comp_120=  }
+comp_121=
+comp_122=}
+comp_123=
+comp_124=return clamp(sh,0.1,1.0);
+comp_125=}
+comp_126=
+comp_127=float calcAO( const float3 pos, const float3 nor ) {
+comp_128=  float aodet=detail*40.;
+comp_129=  float totao = 0.0;
+comp_130=  float sca = 14.0;
+comp_131=  for( int aoi=0; aoi<5; aoi++ ) {
+comp_132=    float hr = aodet*float(aoi*aoi);
+comp_133=    float3 aopos =  nor * hr + pos;
+comp_134=    float dd = de( aopos ).x;
+comp_135=    totao += -(dd-hr)*sca;
+comp_136=    sca *= 0.7;
+comp_137=  }
+comp_138=
+comp_139=  return clamp( 1.0 - 5.0*totao, 0., 1.0 );
+comp_140=}
+comp_141=
+comp_142=float _tex2D(float3 p) {
+comp_143=  p=abs(.5-frac(p*10.));
+comp_144=  float3 c=float3(3., 3., 3.);
+comp_145=  float es, l=es=0.;
+comp_146=  for (int i = 0; i < 10; i++) {
+comp_147=    p = abs(p + c) - abs(p - c) - p;
+comp_148=    p/= clamp(dot(p, p), .0, 1.);
+comp_149=    p = p* -1.5 + c;
+comp_150=    if ( mod_conv(float(i), 2.) < 1. ) {
+comp_151=      float pl = l;
+comp_152=      l = lenv3(p);
+comp_153=      es+= exp(-1. / max(abs(l - pl), 1e-6));
+comp_154=    }
+comp_155=
+comp_156=  }
+comp_157=
+comp_158=  return es;
+comp_159=}
+comp_160=
+comp_161=float3 light(in float3 p, in float3 dir, in float3 n, in float hid) {
+comp_162=// PASSING IN THE NORMAL
+comp_163=#ifdef ENABLE_HARD_SHADOWS
+comp_164=float sh=shadow(p, lightdir);
+comp_165=#else
+comp_166=float sh=calcAO(p,-2.5*lightdir);
+comp_167=// USING AO TO MAKE VERY SOFT SHADOWS
+comp_168=#endif
+comp_169=float ao=calcAO(p,n);
+comp_170=float diff=max(0.,dot(lightdir,-n))*sh;
+comp_171=float y=3.35-p.y;
+comp_172=float3 amb=max(.5,dot(dir,-n))*.5*AMBIENT_COLOR;
+comp_173=if (hid<.5) {
+comp_174=  amb+=max(0.2,dot(float3(0.,1.,0.),-n))*FLOOR_COLOR*pow(max(0.,.2-abs(3.-p.y))/.2,1.5)*2.;
+comp_175=  amb+=energy*pow(max(0.,.4-abs(y))/.4,2.)*max(0.2,dot(float3(0.,-sign(y),0.),-n))*2.;
+comp_176=}
+comp_177=
+comp_178=float3 r = reflect(lightdir,n);
+comp_179=float spec=pow(max(0.,dot(dir,-r))*sh,10.);
+comp_180=float3 col;
+comp_181=float energysource=pow(max(0.,.04-abs(y))/.04,4.)*2.;
+comp_182=if (hid>1.5) {col=float3(1., 1., 1.); spec=spec*spec;}
+comp_183=else{
+comp_184=  float k=_tex2D(p)*.23+.2;
+comp_185=  k=min(k,1.5-energysource);
+comp_186=  col=lerp(float3(k,k*k,k*k*k),float3(k, k, k),.3);
+comp_187=  if (abs(hid-1.)<.001) col*=FLOOR_COLOR*1.3;
+comp_188=}
+comp_189=
+comp_190=col=col*(amb+diff*LIGHT_COLOR)+spec*LIGHT_COLOR;
+comp_191=if (hid<.5) {
+comp_192=  col=max(col,energy*2.*energysource);
+comp_193=}
+comp_194=
+comp_195=col*=min(1.,ao+length(energy)*.5*max(0.,.1-abs(y))/.1);
+comp_196=return col;
+comp_197=}
+comp_198=
+comp_199=float3 raymarch(in float3 from, in float3 dir)
+comp_200=
+comp_201={
+comp_202=  float ey=mod_conv(t*.5,1.);
+comp_203=  float glow,eglow,ref,sphdist,totdist=glow=eglow=ref=sphdist=0.;
+comp_204=  float2 d=float2(1.,0.);
+comp_205=  float3 p, col=float3(0., 0., 0.);
+comp_206=  float3 origdir=dir,origfrom=from,sphNorm;
+comp_207=
+comp_208=  float3 wob=cos(dir*500.0*lenv3(from-pth1)+(from-pth1)*250.+time*10.)*0.0005;
+comp_209=  float t1=Sphere(from-pth1+wob,dir,0.015*aOrb);
+comp_210=  float tg=Sphere(from-pth1+wob,dir,0.02*aOrb);
+comp_211=  if(t1>0.){
+comp_212=    ref=1.0;from+=t1*dir;sphdist=t1;
+comp_213=    sphNorm=normalize(from-pth1+wob);
+comp_214=    dir=reflect(dir,sphNorm);
+comp_215=  }
+comp_216=
+comp_217=  else if (tg>0.) {
+comp_218=    float3 sphglowNorm=normalize(from+tg*dir-pth1+wob);
+comp_219=    glow+=pow(max(0.,dot(sphglowNorm,-dir)),5.);
+comp_220=    };
+comp_221=
+comp_222=    for (int i=min(frame,0); i<RAY_STEPS; i++) {
+comp_223=      if (d.x>det && totdist<3.0) {
+comp_224=        p=from+totdist*dir;
+comp_225=        d=de(p);
+comp_226=        det=detail*(1.+totdist*60.)*(1.+ref*5.);
+comp_227=        totdist+=d.x;
+comp_228=        energy=lerp(ENERGY_COLOR, float3(1.,.95,.6), aTint)*(1.5+sin(time*20.+p.z*10.))*.25*aEnergy;
+comp_229=        if(d.x<0.015)glow+=max(0.,.015-d.x)*exp(-totdist);
+comp_230=        if (d.y<.5 && d.x<0.03){
+comp_231=        // ONLY DOING THE GLOW WHEN IT IS CLOSE ENOUGH
+comp_232=        float glw=min(abs(3.35-p.y-ey),abs(3.35-p.y+ey));
+comp_233=        // 2 glows at once
+comp_234=        eglow+=max(0.,.03-d.x)/.03*
+comp_235=        (pow(max(0.,.05-glw)/.05,5.)
+comp_236=        +pow(max(0.,.15-abs(3.35-p.y))/.15,8.))*1.5;
+comp_237=      }
+comp_238=
+comp_239=    }
+comp_240=
+comp_241=  }
+comp_242=
+comp_243=  float l=pow(max(0.,dot(normalize(-dir.xz),normalize(lightdir.xz))),2.);
+comp_244=  l*=max(0.2,dot(-dir,lightdir));
+comp_245=  float3 backg=.5*(1.2-l)+LIGHT_COLOR*l*.7;
+comp_246=  backg*=AMBIENT_COLOR;
+comp_247=  if (d.x<=det) {
+comp_248=    float3 norm=normal(p-abs(d.x-det)*dir);
+comp_249=    // DO THE NORMAL CALC OUTSIDE OF LIGHTING (since we already have the sphere normal)
+comp_250=    col=light(p-abs(d.x-det)*dir, dir, norm, d.y)*exp(-.2*totdist*totdist);
+comp_251=    col = lerp(col, backg, 1.0-exp(-1.*pow(totdist,1.5)));
+comp_252=  }
+comp_253=
+comp_254=  else {
+comp_255=    col=backg;
+comp_256=  }
+comp_257=
+comp_258=  float3 lglow=LIGHT_COLOR*pow(l,30.)*.5;
+comp_259=  col+=glow*(backg+lglow)*1.3;
+comp_260=  col+=pow(eglow,2.)*energy*.015;
+comp_261=  col+=lglow*min(1.,totdist*totdist*.3);
+comp_262=  if (ref>0.5) {
+comp_263=    float3 sphlight=light(origfrom+sphdist*origdir,origdir,sphNorm,2.);
+comp_264=    col=lerp(col*.3+sphlight*.7,backg,1.0-exp(-1.*pow(sphdist,1.5)));
+comp_265=  }
+comp_266=
+comp_267=  return col;
+comp_268=}
+comp_269=
+comp_270=float3 move(inout float2x2 rotview1,inout float2x2 rotview2) {
+comp_271=  float3 go=path(t);
+comp_272=  float3 adv=path(t+.7);
+comp_273=  float3 advec=normalize(adv-go);
+comp_274=  float an=atan2(advec.x,advec.z);
+comp_275=  rotview1=float2x2(cos(an),sin(an),-sin(an),cos(an));
+comp_276=  an=advec.y*1.7;
+comp_277=  rotview2=float2x2(cos(an),sin(an),-sin(an),cos(an));
+comp_278=  return go;
+comp_279=}
+comp_280=
+comp_281=// AUDIO/LOOK: saturation as if the Remote's "Saturation" control were 0.4 (baked in at request).
+comp_282=// Same math as shiftHSV() in include.fx, with hue and brightness left alone.
+comp_283=float3 saturate40(float3 c) {
+comp_284=  float4 mwK = float4(0, -1.0/3.0, 2.0/3.0, -1);
+comp_285=  float4 mwP = lerp(float4(c.bg, mwK.wz), float4(c.gb, mwK.xy), step(c.b, c.g));
+comp_286=  float4 mwQ = lerp(float4(mwP.xyw, c.r), float4(c.r, mwP.yzx), step(mwP.x, c.r));
+comp_287=  float mwD = mwQ.x - min(mwQ.w, mwQ.y), mwE = 1e-10;
+comp_288=  float mwH = frac(abs(mwQ.z + (mwQ.w - mwQ.y) / (6.0*mwD + mwE)));
+comp_289=  float mwS = mwD / (mwQ.x + mwE);
+comp_290=  float3 mwT = abs(frac(mwH + float3(0, 2.0/3.0, 1.0/3.0)) * 6.0 - 3.0);
+comp_291=  return mwQ.x * lerp(float3(1,1,1), saturate(mwT - 1.0), mwS + (1.0 - mwS) * 0.4);
+comp_292=}
+comp_293=
+comp_294=shader_body {
+comp_295=  // MOUSE: pointer Y zooms - up = zoom in, down = zoom out (0.90x .. 1.30x around the frame centre);
+comp_296=  // pointer X pans the view left/right. Centre + released button give the identity transform, so the
+comp_297=  // untouched frame stays byte-identical.
+comp_298=  float2 mwMouse = (mouse.xy - 0.5) * saturate(mouse.z);
+comp_299=  float mwZoomAmt = mwMouse.y > 0.0 ? 0.6 : 0.2;   // zoom in generously, out carefully
+comp_300=  float mwZoom = 1.0 + mwMouse.y * mwZoomAmt;
+comp_301=  uv = (uv - 0.5) / mwZoom + 0.5 + float2(mwMouse.x * 0.35, 0.0);
+comp_302=  float4 mwDead = float4(0.5, 0.5, 0.0, 0.0);   // superseded: the old mouse code below now reads a centred, released pointer
+comp_303=
+comp_304=  float4 fragColor = 0;
+comp_305=  float2 fragCoord  = uv;
+comp_306=  // CONV: Center on screen, then try some aspect correction
+comp_307=  uv = (uv*2) - 1;
+comp_308=  uv *= aspect.xy;
+comp_309=  // CONV: Adjust this to flip the output (Â±uv.x, Â±uv.y)
+comp_310=  uv = float2(uv.x, -uv.y);
+comp_311=  // CONV: Adjust viewpoint (x,y individually or both)
+comp_312=  uv += float2(0,0) + 0;
+comp_313=  uv *= float2(1,1) * 1;
+comp_314=  // AUDIO: 1 = calm (bass_smooth), 2 = more reactive (bass_att), 3+ = static - see the remote's Version tooltip
+comp_315=  #ifdef vis_version
+comp_316=    float aRng = (int)vis_version == 1 ? 0.34 : 0.42;
+comp_317=    float aFac = (int)vis_version > 2 ? 1*vis_intensity+vis_shift
+comp_318=      : (1.0 - aRng*0.5 + smoothstep(0,2,(int)vis_version == 1 ? bass_smooth : bass_att)*aRng) * vis_intensity + vis_shift;
+comp_319=  #else
+comp_320=    float aFac = (1.0 - 0.15) + smoothstep(0,2,bass_att)*0.30;
+comp_321=  #endif
+comp_322=  float aDev = aFac - 1.0;   // 0 at the track average, +loud, -quiet
+comp_323=  #ifdef vis_version
+comp_324=    float aBe  = aDev * 4.0, aCol = (int)vis_version == 1 ? 0.7 : 1.3;   // beat scale, colour reaction scale
+comp_325=  #else
+comp_326=    float aBe  = aDev * 4.0, aCol = 1.3;   // other MilkDrop variants: v2 tuning
+comp_327=  #endif
+comp_328=  // AUDIO: the level drives the yellow energy lights, not the camera
+comp_329=  #ifdef vis_version
+comp_330=    aEnergy = 1.0 + aDev * ((int)vis_version == 1 ? 3.5 : 2.5);
+comp_331=  #else
+comp_332=    aEnergy = 1.0 + aDev * 2.5;   // other MilkDrop variants: v2 tuning
+comp_333=  #endif
+comp_334=  aTint   = saturate(aDev * 3.5);
+comp_335=  // AUDIO: and the energy orb in front of the camera grows with the level
+comp_336=  #ifdef vis_version
+comp_337=    aOrb    = 1.0 + aDev * ((int)vis_version == 1 ? 2.0 : 1.1);
+comp_338=  #else
+comp_339=    aOrb    = 1.0 + aDev * 1.1;   // other MilkDrop variants: v2 tuning
+comp_340=  #endif
+comp_341=
+comp_342=  pth1 = path(t+.3)+origin+float3(0.,.01,0.);
+comp_343=  // float2 uv = fragCoord.xy / uv.xy*2.-1.;
+comp_344=  float2 uv2=uv;
+comp_345=  #ifdef ENABLE_POSTPROCESS
+comp_346=  uv*=1.+pow(lenv2(uv2*uv2*uv2*uv2),4.)*.07;
+comp_347=  #endif
+comp_348=  // CONV: aspect correction is already done by the prologue (was applied twice)
+comp_349=  float2 mpos=(mwDead.xy-.5)*3.;
+comp_350=  if (mouse_clicked<1.) mpos=float2(0., 0.);
+comp_351=  float2x2 rotview1 = float2x2(1,0,0,1), rotview2 = float2x2(1,0,0,1);
+comp_352=  float3 from=origin+move(rotview1,rotview2);
+comp_353=  float3 dir=normalize(float3(uv*.8,1.));
+comp_354=  dir.yz = mul(dir.yz, transpose(rot(mpos.y)));
+comp_355=  dir.xz = mul(dir.xz, transpose(rot(mpos.x)));
+comp_356=  dir.yz = mul(dir.yz, transpose(rotview2));
+comp_357=  dir.xz = mul(dir.xz, transpose(rotview1));
+comp_358=  float3 color=raymarch(from,dir);
+comp_359=  color=clamp(color,float3(.0, .0, .0),float3(1., 1., 1.));
+comp_360=  color=pow(color,float3(GAMMA, GAMMA, GAMMA))*BRIGHTNESS;
+comp_361=  float clen=lenv3(color);
+comp_362=color=lerp(float3(clen, clen, clen),color,SATURATION);
+comp_363=  // (the baked saturation is applied at the very end, like the engine's own shift)
+comp_364=  #ifdef ENABLE_POSTPROCESS
+comp_365=  // noise intro removed on request (scene is visible from the first frame)
+comp_366=  // vignette removed on request
+comp_367=  // interlace scanlines and film grain removed on request - every version uses the clean look
+comp_368=#endif
+comp_369=  fragColor = float4(color,1.);
+comp_370=  ret = fragColor;
+comp_371=  // AUDIO: the scenery gains colour on beats
+comp_372=  ret = saturate40(lerp(float3(lum(ret), lum(ret), lum(ret)), ret, 1.0 + aBe * 0.7 * aCol));   // default saturation = the 0.4 setting
+comp_373=}

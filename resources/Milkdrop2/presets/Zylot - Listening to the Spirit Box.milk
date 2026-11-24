@@ -1,0 +1,137 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+[preset00]
+FFTAttack=0.500
+FFTDecay=0.500
+fRating=3.000
+fGammaAdj=2.000
+fDecay=1.000
+fVideoEchoZoom=2.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=3.222
+fWaveScale=0.010
+fWaveSmoothing=0.750
+fWaveParam=-0.380
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.500
+wave_g=0.500
+wave_b=0.500
+wave_x=0.500
+wave_y=0.500
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=24.960
+nMotionVectorsY=19.200
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=1
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.50000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wave_0_per_point1=x = -.1+sample*1.2;
+wave_0_per_point2=y = .5+(0|(value1*10000))*(.007+(.003*sin((x*(50))+time*4.33)));
+wave_0_per_point3=
+wave_0_per_point4=r = .3+bass*value2;
+wave_0_per_point5=g = .3+treb*value2;
+wave_0_per_point6=b = .3+mid*value2;
+per_frame_init_1=q1 = aspectx;
+per_frame_init_2=q2 = aspecty;
+per_frame_1=wave_a = 0;
+per_frame_2=warp = 0;
+per_pixel_1=dy = bass_att*(y-.5)*.01;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // sample previous frame
+warp_4=`
+warp_5=`    float4 nV = tex2D(sampler_noise_lq, uv*10);
+warp_6=`    float4 nVD = tex2D(sampler_noise_lq, uv*2);
+warp_7=`
+warp_8=`    float2 nuv = float2(uv.x + (-.0005 + (nV.x*.001)),uv.y + (-.0005 + (nV.z*.001)));
+warp_9=`
+warp_10=`    ret = tex2D(sampler_fc_main, nuv).xyz;
+warp_11=`    
+warp_12=`    // darken (decay) over time
+warp_13=`    ret -= (nVD.x*.002);
+warp_14=`
+warp_15=`    ret.x -= (bass*.001)+abs(uv_orig.y-.5)*.01;
+warp_16=`    ret.y -= (treb*.001)+abs(uv_orig.y-.5)*.01;
+warp_17=`    ret.z -= (mid*.001)+abs(uv_orig.y-.5)*.01;
+warp_18=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float4 nV = tex2D(sampler_noise_lq, uv*10);
+comp_4=`    float4 nVD = tex2D(sampler_noise_lq, uv*.5);
+comp_5=`    
+comp_6=`    float2 nuv = float2(uv.x + (-.005 + (nV.x*.01)),uv.y + (-.005 + (nV.z*.01)));
+comp_7=`    float2 nuv2 = float2(uv.x + (-.005 + (nVD.x*.01)),uv.y + (-.005 + (nVD.z*.01)));
+comp_8=`
+comp_9=`    nuv2 = nuv2 * .5;
+comp_10=`    float2 nuv3 = abs(nuv2-.5);
+comp_11=`
+comp_12=`    ret = lerp(max(tex2D(sampler_fc_main, nuv).xyz,ret = tex2D(sampler_main, uv).xyz)*2,ret = tex2D(sampler_main, uv).xyz,abs(vol-1)*.5);
+comp_13=`    ret = max(ret, tex2D(sampler_fc_main, nuv2).xyz*(vol_att*.33));
+comp_14=`    ret = max(ret, tex2D(sampler_fc_main, nuv3).xyz*(vol_att*.33));
+comp_15=`
+comp_16=`    ret *= 2.00; //gamma
+comp_17=`
+comp_18=`    ret += pow(ret,2);
+comp_19=`}

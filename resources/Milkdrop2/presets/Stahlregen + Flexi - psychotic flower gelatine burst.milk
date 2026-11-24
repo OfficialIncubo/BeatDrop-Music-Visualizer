@@ -296,8 +296,8 @@ per_frame_6=res = beat*(vol + m*0.1) + (1-beat)*(res -  (0.1+diff*0.02)*60/fps);
 per_frame_7=res = max(0,res);
 per_frame_8=
 per_frame_9=
-per_frame_10=x = if(beat,rand(60)*0.01 + 0.2,x);
-per_frame_11=y = if(beat,rand(60)*0.01 + 0.2,y);
+per_frame_10=x = if(beat,int(rand(60))*0.01 + 0.2,x);
+per_frame_11=y = if(beat,int(rand(60))*0.01 + 0.2,y);
 per_frame_12=q1 = x;
 per_frame_13=q2 = y;
 per_frame_14=

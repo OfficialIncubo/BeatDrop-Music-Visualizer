@@ -1,4 +1,6 @@
-Added init/per-frame/per-vertex variables: mousex, mousey, mousedown, mouseclick
+Added init/per-frame/per-vertex variables: mousex, mousey, mousedown, mouseclick, ctrllt, ctrlrt, ctrlup, ctrldn, year, month, day, weekday, hour, minute, second, milliseconds, totalseconds
+
+aspect_sd - Screen-Dependent Aspect Ratio: When it mode is on, it retains as 1, else it goes back to normal aspect. If you want to always be 1:1, just use aspect.
 
 Mouse controls:
 mouse_x - retrieves the X position of mouse
@@ -8,8 +10,8 @@ mouse_pos - retrieves the XY position of mouse
 You can also use:
 mouse.x - retrieves the X position of mouse
 mouse.y - retrieves the Y position of mouse
-mouse.z - retrieves if the left or right button of the mouse is down or not, getting X mouse coordinate (positive if held, otherwise negative)
-mouse.w - retrieves if the left or right button of the mouse is clicked (button up) or not, getting Y mouse coordinate (positive if clicked, otherwise negative)
+mouse.z (or mouse_clicked) - retrieves if the left or right button of the mouse is down or not, getting X mouse coordinate (positive if held, otherwise negative)
+mouse.w (or mouse_released) - retrieves if the left or right button of the mouse is clicked (button up) or not, getting Y mouse coordinate (positive if clicked, otherwise negative)
 
 Note that both mouse coordinates return -1 when the pointer is outside the window. Make sure you add statements while editing presets.
 If you want to really use with mouse down/click events, just pass these per-frame variables mentioned above to q variables and then assign mouse.z or mouse.w with any q variable you assigned (e.g. mouse.z = (any q var);).
@@ -19,8 +21,22 @@ get_fft() - Gets FFT data at a normalized position [0...1]; 0.0 = lowest frequen
 get_fft_hz() - Gets FFT data at the specified frequency in hz
 get_fft_peak() - Gets FFT peak hold data at a normalized position [0...1]; 0.0 = lowest frequency (DC), 1.0 = highest frequency (~22kHz)
 get_fft_peak_hz() - Gets FFT peak hold data at the specified frequency in hz
+Limitation: using frac() may cause errors
 
 Wave shader variables:
 get_wave() - Gets mono waveform data at a normalized position [0...1]
 get_wave_left() - Gets the left channel of the waveform data at a normalized position [0...1]
 get_wave_right() - Gets the right channel of the waveform data at a normalized position [0...1]
+Limitation: using frac() may cause errors
+
+System time shader variables:
+sysTime - Gets the system time in real-time (as float4(hour, minute, second, totalSecond))
+sysDate - Gets the system date in real-time (as float4(year, month, day, weekday))
+sysTimeHour - Gets the actual hour from system time
+sysTimeMinute - Gets the actual minute from system time
+sysTimeSecond - Gets the actual second from system time
+sysTimeTotalSeconds - Gets the converted seconds from hour, minute and seconds from system time
+sysDateYear - Gets the actual year from system date
+sysDateMonth - Gets the actual month from system date
+sysDateDay - Gets the actual day from system date
+sysDateWeekday - Gets the day of the week from system date (1 - Monday, 2 - Tuesday, ..., 7 - Sunday)

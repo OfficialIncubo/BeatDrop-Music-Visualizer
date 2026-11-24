@@ -1,0 +1,256 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 27/09/2026 at 12:52:41.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=2
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.000
+fDecay=0.980
+FFTAttack=0.350
+FFTDecay=0.600
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.000
+fWaveSmoothing=0.000
+fWaveParam=0.000
+fModWaveAlphaStart=0.000
+fModWaveAlphaEnd=0.000
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`shader_body {
+warp_2=`  ret = float4(0.0, 0.0, 0.0, 1.0);
+warp_3=`}
+comp_1=`#define PI   M_PI
+comp_2=`#define TAU  M_PI_2
+comp_3=`
+comp_4=`#define HILITE_AMT   0.25
+comp_5=`#define HILITE_POW   14.0
+comp_6=`#define IRI_SLOPE    0.70
+comp_7=`#define IRI_SPEED    0.03
+comp_8=`#define SAT          1.55
+comp_9=`#define EXPOSURE     0.55
+comp_10=`#define BLACK_FLOOR  0.025
+comp_11=`#define GAMMA        0.72
+comp_12=`#define CORE_BRIGHT  0.25
+comp_13=`
+comp_14=`#define TWIST_AMT    0.80
+comp_15=`#define TWIST_FREQ   1.60
+comp_16=`#define SHEEN_AMT    1.10
+comp_17=`#define DISPERSION   0.012
+comp_18=`#define PULSE_SPEED  0.90
+comp_19=`#define GUST_PERIOD  9.0
+comp_20=`#define WARP_AMT     0.18
+comp_21=`#define NEBULA_AMT   0.12
+comp_22=`#define CAM_ROLL     0.08
+comp_23=`
+comp_24=`float hash11(float n){ return frac(sin(n*127.1)*43758.5453); }
+comp_25=`float hash21(float2 p){ return frac(sin(dot(p, float2(127.1, 311.7)))*43758.5453); }
+comp_26=`
+comp_27=`float vnoise(float2 p){
+comp_28=`    float2 i = floor(p), f = frac(p);
+comp_29=`    f = f*f*(3.0 - 2.0*f);
+comp_30=`    float a = hash21(i);
+comp_31=`    float b = hash21(i + float2(1.0, 0.0));
+comp_32=`    float c = hash21(i + float2(0.0, 1.0));
+comp_33=`    float d = hash21(i + float2(1.0, 1.0));
+comp_34=`    return lerp(lerp(a, b, f.x), lerp(c, d, f.x), f.y);
+comp_35=`}
+comp_36=`
+comp_37=`float fbm(float2 p){
+comp_38=`    float s = 0.0, a = 0.5;
+comp_39=`    for(int i = 0; i < 4; i++){
+comp_40=`        s += a*vnoise(p);
+comp_41=`        p = float2(1.6*p.x - 1.2*p.y, 1.2*p.x + 1.6*p.y);
+comp_42=`        a *= 0.5;
+comp_43=`    }
+comp_44=`    return s;
+comp_45=`}
+comp_46=`
+comp_47=`float3 iri(float t){
+comp_48=`    return 0.5 + 0.5*cos(TAU*t + float3(0.0, 2.1, 4.2));
+comp_49=`}
+comp_50=`
+comp_51=`float3 bundle(float2 uva, float depth, float seed, float t, float gust){
+comp_52=`    float3 acc = float3(0.0, 0.0, 0.0);
+comp_53=`    float drift = t*(0.15 + depth*0.35);
+comp_54=`    float keyLight = 0.35 + 0.65*pow(0.5 + 0.5*sin(uva.x*1.3 - uva.y*0.4 + t*0.35), 2.0);
+comp_55=`
+comp_56=`    for(int i = 0; i < 14; i++){
+comp_57=`        float fi = (float)i;
+comp_58=`        float h  = hash11(fi + seed*61.0);
+comp_59=`        float h2 = hash11(fi + seed*61.0 + 29.0);
+comp_60=`        
+comp_61=`        // Get FFT audio data across the frequency spectrum for each individual strand
+comp_62=`        float fft_band = saturate(fi / 14.0);
+comp_63=`        float strand_fft = get_fft(fft_band);
+comp_64=`        
+comp_65=`        float ph = drift*(0.6 + h*0.8) + h*PI*4.0;
+comp_66=`        float f1 = 1.2 + h2*1.5;
+comp_67=`        float f2 = 3.1 + h*2.0;
+comp_68=`
+comp_69=`        float gph = uva.y*4.0 - t*3.0 + h*6.0 + depth*2.0;
+comp_70=`        // Audio-driven glow and pulses; removed physical sway/gust
+comp_71=`        float gust_amt = 0.35; 
+comp_72=`        float pulse_amt = 1.40 + get_fft(0.85) * 3.5; 
+comp_73=`
+comp_74=`        float xc = (h - 0.5)*3.4
+comp_75=`                 + 0.55 * sin(uva.y*f1 + ph)
+comp_76=`                 + 0.22*sin(uva.y*f2 - ph*1.7)
+comp_77=`                 + 0.30*sin(t*0.20 + h2*9.0)
+comp_78=`                 + gust_amt*gust*sin(gph);
+comp_79=`        float dx = uva.x - xc;
+comp_80=`        float slope = 0.55*f1*cos(uva.y*f1 + ph)
+comp_81=`                    + 0.22*f2*cos(uva.y*f2 - ph*1.7)
+comp_82=`                    + gust_amt*gust*4.0*cos(gph);
+comp_83=`
+comp_84=`        float tp   = uva.y*TWIST_FREQ*(0.7 + h2) + t*(h - 0.5)*0.8 + h*9.0;
+comp_85=`        float face = abs(cos(tp));
+comp_86=`        float wmul = lerp(1.0, 0.12 + 0.88*face, TWIST_AMT);
+comp_87=`
+comp_88=`        // Strand width remains stable while glow handles reactivity
+comp_89=`        float w = (0.006 + 0.010*depth)*(1.0 + 0.6*abs(slope))*wmul;
+comp_90=`
+comp_91=`        float3 dxv  = dx + float3(-1.0, 0.0, 1.0)*DISPERSION*clamp(slope, -3.0, 3.0);
+comp_92=`        float3 core = wmul*w*CORE_BRIGHT/(dxv*dxv + w*w);
+comp_93=`        float sheath = exp(-dx*dx/(w*w*150.0))*(0.30 + strand_fft * 4.0);
+comp_94=`
+comp_95=`        float3 tint = iri(slope*IRI_SLOPE + h*0.9 + t*IRI_SPEED + depth*0.33 + 0.18*sin(tp));
+comp_96=`        tint = lerp(tint, float3(1.0, 0.97, 0.92),
+comp_97=`                    pow(max(1.0 - abs(slope), 0.0), HILITE_POW)*HILITE_AMT);
+comp_98=`
+comp_99=`        float glint = pow(face, 40.0)*SHEEN_AMT*keyLight*(1.0 + strand_fft * 2.0);
+comp_100=`
+comp_101=`        float pulse = pow(0.5 + 0.5*sin(uva.y*(2.0 + h*2.0)
+comp_102=`                          - t*PULSE_SPEED*(0.7 + h2) + h*TAU*3.0), 40.0)
+comp_103=`                    * step(0.45, h2)*pulse_amt;
+comp_104=`
+comp_105=`        float fade = smoothstep(-1.6, -0.9, uva.y + h*0.6)
+comp_106=`                   * smoothstep(1.4, 0.6, uva.y - h2*0.4);
+comp_107=`
+comp_108=`        float3 light = tint*(core*(1.0 + glint + pulse) + sheath*(1.0 + 0.5*pulse));
+comp_109=`        acc += light*fade*(0.25 + 0.75*depth);
+comp_110=`    }
+comp_111=`    return acc;
+comp_112=`}
+comp_113=`
+comp_114=`shader_body {
+comp_115=`    uv.y = 1-uv.y;
+comp_116=`    float2 my_uv = uv * 2.0 - 1.0;
+comp_117=`    my_uv.x *= aspect.x / aspect.y;
+comp_118=`    
+comp_119=`    float t = time;
+comp_120=`
+comp_121=`    float r = CAM_ROLL*sin(t*0.07);
+comp_122=`    float cosR = cos(r), sinR = sin(r);
+comp_123=`    float2 rotated_uv = float2(my_uv.x*cosR - my_uv.y*sinR, my_uv.x*sinR + my_uv.y*cosR);
+comp_124=`
+comp_125=`    // Flow warp remains smooth without audio displacement
+comp_126=`    float warp_amt = WARP_AMT;
+comp_127=`    float2 wv = float2(sin(rotated_uv.y*1.7 + t*0.13) + 0.5*sin(rotated_uv.y*3.3 - rotated_uv.x*1.1 + t*0.21),
+comp_128=`                       0.5*sin(rotated_uv.x*1.3 - t*0.11) + 0.3*cos(rotated_uv.x*2.9 + rotated_uv.y*1.4 + t*0.17));
+comp_129=`    rotated_uv += warp_amt*0.5*wv;
+comp_130=`
+comp_131=`    float gi   = floor(t/GUST_PERIOD);
+comp_132=`    float gp   = frac(t/GUST_PERIOD);
+comp_133=`    float gust = exp(-pow((gp - 0.5)*5.0, 2.0))*(0.4 + 0.8*hash11(gi + 3.7));
+comp_134=`
+comp_135=`    float3 col = float3(0.0, 0.0, 0.0);
+comp_136=`    col += lerp(float3(0.004, 0.003, 0.010), float3(0.012, 0.006, 0.022),
+comp_137=`                smoothstep(-1.0, 1.0, rotated_uv.y));
+comp_138=`
+comp_139=`    float neb = fbm(rotated_uv*1.2 + float2(0.0, t*0.02) + 0.5*fbm(rotated_uv*2.0 - t*0.03));
+comp_140=`    col += iri(neb*0.8 + t*0.01 + 0.55)*pow(max(neb, 0.0), 3.0)*NEBULA_AMT;
+comp_141=`
+comp_142=`    col += bundle(rotated_uv*1.30 + float2(0.4, 0.0), 0.25, 1.0, t, gust)*0.5;
+comp_143=`    col += bundle(rotated_uv*1.00,                 0.60, 2.0, t, gust)*0.8;
+comp_144=`    col += bundle(rotated_uv*0.78 - float2(0.3, 0.0), 1.00, 3.0, t, gust);
+comp_145=`
+comp_146=`    // Sparkles react dynamically across the spectrum
+comp_147=`    for(int j = 0; j < 22; j++){
+comp_148=`        float fj = (float)j;
+comp_149=`        float h  = hash11(fj*7.3);
+comp_150=`        float h2 = hash11(fj*7.3 + 5.0);
+comp_151=`        float life = frac(t*(0.05 + h*0.06) + h2);
+comp_152=`        float2 sp = float2((h - 0.5)*3.2 + 0.3*sin(life*9.0 + h*20.0) + 0.25*gust,
+comp_153=`                        -1.1 + life*2.4);
+comp_154=`        float d = length(rotated_uv - sp);
+comp_155=`        float tw = pow(0.5 + 0.5*sin(t*4.0 + h*40.0), 2.0);
+comp_156=`        
+comp_157=`        float spk_fft = get_fft(saturate(fj / 22.0));
+comp_158=`        col += iri(h + t*0.05)*(0.0009 + spk_fft * 0.0012)/(d*d + 0.00015)*tw*sin(life*PI);
+comp_159=`    }
+comp_160=`
+comp_161=`    col *= (0.88 + 0.12*sin(t*0.17))*(1.0 + 0.25*gust);
+comp_162=`    col = max(col - BLACK_FLOOR, 0.0);
+comp_163=`    col = 1.0 - exp(-col*EXPOSURE);
+comp_164=`    float luma = dot(col, float3(0.299, 0.587, 0.114));
+comp_165=`    col = lerp(float3(luma, luma, luma), col, SAT);
+comp_166=`    col = max(col, 0.0);
+comp_167=`    col = pow(col, float3(GAMMA, GAMMA, GAMMA));
+comp_168=`    col *= 1.0 - 0.30*dot(my_uv*0.6, my_uv*0.6);
+comp_169=`    
+comp_170=`    ret = float4(col, 1.0);
+comp_171=`}

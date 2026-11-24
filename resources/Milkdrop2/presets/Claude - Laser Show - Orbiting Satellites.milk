@@ -1,0 +1,172 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 14/07/2026 at 11:44:19.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.900
+fDecay=0.970
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.630
+fWaveParam=-1.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=q1=0.0;
+per_frame_init_2=q2=40.0;
+per_frame_init_3=q5=0.0;
+per_frame_init_4=q6=0.0;
+per_frame_init_5=time_delay=0.0;
+per_frame_init_6=rand_laser=rand(130);
+per_frame_init_7=temp1 = temp2 = 0;
+per_frame_1=// SKELETON (kept intact, medium retrigger for orbiting motion accents)
+per_frame_2=time_delay = if(time_delay >= .33 && bass > 2.1, 0, time_delay += 1/fps);
+per_frame_3=rand_laser = if(time_delay == 0, rand(130), rand_laser);
+per_frame_4=
+per_frame_5=// Custom variable mapping to feed the Comp Shader
+per_frame_6=q1 = rand_laser;                         // color palette seed
+per_frame_7=q2 = time_delay;                         // beat clock (0 = beat)
+per_frame_8=temp1 += (0.25 + mid_att*0.25)/fps; // orbital motion clock for satellites
+per_frame_9=q3 = temp1;
+per_frame_10=temp2 += (0.10 + treb_att*0.15)/fps; // slow orbit-shape wobble clock
+per_frame_11=q4 = temp2;
+per_frame_12=q6 = 0.5 + 0.5*sin(time*0.3 + rand_laser*0.04); // slow color drift phase
+warp_1=`shader_body {}
+comp_1=`float3 GetLaser(float2 uva, float2 origin, float angle, float3 color_vec, float focus) {
+comp_2=`    float2 p = uva - origin;
+comp_3=`    float2 dir = float2(cos(angle), sin(angle));
+comp_4=`    float2 n = float2(-dir.y, dir.x);
+comp_5=`    float line_dist = abs(dot(p, n));
+comp_6=`    float core = exp(-line_dist * (4500.0 * focus));
+comp_7=`    float glow = 0.0018 / (line_dist + 0.0007);
+comp_8=`    return color_vec * (core + glow);
+comp_9=`}
+comp_10=`
+comp_11=`shader_body
+comp_12=`{
+comp_13=`    float aspect = texsize.x * texsize.z;
+comp_14=`    float2 center = float2(0.5, 0.5);
+comp_15=`    float2 p = uv;
+comp_16=`
+comp_17=`    float col_sel = fmod(q1 * 1.7, 4.0);
+comp_18=`    float3 col1, col2;
+comp_19=`    if (col_sel < 1.0) { col1 = float3(1.0, 0.2, 0.6); col2 = float3(0.0, 1.0, 0.9); }
+comp_20=`    else if (col_sel < 2.0) { col1 = float3(0.4, 1.0, 0.2); col2 = float3(1.0, 0.6, 0.0); }
+comp_21=`    else if (col_sel < 3.0) { col1 = float3(0.7, 0.2, 1.0); col2 = float3(0.1, 0.5, 1.0); }
+comp_22=`    else { col1 = float3(1.0, 0.9, 0.3); col2 = float3(1.0, 1.0, 1.0); }
+comp_23=`
+comp_24=`    float beat_strike = exp(-q2 * 5.0);
+comp_25=`    float beam_focus = 1.0 + beat_strike * 2.0;
+comp_26=`
+comp_27=`    // 1. ORBITING SATELLITE ANCHORS
+comp_28=`    // Three anchor points travel on independent elliptical orbits around the center.
+comp_29=`    // Each anchor fires a small fan of beams aimed roughly back toward the middle,
+comp_30=`    // so the beams themselves sweep and cross as their origins move.
+comp_31=`    float3 lasers = float3(0,0,0);
+comp_32=`    int SATS = 3;
+comp_33=`    for (int s = 0; s < SATS; s++) {
+comp_34=`        float sf = float(s);
+comp_35=`        float orbit_speed = 0.6 + sf * 0.23;
+comp_36=`        float orbit_phase = q3 * orbit_speed + sf * 2.094395; // 120 degrees apart
+comp_37=`        float orbit_rx = 0.34 + 0.05*sin(q4*0.5 + sf);
+comp_38=`        float orbit_ry = 0.22 + 0.05*cos(q4*0.4 + sf);
+comp_39=`
+comp_40=`        float2 anchor = center + float2(cos(orbit_phase)*orbit_rx, sin(orbit_phase)*orbit_ry / max(aspect,0.5));
+comp_41=`
+comp_42=`        float3 sat_col = lerp(col1, col2, frac(sf*0.33 + q6));
+comp_43=`
+comp_44=`        for (int b = 0; b < 4; b++) {
+comp_45=`            float bf = float(b);
+comp_46=`            float spread = 0.5;
+comp_47=`            float aim_ang = atan2(center.y - anchor.y, center.x - anchor.x);
+comp_48=`            float angle = aim_ang + (bf/3.0 - 0.5) * spread + sin(orbit_phase*2.0 + bf)*0.12;
+comp_49=`            lasers += GetLaser(p, anchor, angle, sat_col, beam_focus) * 0.8;
+comp_50=`        }
+comp_51=`
+comp_52=`        // small bright dot marking each satellite's anchor point
+comp_53=`        float dot = exp(-length(p-anchor)*60.0) * 1.2;
+comp_54=`        lasers += sat_col * dot;
+comp_55=`    }
+comp_56=`
+comp_57=`    // 2. Smoke from MilkDrop's blur buffer
+comp_58=`    float3 smoke = GetBlur2(uv).rgb * 0.65;
+comp_59=`    float3 bg = smoke * col1 * 0.15;
+comp_60=`
+comp_61=`    // 3. Center beacon flare, brightens on beat
+comp_62=`    float center_flare = exp(-length(p-center)*5.0) * (0.25 + beat_strike*1.0);
+comp_63=`    lasers += lerp(col1,col2,0.5) * center_flare;
+comp_64=`
+comp_65=`    // 4. Smooth non-seizure brightness breathing
+comp_66=`    float breathe = 0.8 + 0.2*sin(time*0.7 + q6*3.14159);
+comp_67=`
+comp_68=`    float3 final_rgb = (lasers + bg) * breathe;
+comp_69=`    ret = final_rgb;
+comp_70=`}

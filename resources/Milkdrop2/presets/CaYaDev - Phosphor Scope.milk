@@ -1,0 +1,158 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+wavecode_0_enabled=1
+wavecode_0_samples=480
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1
+wavecode_0_smoothing=0.35
+wavecode_0_r=1
+wavecode_0_g=1
+wavecode_0_b=1
+wavecode_0_a=0.9
+wave_0_per_frame1=a = 0.9*min(1, q30);
+wave_0_per_frame2=t1 = time*0.37;
+wave_0_per_point1=an = sample*6.28318;
+wave_0_per_point2=bx = sin(an*3 + t1)*0.26;
+wave_0_per_point3=by = sin(an*2)*0.26;
+wave_0_per_point4=x = 0.5 + (bx + value1*0.3)*0.9;
+wave_0_per_point5=y = 0.5 + (by + value2*0.3)*0.9;
+wave_0_per_point6=r = 0.6;
+wave_0_per_point7=g = 1;
+wave_0_per_point8=b = 0.6;
+wavecode_1_enabled=1
+wavecode_1_samples=360
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=1
+wavecode_1_scaling=1
+wavecode_1_smoothing=0.5
+wavecode_1_r=1
+wavecode_1_g=1
+wavecode_1_b=1
+wavecode_1_a=0.45
+wave_1_per_frame1=a = 0.45*min(1, q30);
+wave_1_per_point1=an = sample*6.28318 - time*0.2;
+wave_1_per_point2=rr = 0.27 + value1*0.08;
+wave_1_per_point3=x = 0.5 + rr*cos(an)*0.9;
+wave_1_per_point4=y = 0.5 + rr*sin(an)*0.9;
+wave_1_per_point5=r = 0.4;
+wave_1_per_point6=g = 1;
+wave_1_per_point7=b = 0.5;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=q1 = 0.6 + 0.6*bass_att;
+per_frame_5=q2 = treb_att;
+per_frame_6=q3 = time*0.11;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  float3 m = tex2D(sampler_main, uv).xyz;
+warp_4=`  ret = lerp(m, GetBlur1(uv), 0.12 * min(1.0, q30)) * pow(0.88, q30);
+warp_5=`  ret = max(ret - 0.003 * max(q30, 1.0), 0.0);
+warp_6=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`  float2 c = uv - 0.5;
+comp_4=`  float r2 = dot(c * aspect.xy * 1.6, c * aspect.xy * 1.6);
+comp_5=`  float2 u = 0.5 + c * (0.94 + 0.08 * r2);
+comp_6=`  float2 e = abs(u - 0.5) * 2.0;
+comp_7=`  float tube = saturate((1.0 - max(e.x, e.y)) * 40.0) * saturate((1.0 - pow(pow(e.x, 6.0) + pow(e.y, 6.0), 0.1666)) * 25.0 + 0.5);
+comp_8=`  float3 m = tex2D(sampler_main, u).xyz;
+comp_9=`  float3 b1 = GetBlur1(u);
+comp_10=`  float3 b2 = GetBlur2(u);
+comp_11=`  float beam = lum(m);
+comp_12=`  float3 phos = float3(0.25, 1.0, 0.4);
+comp_13=`  float3 col = phos * beam * 1.3 + float3(0.85, 1.0, 0.9) * pow(saturate(beam * 1.4), 3.0);
+comp_14=`  col += phos * (lum(b1) * 0.9 + lum(b2) * 0.9) * q1;
+comp_15=`  float2 g = (u - 0.5) * float2(10.0, 8.0);
+comp_16=`  float2 gf = abs(frac(g) - 0.5);
+comp_17=`  float grid = saturate(1.0 - min(gf.x, gf.y) * 40.0) * 0.06;
+comp_18=`  float2 gt = abs(frac(g * 5.0) - 0.5);
+comp_19=`  float ticks = saturate(1.0 - min(gt.x, gt.y) * 20.0) * 0.035 * saturate(1.0 - min(abs(g.x), abs(g.y)) * 8.0);
+comp_20=`  col += phos * (grid + ticks) * (0.7 + 0.3 * q1);
+comp_21=`  col += float3(0.02, 0.05, 0.03);
+comp_22=`  float scan = 0.82 + 0.18 * sin(u.y * 1100.0);
+comp_23=`  col *= scan * (0.97 + 0.03 * sin(time * 50.0) * q2);
+comp_24=`  float sheen = saturate(1.0 - length((uv - float2(0.25, 0.2)) * float2(1.0, 1.6)) * 2.2) * 0.05;
+comp_25=`  col += sheen;
+comp_26=`  col *= 1.0 - r2 * 0.25;
+comp_27=`  ret = (1.0 - exp(-col * 1.6)) * tube;
+comp_28=`}

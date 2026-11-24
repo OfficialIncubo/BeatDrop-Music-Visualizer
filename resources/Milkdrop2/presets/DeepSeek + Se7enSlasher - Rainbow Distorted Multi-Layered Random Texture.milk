@@ -1,0 +1,166 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=2
+PSVERSION_COMP=3
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=smooth_reaction = int(rand(2));
+per_frame_1=q1 = smooth_reaction;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`sampler sampler_rand00;
+comp_2=`sampler sampler_rand01;
+comp_3=`
+comp_4=`shader_body
+comp_5=`{   
+comp_6=`
+comp_7=`    if (q1)
+comp_8=`    {
+comp_9=`        bass = bass_att;
+comp_10=`        mid = mid_att;
+comp_11=`        treb = treb_att;
+comp_12=`    }
+comp_13=` 
+comp_14=`    // Normalize music levels (0-1 range)
+comp_15=`    float bass_norm = bass * 1.2;
+comp_16=`    float mid_norm = mid * 1.2;
+comp_17=`    float treb_norm = treb * 1.2;
+comp_18=`    
+comp_19=`    // Create UV distortion based on music
+comp_20=`    float2 distorted_uv = uv;
+comp_21=`    
+comp_22=`    // Random texture sampling for organic distortion
+comp_23=`    float2 rand_tex1 = tex2D(sampler_rand00, uv * 1.5 + time * 0.2).rg;
+comp_24=`    float2 rand_tex2 = tex2D(sampler_rand01, uv * 2.0 + time * 0.15).rg;
+comp_25=`    
+comp_26=`    // Combine random textures with music reaction
+comp_27=`    float2 noise1 = (rand_tex1 - 0.5) * 0.2;
+comp_28=`    float2 noise2 = (rand_tex2 - 0.5) * 0.15;
+comp_29=`    
+comp_30=`    // Apply distortion
+comp_31=`    distorted_uv += noise1 + noise2;
+comp_32=`    
+comp_33=`    // Add pulsing effect with bass
+comp_34=`    float pulse = sin(time * 3.0 + bass_norm * 5.0) * 0.05 * bass_norm;
+comp_35=`    //distorted_uv += pulse;
+comp_36=`    float2 aspect_t = float2(1, texsize.y/texsize.x);
+comp_37=`    distorted_uv = (distorted_uv-.5)*aspect_t+.5;    
+comp_38=`
+comp_39=`    // Create rainbow color pattern
+comp_40=`    float angle = atan2(distorted_uv.y - 0.5, distorted_uv.x - 0.5);
+comp_41=`    float radius = length(distorted_uv - 0.5);
+comp_42=`    
+comp_43=`    // Color based on angle (rainbow) with music modulation
+comp_44=`    float hue = angle / (2.0 * M_PI) + time * 0.1 + bass_norm * 0.2;
+comp_45=`    hue = frac(hue); // Keep in 0-1 range
+comp_46=`    
+comp_47=`    // Convert hue to RGB (simplified rainbow)
+comp_48=`    float3 rainbow_color;
+comp_49=`    if (hue < 0.1667) { // Red to Yellow
+comp_50=`        rainbow_color = float3(1.0, hue * 6.0, 0.0);
+comp_51=`    } else if (hue < 0.3333) { // Yellow to Green
+comp_52=`        rainbow_color = float3(1.0 - (hue - 0.1667) * 6.0, 1.0, 0.0);
+comp_53=`    } else if (hue < 0.5) { // Green to Cyan
+comp_54=`        rainbow_color = float3(0.0, 1.0, (hue - 0.3333) * 6.0);
+comp_55=`    } else if (hue < 0.6667) { // Cyan to Blue
+comp_56=`        rainbow_color = float3(0.0, 1.0 - (hue - 0.5) * 6.0, 1.0);
+comp_57=`    } else if (hue < 0.8333) { // Blue to Magenta
+comp_58=`        rainbow_color = float3((hue - 0.6667) * 6.0, 0.0, 1.0);
+comp_59=`    } else { // Magenta to Red
+comp_60=`        rainbow_color = float3(1.0, 0.0, 1.0 - (hue - 0.8333) * 6.0);
+comp_61=`    }
+comp_62=`    
+comp_63=`    // Add brightness variation with music
+comp_64=`    float brightness = 0.7 + treb_norm * 0.3;
+comp_65=`    rainbow_color *= brightness;
+comp_66=`    
+comp_67=`    // Add radial gradient
+comp_68=`    float gradient = 1.0 - radius * 1.5;
+comp_69=`    gradient = max(gradient, 0.2);
+comp_70=`    
+comp_71=`    // Add shimmer with high frequencies
+comp_72=`    float shimmer = sin(distorted_uv.x * 20.0 + time * 10.0) * 
+comp_73=`                    sin(distorted_uv.y * 15.0 + time * 8.0) * 
+comp_74=`                    0.1 * treb_norm;
+comp_75=`    
+comp_76=`    // Final color with gradient and shimmer
+comp_77=`    float3 final_color = rainbow_color * gradient + shimmer;
+comp_78=`    
+comp_79=`    // Soft clamp to prevent seizure-inducing flashes
+comp_80=`    final_color = min(final_color, 1.0);
+comp_81=`    
+comp_82=`    // Add subtle alpha pulsing with mid frequencies
+comp_83=`    float alpha_pulse = 0.8 + sin(time * 2.0) * 0.1 * mid_norm;
+comp_84=`    
+comp_85=`    ret = float4(final_color, alpha_pulse);
+comp_86=`}

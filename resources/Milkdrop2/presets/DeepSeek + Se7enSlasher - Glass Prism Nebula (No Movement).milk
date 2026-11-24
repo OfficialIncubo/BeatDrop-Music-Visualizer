@@ -1,0 +1,171 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=2
+PSVERSION_COMP=3
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=smooth_reaction = int(rand(2));
+per_frame_1=q1 = smooth_reaction;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`sampler sampler_rand00;
+comp_2=`sampler sampler_rand01;
+comp_3=`
+comp_4=`shader_body
+comp_5=`{
+comp_6=`    if (q1)
+comp_7=`    {
+comp_8=`        bass = bass_att;
+comp_9=`        mid = mid_att;
+comp_10=`       treb = treb_att;
+comp_11=`    }
+comp_12=`    
+comp_13=`    // Combine frequencies for different effects
+comp_14=`    float energy = bass * 0.5 + mid * 0.3 + treb * 0.2;
+comp_15=`    float detail = treb * 0.7 + mid * 0.3;
+comp_16=`    
+comp_17=`    // Generate random texture for glass
+comp_18=`    float2 rand_uv = uv;
+comp_19=`    float4 rand_tex00 = tex2D(sampler_rand00, rand_uv);
+comp_20=`    float4 rand_tex01 = tex2D(sampler_rand01, rand_uv * 1.5 + 0.5);
+comp_21=`    
+comp_22=`    // Create glass-like refraction patterns
+comp_23=`    float2 distortion = float2(
+comp_24=`        rand_tex00.r * 0.02 - 0.01,
+comp_25=`        rand_tex01.g * 0.02 - 0.01
+comp_26=`    ) * (1.0 + energy * 0.5);
+comp_27=`    
+comp_28=`    uv += distortion;
+comp_29=`    
+comp_30=`    // Glass thickness variation
+comp_31=`    float thickness = rand_tex00.b * 0.8 + 0.2;
+comp_32=`    thickness += sin(uv.x * 20.0 + time * 2.0) * 0.1 * bass;
+comp_33=`    thickness += sin(uv.y * 15.0 + time * 1.5) * 0.1 * mid;
+comp_34=`    
+comp_35=`    // Glass color (slight green/blue tint like real glass)
+comp_36=`    float3 glass_color = float3(0.7, 0.9, 0.8);
+comp_37=`    
+comp_38=`    // Add internal glass imperfections
+comp_39=`    float imperfections = rand_tex01.r * 0.3 + rand_tex00.g * 0.2;
+comp_40=`    imperfections *= (1.0 + detail * 0.3);
+comp_41=`    
+comp_42=`    // MilkDrop-style reactive lighting behind glass
+comp_43=`    float2 light_uv = uv * 2.0 - 1.0;
+comp_44=`    float distance_to_center = length(light_uv);
+comp_45=`    
+comp_46=`    // Create pulsing light rings
+comp_47=`    float ring1 = sin(distance_to_center * 15.0 - time * 3.0 - bass * 2.0) * 0.5 + 0.5;
+comp_48=`    float ring2 = sin(distance_to_center * 25.0 - time * 2.0 - mid * 1.5) * 0.5 + 0.5;
+comp_49=`    
+comp_50=`    // Colorful reactive lights
+comp_51=`    float3 light_color1 = float3(
+comp_52=`        0.8 + sin(time + bass * 2.0) * 0.2,
+comp_53=`        0.5 + cos(time * 0.7 + mid * 1.5) * 0.3,
+comp_54=`        0.9 + sin(time * 1.3 + treb * 2.0) * 0.1
+comp_55=`    );
+comp_56=`    
+comp_57=`    float3 light_color2 = float3(
+comp_58=`        0.6 + cos(time * 0.8 + treb * 1.8) * 0.4,
+comp_59=`        0.7 + sin(time * 1.2 + bass * 1.2) * 0.3,
+comp_60=`        0.5 + cos(time * 0.9 + mid * 1.5) * 0.5
+comp_61=`    );
+comp_62=`    
+comp_63=`    // Combine light rings with music reactivity
+comp_64=`    float light_intensity = (ring1 * bass + ring2 * mid * 0.7) * (1.0 + energy * 0.5);
+comp_65=`    float3 light_behind = light_color1 * ring1 * (0.8 + bass * 0.4) +
+comp_66=`                         light_color2 * ring2 * (0.6 + mid * 0.3);
+comp_67=`    
+comp_68=`    // Add radial glow
+comp_69=`    float glow = 1.0 - smoothstep(0.0, 1.2, distance_to_center);
+comp_70=`    glow = pow(glow, 2.0) * (1.0 + treb * 0.5);
+comp_71=`    
+comp_72=`    // Combine glass with back lighting
+comp_73=`    float3 final_color = glass_color * (0.3 + thickness * 0.3);
+comp_74=`    final_color += light_behind * light_intensity * (1.0 - thickness * 0.5);
+comp_75=`    final_color += light_color1 * glow * (0.3 + treb * 0.2);
+comp_76=`    
+comp_77=`    // Add glass imperfections
+comp_78=`    final_color *= (1.0 - imperfections * 0.2);
+comp_79=`    
+comp_80=`    // Add sparkling effects on high frequencies
+comp_81=`    float sparkles = step(0.95, rand_tex00.r) * treb * 2.0;
+comp_82=`    final_color += float3(1.0, 1.0, 0.9) * sparkles;
+comp_83=`    
+comp_84=`    // Glass edge darkening
+comp_85=`    float edge = 1.0 - smoothstep(0.4, 0.9, distance_to_center);
+comp_86=`    final_color *= (0.7 + edge * 0.3);
+comp_87=`    
+comp_88=`    // Final output with alpha (glass transparency)
+comp_89=`    float alpha = 0.8 - thickness * 0.3 + glow * 0.2;
+comp_90=`    ret = float4(final_color, alpha);
+comp_91=`}

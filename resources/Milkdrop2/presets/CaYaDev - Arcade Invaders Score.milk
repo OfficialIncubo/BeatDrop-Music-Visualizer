@@ -1,0 +1,388 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+per_frame_init_1=stp = 0;
+per_frame_init_2=acc = 0;
+per_frame_init_3=last = 0;
+per_frame_init_4=shot = -10;
+per_frame_init_5=fly = 0;
+per_frame_init_6=fx = 120;
+per_frame_init_7=aim = 5;
+per_frame_init_8=cxs = 99;
+per_frame_init_9=score = 0;
+per_frame_init_10=wave = 1;
+per_frame_init_11=wst = 0;
+per_frame_init_12=imp = -10;
+per_frame_init_13=impx = -50;
+per_frame_init_14=impy = -50;
+per_frame_init_15=typ = 0;
+per_frame_init_16=clr = -10;
+per_frame_init_17=ovr = -10;
+per_frame_init_18=btf = 0;
+per_frame_init_19=bts = 0;
+per_frame_init_20=bty = 0;
+per_frame_init_21=k0 = 0;
+per_frame_init_22=k1 = 0;
+per_frame_init_23=k2 = 0;
+per_frame_init_24=k3 = 0;
+per_frame_init_25=k4 = 0;
+per_frame_init_26=k5 = 0;
+per_frame_init_27=k6 = 0;
+per_frame_init_28=k7 = 0;
+per_frame_init_29=k8 = 0;
+per_frame_init_30=k9 = 0;
+per_frame_init_31=k10 = 0;
+per_frame_init_32=d0 = 0;
+per_frame_init_33=d1 = 0;
+per_frame_init_34=d2 = 0;
+per_frame_init_35=d3 = 0;
+per_frame_init_36=d4 = 0;
+per_frame_init_37=d5 = 0;
+per_frame_init_38=d6 = 0;
+per_frame_init_39=d7 = 0;
+per_frame_init_40=d8 = 0;
+per_frame_init_41=d9 = 0;
+per_frame_init_42=d10 = 0;
+per_frame_init_43=d11 = 0;
+per_frame_init_44=d12 = 0;
+per_frame_init_45=d13 = 0;
+per_frame_init_46=d14 = 0;
+per_frame_init_47=d15 = 0;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=acc = acc + (1.5 + 2.5*min(bass_att, 2))*(1 + 0.15*min(wave - 1, 6))/fps;
+per_frame_5=st = (acc > 1);
+per_frame_6=stp = stp + st;
+per_frame_7=acc = acc - st;
+per_frame_8=w = stp - wst;
+per_frame_9=t = w - 40*floor(w/40);
+per_frame_10=offx = if((t < 20), t*2, (40 - t)*2);
+per_frame_11=bx = 16 + offx;
+per_frame_12=by = 18 + floor(w/20)*3;
+per_frame_13=kt = k0 + k1 + k2 + k3 + k4 + k5 + k6 + k7 + k8 + k9 + k10;
+per_frame_14=low = max(max(max(max(max(max(max(max(max(max(max(-1, if((k0 < 5), 4 - k0, -1)), if((k1 < 5), 4 - k1, -1)), if((k2 < 5), 4 - k2, -1)), if((k3 < 5), 4 - k3, -1)), if((k4 < 5), 4 - k4, -1)), if((k5 < 5), 4 - k5, -1)), if((k6 < 5), 4 - k6, -1)), if((k7 < 5), 4 - k7, -1)), if((k8 < 5), 4 - k8, -1)), if((k9 < 5), 4 - k9, -1)), if((k10 < 5), 4 - k10, -1));
+per_frame_15=go = (by + low*14 + 8 > 102)*(kt > -1)*(kt < 55);
+per_frame_16=wc = equal(kt, 55);
+per_frame_17=rs = bor(go, wc);
+per_frame_18=ovr = if(go, time, ovr);
+per_frame_19=clr = if(wc, time, clr);
+per_frame_20=wave = wave + wc;
+per_frame_21=score = score*(1 - go);
+per_frame_22=wst = if(rs, stp, wst);
+per_frame_23=fly = fly*(1 - rs);
+per_frame_24=k0 = k0*(1 - wc);
+per_frame_25=k1 = k1*(1 - wc);
+per_frame_26=k2 = k2*(1 - wc);
+per_frame_27=k3 = k3*(1 - wc);
+per_frame_28=k4 = k4*(1 - wc);
+per_frame_29=k5 = k5*(1 - wc);
+per_frame_30=k6 = k6*(1 - wc);
+per_frame_31=k7 = k7*(1 - wc);
+per_frame_32=k8 = k8*(1 - wc);
+per_frame_33=k9 = k9*(1 - wc);
+per_frame_34=k10 = k10*(1 - wc);
+per_frame_35=d0 = d0*(1 - rs);
+per_frame_36=d1 = d1*(1 - rs);
+per_frame_37=d2 = d2*(1 - rs);
+per_frame_38=d3 = d3*(1 - rs);
+per_frame_39=d4 = d4*(1 - rs);
+per_frame_40=d5 = d5*(1 - rs);
+per_frame_41=d6 = d6*(1 - rs);
+per_frame_42=d7 = d7*(1 - rs);
+per_frame_43=d8 = d8*(1 - rs);
+per_frame_44=d9 = d9*(1 - rs);
+per_frame_45=d10 = d10*(1 - rs);
+per_frame_46=d11 = d11*(1 - rs);
+per_frame_47=d12 = d12*(1 - rs);
+per_frame_48=d13 = d13*(1 - rs);
+per_frame_49=d14 = d14*(1 - rs);
+per_frame_50=d15 = d15*(1 - rs);
+per_frame_51=calm = (time - clr > 1.2)*(time - ovr > 1.6);
+per_frame_52=hy = 124 - (time - shot)*420;
+per_frame_53=hitb = fly*btf*(hy < bty + 0.5);
+per_frame_54=lx = fx - bx;
+per_frame_55=ci = floor(lx/16);
+per_frame_56=inc = (ci > -1)*(ci < 11)*(lx - ci*16 < 8);
+per_frame_57=kc = if(equal(ci,0),k0,if(equal(ci,1),k1,if(equal(ci,2),k2,if(equal(ci,3),k3,if(equal(ci,4),k4,if(equal(ci,5),k5,if(equal(ci,6),k6,if(equal(ci,7),k7,if(equal(ci,8),k8,if(equal(ci,9),k9,if(equal(ci,10),k10,0)))))))))));
+per_frame_58=ary = 4 - kc;
+per_frame_59=ay = by + ary*14 + 7;
+per_frame_60=hita = fly*(1 - hitb)*inc*(kc < 5)*(hy < ay + 0.5);
+per_frame_61=miss = fly*(1 - hitb)*(1 - hita)*(hy < -8);
+per_frame_62=score = score + hita*if((ary < 1), 30, if((ary < 3), 20, 10));
+per_frame_63=k0 = k0 + hita*equal(ci, 0);
+per_frame_64=k1 = k1 + hita*equal(ci, 1);
+per_frame_65=k2 = k2 + hita*equal(ci, 2);
+per_frame_66=k3 = k3 + hita*equal(ci, 3);
+per_frame_67=k4 = k4 + hita*equal(ci, 4);
+per_frame_68=k5 = k5 + hita*equal(ci, 5);
+per_frame_69=k6 = k6 + hita*equal(ci, 6);
+per_frame_70=k7 = k7 + hita*equal(ci, 7);
+per_frame_71=k8 = k8 + hita*equal(ci, 8);
+per_frame_72=k9 = k9 + hita*equal(ci, 9);
+per_frame_73=k10 = k10 + hita*equal(ci, 10);
+per_frame_74=d0 = d0 + hitb*equal(bts, 0);
+per_frame_75=d1 = d1 + hitb*equal(bts, 1);
+per_frame_76=d2 = d2 + hitb*equal(bts, 2);
+per_frame_77=d3 = d3 + hitb*equal(bts, 3);
+per_frame_78=d4 = d4 + hitb*equal(bts, 4);
+per_frame_79=d5 = d5 + hitb*equal(bts, 5);
+per_frame_80=d6 = d6 + hitb*equal(bts, 6);
+per_frame_81=d7 = d7 + hitb*equal(bts, 7);
+per_frame_82=d8 = d8 + hitb*equal(bts, 8);
+per_frame_83=d9 = d9 + hitb*equal(bts, 9);
+per_frame_84=d10 = d10 + hitb*equal(bts, 10);
+per_frame_85=d11 = d11 + hitb*equal(bts, 11);
+per_frame_86=d12 = d12 + hitb*equal(bts, 12);
+per_frame_87=d13 = d13 + hitb*equal(bts, 13);
+per_frame_88=d14 = d14 + hitb*equal(bts, 14);
+per_frame_89=d15 = d15 + hitb*equal(bts, 15);
+per_frame_90=hit = bor(hita, hitb);
+per_frame_91=imp = if(hit, time, imp);
+per_frame_92=impx = if(hit, fx, impx);
+per_frame_93=impy = if(hitb, bty, if(hita, ay, impy));
+per_frame_94=typ = if(hit, hitb, typ);
+per_frame_95=fly = fly*(1 - hit)*(1 - miss);
+per_frame_96=aim = if(bor(bor(hit, miss), rs), floor(rand(11)), aim);
+per_frame_97=aim = if((if(equal(aim,0),k0,if(equal(aim,1),k1,if(equal(aim,2),k2,if(equal(aim,3),k3,if(equal(aim,4),k4,if(equal(aim,5),k5,if(equal(aim,6),k6,if(equal(aim,7),k7,if(equal(aim,8),k8,if(equal(aim,9),k9,if(equal(aim,10),k10,0))))))))))) < 5), aim, aim + 1 - 11*(aim > 9));
+per_frame_98=aim = if((if(equal(aim,0),k0,if(equal(aim,1),k1,if(equal(aim,2),k2,if(equal(aim,3),k3,if(equal(aim,4),k4,if(equal(aim,5),k5,if(equal(aim,6),k6,if(equal(aim,7),k7,if(equal(aim,8),k8,if(equal(aim,9),k9,if(equal(aim,10),k10,0))))))))))) < 5), aim, aim + 1 - 11*(aim > 9));
+per_frame_99=aim = if((if(equal(aim,0),k0,if(equal(aim,1),k1,if(equal(aim,2),k2,if(equal(aim,3),k3,if(equal(aim,4),k4,if(equal(aim,5),k5,if(equal(aim,6),k6,if(equal(aim,7),k7,if(equal(aim,8),k8,if(equal(aim,9),k9,if(equal(aim,10),k10,0))))))))))) < 5), aim, aim + 1 - 11*(aim > 9));
+per_frame_100=aim = if((if(equal(aim,0),k0,if(equal(aim,1),k1,if(equal(aim,2),k2,if(equal(aim,3),k3,if(equal(aim,4),k4,if(equal(aim,5),k5,if(equal(aim,6),k6,if(equal(aim,7),k7,if(equal(aim,8),k8,if(equal(aim,9),k9,if(equal(aim,10),k10,0))))))))))) < 5), aim, aim + 1 - 11*(aim > 9));
+per_frame_101=aim = if((if(equal(aim,0),k0,if(equal(aim,1),k1,if(equal(aim,2),k2,if(equal(aim,3),k3,if(equal(aim,4),k4,if(equal(aim,5),k5,if(equal(aim,6),k6,if(equal(aim,7),k7,if(equal(aim,8),k8,if(equal(aim,9),k9,if(equal(aim,10),k10,0))))))))))) < 5), aim, aim + 1 - 11*(aim > 9));
+per_frame_102=aim = if((if(equal(aim,0),k0,if(equal(aim,1),k1,if(equal(aim,2),k2,if(equal(aim,3),k3,if(equal(aim,4),k4,if(equal(aim,5),k5,if(equal(aim,6),k6,if(equal(aim,7),k7,if(equal(aim,8),k8,if(equal(aim,9),k9,if(equal(aim,10),k10,0))))))))))) < 5), aim, aim + 1 - 11*(aim > 9));
+per_frame_103=aim = if((if(equal(aim,0),k0,if(equal(aim,1),k1,if(equal(aim,2),k2,if(equal(aim,3),k3,if(equal(aim,4),k4,if(equal(aim,5),k5,if(equal(aim,6),k6,if(equal(aim,7),k7,if(equal(aim,8),k8,if(equal(aim,9),k9,if(equal(aim,10),k10,0))))))))))) < 5), aim, aim + 1 - 11*(aim > 9));
+per_frame_104=aim = if((if(equal(aim,0),k0,if(equal(aim,1),k1,if(equal(aim,2),k2,if(equal(aim,3),k3,if(equal(aim,4),k4,if(equal(aim,5),k5,if(equal(aim,6),k6,if(equal(aim,7),k7,if(equal(aim,8),k8,if(equal(aim,9),k9,if(equal(aim,10),k10,0))))))))))) < 5), aim, aim + 1 - 11*(aim > 9));
+per_frame_105=aim = if((if(equal(aim,0),k0,if(equal(aim,1),k1,if(equal(aim,2),k2,if(equal(aim,3),k3,if(equal(aim,4),k4,if(equal(aim,5),k5,if(equal(aim,6),k6,if(equal(aim,7),k7,if(equal(aim,8),k8,if(equal(aim,9),k9,if(equal(aim,10),k10,0))))))))))) < 5), aim, aim + 1 - 11*(aim > 9));
+per_frame_106=aim = if((if(equal(aim,0),k0,if(equal(aim,1),k1,if(equal(aim,2),k2,if(equal(aim,3),k3,if(equal(aim,4),k4,if(equal(aim,5),k5,if(equal(aim,6),k6,if(equal(aim,7),k7,if(equal(aim,8),k8,if(equal(aim,9),k9,if(equal(aim,10),k10,0))))))))))) < 5), aim, aim + 1 - 11*(aim > 9));
+per_frame_107=cxs = cxs + (bx + aim*16 + 3 - cxs)*min(1, 0.3*q30);
+per_frame_108=beat = (bass > 1.3)*(time - last > 0.35)*(1 - fly)*calm;
+per_frame_109=last = if(beat, time, last);
+per_frame_110=shot = if(beat, time, shot);
+per_frame_111=fx = if(beat, floor(cxs + 0.5), fx);
+per_frame_112=sb = fx - 26;
+per_frame_113=bk = floor(sb/52);
+per_frame_114=bl = sb - bk*52;
+per_frame_115=slot = min(floor(bl/5.5), 3);
+per_frame_116=inb = (bk > -1)*(bk < 4)*(bl < 22);
+per_frame_117=ds = if(equal(bk*4 + slot,0),d0,if(equal(bk*4 + slot,1),d1,if(equal(bk*4 + slot,2),d2,if(equal(bk*4 + slot,3),d3,if(equal(bk*4 + slot,4),d4,if(equal(bk*4 + slot,5),d5,if(equal(bk*4 + slot,6),d6,if(equal(bk*4 + slot,7),d7,if(equal(bk*4 + slot,8),d8,if(equal(bk*4 + slot,9),d9,if(equal(bk*4 + slot,10),d10,if(equal(bk*4 + slot,11),d11,if(equal(bk*4 + slot,12),d12,if(equal(bk*4 + slot,13),d13,if(equal(bk*4 + slot,14),d14,if(equal(bk*4 + slot,15),d15,0))))))))))))))));
+per_frame_118=btf = if(beat, inb*(ds < 3), btf);
+per_frame_119=bts = if(beat, bk*4 + slot, bts);
+per_frame_120=hole = (bl > 8.5)*(bl < 13.5);
+per_frame_121=bty = if(beat, min(113 - ds*3, 113 - 4*hole), bty);
+per_frame_122=fly = bor(fly, beat);
+per_frame_123=hy = 124 - (time - shot)*420;
+per_frame_124=q1 = w;
+per_frame_125=q2 = bx;
+per_frame_126=q3 = if(fly, hy, -100);
+per_frame_127=q4 = time*0.02 + mid_att*0.03;
+per_frame_128=q5 = min(treb_att, 2);
+per_frame_129=q6 = k0*1 + k1*6 + k2*36 + k3*216 + k4*1296 + k5*7776;
+per_frame_130=q7 = k6*1 + k7*6 + k8*36 + k9*216 + k10*1296;
+per_frame_131=q8 = d0*1 + d1*4 + d2*16 + d3*64 + d4*256 + d5*1024 + d6*4096 + d7*16384;
+per_frame_132=q9 = d8*1 + d9*4 + d10*16 + d11*64 + d12*256 + d13*1024 + d14*4096 + d15*16384;
+per_frame_133=q10 = cxs;
+per_frame_134=q11 = by;
+per_frame_135=q12 = fx;
+per_frame_136=q13 = impx;
+per_frame_137=q14 = impy;
+per_frame_138=q15 = time - imp;
+per_frame_139=q16 = typ;
+per_frame_140=q17 = score;
+per_frame_141=q18 = wave;
+per_frame_142=q19 = time - clr;
+per_frame_143=q20 = time - ovr;
+warp_1=`sampler sampler_pw_noise_lq;
+warp_2=`float digitOf(float v, float base, float i)
+warp_3=`{
+warp_4=`  // half-unit margin: a fixed +0.001 carried 7775/7776 over and decoded -1, so dead columns drew again
+warp_5=`  float p = pow(base, i);
+warp_6=`  return floor((v + 0.5) / p) - base * floor((v + 0.5) / (p * base));
+warp_7=`}
+warp_8=`float bitOf(float bits, float idx)
+warp_9=`{
+warp_10=`  return step(0.5, frac(floor(bits / exp2(idx) + 0.001) * 0.5));
+warp_11=`}
+warp_12=`float bitAt(float row, float colx, float design, float frameN)
+warp_13=`{
+warp_14=`  // 8x8 bitmaps, two walking frames per design; each row is a byte packed into a float
+warp_15=`  float r = 0.0;
+warp_16=`  if (design < 0.5) {
+warp_17=`    float4 a = float4(24.0, 60.0, 126.0, 219.0);
+warp_18=`    float4 b = frameN < 0.5 ? float4(255.0, 36.0, 90.0, 165.0) : float4(255.0, 90.0, 129.0, 66.0);
+warp_19=`    r = row < 4.0 ? (row < 2.0 ? (row < 1.0 ? a.x : a.y) : (row < 3.0 ? a.z : a.w)) : (row < 6.0 ? (row < 5.0 ? b.x : b.y) : (row < 7.0 ? b.z : b.w));
+warp_20=`  } else if (design < 1.5) {
+warp_21=`    float4 a = float4(36.0, 126.0, 219.0, 255.0);
+warp_22=`    float4 b = frameN < 0.5 ? float4(255.0, 189.0, 36.0, 102.0) : float4(255.0, 189.0, 66.0, 129.0);
+warp_23=`    r = row < 4.0 ? (row < 2.0 ? (row < 1.0 ? a.x : a.y) : (row < 3.0 ? a.z : a.w)) : (row < 6.0 ? (row < 5.0 ? b.x : b.y) : (row < 7.0 ? b.z : b.w));
+warp_24=`  } else {
+warp_25=`    float4 a = float4(60.0, 126.0, 255.0, 219.0);
+warp_26=`    float4 b = frameN < 0.5 ? float4(255.0, 102.0, 219.0, 129.0) : float4(255.0, 102.0, 165.0, 66.0);
+warp_27=`    r = row < 4.0 ? (row < 2.0 ? (row < 1.0 ? a.x : a.y) : (row < 3.0 ? a.z : a.w)) : (row < 6.0 ? (row < 5.0 ? b.x : b.y) : (row < 7.0 ? b.z : b.w));
+warp_28=`  }
+warp_29=`  return bitOf(r, 7.0 - colx);
+warp_30=`}
+warp_31=`float glyph(float d, float2 p)
+warp_32=`{
+warp_33=`  // 3x5 digits, top row in the high bits
+warp_34=`  float bits = d < 5.0 ? (d < 2.0 ? (d < 1.0 ? 31599.0 : 9362.0) : (d < 3.0 ? 29671.0 : (d < 4.0 ? 29647.0 : 23497.0)))
+warp_35=`                       : (d < 7.0 ? (d < 6.0 ? 31183.0 : 31215.0) : (d < 8.0 ? 29330.0 : (d < 9.0 ? 31727.0 : 31695.0)));
+warp_36=`  float inside = step(0.0, p.x) * step(p.x, 2.0) * step(0.0, p.y) * step(p.y, 4.0);
+warp_37=`  return inside * bitOf(bits, (4.0 - p.y) * 3.0 + (2.0 - p.x));
+warp_38=`}
+warp_39=`float3 scene(float2 u)
+warp_40=`{
+warp_41=`  float2 px = floor(u * float2(240.0, 135.0));
+warp_42=`  float3 c = float3(0.0, 0.0, 0.0);
+warp_43=`  float3 tint = 0.5 + 0.5 * cos(6.28318 * (float3(0.3, 0.45, 0.6) + q4));
+warp_44=`  // formation: 11 columns x 5 rows, 16 px apart; shot aliens are gone, the lowest of a column goes first
+warp_45=`  float2 lp = px - float2(q2, q11);
+warp_46=`  float ci = floor(lp.x / 16.0);
+warp_47=`  float ri = floor(lp.y / 14.0);
+warp_48=`  float2 inCell = float2(lp.x - ci * 16.0, lp.y - ri * 14.0);
+warp_49=`  if (ci >= 0.0 && ci < 11.0 && ri >= 0.0 && ri < 5.0 && inCell.x < 8.0 && inCell.y < 8.0) {
+warp_50=`    float kills = ci < 6.0 ? digitOf(q6, 6.0, ci) : digitOf(q7, 6.0, ci - 6.0);
+warp_51=`    float alive = step(ri, 4.5 - kills);
+warp_52=`    float design = ri < 1.0 ? 0.0 : (ri < 3.0 ? 1.0 : 2.0);
+warp_53=`    float on = bitAt(inCell.y, inCell.x, design, frac(q1 * 0.5) < 0.5 ? 0.0 : 1.0);
+warp_54=`    float3 ic = ri < 1.0 ? float3(1.0, 0.35, 0.8) : (ri < 3.0 ? float3(0.4, 0.9, 1.0) : float3(0.5, 1.0, 0.4));
+warp_55=`    c = on * alive * ic;
+warp_56=`  }
+warp_57=`  // bunkers erode from below where shots land
+warp_58=`  float sx = px.x - 26.0;
+warp_59=`  float sk = floor(sx / 52.0);
+warp_60=`  float sl = sx - sk * 52.0;
+warp_61=`  if (sk >= 0.0 && sk < 4.0 && sl < 22.0 && px.y > 104.0 && px.y < 114.0) {
+warp_62=`    float slot = min(floor(sl / 5.5), 3.0);
+warp_63=`    float s = sk * 4.0 + slot;
+warp_64=`    float dmg = s < 8.0 ? digitOf(q8, 4.0, s) : digitOf(q9, 4.0, s - 8.0);
+warp_65=`    float jag = step(0.5, frac(sin(px.x * 12.9898 + s) * 43758.5)) * step(0.5, dmg);
+warp_66=`    float keep = step(px.y, 113.5 - dmg * 3.0 - jag);
+warp_67=`    float hole = step(sl, 13.0) * step(9.0, sl) * step(110.0, px.y);
+warp_68=`    c = float3(0.3, 1.0, 0.35) * (1.0 - hole) * keep;
+warp_69=`  }
+warp_70=`  // cannon slides under its next target
+warp_71=`  float2 cp = px - float2(floor(q10 + 0.5), 124.0);
+warp_72=`  float cannon = step(abs(cp.x), 6.0) * step(0.0, cp.y) * step(cp.y, 4.0) + step(abs(cp.x), 1.0) * step(-2.0, cp.y) * step(cp.y, 0.0);
+warp_73=`  c = max(c, float3(0.4, 1.0, 0.5) * cannon);
+warp_74=`  // the shot stops where it hits
+warp_75=`  float beam = step(abs(px.x - q12), 0.5) * step(q3, px.y) * step(px.y, q3 + 5.0);
+warp_76=`  c = max(c, float3(1.0, 1.0, 0.8) * beam);
+warp_77=`  // impact burst
+warp_78=`  float2 dp = px - float2(q13, q14);
+warp_79=`  float rr = 1.0 + q15 * 40.0;
+warp_80=`  float m = max(abs(dp.x), abs(dp.y));
+warp_81=`  float ray = max(step(abs(abs(dp.x) - abs(dp.y)), 0.5), step(min(abs(dp.x), abs(dp.y)), 0.5));
+warp_82=`  float burst = ray * step(abs(m - rr), 1.0) * step(q15, 0.22) + step(m, 1.5) * step(q15, 0.08);
+warp_83=`  c = max(c, lerp(float3(1.0, 0.95, 0.6), float3(0.4, 1.0, 0.4), q16) * burst);
+warp_84=`  // score top left, wave pips top right
+warp_85=`  float sc = q17 - 10000.0 * floor(q17 / 10000.0);
+warp_86=`  float2 sp = px - float2(4.0, 3.0);
+warp_87=`  float di = floor(sp.x / 4.0);
+warp_88=`  float digit = (di >= 0.0 && di < 4.0) ? glyph(digitOf(sc, 10.0, 3.0 - di), float2(sp.x - di * 4.0, sp.y)) : 0.0;
+warp_89=`  float flashS = step(q15, 0.15) * (1.0 - q16);
+warp_90=`  c = max(c, lerp(float3(0.9, 0.9, 0.9), float3(1.0, 1.0, 0.4), flashS) * digit);
+warp_91=`  float2 wp = px - float2(232.0, 3.0);
+warp_92=`  float wi = floor(-wp.x / 4.0);
+warp_93=`  float pip = step(0.0, wi) * step(wi, min(q18, 9.0) - 1.0) * step(-wp.x - wi * 4.0, 1.5) * step(0.0, wp.y) * step(wp.y, 2.0) * step(wp.x, 0.5);
+warp_94=`  c = max(c, float3(1.0, 0.4, 0.8) * pip);
+warp_95=`  float ground = step(abs(px.y - 130.0), 0.5);
+warp_96=`  c = max(c, float3(0.3, 1.0, 0.35) * ground * 0.8);
+warp_97=`  c = c * lerp(float3(1.0, 1.0, 1.0), tint, 0.25);
+warp_98=`  // wave cleared: white flash; invaded: red alarm
+warp_99=`  c += float3(0.6, 0.6, 0.7) * saturate(1.0 - q19 * 2.0) * step(0.0, q19);
+warp_100=`  c = lerp(c, float3(1.0, 0.1, 0.1) * (0.4 + 0.6 * step(0.5, frac(q20 * 4.0))), saturate(1.0 - q20 / 1.5) * 0.6 * step(0.0, q20));
+warp_101=`  return c;
+warp_102=`}
+warp_103=`shader_body
+warp_104=`{
+warp_105=`  // the scene is drawn here so the phosphor afterimage and glow can come from the buffer
+warp_106=`  float2 g = floor(uv * float2(320.0, 180.0));
+warp_107=`  float4 n = tex2D(sampler_pw_noise_lq, g / 256.0);
+warp_108=`  float star = step(0.995, n.x) * (0.5 + 0.5 * sin(time * (1.0 + n.y * 3.0) + n.z * 6.28)) * (0.6 + 0.3 * q5);
+warp_109=`  float3 old = tex2D(sampler_main, uv).xyz;
+warp_110=`  ret = max(old * pow(0.6, q30) - 0.002 * max(q30, 1.0), max(scene(uv), float3(star, star, star) * 0.8));
+warp_111=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`  float2 cc = uv - 0.5;
+comp_4=`  float2 u = 0.5 + cc * (1.0 + dot(cc, cc) * 0.08);
+comp_5=`  float inside = step(0.0, u.x) * step(u.x, 1.0) * step(0.0, u.y) * step(u.y, 1.0);
+comp_6=`  float3 col = tex2D(sampler_main, u).xyz;
+comp_7=`  col += GetBlur1(u) * 0.45 + GetBlur2(u) * 0.2;
+comp_8=`  float scan = 0.75 + 0.25 * sin(u.y * 135.0 * 6.28318);
+comp_9=`  col *= scan;
+comp_10=`  col += float3(0.01, 0.015, 0.02);
+comp_11=`  col *= inside * (1.0 - dot(cc, cc) * 1.1);
+comp_12=`  ret = 1.0 - exp(-col * 1.6);
+comp_13=`}

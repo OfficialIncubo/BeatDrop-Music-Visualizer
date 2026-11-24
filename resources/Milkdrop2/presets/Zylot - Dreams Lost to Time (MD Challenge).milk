@@ -1,0 +1,145 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=3
+[preset00]
+FFTAttack=0.500
+FFTDecay=0.700
+fRating=5.000
+fGammaAdj=1.460
+fDecay=0.935
+fVideoEchoZoom=1.007
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=2
+nWaveMode=15
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=0.625
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.880
+fModWaveAlphaEnd=1.980
+fWarpAnimSpeed=1.000
+fWarpScale=2.853
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00600
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.005
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.060
+mv_g=1.000
+mv_b=0.819
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=trav = 0;
+per_frame_1=q2 = if(above(bass*.4,q2),q2+bass*.2,q2-bass*.001)*.02;
+per_frame_2=    
+per_frame_3=trav += q2;
+per_frame_4=q3 = trav;
+warp_1=`// Shader by Yohei Nishitsuji
+warp_2=`// https://fragcoord.xyz/s/dnvctkmz
+warp_3=`// Ported to MilkDrop by MilkDrop2077
+warp_4=`
+warp_5=`#define SCREEN_SPIN_SPEED 0.15-q3
+warp_6=`
+warp_7=`float3 hsv(float h, float s, float v) {
+warp_8=`    float4 t = float4(1.0, 2.0/3.0, 1.0/3.0, 3.0);
+warp_9=`    float3 p = abs(frac(float3(h, h, h) + t.xyz) * 6.0 - float3(bass_att, mid_att, treb_att));
+warp_10=`    return v * lerp(float3(t.x, t.x, t.x), clamp(p - float3(t.x, t.x, t.x), 0.0, 1.0), s)/min(vol_att,.5);
+warp_11=`}
+warp_12=`
+warp_13=`float2x2 rotate2D(float a) {
+warp_14=`    return transpose(float2x2(cos(a), -sin(a), sin(a), cos(a)));
+warp_15=`}
+warp_16=`
+warp_17=`shader_body
+warp_18=`{
+warp_19=`    float2 fragCoord = uv_orig * texsize.xy;
+warp_20=`    float2 r = texsize.xy;
+warp_21=`    float4 o = float4(0.0, 0.0, 0.0, 1.0);
+warp_22=`
+warp_23=`    // Rotate the screen
+warp_24=`    float spinAngle = -time * SCREEN_SPIN_SPEED;
+warp_25=`    float2x2 spinMat = rotate2D(spinAngle);
+warp_26=`    float2 centered = fragCoord - 0.5 * r;
+warp_27=`    float2 spun = mul(centered, spinMat) + .5 * r;
+warp_28=`    float2 FC = spun;
+warp_29=`
+warp_30=`    // Watch for mouse outside the window = -1 in MilkDrop3
+warp_31=`
+warp_32=`    float2 m = (.5*r - 0.5 * r) / r;
+warp_33=`
+warp_34=`    float i = 0.0, z = 0.0, d = 0.0, s = 0.0;
+warp_35=` 
+warp_36=`    for (int iter = 0; iter < 130 && (i + 1.0 + z) < 130.0; iter++) {
+warp_37=`        i += 1.0;
+warp_38=`
+warp_39=`        float3 dir = normalize(float3(FC.xy * 2 - r, r.y));
+warp_40=`        dir.xy += m * 1.2;
+warp_41=`        float3 q = z * normalize(dir);
+warp_42=`
+warp_43=`        q.z += time;
+warp_44=`        q.zy = .5+.1*sin(i*dir)*(dir*r*.01*(-2+sin(q3*2)*1.5));
+warp_45=`
+warp_46=`        for (int k = 0; k < 3; k++) {
+warp_47=`            s = 4.0 * exp2(float(k));
+warp_48=`            q += cos(q.yzx * s + time) / s;
+warp_49=`        }
+warp_50=`
+warp_51=`        d = 0.008 + abs((length(q.yx) - 6.0) * q.x) / 5.0;
+warp_52=`        z += d;
+warp_53=`
+warp_54=`        o.rgb += hsv(0.07 + sin(z * 0.4 * mid_att) * 0.03 + m.x * 0.15, 0.75, .6+.3*sin(i)) / d;
+warp_55=`    }
+warp_56=`
+warp_57=`    o = tanh(o / 9e2);
+warp_58=`
+warp_59=`    ret = o;
+warp_60=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    ret = GetPixel(uv);
+comp_4=`}

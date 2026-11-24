@@ -514,8 +514,8 @@ per_frame_40=res = beat*(vol+2*diff) + (1-beat)*(res - (diff*0.04 + 0.12)*60/fps
 per_frame_41=res = max(0,res);
 per_frame_42=monitor = res;
 per_frame_43=
-per_frame_44=x = if(beat,rand(60)*0.01 + 0.2,x);
-per_frame_45=y = if(beat,rand(60)*0.01 + 0.2,y);
+per_frame_44=x = if(beat,int(rand(60))*0.01 + 0.2,x);
+per_frame_45=y = if(beat,int(rand(60))*0.01 + 0.2,y);
 per_frame_46=q21 = x;
 per_frame_47=q22 = y;
 per_frame_48=

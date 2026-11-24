@@ -1,0 +1,123 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+per_frame_init_1=rise = 0;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=rise = rise + (0.7 + 0.5*bass_att)/fps;
+per_frame_5=q1 = 0.55 + 0.35*bass_att;
+per_frame_6=q2 = 0.45 + 0.3*mid_att;
+per_frame_7=q3 = treb_att;
+per_frame_8=q4 = rise;
+per_frame_9=q5 = time;
+warp_1=`sampler sampler_pw_noise_lq;
+warp_2=`shader_body
+warp_3=`{
+warp_4=`  float k = q30;
+warp_5=`  float sway = tex2D(sampler_noise_lq, float2(uv.x * 2.0, uv.y * 1.5 + q5 * 0.3)).x - 0.5;
+warp_6=`  float2 draft = float2(sway * 0.004 * q2, -0.006) * k;
+warp_7=`  float e = tex2D(sampler_main, uv - draft).x;
+warp_8=`  e = e * pow(0.975, k) - 0.002 * k;
+warp_9=`  float2 sp = uv * texsize.xy / 256.0 + rand_frame.xy * 7.0;
+warp_10=`  float4 st = tex2D(sampler_pw_noise_lq, sp);
+warp_11=`  float born = saturate((st.x * st.y - (0.993 - 0.003 * q3)) * 300.0) * saturate((uv.y - 0.6) * 4.0);
+warp_12=`  ret = float3(saturate(max(e, born)), 0, 0);
+warp_13=`}
+comp_1=`float flame(float2 uv0, float t, float lift, float stir)
+comp_2=`{
+comp_3=`  float2 p = float2(uv0.x * aspect.x * 1.6, 1.0 - uv0.y);
+comp_4=`  float w = tex2D(sampler_noise_hq, float2(p.x * 0.35, p.y * 0.2 - t * 0.35)).x - 0.5;
+comp_5=`  p.x += w * 0.5 * stir * p.y;
+comp_6=`  float n = tex2D(sampler_noise_hq, float2(p.x * 0.7, p.y * 0.22 - t * 0.55)).x * 0.6
+comp_7=`          + tex2D(sampler_noise_hq, float2(p.x * 1.5 + 0.3, p.y * 0.45 - t * 0.95)).x * 0.28
+comp_8=`          + tex2D(sampler_noise_hq, float2(p.x * 3.1 + 0.7, p.y * 0.9 - t * 1.6)).x * 0.12;
+comp_9=`  float h = p.y / (0.6 * lift + 0.15);
+comp_10=`  return saturate((n - h * 0.6 - 0.05) * 2.2) * saturate(1.0 - h * 0.35);
+comp_11=`}
+comp_12=`shader_body
+comp_13=`{
+comp_14=`  float hz = flame(uv, q4, q1, q2);
+comp_15=`  float2 haze = (tex2D(sampler_noise_hq, float2(uv.x * 4.0, uv.y * 3.0 + q5 * 0.7)).xy - 0.5) * 0.01 * saturate(hz * 2.0 + 0.2);
+comp_16=`  float t = flame(uv + haze, q4, q1, q2);
+comp_17=`  float3 col = float3(0.9, 0.18, 0.02) * saturate(t * 2.5);
+comp_18=`  col = lerp(col, float3(1.0, 0.55, 0.1), saturate(t * 2.2 - 0.5));
+comp_19=`  col = lerp(col, float3(1.0, 0.85, 0.45), saturate(t * 2.5 - 1.4));
+comp_20=`  col = lerp(col, float3(1.0, 0.98, 0.9), saturate(t * 4.0 - 3.4));
+comp_21=`  col += float3(0.5, 0.12, 0.02) * saturate(1.0 - (1.0 - uv.y) * 2.5) * 0.25 * q1;
+comp_22=`  float s = tex2D(sampler_main, uv).x;
+comp_23=`  col += float3(1.0, 0.7, 0.3) * s * 2.0 + float3(1.0, 0.4, 0.08) * GetBlur1(uv).x * 3.0 + float3(1.0, 0.3, 0.05) * GetBlur2(uv).x * 1.5;
+comp_24=`  col += float3(0.02, 0.005, 0.01);
+comp_25=`  ret = 1.0 - exp(-col * 1.5);
+comp_26=`}

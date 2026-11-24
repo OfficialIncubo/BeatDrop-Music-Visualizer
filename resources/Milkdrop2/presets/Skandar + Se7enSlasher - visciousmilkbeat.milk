@@ -1,0 +1,249 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 20/08/2026 at 17:36:18.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=2
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.000
+fDecay=1.000
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.000
+fWaveSmoothing=0.000
+fWaveParam=0.000
+fModWaveAlphaStart=0.000
+fModWaveAlphaEnd=0.000
+fWarpAnimSpeed=0.000
+fWarpScale=0.000
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.000
+mv_r=0.000
+mv_g=0.000
+mv_b=0.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=q1=time;
+per_frame_init_2=temp=0;
+per_frame_1=// This shader can move overtime so that it uses time variable. "float T=time*0.25+q1;"
+per_frame_2=
+per_frame_3=temp+=bass_att*0.025; // We grab the temporary variable, so it can move forward overtime by the beat without jumping back.
+per_frame_4=q1=temp; // Pass it to a q variable.
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    ret=tex2D(sampler_main,uv).xyz;
+warp_4=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`   uv.y = 1-uv.y; // Y flipping is obligatory while porting shaders from ShaderToy, FragCoord.xyz etc.
+comp_4=`
+comp_5=`    float2 p;
+comp_6=`    float3 c;
+comp_7=`    float3 c0;
+comp_8=`    float w0;
+comp_9=`    float wt;
+comp_10=`    float wp;
+comp_11=`    float wb;
+comp_12=`   float w;
+comp_13=`   float a;
+comp_14=`   float s;
+comp_15=`   float co;
+comp_16=`
+comp_17=`   /*
+comp_18=`      Original GLSL:
+comp_19=`
+comp_20=`          uv /= resolution.xx;
+comp_21=`
+comp_22=`      MilkDrop uv is normalized [0,1]. Since the original
+comp_23=`      divides BOTH coordinates by horizontal resolution,
+comp_24=`      reconstruct the same coordinate system by scaling Y
+comp_25=`      by height/width.
+comp_26=`   */
+comp_27=`
+comp_28=`   p.x=uv.x;
+comp_29=`   p.y=uv.y*texsize.y*texsize.z;
+comp_30=`
+comp_31=`   p=float2(0.125,0.75)
+comp_32=`     +(p-float2(0.125,0.75))*0.03;
+comp_33=`
+comp_34=`   /*
+comp_35=`      Original:
+comp_36=`
+comp_37=`          float T=iTime*.25 + time;
+comp_38=`
+comp_39=`      MilkDrop has one playback clock. q1 stores that same
+comp_40=`      clock, so both original clocks are mapped to it.
+comp_41=`   */
+comp_42=`
+comp_43=`   float T=time*0.25+q1;
+comp_44=`
+comp_45=`   c.x=clamp(
+comp_46=`       1.0-0.7*length(p-float2(0.1,0.0)),
+comp_47=`       0.0,1.0)*2.0-1.0;
+comp_48=`
+comp_49=`   c.y=clamp(
+comp_50=`       1.0-0.7*length(p-float2(0.9,0.0)),
+comp_51=`       0.0,1.0)*2.0-1.0;
+comp_52=`
+comp_53=`   c.z=clamp(
+comp_54=`       1.0-0.7*length(p-float2(0.5,1.0)),
+comp_55=`       0.0,1.0)*2.0-1.0;
+comp_56=`
+comp_57=`   c0=float3(0.0,0.0,0.0);
+comp_58=`   w0=0.0;
+comp_59=`
+comp_60=`   /*
+comp_61=`      The GLSL rotation:
+comp_62=`
+comp_63=`          p * mat2(s,c,c,-s)
+comp_64=`
+comp_65=`      becomes:
+comp_66=`
+comp_67=`          x' = x*s + y*c
+comp_68=`          y' = x*c - y*s
+comp_69=`
+comp_70=`      The unusual matrix is intentionally preserved.
+comp_71=`   */
+comp_72=`
+comp_73=`   /* i = 0 */
+comp_74=`   wt=-0.060000;
+comp_75=`   wp=0.501500;
+comp_76=`   wb=0.050000;
+comp_77=`
+comp_78=`   a=1.6+T*0.65*wt+(p.x+0.7)*23.0*wp;
+comp_79=`   s=sin(a*15.83);
+comp_80=`   co=cos(a*15.83);
+comp_81=`   c.xz=float2(c.x*s+c.z*co,c.x*co-c.z*s);
+comp_82=`
+comp_83=`   a=c.z*c.x*wb+1.7+T*wt+(p.y+1.1)*15.0*wp;
+comp_84=`   s=sin(a*15.83);
+comp_85=`   co=cos(a*15.83);
+comp_86=`   c.xy=float2(c.x*s+c.y*co,c.x*co-c.y*s);
+comp_87=`
+comp_88=`   a=c.x*c.y*wb+2.4-T*0.79*wt
+comp_89=`    +(p.x+p.y*(frac(0.0/2.0)-0.25)*4.0)*17.0*wp;
+comp_90=`   s=sin(a*15.83);
+comp_91=`   co=cos(a*15.83);
+comp_92=`   c.yz=float2(c.y*s+c.z*co,c.y*co-c.z*s);
+comp_93=`
+comp_94=`   a=c.y*c.z*wb+1.6-T*0.65*wt+(p.x+0.7)*23.0*wp;
+comp_95=`   s=sin(a*15.83);
+comp_96=`   co=cos(a*15.83);
+comp_97=`   c.xz=float2(c.x*s+c.z*co,c.x*co-c.z*s);
+comp_98=`
+comp_99=`   a=c.z*c.x*wb+1.7-T*wt+(p.y+1.1)*15.0*wp;
+comp_100=`   s=sin(a*15.83);
+comp_101=`   co=cos(a*15.83);
+comp_102=`  c.xy=float2(c.x*s+c.y*co,c.x*co-c.y*s);
+comp_103=`
+comp_104=`  w=1.5;
+comp_105=`  c0+=c*w;
+comp_106=`  w0+=w;
+comp_107=`
+comp_108=`  /* i = 1..15 */
+comp_109=`  for(int i=1;i<16;i++)
+comp_110=`  {
+comp_111=`      wt=(float(i*i)/256.0-0.2)*0.3;
+comp_112=`      wp=0.5+(float(i)+1.0)*(float(i)+1.5)*0.001;
+comp_113=`      wb=0.05+float(i)/16.0*0.1;
+comp_114=`
+comp_115=`      a=1.6+T*0.65*wt+(p.x+0.7)*23.0*wp;
+comp_116=`      s=sin(a*15.83);
+comp_117=`      co=cos(a*15.83);
+comp_118=`      c.xz=float2(c.x*s+c.z*co,c.x*co-c.z*s);
+comp_119=`
+comp_120=`      a=c.z*c.x*wb+1.7+T*wt+(p.y+1.1)*15.0*wp;
+comp_121=`      s=sin(a*15.83);
+comp_122=`      co=cos(a*15.83);
+comp_123=`      c.xy=float2(c.x*s+c.y*co,c.x*co-c.y*s);
+comp_124=`
+comp_125=`      a=c.x*c.y*wb+2.4-T*0.79*wt
+comp_126=`       +(p.x+p.y*(frac(float(i)/2.0)-0.25)*4.0)*17.0*wp;
+comp_127=`      s=sin(a*15.83);
+comp_128=`      co=cos(a*15.83);
+comp_129=`      c.yz=float2(c.y*s+c.z*co,c.y*co-c.z*s);
+comp_130=`
+comp_131=`      a=c.y*c.z*wb+1.6-T*0.65*wt+(p.x+0.7)*23.0*wp;
+comp_132=`      s=sin(a*15.83);
+comp_133=`      co=cos(a*15.83);
+comp_134=`      c.xz=float2(c.x*s+c.z*co,c.x*co-c.z*s);
+comp_135=`
+comp_136=`      a=c.z*c.x*wb+1.7-T*wt+(p.y+1.1)*15.0*wp;
+comp_137=`      s=sin(a*15.83);
+comp_138=`      co=cos(a*15.83);
+comp_139=`      c.xy=float2(c.x*s+c.y*co,c.x*co-c.y*s);
+comp_140=`
+comp_141=`      w=1.5-float(i)/16.0;
+comp_142=`      c0+=c*w;
+comp_143=`      w0+=w;
+comp_144=`  }
+comp_145=`
+comp_146=`  c0=c0/w0*2.0+0.5;
+comp_147=`
+comp_148=`  c0*=0.5+
+comp_149=`      dot(c0,float3(1.0,1.0,1.0))/sqrt(3.0)*0.5;
+comp_150=`
+comp_151=`  c0+=pow(
+comp_152=`      length(sin(c0*3.141592654*4.0))/sqrt(3.0),
+comp_153=`      20.0
+comp_154=`  )*(0.3+0.7*c0);
+comp_155=`
+comp_156=`  ret=c0;
+comp_157=`}

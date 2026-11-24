@@ -1,0 +1,294 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 28/06/2026 at 20:04:56.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=smooth_reaction = int(rand(2))
+per_frame_1=q1 = smooth_reaction
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`sampler sampler_rand00;
+comp_2=`sampler sampler_rand01;
+comp_3=`sampler sampler_rand02;
+comp_4=`sampler sampler_rand03;
+comp_5=`
+comp_6=`float hash(float n) { return frac(sin(n)*43758.5453); }
+comp_7=`
+comp_8=`float noise(in float3 x) {
+comp_9=`    float3 p = floor(x);
+comp_10=`    float3 f = frac(x);
+comp_11=`    f = f*f*(3.0-2.0*f);
+comp_12=`    
+comp_13=`    float n = p.x + p.y*57.0 + 113.0*p.z;
+comp_14=`    return lerp(lerp(lerp(hash(n+0.0), hash(n+1.0),f.x),
+comp_15=`                   lerp(hash(n+57.0), hash(n+58.0),f.x),f.y),
+comp_16=`               lerp(lerp(hash(n+113.0), hash(n+114.0),f.x),
+comp_17=`                   lerp(hash(n+170.0), hash(n+171.0),f.x),f.y),f.z);
+comp_18=`}
+comp_19=`
+comp_20=`float fbm(float3 p) {
+comp_21=`    float f = 0.0;
+comp_22=`    f += 0.5000*noise(p); p *= 2.01;
+comp_23=`    f += 0.2500*noise(p); p *= 2.02;
+comp_24=`    f += 0.1250*noise(p); p *= 2.03;
+comp_25=`    f += 0.0625*noise(p);
+comp_26=`    return f;
+comp_27=`}
+comp_28=`
+comp_29=`float3 plasma(float2 uvc, float timec) {
+comp_30=`    float t = timec * 0.5;
+comp_31=`    
+comp_32=`    // Multiple layers of noise
+comp_33=`    float n1 = fbm(float3(uvc*3.0, t*0.5));
+comp_34=`    float n2 = fbm(float3(uvc*6.0 + 0.5, t*0.7));
+comp_35=`    float n3 = fbm(float3(uvc*12.0 + 0.8, t*0.9));
+comp_36=`    float n4 = fbm(float3(uvc*24.0 + 1.2, t*1.1));
+comp_37=`    
+comp_38=`    // Music-reactive modulation
+comp_39=`    float bass_pulse = bass * 2.0 + bass_att;
+comp_40=`    float mid_pulse = mid * 1.5 + mid_att;
+comp_41=`    float treb_pulse = treb * 3.0 + treb_att;
+comp_42=`    
+comp_43=`    // Combine noises with music reactivity
+comp_44=`    float pattern = n1 * 0.5 + n2 * 0.3 + n3 * 0.15 + n4 * 0.05;
+comp_45=`    pattern += sin(uvc.x*20.0 + t*2.0) * 0.1 * treb_pulse;
+comp_46=`    pattern += sin(uvc.y*15.0 + t*1.5) * 0.08 * mid_pulse;
+comp_47=`    
+comp_48=`    // Color mixing
+comp_49=`    float3 col1 = float3(0.5, 0.2, 0.8); // Purple
+comp_50=`    float3 col2 = float3(0.1, 0.6, 0.9); // Blue
+comp_51=`    float3 col3 = float3(0.0, 0.9, 0.5); // Green
+comp_52=`    float3 col4 = float3(0.9, 0.3, 0.1); // Orange
+comp_53=`    
+comp_54=`    float color_mix = sin(t*0.3 + pattern*5.0) * 0.5 + 0.5;
+comp_55=`    color_mix += bass_pulse * 0.3;
+comp_56=`    
+comp_57=`    float3 color = lerp(lerp(col1, col2, color_mix), 
+comp_58=`                     lerp(col3, col4, color_mix), 
+comp_59=`                     sin(t*0.2 + uvc.x*2.0)*0.5 + 0.5);
+comp_60=`    
+comp_61=`    // Add brightness from music
+comp_62=`    color += float3(bass_pulse * 0.3, mid_pulse * 0.2, treb_pulse * 0.4);
+comp_63=`    
+comp_64=`    return color;
+comp_65=`}
+comp_66=`
+comp_67=`float3 nebula(float2 uva, float timea) {
+comp_68=`    uva = uva * 2.0 - 1.0;
+comp_69=`    
+comp_70=`    // Sample random textures
+comp_71=`    float3 rand00 = tex2D(sampler_rand00, frac(uva*0.5 + 0.5)).rgb;
+comp_72=`    float3 rand01 = tex2D(sampler_rand01, frac(uva*0.3 + 0.2)).rgb;
+comp_73=`    float3 rand02 = tex2D(sampler_rand02, frac(uva*0.7 + 0.8)).rgb;
+comp_74=`    float3 rand03 = tex2D(sampler_rand03, frac(uva*1.2 + 0.3)).rgb;
+comp_75=`    
+comp_76=`    float t = timea * 0.3;
+comp_77=`    
+comp_78=`    // Music-reactive distortion
+comp_79=`    float distortion = (bass*2.0 + mid*1.5 + treb*1.0) * 0.5;
+comp_80=`    distortion += (bass_att + mid_att + treb_att) * 0.3;
+comp_81=`    
+comp_82=`    // Create nebula pattern
+comp_83=`    float r = length(uva);
+comp_84=`    float angle = atan2(uva.y, uva.x);
+comp_85=`    
+comp_86=`    // Combine random textures with music modulation
+comp_87=`    float pattern1 = rand00.r * 0.3 + sin(angle*5.0 + t + r*10.0) * 0.2;
+comp_88=`    float pattern2 = rand01.g * 0.4 + cos(angle*3.0 + t*1.3 + r*8.0) * 0.2;
+comp_89=`    float pattern3 = rand02.b * 0.3 + sin(angle*7.0 + t*1.7 + r*12.0) * 0.2;
+comp_90=`    
+comp_91=`    pattern1 += sin(r*20.0 + t*2.0) * 0.1 * treb;
+comp_92=`    pattern2 += cos(r*15.0 + t*1.5) * 0.08 * mid;
+comp_93=`    pattern3 += sin(r*25.0 + t*2.5) * 0.12 * bass;
+comp_94=`    
+comp_95=`    // Radial fade
+comp_96=`    float fade = 1.0 - smoothstep(0.0, 1.0, r);
+comp_97=`    fade *= 1.0 + distortion * 0.5;
+comp_98=`    
+comp_99=`    float3 nebula_color = float3(pattern1*0.8, pattern2*0.6, pattern3*1.0);
+comp_100=`    nebula_color *= fade;
+comp_101=`    
+comp_102=`    // Add sparkling stars from treble
+comp_103=`    float stars = pow(rand03.r * rand03.g * rand03.b, 3.0);
+comp_104=`    stars *= smoothstep(0.1, 0.9, stars);
+comp_105=`    stars *= treb * 2.0 + treb_att;
+comp_106=`    
+comp_107=`    nebula_color += stars * float3(1.0, 0.9, 0.7);
+comp_108=`    
+comp_109=`    return nebula_color;
+comp_110=`}
+comp_111=`
+comp_112=`float3 aurora(float2 uvb, float timeb) {
+comp_113=`    uvb.x += sin(uvb.y*3.0 + timeb*0.5) * 0.1 * bass;
+comp_114=`    uvb.y += cos(uvb.x*2.0 + timeb*0.3) * 0.05 * mid;
+comp_115=`    
+comp_116=`    float t = timeb * 0.4;
+comp_117=`    
+comp_118=`    // Aurora layers
+comp_119=`    float layer1 = sin(uvb.x*10.0 + t*1.5 + sin(uvb.y*5.0 + t));
+comp_120=`    float layer2 = sin(uvb.x*15.0 + t*2.0 + sin(uvb.y*8.0 + t*1.2));
+comp_121=`    float layer3 = sin(uvb.x*20.0 + t*2.5 + sin(uvb.y*12.0 + t*1.5));
+comp_122=`    
+comp_123=`    // Music-reactive intensity
+comp_124=`    layer1 *= 0.5 + bass*0.8 + bass_att*0.4;
+comp_125=`    layer2 *= 0.4 + mid*0.6 + mid_att*0.3;
+comp_126=`    layer3 *= 0.3 + treb*0.5 + treb_att*0.2;
+comp_127=`    
+comp_128=`    // Vertical fading
+comp_129=`    float vertical_fade = pow(uvb.y, 2.0);
+comp_130=`    
+comp_131=`    // Combine layers
+comp_132=`    float aurora_pattern = (layer1 + layer2*0.7 + layer3*0.5) * vertical_fade;
+comp_133=`    aurora_pattern = abs(aurora_pattern);
+comp_134=`    
+comp_135=`    // Aurora colors (green/blue/purple)
+comp_136=`    float3 aurora_color = lerp(
+comp_137=`        float3(0.1, 0.8, 0.3), // Green
+comp_138=`        float3(0.2, 0.4, 0.9), // Blue
+comp_139=`        sin(t*0.2 + uvb.x*3.0)*0.5 + 0.5
+comp_140=`    );
+comp_141=`    
+comp_142=`    aurora_color = lerp(
+comp_143=`        aurora_color,
+comp_144=`        float3(0.7, 0.2, 0.8), // Purple
+comp_145=`        sin(t*0.3 + uvb.y*2.0)*0.5 + 0.5
+comp_146=`    );
+comp_147=`    
+comp_148=`    return aurora_color * aurora_pattern * 2.0;
+comp_149=`}
+comp_150=`
+comp_151=`shader_body {
+comp_152=`
+comp_153=`    if (q1)
+comp_154=`    {
+comp_155=`        bass = bass_att;
+comp_156=`        mid = mid_att;
+comp_157=`        treb = treb_att;
+comp_158=`    }
+comp_159=`    
+comp_160=`    // Time with music modulation
+comp_161=`    float timesync = time;
+comp_162=`    timesync += bass * 0.5 + mid * 0.3 + treb * 0.2;
+comp_163=`    
+comp_164=`    // Create warp effect from bass
+comp_165=`    float bass_warp = bass * 0.5 + bass_att * 0.3;
+comp_166=`    float mid_warp = mid * 0.3 + mid_att * 0.2;
+comp_167=`    float treb_warp = treb * 0.2 + treb_att * 0.1;
+comp_168=`    
+comp_169=`    // Apply music-reactive warping
+comp_170=`    uv.x += sin(uv.y*10.0 + timesync*2.0) * 0.05 * bass_warp;
+comp_171=`    uv.y += cos(uv.x*8.0 + timesync*1.7) * 0.04 * mid_warp;
+comp_172=`    uv += (tex2D(sampler_rand00, frac(uv*2.0)).rg - 0.5) * 0.1 * treb_warp;
+comp_173=`    
+comp_174=`    // Combine effects
+comp_175=`    float3 color1 = plasma(uv, time);
+comp_176=`    float3 color2 = nebula(uv * 0.8 + 0.1, time);
+comp_177=`    float3 color3 = aurora(uv * 1.2 - 0.1, time);
+comp_178=`    
+comp_179=`    // Music-reactive blending
+comp_180=`    float blend1 = 0.5 + bass * 0.3 + mid * 0.2;
+comp_181=`    float blend2 = 0.3 + treb * 0.4 + bass_att * 0.2;
+comp_182=`    float blend3 = 0.2 + mid_att * 0.3 + treb_att * 0.3;
+comp_183=`    
+comp_184=`    // Final color composition
+comp_185=`    float3 final_color = color1 * blend1 + color2 * blend2 + color3 * blend3;
+comp_186=`    
+comp_187=`    // Add central glow from bass hits
+comp_188=`    float center_dist = length(uv - 0.5);
+comp_189=`    float glow = 1.0 - smoothstep(0.0, 0.5, center_dist);
+comp_190=`    glow *= glow * (bass *2 + bass_att);
+comp_191=`    
+comp_192=`    final_color += float3(0.8, 0.4, 1.0) * glow * 0.5;
+comp_193=`    
+comp_194=`    // Add rhythmic pulsing
+comp_195=`    float pulse = sin(timesync*3.0) * 0.1 + 1.0;
+comp_196=`    pulse += bass * 0.3 + mid * 0.2 + treb * 0.1;
+comp_197=`    final_color *= pulse;
+comp_198=`    
+comp_199=`    // Add subtle vignette
+comp_200=`    float vignette = 1.0 - center_dist * 0.5;
+comp_201=`    vignette = pow(vignette, 7.5);
+comp_202=`    final_color *= vignette;
+comp_203=`    
+comp_204=`    // Output final color
+comp_205=`    ret = float4(final_color, 1.0);
+comp_206=`}

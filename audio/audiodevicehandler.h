@@ -13,7 +13,7 @@ public:
 
     HRESULT Initialize();
     HRESULT CheckForDeviceChanges(IMMDevice** ppNewDevice);
-    void ResetToDefaultDevice();
+    HRESULT ResetToDefaultDevice(IMMDevice** ppNewDevice);
 
 //private:
     IMMDeviceEnumerator* m_pEnumerator;

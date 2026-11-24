@@ -1,0 +1,358 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=3
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.005
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99990
+rot=-0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=0.99990
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+wavecode_0_enabled=0
+wavecode_0_samples=120
+wavecode_0_sep=38
+wavecode_0_bSpectrum=1
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=2.15542
+wavecode_0_smoothing=0.10000
+wavecode_0_r=1.000
+wavecode_0_g=0.000
+wavecode_0_b=0.000
+wavecode_0_a=0.500
+wavecode_1_enabled=0
+wavecode_1_samples=120
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=0
+wavecode_1_scaling=0.89152
+wavecode_1_smoothing=0.82000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=0.000
+wavecode_1_a=0.500
+wavecode_2_enabled=0
+wavecode_2_samples=120
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=5.34537
+wavecode_2_smoothing=0.82000
+wavecode_2_r=0.000
+wavecode_2_g=0.600
+wavecode_2_b=1.000
+wavecode_2_a=0.500
+wavecode_3_enabled=0
+wavecode_3_samples=40
+wavecode_3_sep=0
+wavecode_3_bSpectrum=1
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=1
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=0.600
+shapecode_0_enabled=0
+shapecode_0_sides=4
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.09820
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=1.00531
+shapecode_0_tex_zoom=1.53110
+shapecode_0_r=0.000
+shapecode_0_g=0.000
+shapecode_0_b=0.000
+shapecode_0_a=0.500
+shapecode_0_r2=0.300
+shapecode_0_g2=0.300
+shapecode_0_b2=0.300
+shapecode_0_a2=0.000
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=1.000
+shapecode_1_enabled=0
+shapecode_1_sides=4
+shapecode_1_additive=0
+shapecode_1_thickOutline=1
+shapecode_1_textured=0
+shapecode_1_num_inst=50
+shapecode_1_x=0.800
+shapecode_1_y=0.800
+shapecode_1_rad=0.02194
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=0.93550
+shapecode_1_r=1.000
+shapecode_1_g=1.000
+shapecode_1_b=1.000
+shapecode_1_a=0.400
+shapecode_1_r2=1.000
+shapecode_1_g2=1.000
+shapecode_1_b2=1.000
+shapecode_1_a2=0.500
+shapecode_1_border_r=0.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=0.000
+shapecode_1_border_a=0.000
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=1
+shapecode_2_thickOutline=1
+shapecode_2_textured=0
+shapecode_2_num_inst=21
+shapecode_2_x=0.950
+shapecode_2_y=0.900
+shapecode_2_rad=0.06386
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=0.73678
+shapecode_2_r=1.000
+shapecode_2_g=0.600
+shapecode_2_b=1.000
+shapecode_2_a=1.000
+shapecode_2_r2=0.000
+shapecode_2_g2=0.700
+shapecode_2_b2=1.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=0.000
+shapecode_2_border_a=0.000
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=1
+shapecode_3_textured=0
+shapecode_3_num_inst=2
+shapecode_3_x=0.600
+shapecode_3_y=0.650
+shapecode_3_rad=0.04914
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=0.34933
+shapecode_3_r=1.000
+shapecode_3_g=1.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=0.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=0.200
+shapecode_3_border_g=0.700
+shapecode_3_border_b=0.500
+shapecode_3_border_a=0.000
+per_frame_1=//FRACTAL BY JIAN SIMANJUNTAK
+per_frame_2=
+per_frame_3=bb = bb*0.99 + bass*0.02;
+per_frame_4=mm = mm*0.99 + mid*0.02;
+per_frame_5=tt = tt*0.99 + treb*0.02;
+per_frame_6=
+per_frame_7=mx = max(max(bb,mm),tt);
+per_frame_8=mn = min(min(bb,mm),tt);
+per_frame_9=
+per_frame_10=t1 = (bb-mn)/(mx-mn);
+per_frame_11=t2 = (mm-mn)/(mx-mn);
+per_frame_12=t3 = (tt-mn)/(mx-mn);
+per_frame_13=
+per_frame_14=v = 2/fps;
+per_frame_15=bm = bm + (t1-t2)*v;
+per_frame_16=mt = mt + (t2-t3)*v;
+per_frame_17=
+per_frame_18=
+per_frame_19=q26 = -bm; // rotation
+per_frame_20=q27 = mt; // growth
+warp_1=`//Original shader by Tubeman
+warp_2=`//ShaderToy Original: https://www.shadertoy.com/view/l3fSDr
+warp_3=`//MilkDrop (HLSL) Port by Jian Simanjuntak
+warp_4=`
+warp_5=`//BEGIN//
+warp_6=`
+warp_7=`float3 pal(float t) {
+warp_8=`    float3 b = float3(.45, .45, .45);
+warp_9=`    float3 c = float3(.35, .35, .35);
+warp_10=`    return b + c*cos(6.28318*(t*float3(1, 1, 1)+float3(.7,.39, .2)));
+warp_11=`}
+warp_12=`
+warp_13=`float gyroid(float3 p, float scale) {
+warp_14=`    p *= scale;
+warp_15=`    float bias = lerp(1.1, 2.65, sin(time*.4 + p.x/3. + p.z/4.)*.5+.5);
+warp_16=`    float g = abs(dot(sin(p*1.01), cos(p.zxy*1.61)) - bias)/(scale*1.5)-.1;
+warp_17=`    return g;
+warp_18=`}
+warp_19=`
+warp_20=`float scene(float3 p) {
+warp_21=`    float g1 = .7*gyroid(p, 4.);
+warp_22=`    return g1;
+warp_23=`}
+warp_24=`
+warp_25=`// from @blackle
+warp_26=`float3 norm(float3 p) {
+warp_27=`    float3x3 k = float3x3(p,p,p) - float3x3(0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01);
+warp_28=`    return normalize(scene(p) - float3(scene(k[0]),scene(k[1]),scene(k[2])));
+warp_29=`}
+warp_30=`	shader_body {
+warp_31=`    uv = (uv * 2)-1;
+warp_32=`    float3 init = float3(time*.25,1.5,.3);
+warp_33=`    float3 cam = normalize(float3(1., uv ));
+warp_34=`    
+warp_35=`    // basic raymarcher from @blackle
+warp_36=`    float3 p = init;
+warp_37=`    bool hit = false;
+warp_38=`    for ( int i = 0; i < 100 && !hit; i++) {
+warp_39=`        if (distance(p,init) > 8.) int test = 0;
+warp_40=`       float d = scene(p);
+warp_41=`       if (d*d < 0.00001) hit = true;
+warp_42=`       p += cam*d;
+warp_43=`    }
+warp_44=`    float3 n = norm(p);
+warp_45=`
+warp_46=`    float ao = 1.-smoothstep(-.3,.75,scene(p+n*.4))
+warp_47=`             * smoothstep(-3.,3.,scene(p+n*1.));
+warp_48=`             
+warp_49=`    float fres = -max(0., pow(.8-abs(dot(cam,n)), 3.));
+warp_50=`    float3 vign = smoothstep(0.,1.,(1.-(length(uv*.8)-.1)));
+warp_51=`    float3 col = pal(.1-time*.01 + p.x*.28 + p.y*.2 + p.z*.2);
+warp_52=`    col = (float3(fres, fres, fres)+col)*ao;
+warp_53=`    col = lerp(col, float3(0,0,0), !hit ? 1. : smoothstep(0.,8.,distance(p,init)));
+warp_54=`    col = lerp(float3(0,0,0),col, vign+.1);
+warp_55=`    col = smoothstep(0.,1.+.3*sin(time+p.x*4.+p.z*4.),col);
+warp_56=`    ret = col;
+warp_57=`    ret = sqrt(ret);
+warp_58=`}
+warp_59=`// Thank you for warp shader edited by Jian Simanjuntak //
+comp_1=`float2 complex_div(float2 numerator, float2 denominator){
+comp_2=`   return float2( numerator.x*denominator.x + numerator.y*denominator.y,
+comp_3=`                  numerator.y*denominator.x - numerator.x*denominator.y)/
+comp_4=`          (denominator.x*denominator.x + denominator.y*denominator.y);
+comp_5=`}
+comp_6=`
+comp_7=`float2 uv_polar(float2 domain, float2 center){
+comp_8=`   float2 c = domain - center;
+comp_9=`   float rad_hq = length(c);
+comp_10=`   float ang_hq = atan2(c.x,c.y);
+comp_11=`   return float2(ang_hq, rad_hq);
+comp_12=`}
+comp_13=`
+comp_14=`float2 uv_polar_logarithmic(float2 domain, float2 center, int fins, float log_factor, float2 coord){
+comp_15=`   float2 polar = uv_polar(domain, center);
+comp_16=`   return float2(polar.x*fins+coord.x, log_factor*log(1/polar.y) + coord.y);
+comp_17=`}
+comp_18=`
+comp_19=`float2 uv_moebius_transformation(float2 domain, float2 zeroPoint, float2 infinityPoint,float zoom){
+comp_20=`   return complex_div((domain - zeroPoint)*zoom, domain - infinityPoint)+0.5;
+comp_21=`}
+comp_22=`
+comp_23=`float2 uv_bipolar_logarithmic(float2 domain, float2 northPole, float2 southPole, int fins, float log_factor, float2 coord){
+comp_24=`   float2 help_uv = uv_moebius_transformation(domain, northPole, southPole, 1);
+comp_25=`   return uv_polar_logarithmic(help_uv,0.5,fins,log_factor,coord)*float2(M_INV_PI_2,1);
+comp_26=`}
+comp_27=`
+comp_28=`float2 uv_scale(float2 domain, float2 center, float2 scale){
+comp_29=`   return center + (domain-center)*scale;
+comp_30=`}
+comp_31=`float2 uv_lens_half_sphere(float2 domain, float2 position, float radius, float refractivity){
+comp_32=`   float2 polar = uv_polar(domain, position);
+comp_33=`   float cone = saturate(1-polar.y/radius);
+comp_34=`   float halfsphere = sqrt(1-pow(cone-1,2));
+comp_35=`   float w = atan2(1-cone,halfsphere);
+comp_36=`   float refrac_w = w-asin(sin(w)/refractivity);
+comp_37=`   float refrac_d = 1-cone - sin(refrac_w)*halfsphere/cos(refrac_w);
+comp_38=`   float2 refrac_uv =position+float2(sin(polar.x),cos(polar.x))*refrac_d*radius;
+comp_39=`   bool mask =(length(domain-position)<radius);
+comp_40=`   return !mask*domain + 
+comp_41=`           mask*refrac_uv;
+comp_42=`}
+comp_43=`shader_body
+comp_44=`{
+comp_45=`float2 uvo = uv;
+comp_46=`uv = 0.5+(uv-0.5)*aspect.wz;
+comp_47=`uv = uv_bipolar_logarithmic(uv, float2(0,0.5), float2(1,0.5), 4, 0.55, float2(q26,0.1*q27));
+comp_48=`uv = 0.5 + (1.0 - abs( frac( uv * 0.5 ) * 2 - 1.0 )-0.5)*0.995; // Eo.S. mirror code with cutted borders
+comp_49=`uv = uv_lens_half_sphere(uv, 0.5, 0.5, 3).yx;
+comp_50=`uv = uv_bipolar_logarithmic(uv, float2(0,0.5), float2(1,0.5), 4, 0.55, float2(q26,0.1*q27)).yx;
+comp_51=`uv = 0.5 + (1.0 - abs( frac( uv * 0.5 ) * 2 - 1.0 )-0.5)*0.995; // Eo.S. mirror code with cutted borders
+comp_52=`
+comp_53=`    ret = tex2D(sampler_main, uv).xyz;
+comp_54=`    ret *= 1.00; //gamma
+comp_55=`}
+comp_56=`
+comp_57=`

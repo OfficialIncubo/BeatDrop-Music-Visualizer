@@ -85,7 +85,7 @@ wavecode_0_r=0.000
 wavecode_0_g=1.000
 wavecode_0_b=1.000
 wavecode_0_a=1.000
-wave_0_per_frame1=q1 = below(rand(100),4 + 10*(treb+mid+bass));
+wave_0_per_frame1=q1 = below(int(rand(100)),4 + 10*(treb+mid+bass));
 wave_0_per_point1=it = (it + 1)*above(sample,0)*below(it,53);
 wave_0_per_point2=ita = (ita + equal(it,0))*above(sample,0);
 wave_0_per_point3=
@@ -203,12 +203,12 @@ shapecode_0_border_r=1.000
 shapecode_0_border_g=1.000
 shapecode_0_border_b=1.000
 shapecode_0_border_a=0.000
-shape_0_per_frame1=x = rand(1000)/1000;
-shape_0_per_frame2=y = rand(1000)/1000;
+shape_0_per_frame1=x = int(rand(1000))/1000;
+shape_0_per_frame2=y = int(rand(1000))/1000;
 shape_0_per_frame3=
-shape_0_per_frame4=r = rand(1200)/1000;
-shape_0_per_frame5=g = rand(1200)/1000;
-shape_0_per_frame6=b = rand(1200)/1000;
+shape_0_per_frame4=r = int(rand(1200))/1000;
+shape_0_per_frame5=g = int(rand(1200))/1000;
+shape_0_per_frame6=b = int(rand(1200))/1000;
 shape_0_per_frame7=
 shape_0_per_frame8=r2 = r;
 shape_0_per_frame9=g2 = g;
@@ -299,10 +299,10 @@ per_frame_6=res = beat*(vol + m*0.1) + (1-beat)*(res -  (0.1+diff*0.02)*60/fps);
 per_frame_7=res = max(0,res);
 per_frame_8=
 per_frame_9=
-per_frame_10=d_x = if(beat, (rand(2000)-1000)*0.001 , d_x);
-per_frame_11=d_y = if(beat, (rand(2000)-1000)*0.001 , d_y);
-per_frame_12=r = if(beat, (rand(2000)-1000)*0.001 , r);
-per_frame_13=z = if(beat, rand(1000)*0.001 , z);
+per_frame_10=d_x = if(beat, (int(rand(2000))-1000)*0.001 , d_x);
+per_frame_11=d_y = if(beat, (int(rand(2000))-1000)*0.001 , d_y);
+per_frame_12=r = if(beat, (int(rand(2000))-1000)*0.001 , r);
+per_frame_13=z = if(beat, int(rand(1000))*0.001 , z);
 per_frame_14=zoom = 1.01 + z*0.03;
 per_frame_15=rot = r*0.04;
 per_frame_16=dx = d_x*0.01;
@@ -311,9 +311,9 @@ per_frame_18=
 per_frame_19=wave_a = beat;
 per_frame_20=
 per_frame_21=// nice random hue-fade
-per_frame_22=rr = rr + (rand(100)-50)/1000;
-per_frame_23=gg = gg + (rand(100)-50)/1000;
-per_frame_24=bb = bb + (rand(100)-50)/1000;
+per_frame_22=rr = rr + (int(rand(100))-50)/1000;
+per_frame_23=gg = gg + (int(rand(100))-50)/1000;
+per_frame_24=bb = bb + (int(rand(100))-50)/1000;
 per_frame_25=rr = max(0, min( 1, rr));
 per_frame_26=gg = max(0, min( 1, gg));
 per_frame_27=bb = max(0, min( 1, bb));

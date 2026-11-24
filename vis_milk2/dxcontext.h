@@ -80,8 +80,10 @@ public:
 
     void SaveWindow();
     HWND GetHwnd();
+    void SetHwnd(HWND hwnd) { m_hwnd = hwnd; }
     bool OnUserResizeWindow(RECT* w, RECT* c);
     bool TempIgnoreDestroyMessages();
+    void FlushGPU();
 
     // PUBLIC DATA - DO NOT WRITE TO THESE FROM OUTSIDE THE CLASS
     int m_ready;

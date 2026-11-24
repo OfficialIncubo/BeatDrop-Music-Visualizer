@@ -1,3 +1,4 @@
+#include <cmath>
 /*
   LICENSE
   -------
@@ -134,25 +135,849 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
             -http://www.experts-exchange.com/Programming/Programming_Platforms/Win_Prog/Q_20096218.html
 */
 #include "pluginshell.h"
+#include "unicode_text.h"
 #include "utility.h"
 #include "defines.h"
 #include "shell_defines.h"
 #include "resource.h"
 #include "wasabi.h"
-#include <multimon.h>
+#include <WinUser.h>
+#include "Milkdrop2PcmVisualizer.h"
 #include "AutoCharFn.h"
 #include <mmsystem.h>
 #include "plugin.h"
+#include "../audio/audiobuf.h"
 #include <shellapi.h>
+#include <commctrl.h>
 #pragma comment(lib,"winmm.lib")    // for timeGetTime
 
+extern CPlugin g_plugin;
+extern HWND g_hWorkerW;
+static UINT WM_TASKBARCREATED = 0;
+#define TIMER_DESKTOP_REFRESH 1024
+#define TIMER_DESKTOP_WATCHDOG 1025
+
+static bool IsDesktopModeAttached(HWND hwnd)
+{
+	return IsWindow(hwnd) && g_hWorkerW && IsWindow(g_hWorkerW) &&
+		GetParent(hwnd) == g_hWorkerW;
+}
+
+static bool IsDesktopSettingChange(WPARAM wParam, LPARAM lParam)
+{
+	if (wParam == SPI_SETDESKWALLPAPER || wParam == SPI_SETWORKAREA)
+		return true;
+
+	if (!lParam)
+		return false;
+
+	const wchar_t* area = reinterpret_cast<const wchar_t*>(lParam);
+	return _wcsicmp(area, L"Desktop") == 0 ||
+		_wcsicmp(area, L"Control Panel\\Desktop") == 0;
+}
+
+static void StopDesktopModeTimers(HWND hwnd)
+{
+	KillTimer(hwnd, TIMER_DESKTOP_REFRESH);
+	KillTimer(hwnd, TIMER_DESKTOP_WATCHDOG);
+}
+
+// Show/Hide Render Window Initializations
 NOTIFYICONDATA nid = {};
 bool renderWindowHidden = false;
 HWND g_hWnd = NULL;
+bool trayIconRegistered = false;
+bool desktopModeHotkeyRegistered = false;
+// Keep the HWND that owns the shell entry separately from nid.hWnd. During
+// desktop recovery the renderer HWND can be replaced before the old entry is
+// deleted, which otherwise leaves duplicate notification icons behind.
+static HWND trayIconOwnerHwnd = NULL;
+
+void UpdateTrayIconForHiddenWindow();
+void UpdateTrayIconForShownWindow();
+void UpdateTrayIconForDesktopMode();
+
+static void HandleCtrlW(HWND hwnd)
+{
+	if (g_plugin.m_bDesktopMode)
+		return;
+
+	if (!IsWindowVisible(hwnd))
+	{
+		RestoreRenderWindowIcon(hwnd);
+		UpdateTrayIconForShownWindow();
+		SetForegroundWindow(hwnd);
+		SetFocus(hwnd);
+	}
+	else
+	{
+		ShowWindow(hwnd, SW_HIDE);
+		UpdateTrayIconForHiddenWindow();
+	}
+}
+
+static void HandleShiftW(HWND hwnd)
+{
+	if (!IsWindowVisible(hwnd))
+	{
+		if (g_plugin.m_bDesktopMode)
+		{
+			ShowWindow(hwnd, SW_SHOW);
+			UpdateTrayIconForDesktopMode();
+		}
+		else
+		{
+			RestoreRenderWindowIcon(hwnd);
+			UpdateTrayIconForShownWindow();
+		}
+	}
+	g_plugin.m_mouseDown = 0;
+	g_plugin.ToggleDesktopMode(hwnd);
+	if (g_plugin.m_bDesktopMode)
+		g_plugin.StartDesktopModeRecoveryTimers(hwnd);
+	else
+		StopDesktopModeTimers(hwnd);
+}
+
+static const UINT WM_TRAY_MENU_COMMAND = WM_APP + 10;
+static volatile LONG trayMenuOpen = 0;
+
+static void EnsureTrayIconRegistered()
+{
+	if (!nid.hWnd || !IsWindow(nid.hWnd))
+		return;
+
+	if (trayIconOwnerHwnd && trayIconOwnerHwnd != nid.hWnd)
+	{
+		NOTIFYICONDATA oldNid = nid;
+		oldNid.hWnd = trayIconOwnerHwnd;
+		Shell_NotifyIcon(NIM_DELETE, &oldNid);
+		trayIconOwnerHwnd = NULL;
+		trayIconRegistered = false;
+	}
+
+	if (!trayIconRegistered)
+	{
+		// Explorer may still be rebuilding the notification area after a restart.
+		// Keep the registration state so the desktop watchdog can retry safely.
+		Shell_NotifyIcon(NIM_DELETE, &nid);
+		trayIconRegistered = Shell_NotifyIcon(NIM_ADD, &nid) != FALSE;
+		if (trayIconRegistered)
+			trayIconOwnerHwnd = nid.hWnd;
+	}
+	else if (!Shell_NotifyIcon(NIM_MODIFY, &nid))
+	{
+		// The shell can forget an icon without destroying our window.
+		trayIconRegistered = false;
+		EnsureTrayIconRegistered();
+	}
+}
+
+enum TrayMenuCommand
+{
+	TRAY_MENU_SHOW_WINDOW = 2000,
+	TRAY_MENU_ENABLE_LYRICS,
+	TRAY_MENU_OPEN_LYRICS_EDITOR,
+	TRAY_MENU_SPOUT,
+	TRAY_MENU_LOCK_PRESET,
+	TRAY_MENU_AUTO_LOCK_SILENCE,
+	TRAY_MENU_ORDER,
+	TRAY_MENU_NEXT_PRESET,
+	TRAY_MENU_NEXT_PRESET_SOFTCUT,
+	TRAY_MENU_PREVIOUS_PRESET,
+	TRAY_MENU_RELOAD_PRESET,
+	TRAY_MENU_RESET_TIME,
+	TRAY_MENU_FREEZE_BEAT,
+	TRAY_MENU_AUDIO_DEVICE,
+	TRAY_MENU_SCREENSHOT,
+	TRAY_MENU_PLAY,
+	TRAY_MENU_PAUSE,
+	TRAY_MENU_STOP,
+	TRAY_MENU_PREVIOUS_TRACK,
+	TRAY_MENU_NEXT_TRACK,
+	TRAY_MENU_SEEK_LEFT,
+	TRAY_MENU_SEEK_RIGHT,
+	TRAY_MENU_FULLSCREEN,
+	TRAY_MENU_MONITOR_STRETCH,
+	TRAY_MENU_BORDERLESS,
+	TRAY_MENU_HIDE_WINDOW,
+	TRAY_MENU_DESKTOP_MODE,
+	TRAY_MENU_ALWAYS_ON_TOP,
+	TRAY_MENU_TRANSPARENCY,
+	TRAY_MENU_EXIT,
+	TRAY_MENU_AUDIO_SENSITIVITY_BASE = 2100,
+	TRAY_MENU_FPS_BASE = 2200,
+	TRAY_MENU_TRANSITION_BASE = 2600,
+	TRAY_MENU_HARDCUT_BASE = 2700,
+    TRAY_MENU_WEBCAM_MODE_BASE = 2800,
+    TRAY_MENU_WEBCAM_OPACITIES = 2810,
+    TRAY_MENU_WEBCAM_SET_OPACITY_BASE = 2820,
+    TRAY_MENU_WEBCAM_SELECT = 2830,
+    TRAY_MENU_HDR = 2840,
+    TRAY_MENU_HDR_CALIBRATION = 2841,
+    TRAY_MENU_WEBCAM_DEVICE_BASE = 10000
+};
+
+static void ToggleTraySpout()
+{
+	g_plugin.bSpoutChanged = true;
+	g_plugin.bSpoutOut = !g_plugin.bSpoutOut;
+	if (g_plugin.bInitialized)
+	{
+		g_plugin.spoutsender.ReleaseDX9sender();
+		g_plugin.bInitialized = false;
+	}
+}
+
+static void ExecuteTrayMenuCommand(HWND hwnd, UINT command, LPARAM value = 0);
+
+struct ContextMenuRequest
+{
+    HWND hwnd;
+    bool visualWindowMenu;
+    BeatDropWebcam::Mode webcamMode;
+    bool hdrActive;
+    std::wstring selectedCamera;
+    unsigned long long cameraSelection;
+};
+
+static constexpr int WebcamOpacityResolution = 1000;
+// Owned and accessed only by the renderer/UI thread, independently of popup menus.
+static HWND webcamOpacityWindow = nullptr;
+static bool updatingWebcamOpacityControls = false;
+
+static INT_PTR CALLBACK WebcamOpacityDialogProc(HWND dialog, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    if (message == WM_INITDIALOG)
+    {
+        // CreateDialogParam sends WM_INITDIALOG synchronously; the initial
+        // values only need to remain alive until window creation returns.
+        const auto* opacity = reinterpret_cast<const float*>(lParam);
+        updatingWebcamOpacityControls = true;
+        for (int i = 0; i < 3; ++i)
+        {
+            const HWND slider = GetDlgItem(dialog, IDC_WEBCAM_DEEP_SLIDER + i);
+            SendMessageW(slider, TBM_SETRANGE, TRUE, MAKELPARAM(0, WebcamOpacityResolution));
+            SendMessageW(slider, TBM_SETPOS, TRUE, static_cast<int>(opacity[i] * WebcamOpacityResolution + 0.5f));
+            SendMessageW(slider, TBM_SETPAGESIZE, 0, WebcamOpacityResolution / 20);
+            wchar_t label[32];
+            swprintf_s(label, L"%.3f", opacity[i]);
+            SetDlgItemTextW(dialog, IDC_WEBCAM_DEEP_VALUE + i, label);
+        }
+        const HICON icon = LoadIconW(GetModuleHandleW(nullptr), MAKEINTRESOURCEW(IDI_PLUGIN_ICON));
+        SendMessageW(dialog, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(icon));
+        SendMessageW(dialog, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(icon));
+        updatingWebcamOpacityControls = false;
+        SetFocus(GetDlgItem(dialog, IDC_WEBCAM_DEEP_SLIDER));
+        return FALSE;
+    }
+    if (message == WM_COMMAND && !updatingWebcamOpacityControls &&
+        LOWORD(wParam) >= IDC_WEBCAM_DEEP_VALUE && LOWORD(wParam) <= IDC_WEBCAM_TOP_VALUE)
+    {
+        int index=LOWORD(wParam)-IDC_WEBCAM_DEEP_VALUE;
+        HWND slider=GetDlgItem(dialog,IDC_WEBCAM_DEEP_SLIDER+index);
+        wchar_t text[64],*end=nullptr;GetDlgItemTextW(dialog,LOWORD(wParam),text,64);
+        float value=wcstof(text,&end);while(end && (*end==L' '||*end==L'\t'))++end;
+        bool valid=end!=text && end && !*end && std::isfinite(value) && value>=0 && value<=1;
+        if(HIWORD(wParam)==EN_CHANGE && valid) {
+            int position=static_cast<int>(value*WebcamOpacityResolution+.5f);
+            SendMessageW(slider,TBM_SETPOS,TRUE,position);
+            PostMessageW(g_hWnd,WM_TRAY_MENU_COMMAND,TRAY_MENU_WEBCAM_SET_OPACITY_BASE+index,position);
+        }
+        if(HIWORD(wParam)==EN_KILLFOCUS) {
+            // Keep incomplete/invalid typing harmless and restore the last
+            // accepted value when leaving the box. Match slider precision.
+            int position=static_cast<int>(SendMessageW(slider,TBM_GETPOS,0,0));
+            swprintf_s(text,L"%.3f",position/static_cast<float>(WebcamOpacityResolution));
+            updatingWebcamOpacityControls=true;SetDlgItemTextW(dialog,LOWORD(wParam),text);updatingWebcamOpacityControls=false;
+        }
+        return TRUE;
+    }
+    if (message == WM_COMMAND && HIWORD(wParam) == BN_CLICKED &&
+        LOWORD(wParam) >= IDC_WEBCAM_DEEP_RESET && LOWORD(wParam) <= IDC_WEBCAM_TOP_RESET)
+    {
+        const int index = LOWORD(wParam) - IDC_WEBCAM_DEEP_RESET;
+        const HWND slider = GetDlgItem(dialog, IDC_WEBCAM_DEEP_SLIDER + index);
+        SendMessageW(slider, TBM_SETPOS, TRUE, WebcamOpacityResolution / 2);
+        // Programmatic slider changes do not send WM_HSCROLL themselves.
+        // Reuse the live-preview handler to update the label and renderer.
+        SendMessageW(dialog, WM_HSCROLL, TB_THUMBPOSITION, reinterpret_cast<LPARAM>(slider));
+        return TRUE;
+    }
+    if (message == WM_HSCROLL)
+    {
+        const int index = GetDlgCtrlID(reinterpret_cast<HWND>(lParam)) - IDC_WEBCAM_DEEP_SLIDER;
+        if (index >= 0 && index < 3)
+        {
+            const int position = static_cast<int>(SendMessageW(reinterpret_cast<HWND>(lParam), TBM_GETPOS, 0, 0));
+            wchar_t label[32];
+            swprintf_s(label, L"%.3f", position / static_cast<float>(WebcamOpacityResolution));
+            updatingWebcamOpacityControls = true;
+            SetDlgItemTextW(dialog, IDC_WEBCAM_DEEP_VALUE + index, label);
+            updatingWebcamOpacityControls = false;
+            PostMessageW(g_hWnd, WM_TRAY_MENU_COMMAND, TRAY_MENU_WEBCAM_SET_OPACITY_BASE + index, position);
+        }
+        return TRUE;
+    }
+    if (message == WM_CLOSE || (message == WM_COMMAND && (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)))
+    {
+        DestroyWindow(dialog);
+        return TRUE;
+    }
+    if (message == WM_NCDESTROY && webcamOpacityWindow == dialog)
+        webcamOpacityWindow = nullptr;
+    return FALSE;
+}
+
+static HWND hdrCalibrationWindow = nullptr;
+struct HdrControlRange { float minimum, maximum, scale; };
+static const HdrControlRange hdrControlRanges[] = {
+    {0,1000,1}, {0,10000,1}, {0,4,1000}, {.25f,4,1000}, {.1f,4,1000}, {.1f,4,1000}
+};
+static bool ReadHdrControl(HWND dialog,int index,float& value) {
+    wchar_t text[64],*end=nullptr;GetDlgItemTextW(dialog,IDC_HDR_VALUE_BASE+index,text,64);
+    value=wcstof(text,&end);while(end && (*end==L' '||*end==L'\t'))++end;
+    const auto& range=hdrControlRanges[index];
+    return end!=text && end && !*end && std::isfinite(value) && value>=range.minimum && value<=range.maximum;
+}
+
+static bool populatingHdrControls=false;
+static void PreviewHdrControl(HWND dialog,int index,float value) {
+    HdrSettings next=g_plugin.m_hdr.settings;
+    float* fields[]={&next.paperWhite,&next.peak,&next.highlights,&next.compression,&next.titleBrightness,&next.lyricsBrightness};
+    *fields[index]=value;
+    if(index<2) {
+        float paired;
+        if(ReadHdrControl(dialog,1-index,paired))*fields[1-index]=paired;
+        if(next.paperWhite>0 && next.peak>0 && next.peak<next.paperWhite)return;
+    }
+    g_plugin.m_hdr.settings=next;
+}
+static void PopulateHdrCalibration(HWND dialog, const HdrSettings& values) {
+    populatingHdrControls=true;
+    const float numbers[]={values.paperWhite,values.peak,values.highlights,values.compression,values.titleBrightness,values.lyricsBrightness};
+    for (int i=0;i<6;++i) { wchar_t text[32];swprintf_s(text,L"%.3f",numbers[i]);SetDlgItemTextW(dialog,IDC_HDR_VALUE_BASE+i,text); }
+    populatingHdrControls=false;
+}
+static INT_PTR CALLBACK HdrCalibrationProc(HWND dialog,UINT message,WPARAM wParam,LPARAM lParam) {
+    if(message==WM_INITDIALOG) {
+        for(int i=0;i<6;++i) {
+            const auto& range=hdrControlRanges[i];HWND slider=GetDlgItem(dialog,IDC_HDR_SLIDER_BASE+i);
+            SendMessageW(slider,TBM_SETRANGEMIN,FALSE,static_cast<int>(range.minimum*range.scale));
+            SendMessageW(slider,TBM_SETRANGEMAX,TRUE,static_cast<int>(range.maximum*range.scale));
+            SendMessageW(slider,TBM_SETPAGESIZE,0,static_cast<int>((range.maximum-range.minimum)*range.scale/20));
+        }
+        PopulateHdrCalibration(dialog,g_plugin.m_hdr.settings);
+        HICON icon=LoadIconW(GetModuleHandleW(nullptr),MAKEINTRESOURCEW(IDI_PLUGIN_ICON));
+        SendMessageW(dialog,WM_SETICON,ICON_SMALL,reinterpret_cast<LPARAM>(icon));
+        SendMessageW(dialog,WM_SETICON,ICON_BIG,reinterpret_cast<LPARAM>(icon));
+        return TRUE;
+    }
+    if(message==WM_COMMAND && HIWORD(wParam)==EN_CHANGE) {
+        int index=LOWORD(wParam)-IDC_HDR_VALUE_BASE;float value;
+        if(index>=0 && index<6 && ReadHdrControl(dialog,index,value)) {
+            SendDlgItemMessageW(dialog,IDC_HDR_SLIDER_BASE+index,TBM_SETPOS,TRUE,static_cast<int>(value*hdrControlRanges[index].scale+.5f));
+            if(!populatingHdrControls)PreviewHdrControl(dialog,index,value);
+        }
+        return TRUE;
+    }
+    if(message==WM_HSCROLL && lParam) {
+        int index=GetDlgCtrlID(reinterpret_cast<HWND>(lParam))-IDC_HDR_SLIDER_BASE;
+        if(index>=0 && index<6) {
+            float value=static_cast<float>(SendMessageW(reinterpret_cast<HWND>(lParam),TBM_GETPOS,0,0))/hdrControlRanges[index].scale;
+            wchar_t text[32];swprintf_s(text,L"%.3f",value);SetDlgItemTextW(dialog,IDC_HDR_VALUE_BASE+index,text);
+        }
+        return TRUE;
+    }
+    if(message==WM_COMMAND && LOWORD(wParam)==IDC_HDR_RESET) {
+        g_plugin.m_hdr.settings=HdrSettings{};PopulateHdrCalibration(dialog,g_plugin.m_hdr.settings);
+        g_plugin.SaveHdrSettings();return TRUE;
+    }
+    if(message==WM_COMMAND && LOWORD(wParam)==IDC_HDR_APPLY) {
+        float values[6];
+        for(int i=0;i<6;++i) {
+            if(!ReadHdrControl(dialog,i,values[i])) {
+                MessageBoxW(dialog,L"Enter a finite number within the indicated range. Reference white accepts 0 to 1000 nits; display peak accepts 0 to 10000 nits.",L"HDR calibration",MB_OK|MB_ICONINFORMATION);
+                SetFocus(GetDlgItem(dialog,IDC_HDR_VALUE_BASE+i));return TRUE;
+            }
+        }
+        if(values[0]>0 && values[1]>0 && values[1]<values[0]) {
+            MessageBoxW(dialog,L"Display peak must be at least the reference-white brightness.",L"HDR calibration",MB_OK|MB_ICONINFORMATION);return TRUE;
+        }
+        HdrSettings next;next.paperWhite=values[0];next.peak=values[1];next.highlights=values[2];next.compression=values[3];next.titleBrightness=values[4];next.lyricsBrightness=values[5];
+        g_plugin.m_hdr.settings=next;g_plugin.SaveHdrSettings();return TRUE;
+    }
+    if(message==WM_CLOSE || (message==WM_COMMAND && LOWORD(wParam)==IDCANCEL)) {g_plugin.SaveHdrSettings();DestroyWindow(dialog);return TRUE;}
+    if(message==WM_NCDESTROY && hdrCalibrationWindow==dialog)hdrCalibrationWindow=nullptr;
+    return FALSE;
+}
+static void ShowHdrCalibration() {
+    INITCOMMONCONTROLSEX controls={sizeof(controls),ICC_BAR_CLASSES};
+    if(!InitCommonControlsEx(&controls))return;
+    if(!hdrCalibrationWindow)hdrCalibrationWindow=CreateDialogParamW(GetModuleHandleW(nullptr),MAKEINTRESOURCEW(IDD_HDR_CALIBRATION),nullptr,HdrCalibrationProc,0);
+    if(hdrCalibrationWindow) {
+        ShowWindow(hdrCalibrationWindow,SW_SHOWNORMAL);
+        SetWindowPos(hdrCalibrationWindow,HWND_TOP,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_SHOWWINDOW);
+        SetForegroundWindow(hdrCalibrationWindow);SetActiveWindow(hdrCalibrationWindow);
+        SetFocus(GetDlgItem(hdrCalibrationWindow,IDC_HDR_VALUE_BASE));
+    }
+}
+
+bool HandleWebcamOpacityDialogMessage(MSG* message)
+{
+    return (hdrCalibrationWindow && IsDialogMessageW(hdrCalibrationWindow,message)) ||
+        (webcamOpacityWindow && IsDialogMessageW(webcamOpacityWindow, message));
+}
+
+void CloseWebcamOpacityDialog()
+{
+    if (webcamOpacityWindow) DestroyWindow(webcamOpacityWindow);
+    if (hdrCalibrationWindow) DestroyWindow(hdrCalibrationWindow);
+}
+
+static void ShowWebcamOpacityDialog()
+{
+    if (!webcamOpacityWindow)
+    {
+        INITCOMMONCONTROLSEX controls = { sizeof(controls), ICC_BAR_CLASSES };
+        if (!InitCommonControlsEx(&controls)) return;
+        const float opacity[] = { g_plugin.m_fWebcamDeepOpacity,
+            g_plugin.m_fWebcamBurnOpacity, g_plugin.m_fWebcamTopOpacity };
+        webcamOpacityWindow = CreateDialogParamW(GetModuleHandleW(nullptr),
+            MAKEINTRESOURCEW(IDD_WEBCAM_OPACITY), nullptr, WebcamOpacityDialogProc,
+            reinterpret_cast<LPARAM>(opacity));
+    }
+    if (webcamOpacityWindow)
+    {
+        ShowWindow(webcamOpacityWindow, SW_SHOWNORMAL);
+        // Raise within the normal window band; never enable WS_EX_TOPMOST.
+        SetWindowPos(webcamOpacityWindow, HWND_TOP, 0, 0, 0, 0,
+            SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+        SetForegroundWindow(webcamOpacityWindow);
+        SetActiveWindow(webcamOpacityWindow);
+        SetFocus(GetDlgItem(webcamOpacityWindow, IDC_WEBCAM_DEEP_SLIDER));
+    }
+}
+
+static void ShowTrayContextMenu(const ContextMenuRequest& request)
+{
+    const HWND hwnd = request.hwnd;
+    const bool visualWindowMenu = request.visualWindowMenu;
+	HMENU menu = CreatePopupMenu();
+	HMENU sensitivityMenu = CreatePopupMenu();
+	HMENU fpsMenu = CreatePopupMenu();
+	HMENU transitionMenu = CreatePopupMenu();
+	HMENU hardcutMenu = CreatePopupMenu();
+	if (!menu || !sensitivityMenu || !fpsMenu || !transitionMenu || !hardcutMenu)
+	{
+		if (menu) DestroyMenu(menu);
+		if (sensitivityMenu) DestroyMenu(sensitivityMenu);
+		if (fpsMenu) DestroyMenu(fpsMenu);
+		if (transitionMenu) DestroyMenu(transitionMenu);
+		if (hardcutMenu) DestroyMenu(hardcutMenu);
+		return;
+	}
+
+	const bool desktopMode = g_plugin.m_bDesktopMode || IsDesktopModeAttached(hwnd);
+	if (renderWindowHidden || desktopMode)
+	{
+		const wchar_t* showText = renderWindowHidden
+			? L"Show visual window"
+			: L"Switch to normal visual window";
+		AppendMenuW(menu, MF_STRING, TRAY_MENU_SHOW_WINDOW, showText);
+	}
+	if (visualWindowMenu || desktopMode)
+	{
+		AppendMenuW(menu, MF_STRING | (fullscreen ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_FULLSCREEN, L"Full-screen mode");
+		AppendMenuW(menu, MF_STRING | (stretch ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_MONITOR_STRETCH, L"Monitor stretch mode");
+	}
+	if (visualWindowMenu)
+	{
+		UINT borderlessFlags = MF_STRING | (borderless ? MF_CHECKED : MF_UNCHECKED);
+		if (fullscreen || stretch || desktopMode)
+			borderlessFlags |= MF_GRAYED;
+		AppendMenuW(menu, borderlessFlags, TRAY_MENU_BORDERLESS, L"Borderless mode");
+		AppendMenuW(menu, MF_STRING, TRAY_MENU_HIDE_WINDOW, L"Hide visual window");
+		AppendMenuW(menu, MF_STRING | (desktopMode ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_DESKTOP_MODE, L"Desktop mode");
+		AppendMenuW(menu, MF_STRING | (g_plugin.m_bAlwaysOnTop ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_ALWAYS_ON_TOP, L"Always on top");
+		AppendMenuW(menu, MF_STRING | (g_plugin.TranspaMode ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_TRANSPARENCY, L"Transparency mode");
+	}
+	AppendMenuW(menu, MF_SEPARATOR, 0, NULL);
+    std::vector<BeatDropWebcam::Device> cameras;
+    const HRESULT cameraStatus = BeatDropWebcam::ListDevices(cameras);
+    HMENU cameraMenu = CreatePopupMenu();
+    HMENU webcamModeMenu = CreatePopupMenu();
+    if (!cameraMenu || !webcamModeMenu)
+    {
+        if (cameraMenu) DestroyMenu(cameraMenu);
+        if (webcamModeMenu) DestroyMenu(webcamModeMenu);
+        DestroyMenu(menu);
+        DestroyMenu(sensitivityMenu);
+        DestroyMenu(fpsMenu);
+        DestroyMenu(transitionMenu);
+        DestroyMenu(hardcutMenu);
+        return;
+    }
+    if (FAILED(cameraStatus) || cameras.empty())
+        AppendMenuW(cameraMenu, MF_STRING | MF_GRAYED, 0,
+            FAILED(cameraStatus) ? L"Unable to list cameras" : L"No cameras found");
+    for (size_t i = 0; i < cameras.size(); ++i)
+    {
+        const bool selected = request.selectedCamera.empty()
+            ? request.cameraSelection % cameras.size() == i : request.selectedCamera == cameras[i].id;
+        // Escape ampersands so the complete device name is shown literally.
+        std::wstring label;
+        for (wchar_t ch : cameras[i].name) { label += ch; if (ch == L'&') label += ch; }
+        AppendMenuW(cameraMenu, MF_STRING | (selected ? MF_CHECKED : 0),
+            TRAY_MENU_WEBCAM_DEVICE_BASE + i, label.c_str());
+    }
+    const wchar_t* webcamModes[] = { L"Disabled", L"Deep (no burn)", L"Deep (with burn)", L"Top" };
+    const int modeOrder[] = { BeatDropWebcam::Deep, BeatDropWebcam::DeepBurn, BeatDropWebcam::Top, BeatDropWebcam::Off };
+    for (int mode : modeOrder)
+        AppendMenuW(webcamModeMenu, MF_STRING | (request.webcamMode == mode ? MF_CHECKED : 0),
+            TRAY_MENU_WEBCAM_MODE_BASE + mode, webcamModes[mode]);
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(cameraMenu), L"Webcam/camera devices");
+    AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(webcamModeMenu), L"Webcam modes (layers)");
+    AppendMenuW(menu, MF_STRING, TRAY_MENU_WEBCAM_OPACITIES, L"Webcam mode opacities...");
+    AppendMenuW(menu, MF_SEPARATOR, 0, nullptr);
+
+	AppendMenuW(menu, MF_STRING | (g_plugin.m_bEnableLyrics ? MF_CHECKED : MF_UNCHECKED),
+		TRAY_MENU_ENABLE_LYRICS, L"Enable lyrics");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_OPEN_LYRICS_EDITOR,
+		L"Open lyrics editor");
+    AppendMenuW(menu, MF_STRING | (request.hdrActive ? MF_CHECKED : MF_UNCHECKED),
+        TRAY_MENU_HDR, L"HDR output");
+    AppendMenuW(menu, MF_STRING, TRAY_MENU_HDR_CALIBRATION, L"HDR calibration...");
+	AppendMenuW(menu, MF_STRING | (g_plugin.bSpoutOut ? MF_CHECKED : MF_UNCHECKED),
+		TRAY_MENU_SPOUT, L"Spout output");
+
+	for (int value = 0; value <= 25; ++value)
+	{
+		wchar_t text[32];
+		swprintf_s(text, L"%d", value);
+		AppendMenuW(sensitivityMenu,
+			MF_STRING | (static_cast<int>(g_plugin.m_nAudioSensitivity + 0.5f) == value ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_AUDIO_SENSITIVITY_BASE + value, text);
+	}
+	AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(sensitivityMenu), L"Audio sensitivity");
+
+	const int fpsValues[] = { 0, 24, 30, 50, 60, 90, 120, 144, 180, 200, 240, 360 };
+	for (int value : fpsValues)
+	{
+		wchar_t text[32];
+		swprintf_s(text, value == 0 ? L"Unlimited (0)" : L"%d FPS", value);
+		AppendMenuW(fpsMenu,
+			MF_STRING | (g_plugin.GetMaxFPS() == value ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_FPS_BASE + value, text);
+	}
+	AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(fpsMenu), L"FPS limit");
+
+	const wchar_t* transitionNames[] = {
+		L"Random", L"Fade", L"Directional Wipe", L"Plasma", L"Radial",
+		L"Clock", L"Spiral/Snail", L"Rhombus/Diamond", L"Nuclear Clock",
+		L"Square/Diamond", L"Checkerboard Wipe", L"Curtain", L"Bubble",
+		L"Kaleidoscope", L"Moebius Strip", L"Star", L"Disco Floor",
+		L"Fire/Flame", L"Whirlpool Drain", L"Julia Fractal"
+	};
+	for (int value = -1; value <= 18; ++value)
+	{
+		const int nameIndex = value + 1;
+		AppendMenuW(transitionMenu,
+			MF_STRING | (g_plugin.m_nTransitionBlendPattern == value ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_TRANSITION_BASE + nameIndex, transitionNames[nameIndex]);
+	}
+	AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(transitionMenu), L"Transition pattern");
+
+	const wchar_t* hardcutNames[] = {
+		L"OFF", L"Normal", L"Bass Blend", L"Bass", L"Middle", L"Treble",
+		L"Bass Fast Blend", L"Treble Fast Blend", L"Bass Blend and Hardcut Treble",
+		L"Rhythmic Hardcut", L"2 beats", L"4 beats", L"Kinetronix (Vizikord)"
+	};
+	for (int mode = 0; mode <= 12; ++mode)
+	{
+		AppendMenuW(hardcutMenu,
+			MF_STRING | (HardcutMode == mode ? MF_CHECKED : MF_UNCHECKED),
+			TRAY_MENU_HARDCUT_BASE + mode, hardcutNames[mode]);
+	}
+	AppendMenuW(menu, MF_POPUP, reinterpret_cast<UINT_PTR>(hardcutMenu), L"Hardcut mode");
+
+	AppendMenuW(menu, MF_STRING | (g_plugin.m_bPresetLockedByUser ? MF_CHECKED : MF_UNCHECKED),
+		TRAY_MENU_LOCK_PRESET, L"Lock current preset");
+	AppendMenuW(menu, MF_STRING | (g_plugin.m_bAutoLockPresetWhenNoMusic ? MF_CHECKED : MF_UNCHECKED),
+		TRAY_MENU_AUTO_LOCK_SILENCE, L"Auto lock preset when no music/silence");
+	AppendMenuW(menu, MF_STRING | (!g_plugin.m_bSequentialPresetOrder ? MF_CHECKED : MF_UNCHECKED),
+		TRAY_MENU_ORDER, L"Random preset order");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_NEXT_PRESET, L"Next preset");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_NEXT_PRESET_SOFTCUT, L"Next preset (Softcut)");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_PREVIOUS_PRESET, L"Previous preset");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_RELOAD_PRESET, L"Reload preset");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_RESET_TIME, L"Reset time variable");
+	AppendMenuW(menu, MF_STRING | (g_plugin.m_bFreezeBeatDetection ? MF_CHECKED : MF_UNCHECKED),
+		TRAY_MENU_FREEZE_BEAT, L"Freeze beat detection");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_AUDIO_DEVICE,
+		g_plugin.m_bCaptureMic ? L"Switch to speaker device" : L"Switch to microphone device");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_SCREENSHOT, L"Save screenshot");
+	AppendMenuW(menu, MF_SEPARATOR, 0, NULL);
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_PLAY, L"Play");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_PAUSE, L"Pause");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_STOP, L"Stop");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_PREVIOUS_TRACK, L"Previous track");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_NEXT_TRACK, L"Next track");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_SEEK_LEFT, L"Seek left");
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_SEEK_RIGHT, L"Seek right");
+	AppendMenuW(menu, MF_SEPARATOR, 0, NULL);
+	AppendMenuW(menu, MF_STRING, TRAY_MENU_EXIT, L"Exit");
+
+	POINT point;
+	GetCursorPos(&point);
+	// TrackPopupMenu must be owned by a window on this menu thread.  Using the
+	// renderer window here makes the popup close immediately on some Windows versions.
+	HWND menuOwner = CreateWindowExW(WS_EX_TOOLWINDOW, L"STATIC", L"",
+		WS_POPUP, point.x, point.y, 1, 1, NULL, NULL, GetModuleHandle(NULL), NULL);
+	if (menuOwner)
+	{
+		ShowWindow(menuOwner, SW_SHOWNOACTIVATE);
+		SetForegroundWindow(menuOwner);
+	}
+	const UINT command = TrackPopupMenu(menu,
+		TPM_RETURNCMD | TPM_NONOTIFY | TPM_RIGHTBUTTON,
+		point.x, point.y, 0, menuOwner, NULL);
+
+    // Finish the popup owner's activation/teardown before dispatching an
+    // action that opens a window on the renderer thread.
+    if (menuOwner) DestroyWindow(menuOwner);
+
+    if (command >= TRAY_MENU_WEBCAM_DEVICE_BASE &&
+        command - TRAY_MENU_WEBCAM_DEVICE_BASE < cameras.size())
+    {
+        const auto& id = cameras[command - TRAY_MENU_WEBCAM_DEVICE_BASE].id;
+        // Synchronous dispatch keeps this borrowed string alive until it is copied.
+        SendMessageW(hwnd, WM_TRAY_MENU_COMMAND, TRAY_MENU_WEBCAM_SELECT, reinterpret_cast<LPARAM>(&id));
+    }
+    else if (command != 0)
+        PostMessageW(hwnd, WM_TRAY_MENU_COMMAND, command, 0);
+
+	DestroyMenu(fpsMenu);
+	DestroyMenu(sensitivityMenu);
+	DestroyMenu(transitionMenu);
+	DestroyMenu(hardcutMenu);
+	DestroyMenu(menu);
+}
+
+static DWORD WINAPI TrayContextMenuThreadProc(void* parameter)
+{
+	ContextMenuRequest* request = static_cast<ContextMenuRequest*>(parameter);
+	ShowTrayContextMenu(*request);
+	delete request;
+	InterlockedExchange(&trayMenuOpen, 0);
+	return 0;
+}
+
+static void BeginContextMenu(HWND hwnd, bool visualWindowMenu)
+{
+	if (InterlockedCompareExchange(&trayMenuOpen, 1, 0) != 0)
+		return;
+
+	ContextMenuRequest* request = new ContextMenuRequest{ hwnd, visualWindowMenu,
+        g_plugin.m_webcam.GetMode(), g_plugin.m_hdr.Active(), g_plugin.m_webcam.SelectedDevice(), g_plugin.m_webcam.CameraSelection() };
+	HANDLE thread = CreateThread(NULL, 0, TrayContextMenuThreadProc, request, 0, NULL);
+	if (thread)
+		CloseHandle(thread);
+	else
+	{
+		delete request;
+		InterlockedExchange(&trayMenuOpen, 0);
+	}
+}
+
+static void BeginTrayContextMenu(HWND hwnd)
+{
+	BeginContextMenu(hwnd, false);
+}
+
+void BeginVisualContextMenu(HWND hwnd)
+{
+	BeginContextMenu(hwnd, true);
+}
+
+static void SendMediaKey(WORD key)
+{
+	keybd_event(static_cast<BYTE>(key), 0, 0, 0);
+	keybd_event(static_cast<BYTE>(key), 0, KEYEVENTF_KEYUP, 0);
+}
+
+static void ExecuteTrayMenuCommand(HWND hwnd, UINT command, LPARAM value)
+{
+    if (command == TRAY_MENU_HDR_CALIBRATION) { ShowHdrCalibration(); return; }
+    if (command == TRAY_MENU_HDR)
+    {
+        g_plugin.ToggleHdr(false);
+        return;
+    }
+
+    if (command == TRAY_MENU_WEBCAM_OPACITIES)
+    {
+        ShowWebcamOpacityDialog();
+        return;
+    }
+    if (command >= TRAY_MENU_WEBCAM_SET_OPACITY_BASE && command < TRAY_MENU_WEBCAM_SET_OPACITY_BASE + 3)
+    {
+        float* opacities[] = { &g_plugin.m_fWebcamDeepOpacity, &g_plugin.m_fWebcamBurnOpacity, &g_plugin.m_fWebcamTopOpacity };
+        if (value >= 0 && value <= WebcamOpacityResolution)
+            *opacities[command - TRAY_MENU_WEBCAM_SET_OPACITY_BASE] = value / static_cast<float>(WebcamOpacityResolution);
+        return; // Keep keyboard focus in the slider dialog during live preview.
+    }
+    if (command == TRAY_MENU_WEBCAM_SELECT && value)
+    {
+        const auto* id = reinterpret_cast<const std::wstring*>(value);
+        g_plugin.m_webcam.SelectCamera(*id, false);
+        return;
+    }
+    if (command >= TRAY_MENU_WEBCAM_MODE_BASE && command <= TRAY_MENU_WEBCAM_MODE_BASE + BeatDropWebcam::Top)
+    {
+        g_plugin.SetWebcamMode(static_cast<BeatDropWebcam::Mode>(command - TRAY_MENU_WEBCAM_MODE_BASE), false);
+        return;
+    }
+	HWND rendererWindow = hwnd;
+
+	if (command == TRAY_MENU_SHOW_WINDOW)
+	{
+		if (renderWindowHidden)
+		{
+			ShowWindow(rendererWindow, SW_SHOW);
+			RestoreRenderWindowIcon(rendererWindow);
+			UpdateTrayIconForShownWindow();
+		}
+		else if (g_plugin.m_bDesktopMode)
+		{
+			g_plugin.m_mouseDown = 0;
+			g_plugin.ToggleDesktopMode(rendererWindow);
+		}
+	}
+	else if (command == TRAY_MENU_ENABLE_LYRICS)
+		g_plugin.ToggleLyrics(false);
+	else if (command == TRAY_MENU_OPEN_LYRICS_EDITOR)
+		g_plugin.OpenLyricsEditor(rendererWindow);
+	else if (command == TRAY_MENU_SPOUT)
+		ToggleTraySpout();
+	else if (command >= TRAY_MENU_AUDIO_SENSITIVITY_BASE && command < TRAY_MENU_AUDIO_SENSITIVITY_BASE + 26)
+	{
+		g_plugin.m_nAudioSensitivity = static_cast<float>(command - TRAY_MENU_AUDIO_SENSITIVITY_BASE);
+		g_fAudioSensitivity = g_plugin.m_nAudioSensitivity;
+	}
+	else if (command >= TRAY_MENU_FPS_BASE && command <= TRAY_MENU_FPS_BASE + 360)
+		g_plugin.SetMaxFPS(command - TRAY_MENU_FPS_BASE);
+	else if (command >= TRAY_MENU_TRANSITION_BASE && command <= TRAY_MENU_TRANSITION_BASE + 19)
+		g_plugin.m_nTransitionBlendPattern = static_cast<int>(command - TRAY_MENU_TRANSITION_BASE) - 1;
+	else if (command >= TRAY_MENU_HARDCUT_BASE && command <= TRAY_MENU_HARDCUT_BASE + 12)
+		g_plugin.SetHardcutMode(static_cast<int>(command - TRAY_MENU_HARDCUT_BASE));
+	else if (command == TRAY_MENU_LOCK_PRESET)
+	{
+		g_plugin.m_bPresetLockedByUser = !g_plugin.m_bPresetLockedByUser;
+	}
+	else if (command == TRAY_MENU_AUTO_LOCK_SILENCE)
+		g_plugin.ToggleAutoLockPresetWhenNoMusic(false);
+	else if (command == TRAY_MENU_ORDER)
+	{
+		g_plugin.m_bSequentialPresetOrder = !g_plugin.m_bSequentialPresetOrder;
+
+		// erase all history, too:
+		g_plugin.m_presetHistory[0] = g_plugin.m_szCurrentPresetFile;
+		g_plugin.m_presetHistoryPos = 0;
+		g_plugin.m_presetHistoryFwdFence = 1;
+		g_plugin.m_presetHistoryBackFence = 0;
+	}
+	else if (command == TRAY_MENU_NEXT_PRESET)
+		g_plugin.NextPreset(0.0f);
+	else if (command == TRAY_MENU_NEXT_PRESET_SOFTCUT)
+		g_plugin.NextPreset(g_plugin.m_fBlendTimeUser);
+	else if (command == TRAY_MENU_PREVIOUS_PRESET)
+		g_plugin.PrevPreset(0.0f);
+	else if (command == TRAY_MENU_RELOAD_PRESET)
+		g_plugin.LoadPreset(g_plugin.m_szCurrentPresetFile, 0.0f);
+	else if (command == TRAY_MENU_RESET_TIME)
+		g_plugin.ResetTimeVariable();
+	else if (command == TRAY_MENU_FREEZE_BEAT)
+		g_plugin.ToggleBeatDetectionFreeze(false);
+	else if (command == TRAY_MENU_AUDIO_DEVICE)
+	{
+		g_plugin.m_bCaptureMic = !g_plugin.m_bCaptureMic;
+		DetectSampleRate();
+	}
+	else if (command == TRAY_MENU_SCREENSHOT)
+		g_plugin.CaptureScreenshot();
+	else if (command == TRAY_MENU_PLAY || command == TRAY_MENU_PAUSE)
+		SendMediaKey(VK_MEDIA_PLAY_PAUSE);
+	else if (command == TRAY_MENU_STOP)
+		SendMediaKey(VK_MEDIA_STOP);
+	else if (command == TRAY_MENU_PREVIOUS_TRACK)
+		SendMediaKey(VK_MEDIA_PREV_TRACK);
+	else if (command == TRAY_MENU_NEXT_TRACK)
+		SendMediaKey(VK_MEDIA_NEXT_TRACK);
+	else if (command == TRAY_MENU_SEEK_LEFT)
+		SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_REWIND));
+	else if (command == TRAY_MENU_SEEK_RIGHT)
+		SendNotifyMessage(HWND_BROADCAST, WM_APPCOMMAND, 0, MAKELPARAM(0, APPCOMMAND_MEDIA_FAST_FORWARD));
+	else if (command == TRAY_MENU_FULLSCREEN)
+		ToggleFullScreen(rendererWindow);
+	else if (command == TRAY_MENU_MONITOR_STRETCH)
+		ToggleStretch(rendererWindow);
+	else if (command == TRAY_MENU_BORDERLESS)
+	{
+		if (!fullscreen && !stretch)
+			ToggleBorderlessWindow(rendererWindow);
+	}
+	else if (command == TRAY_MENU_HIDE_WINDOW)
+	{
+		ShowWindow(rendererWindow, SW_HIDE);
+		UpdateTrayIconForHiddenWindow();
+	}
+	else if (command == TRAY_MENU_DESKTOP_MODE)
+	{
+		g_plugin.m_mouseDown = 0;
+		g_plugin.ToggleDesktopMode(rendererWindow);
+	}
+	else if (command == TRAY_MENU_ALWAYS_ON_TOP)
+	{
+		g_plugin.m_bAlwaysOnTop = !g_plugin.m_bAlwaysOnTop;
+		g_plugin.ToggleAlwaysOnTop(rendererWindow);
+	}
+	else if (command == TRAY_MENU_TRANSPARENCY)
+	{
+		if (!g_plugin.m_bDesktopMode)
+		{
+			g_plugin.TranspaMode = !g_plugin.TranspaMode;
+			ToggleTransparency(rendererWindow);
+		}
+	}
+	else if (command == TRAY_MENU_EXIT)
+		PostMessage(hwnd, WM_CLOSE, 0, 0);
+
+	// The popup has its own temporary owner window. Restore keyboard focus to
+	// the renderer after actions that leave it as a normal interactive window.
+	if (command != TRAY_MENU_EXIT && !g_plugin.m_bDesktopMode && IsWindowVisible(rendererWindow))
+	{
+		SetForegroundWindow(rendererWindow);
+		SetFocus(rendererWindow);
+	}
+}
 
 void InitializeTrayIcon(HWND hWnd)
 {
+	if (trayIconOwnerHwnd)
+	{
+		NOTIFYICONDATA oldNid = nid;
+		oldNid.hWnd = trayIconOwnerHwnd;
+		Shell_NotifyIcon(NIM_DELETE, &oldNid);
+		trayIconOwnerHwnd = NULL;
+	}
 	g_hWnd = hWnd;
+	trayIconRegistered = false;
 
 	nid.cbSize = sizeof(NOTIFYICONDATA);
 	nid.hWnd = hWnd;
@@ -160,27 +985,50 @@ void InitializeTrayIcon(HWND hWnd)
 	nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
 	nid.uCallbackMessage = WM_USER + 1; // Custom message for tray events
 	nid.hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_PLUGIN_ICON)); // Use your app icon
+
+	// A recovered render window has a new HWND. Re-register the tray icon
+	// immediately so Desktop Mode keeps its notification-area entry.
+	if (g_plugin.m_bDesktopMode)
+		UpdateTrayIconForDesktopMode();
+	else if (renderWindowHidden)
+		UpdateTrayIconForHiddenWindow();
 }
 
 // Function to update tray icon when window is hidden
 void UpdateTrayIconForHiddenWindow()
 {
-	lstrcpy(nid.szTip, TEXT("BeatDrop Music Visualizer - Render window hidden\nLeft click to show. Right click to exit visualizer."));
-	Shell_NotifyIcon(NIM_ADD, &nid);
+	lstrcpy(nid.szTip, TEXT("BeatDrop Music Visualizer - Render window hidden\nLeft click to show. Right click for options."));
+	EnsureTrayIconRegistered();
 	renderWindowHidden = true;
 }
 
 // Function to update tray icon when window is shown
 void UpdateTrayIconForShownWindow()
 {
-	Shell_NotifyIcon(NIM_DELETE, &nid);
+	NOTIFYICONDATA iconToDelete = nid;
+	if (trayIconOwnerHwnd)
+		iconToDelete.hWnd = trayIconOwnerHwnd;
+	Shell_NotifyIcon(NIM_DELETE, &iconToDelete);
+	trayIconOwnerHwnd = NULL;
+	trayIconRegistered = false;
 	renderWindowHidden = false;
+}
+
+void UpdateTrayIconForDesktopMode()
+{
+	lstrcpy(nid.szTip, TEXT("BeatDrop Music Visualizer - Desktop Mode ON\nLeft click to restore. Right click for options."));
+	EnsureTrayIconRegistered();
 }
 
 // Function to remove tray icon (call this when closing)
 void RemoveTrayIcon()
 {
-	Shell_NotifyIcon(NIM_DELETE, &nid);
+	NOTIFYICONDATA iconToDelete = nid;
+	if (trayIconOwnerHwnd)
+		iconToDelete.hWnd = trayIconOwnerHwnd;
+	Shell_NotifyIcon(NIM_DELETE, &iconToDelete);
+	trayIconOwnerHwnd = NULL;
+	trayIconRegistered = false;
 }
 
 // STATE VALUES & VERTEX FORMATS FOR HELP SCREEN TEXTURE:
@@ -758,6 +1606,91 @@ void CPluginShell::CleanUpDX9Stuff(int final_cleanup)
 	}
 
 	CleanUpMyDX9Stuff(final_cleanup);
+}
+
+void CPluginShell::PrepareForExternalDeviceReset()
+{
+	// See the comment on this method's declaration in pluginshell.h - call
+	// this immediately before any Reset() issued from outside this class on
+	// the device it owns (final_cleanup=0: this is a temporary teardown, not
+	// the plugin shutting down, so everything gets reallocated right after).
+	CleanUpDX9Stuff(0);
+	if (m_lpDX)
+		m_lpDX->FlushGPU();
+}
+
+void CPluginShell::RestoreAfterExternalDeviceReset()
+{
+	AllocateDX9Stuff();
+}
+
+void CPluginShell::ReplaceRenderWindow(HWND hwnd)
+{
+	m_hRenderWnd = hwnd;
+	if (m_lpDX)
+		m_lpDX->SetHwnd(hwnd);
+	if (g_plugin.m_bDesktopMode)
+	{
+		// The replacement HWND is a new tray-icon owner after a shell refresh.
+		g_hWnd = hwnd;
+		nid.hWnd = hwnd;
+		if (trayIconOwnerHwnd && trayIconOwnerHwnd != hwnd)
+		{
+			NOTIFYICONDATA oldNid = nid;
+			oldNid.hWnd = trayIconOwnerHwnd;
+			Shell_NotifyIcon(NIM_DELETE, &oldNid);
+		}
+		trayIconOwnerHwnd = NULL;
+		trayIconRegistered = false;
+		UpdateTrayIconForDesktopMode();
+	}
+}
+
+void CPluginShell::StartDesktopModeRecoveryTimers(HWND hwnd)
+{
+	SetTimer(hwnd, TIMER_DESKTOP_REFRESH, 250, NULL);
+	SetTimer(hwnd, TIMER_DESKTOP_WATCHDOG, 1000, NULL);
+}
+
+void CPluginShell::ResetTimeVariable()
+{
+	// A soft cut has already installed the destination preset as m_pState.
+	// Finish its cross-fade before moving the clock backwards so blend progress
+	// cannot become negative and render an invalid intermediate frame.
+	if (g_plugin.m_pState && g_plugin.m_pState->m_bBlending)
+		g_plugin.m_pState->m_bBlending = false;
+
+	// Error notifications use the visualizer time. Shift their lifetime along
+	// with the clock so resetting it does not expire messages prematurely.
+	const float timeOffset = m_time;
+	if (timeOffset != 0.0f)
+	{
+		std::lock_guard<std::mutex> lock(g_plugin.m_errorsMutex);
+		for (auto& message : g_plugin.m_errors)
+		{
+			message.birthTime -= timeOffset;
+			message.expireTime -= timeOffset;
+		}
+	}
+	m_time = 0;
+	g_plugin.m_fPresetStartTime = g_plugin.GetTime();
+	g_plugin.m_fNextPresetTime = -1.0f;
+}
+
+void CPluginShell::SetMaxFPS(int fps)
+{
+	if (fps < 0)
+		fps = 0;
+	if (fps > 360)
+		fps = 360;
+	m_max_fps_fs = fps;
+	m_max_fps_dm = fps;
+	m_max_fps_w = fps;
+}
+
+int CPluginShell::GetMaxFPS() const
+{
+	return m_max_fps_w;
 }
 
 void CPluginShell::OnUserResizeTextWindow()
@@ -1399,6 +2332,7 @@ int CPluginShell::PluginRender(unsigned char *pWaveL, unsigned char *pWaveR)//, 
 	{
 		// device WAS lost, and is now ready to be reset (and come back online):
 		CleanUpDX9Stuff(0);
+		m_lpDX->FlushGPU();
 		if (m_lpDX->m_lpDevice->Reset(m_lpDX->m_d3dpp) != D3D_OK)
 		{
 			// note: a basic warning messagebox will have already been given.
@@ -1513,7 +2447,33 @@ void CPluginShell::DrawAndDisplay(int redraw)
 	    }
 	}*/
 
-	if (D3D_OK==m_lpDX->m_lpDevice->BeginScene())
+    if (g_plugin.m_bHdr)
+    {
+        std::wstring reason;
+        const bool compatibleMode = !m_vjd3d9_device &&
+            m_lpDX->m_client_width == m_lpDX->m_REAL_client_width &&
+            m_lpDX->m_client_height == m_lpDX->m_REAL_client_height &&
+            !g_plugin.TranspaMode;
+        if (!compatibleMode || !g_plugin.m_hdr.Prepare(GetDevice(), GetPluginWindow(), reason))
+        {
+            g_plugin.m_bHdr = false;
+            g_plugin.m_hdr.Reset();
+            if (reason.empty()) reason = L"HDR is unavailable in this window mode. SDR output retained.";
+            g_plugin.AddErrorNotif(reason.data());
+        }
+    }
+
+    // HDR changes only the display target. Warp feedback and blur keep their
+    // original formats: changing their clipping changes preset dynamics.
+    bool hdrFrame = g_plugin.m_hdr.Active() && g_plugin.m_hdr.BeginFrame(GetDevice());
+    if (g_plugin.m_hdr.Active() && !hdrFrame)
+    {
+        g_plugin.m_bHdr = false;
+        g_plugin.m_hdr.Reset();
+    }
+
+	const bool sceneStarted = D3D_OK == m_lpDX->m_lpDevice->BeginScene();
+	if (sceneStarted)
 	{
 		MyRenderFn(redraw);
 
@@ -1530,6 +2490,13 @@ void CPluginShell::DrawAndDisplay(int redraw)
 
 		m_lpDX->m_lpDevice->EndScene();
 	}
+
+    if (hdrFrame && (!sceneStarted || !g_plugin.m_hdr.EndFrame(GetDevice())))
+    {
+        g_plugin.m_bHdr = false;
+        g_plugin.m_hdr.Reset();
+    }
+    g_plugin.SendSpoutFrame();
 
 	// VJ Mode:
 	if (m_vj_mode && m_vjd3d9_device && !m_hidden_textwnd && D3D_OK==m_vjd3d9_device->BeginScene())
@@ -1549,6 +2516,20 @@ void CPluginShell::DrawAndDisplay(int redraw)
 		m_vjd3d9_device->EndScene();
 	}
 
+    bool hdrHandledFrame = false;
+    if (g_plugin.m_hdr.Active())
+    {
+        std::wstring reason;
+        hdrHandledFrame = g_plugin.m_hdr.Present(GetDevice(), reason);
+        if (!hdrHandledFrame)
+        {
+            g_plugin.m_bHdr = false;
+            if (!reason.empty()) g_plugin.AddErrorNotif(reason.data());
+        }
+    }
+
+    if (!hdrHandledFrame)
+    {
 	if (m_lpDX->m_client_width != m_lpDX->m_REAL_client_width || m_lpDX->m_client_height != m_lpDX->m_REAL_client_height)
 	{
 		int real_w = m_lpDX->m_REAL_client_width;   // real client size, in pixels
@@ -1564,6 +2545,8 @@ void CPluginShell::DrawAndDisplay(int redraw)
 	}
 	else
 		m_lpDX->m_lpDevice->Present(NULL,NULL,NULL,NULL);
+
+    }
 
 	if (m_vjd3d9_device && !m_hidden_textwnd)
 		m_vjd3d9_device->Present(NULL,NULL,NULL,NULL);
@@ -1720,10 +2703,10 @@ void CPluginShell::DoTime()
 
 	m_time += 1.0f/m_fps;
 	if (m_time >= m_dTimeVariableResetDelay)
-		m_time = 0; // Reset the time variable after 250000 seconds.
+		ResetTimeVariable(); // Reset the time variable after 250000 seconds.
 
 	if ((GetKeyState(VK_CONTROL) & 0x8000) && (GetKeyState('T') & 0x8000))
-		m_time = 0;
+		ResetTimeVariable();
 
 	// timekeeping goals:
 	//    1. keep 'm_time' increasing SMOOTHLY: (smooth animation depends on it)
@@ -1999,7 +2982,7 @@ void CPluginShell::RenderBuiltInTextMsgs()
 			if (!g_szHelp_W)
 				m_d3dx_font[HELPSCREEN_FONT]->DrawTextA(NULL, (char*)g_szHelp, -1, &r, DT_CALCRECT, 0xFFFFFFFF);
 			else
-				m_d3dx_font[HELPSCREEN_FONT]->DrawTextW(NULL, g_szHelp, -1, &r, DT_CALCRECT, 0xFFFFFFFF);
+				BeatDropText::Draw(m_d3dx_font[HELPSCREEN_FONT], g_szHelp, -1, &r, DT_CALCRECT, 0xFFFFFFFF);
 
 			r.top += m_upper_left_corner_y;
 			r.left += m_left_edge;
@@ -2014,7 +2997,7 @@ void CPluginShell::RenderBuiltInTextMsgs()
 			if (!g_szHelp_W)
 				m_d3dx_font[HELPSCREEN_FONT]->DrawTextA(NULL, (char*)g_szHelp, -1, &r, 0, 0xFFFFFFFF);
 			else
-				m_d3dx_font[HELPSCREEN_FONT]->DrawTextW(NULL, g_szHelp, -1, &r, 0, 0xFFFFFFFF);
+				BeatDropText::Draw(m_d3dx_font[HELPSCREEN_FONT], g_szHelp, -1, &r, 0, 0xFFFFFFFF);
 
 			m_upper_left_corner_y += r.bottom - r.top + PLAYLIST_INNER_MARGIN * 3;
 		}
@@ -2040,7 +3023,7 @@ void CPluginShell::RenderBuiltInTextMsgs()
 			}
 
 			SetRect(&r, m_left_edge, m_lower_right_corner_y - GetFontHeight(DECORATIVE_FONT), m_right_edge + dx, m_lower_right_corner_y);
-			m_lower_right_corner_y -= m_d3dx_font[DECORATIVE_FONT]->DrawTextW(NULL, wasabiApiLangString(IDS_PRESS_F1_MSG), -1, &r, DT_RIGHT, 0xFFFFFFFF);
+			m_lower_right_corner_y -= BeatDropText::Draw(m_d3dx_font[DECORATIVE_FONT], wasabiApiLangString(IDS_PRESS_F1_MSG), -1, &r, DT_RIGHT, 0xFFFFFFFF);
 		}
 	}
 }
@@ -2124,7 +3107,7 @@ void CPluginShell::RenderPlaylist()
 						//sprintf(m_playlist[i], "%d. %s ", j+1, buf);  // leave an extra space @ end, so italicized fonts don't get clipped
 
 						SetRect(&r, 0, 0, max_w, 1024);
-						m_d3dx_font[PLAYLIST_FONT]->DrawTextW(NULL, m_playlist[i], -1, &r, dwFlags | DT_CALCRECT, 0xFFFFFFFF);
+						BeatDropText::Draw(m_d3dx_font[PLAYLIST_FONT], m_playlist[i], -1, &r, dwFlags | DT_CALCRECT, 0xFFFFFFFF);
 						int w = r.right-r.left;
 						if (w>0)
 							m_playlist_width_pixels = max(m_playlist_width_pixels, w);
@@ -2169,7 +3152,7 @@ void CPluginShell::RenderPlaylist()
 					        (i==now_playing ? PLAYLIST_COLOR_BOTH : PLAYLIST_COLOR_HILITE_TRACK) :
 							        (i==now_playing ? PLAYLIST_COLOR_PLAYING_TRACK : PLAYLIST_COLOR_NORMAL);
 
-				y += m_d3dx_font[PLAYLIST_FONT]->DrawTextW(NULL, m_playlist[i-start], -1, &r, dwFlags, color);
+				y += BeatDropText::Draw(m_d3dx_font[PLAYLIST_FONT], m_playlist[i-start], -1, &r, dwFlags, color);
 			}
 
 			//m_d3dx_font[PLAYLIST_FONT]->End();
@@ -2218,14 +3201,101 @@ LRESULT CALLBACK CPluginShell::WindowProc(HWND hWnd, unsigned uMsg, WPARAM wPara
 
 LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lParam)
 {
+	if (WM_TASKBARCREATED == 0)
+		WM_TASKBARCREATED = RegisterWindowMessageW(L"TaskbarCreated");
+
+	// F10 is a system-menu accelerator if it reaches DefWindowProc. Consume it
+	// here and use it to cycle the SMTC track-time overlay instead.
+	if ((uMsg == WM_KEYDOWN || uMsg == WM_SYSKEYDOWN) && wParam == VK_F10)
+	{
+		g_plugin.CycleSongTimeDisplay();
+		return 0;
+	}
+
 	USHORT mask = 1 << (sizeof(SHORT)*8 - 1);
 	//bool bShiftHeldDown = (GetKeyState(VK_SHIFT) & mask) != 0;
 	bool bCtrlHeldDown  = (GetKeyState(VK_CONTROL) & mask) != 0;
 	//bool bAltHeldDown: most keys come in under WM_SYSKEYDOWN when ALT is depressed.
-	RECT rect;
+	//RECT rect;
+
+	// Catch Explorer restarts
+	if (uMsg == WM_TASKBARCREATED)
+	{
+		if (g_plugin.m_bDesktopMode)
+		{
+			// Explorer removes notification icons while rebuilding the shell.
+			// Delete the known owner before marking the entry stale; this also
+			// prevents a replacement HWND from accumulating another icon.
+			if (trayIconOwnerHwnd)
+			{
+				NOTIFYICONDATA oldNid = nid;
+				oldNid.hWnd = trayIconOwnerHwnd;
+				Shell_NotifyIcon(NIM_DELETE, &oldNid);
+				trayIconOwnerHwnd = NULL;
+			}
+			trayIconRegistered = false;
+			UpdateTrayIconForDesktopMode();
+			// Explorer creates its replacement WorkerW asynchronously. The application
+			// window remains alive while the refresh recreates only its desktop surface.
+			SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 750, NULL);
+			SetTimer(hWnd, TIMER_DESKTOP_WATCHDOG, 1000, NULL);
+		}
+	}
+	// Catch wallpaper/work-area changes without reacting to every system setting.
+	else if (uMsg == WM_SETTINGCHANGE && IsDesktopSettingChange(wParam, lParam))
+	{
+		if (g_plugin.m_bDesktopMode)
+			SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 500, NULL);
+	}
+	// Catch monitor/resolution changes after Windows has settled the new layout.
+	else if (uMsg == WM_DISPLAYCHANGE)
+	{
+		if (g_plugin.m_bDesktopMode)
+			SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 500, NULL);
+	}
+	// Execute the refresh after Explorer has had time to rebuild its desktop.
+	else if (uMsg == WM_TIMER && wParam == TIMER_DESKTOP_REFRESH)
+	{
+		KillTimer(hWnd, TIMER_DESKTOP_REFRESH);
+		if (g_plugin.m_bDesktopMode)
+		{
+			// Trigger the refresh (pass 'true' to avoid saving bad window coordinates)
+			g_plugin.ToggleDesktopMode(hWnd, true);
+
+			// WorkerW can appear well after TaskbarCreated. Retry instead of leaving
+			// the renderer detached when the first attempt is too early.
+			if (!IsDesktopModeAttached(hWnd))
+				SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 500, NULL);
+		}
+	}
+	else if (uMsg == WM_TIMER && wParam == TIMER_DESKTOP_WATCHDOG)
+	{
+		if (!g_plugin.m_bDesktopMode)
+		{
+			StopDesktopModeTimers(hWnd);
+		}
+		else if (!IsDesktopModeAttached(hWnd))
+		{
+			// This also recovers if a shell replacement notification was missed.
+			SetTimer(hWnd, TIMER_DESKTOP_REFRESH, 250, NULL);
+		}
+		else
+		{
+			// Retry registration while Explorer finishes rebuilding its tray.
+			UpdateTrayIconForDesktopMode();
+		}
+	}
 
 	switch (uMsg)
 	{
+	case WM_HOTKEY:
+		if (wParam == BEATDROP_HOTKEY_DESKTOP_MODE)
+		{
+			HandleShiftW(hWnd);
+			return 0;
+		}
+		break;
+
 	case WM_ERASEBKGND:
 		// Repaint window when song is paused and image needs to be repainted:
 		if (m_lpDX && m_lpDX->m_lpDevice && GetFrame() > 0)
@@ -2245,10 +3315,12 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 		break;
 
 	case WM_CLOSE:
+		StopDesktopModeTimers(hWnd);
 		RemoveTrayIcon();
 		break;
 
 	case WM_DESTROY:
+		StopDesktopModeTimers(hWnd);
 		// note: don't post quit message here if the window is being destroyed
 		// and re-created on a switch between windowed & FAKE fullscreen modes.
 		if (!m_lpDX->TempIgnoreDestroyMessages())
@@ -2268,13 +3340,26 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 		{
 			if (renderWindowHidden)
 			{
-				ShowWindow(GetPluginWindow(), SW_SHOW);
+				HWND rendererWindow = GetPluginWindow();
+				ShowWindow(rendererWindow, SW_SHOW);
+				RestoreRenderWindowIcon(rendererWindow);
 				UpdateTrayIconForShownWindow();
+				SetForegroundWindow(rendererWindow);
+				SetFocus(rendererWindow);
+			}
+			else if (g_plugin.m_bDesktopMode)
+			{
+				g_plugin.m_mouseDown = 0;
+				g_plugin.ToggleDesktopMode(GetPluginWindow());
 			}
 		}
-		else if (lParam == WM_RBUTTONUP)
-			PostMessage(hWnd, WM_CLOSE, 0, 0);
-		break;
+	else if (lParam == WM_RBUTTONUP)
+		BeginTrayContextMenu(hWnd);
+	break;
+
+	case WM_TRAY_MENU_COMMAND:
+		ExecuteTrayMenuCommand(hWnd, static_cast<UINT>(wParam), lParam);
+	break;
 
 	// benski> a little hack to get the window size correct. it seems to work
 	case WM_USER+555:
@@ -2307,12 +3392,9 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 	case WM_EXITSIZEMOVE:
 		// SPOUT
 		// Find out whether the window has been resized or just moved
-		GetClientRect(hWnd, &rect);
-		if ((rect.right - rect.left) != 1280
-			|| (rect.bottom - rect.top) != 720) {
-			if (m_lpDX && m_lpDX->m_ready)
-				OnUserResizeWindow();
-		}
+		// GetClientRect(hWnd, &rect);
+		if (m_lpDX && m_lpDX->m_ready)
+			OnUserResizeWindow();
 		m_resizing = 0;
 		break;
 
@@ -2482,20 +3564,20 @@ LRESULT CPluginShell::PluginShellWindowProc(HWND hWnd, unsigned uMsg, WPARAM wPa
 			// Incubo_ - The show render window is moved to WM_USER + 1, the custom system tray message handler
 			case 'w':
 			case 'W':
-				if (GetKeyState(VK_CONTROL) & 0x0800)
-				{
-					if (IsWindowVisible(GetPluginWindow()))
-					{
-						ShowWindow(GetPluginWindow(), SW_HIDE);
-						UpdateTrayIconForHiddenWindow();
-					}
-					/*
-					Don't to else because the window and the icon from taskbar is hidden,
-					but it pops up the icon to system tray, where you can double click
-					to show the render window. Check WM_USER + 1.
-					*/
-				}
+			{
+				const bool controlDown = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+				const bool shiftDown = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+				// When global Ctrl+Shift+W registration succeeded, WM_HOTKEY performs
+				// that action. Consume the focused event to avoid toggling twice.
+				if (controlDown && shiftDown && desktopModeHotkeyRegistered)
+					return 0;
+
+				if (controlDown && shiftDown)
+					HandleShiftW(GetPluginWindow());
+				else if (controlDown)
+					HandleCtrlW(GetPluginWindow());
 				return 0;
+			}
 
 		    case VK_ESCAPE:
 			    if (m_show_help)

@@ -1,0 +1,144 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+per_frame_init_1=last = 0;
+per_frame_init_2=glitch = 0;
+per_frame_init_3=spin = 0;
+per_frame_init_4=pulse = 2;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=beat = (bass > 1.3)*((time - last) > 0.4);
+per_frame_5=last = if(beat, time, last);
+per_frame_6=glitch = max(glitch*pow(0.8, q30), beat);
+per_frame_7=pulse = if(beat, 0, pulse + 1.6/fps);
+per_frame_8=spin = spin + (0.25 + 0.5*min(mid_att, 2))/fps;
+per_frame_9=q1 = spin;
+per_frame_10=q2 = glitch;
+per_frame_11=q3 = pulse;
+per_frame_12=q4 = min(bass_att, 2);
+per_frame_13=q5 = min(mid_att, 2);
+per_frame_14=q6 = min(treb_att, 2);
+per_frame_15=q7 = time;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  ret = tex2D(sampler_main, uv).xyz * pow(0.6, q30);
+warp_4=`}
+comp_1=`float grid(float3 n, float spin)
+comp_2=`{
+comp_3=`  float lon = atan2(n.z, n.x) + spin;
+comp_4=`  float lat = asin(clamp(n.y, -1.0, 1.0));
+comp_5=`  float a = abs(frac(lon * 12.0 / 6.28318 + 0.5) - 0.5) * cos(lat);
+comp_6=`  float b = abs(frac(lat * 9.0 / 3.14159 + 0.5) - 0.5);
+comp_7=`  return saturate(1.0 - min(a, b) * 26.0);
+comp_8=`}
+comp_9=`shader_body
+comp_10=`{
+comp_11=`  float2 q = uv;
+comp_12=`  float band = floor(q.y * 18.0);
+comp_13=`  float off = (frac(sin(band * 91.7 + floor(q7 * 20.0)) * 43758.5453) - 0.5) * 0.06 * q2;
+comp_14=`  q.x += off * step(0.6, frac(sin(band * 17.3) * 9731.1));
+comp_15=`  float2 p = (q - float2(0.5, 0.47)) * aspect.xy;
+comp_16=`  float rr = 0.235 * (1.0 + 0.04 * q4);
+comp_17=`  float r2 = dot(p, p) / (rr * rr);
+comp_18=`  float3 holo = float3(0.25, 0.85, 1.0);
+comp_19=`  float3 col = float3(0.004, 0.012, 0.02);
+comp_20=`  if (r2 < 1.0)
+comp_21=`  {
+comp_22=`    float z = sqrt(1.0 - r2);
+comp_23=`    float3 nf = float3(p.x / rr, -p.y / rr, z);
+comp_24=`    float3 nb = float3(p.x / rr, -p.y / rr, -z);
+comp_25=`    float gf = grid(nf, q1);
+comp_26=`    float gb = grid(nb, q1);
+comp_27=`    float rim = pow(1.0 - z, 2.5);
+comp_28=`    float wave = exp(-pow((nf.y + 1.0 - q3 * 2.0) * 7.0, 2.0));
+comp_29=`    col += holo * (gf * 0.95 + gb * 0.28 + rim * 0.55 + 0.05);
+comp_30=`    col += float3(0.8, 1.0, 1.0) * wave * (0.25 + gf * 0.9);
+comp_31=`  }
+comp_32=`  float lon = atan2(p.y * 3.2, p.x);
+comp_33=`  float seg = floor((lon / 6.28318 + 0.5) * 48.0);
+comp_34=`  float lvl = lerp(lerp(q4, q5, saturate(abs(seg - 24.0) / 12.0)), q6, saturate(abs(seg - 24.0) / 24.0));
+comp_35=`  float h = 0.01 + 0.07 * saturate(lvl * 0.6) * (0.6 + 0.4 * frac(sin(seg * 12.9) * 4375.5));
+comp_36=`  float er = length(float2(p.x, p.y * 3.2));
+comp_37=`  float bar = step(rr * 1.12, er) * step(er, rr * 1.12 + h) * step(0.25, frac((lon / 6.28318 + 0.5) * 48.0));
+comp_38=`  col += holo * bar * 0.9;
+comp_39=`  float2 e = (q - float2(0.5, 0.9)) * aspect.xy;
+comp_40=`  float cone = saturate(1.0 - abs(e.x) / (0.02 + (-e.y) * 0.75)) * step(e.y, 0.0) * step(-0.62, e.y);
+comp_41=`  col += holo * cone * 0.07 * (0.7 + 0.3 * sin(q7 * 9.0 + q.y * 40.0));
+comp_42=`  col += holo * exp(-dot(e * float2(1.0, 5.0), e * float2(1.0, 5.0)) * 60.0) * 0.8;
+comp_43=`  float scan = 0.82 + 0.18 * sin(q.y * texsize.y * 1.2 + q7 * 6.0) * (0.5 + 0.5 * saturate(q6));
+comp_44=`  col *= scan;
+comp_45=`  col += holo * 0.02 * frac(sin(dot(q + q7, float2(12.9898, 78.233))) * 43758.5453);
+comp_46=`  ret = 1.0 - exp(-col * 1.6);
+comp_47=`}

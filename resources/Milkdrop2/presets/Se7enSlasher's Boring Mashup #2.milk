@@ -1,0 +1,137 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 05/08/2026 at 17:58:05.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=0
+[preset00]
+fRating=3.500
+fGammaAdj=1.000
+fDecay=0.985
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=0.998
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=1
+nWaveMode=6
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=1
+bDarken=0
+bSolarize=1
+bInvert=0
+fWaveAlpha=4.050
+fWaveScale=0.597
+fWaveSmoothing=0.000
+fWaveParam=0.000
+fModWaveAlphaStart=1.490
+fModWaveAlphaEnd=0.750
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99950
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.200
+ob_a=1.000
+ib_size=0.000
+ib_r=1.000
+ib_g=0.000
+ib_b=0.000
+ib_a=1.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.000
+mv_r=0.760
+mv_g=0.480
+mv_b=0.390
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=wave_r = wave_r + 0.350*( 0.60*sin(0.825*time) + 0.40*sin(0.915*time) );
+per_frame_2=wave_g = wave_g + 0.350*( 0.60*sin(0.900*time) + 0.40*sin(1.025*time) );
+per_frame_3=wave_b = wave_b + 0.350*( 0.60*sin(0.810*time) + 0.40*sin(0.950*time) );
+per_frame_4=wave_y = wave_y + 0.2*sin(1.85*time);
+per_frame_5=time = time/100;
+per_frame_6=cx = cx + 0.225*( 0.60*sin(0.350*time) + 0.40*sin(0.350*time) );
+per_frame_7=cy = cy + 0.225*( 0.60*sin(0.350*time) + 0.40*sin(0.350*time) );
+per_frame_8=dx = 0.00005 + .0009*( 0.60*sin(0.234*time) + 0.40*sin(0.277*time) );
+per_frame_9=dy = 0.00005 + .0009*( 0.60*sin(0.234*time) + 0.40*sin(0.277*time) );
+per_frame_10=xwave_x = wave_x + 0.250*( 0.60*sin(2.112*time) + 0.40*sin(1.589*time) );
+per_frame_11=xwave_y = wave_y + 0.250*( 0.60*sin(1.752*time) + 0.40*sin(2.298*time) );
+per_frame_12=bass_eff = max(max(bass,bass_att)-1,0);
+per_frame_13=bass_thresh = above(bass_att,bass_thresh)*2 + (1-above(bass_att,bass_thresh))*((bass_thresh-1.3)*0.96+1.3);
+per_frame_14=decay = decay - 0.05*equal(frame%16,0);
+per_frame_15=zoom = decay;
+per_frame_16=rot = bass_eff/bass_thresh;
+per_frame_17=ob_size = rot-bass;
+per_frame_18=ib_a = 1-bass_eff;
+per_frame_19=ib_r = 1-wave_r;
+per_frame_20=ib_b = 1-wave_g;
+per_frame_21=ib_g = 1-wave_b;
+per_pixel_1=sx=sx+0.07*sin(rad*18 + time*9);
+per_pixel_2=sy=sy+0.07*sin(rad*18 + time*9);
+per_pixel_3=zoom=zoom + 0.005*tan(ang-ang)+.05;
+per_pixel_4=ray = pow(rad,1.85)+.037;
+warp_1=`#define MYSAMP sampler_rand00      //sampler_cells
+warp_2=`sampler MYSAMP;
+warp_3=`float4 texsize_rand00;
+warp_4=`
+warp_5=`shader_body
+warp_6=`{
+warp_7=`    ret = tex2D( sampler_main, uv ).xyz;
+warp_8=`
+warp_9=`    // this vector points exactly one pixel, in the direction of motion
+warp_10=`    float2 v = normalize(uv-uv_orig)*texsize.zw;
+warp_11=`
+warp_12=`    float3 s;
+warp_13=`    ret = max(ret, tex2D(sampler_main, uv+v)*0.97);
+warp_14=`    ret = max(ret, tex2D(sampler_main, uv-v)*0.97);
+warp_15=`    ret = max(ret, tex2D(sampler_main, uv+v*2)*0.90);
+warp_16=`    ret = max(ret, tex2D(sampler_main, uv-v*2)*0.90);
+warp_17=`
+warp_18=`
+warp_19=`    // ERROR DIFFUSION DITHER - looks great
+warp_20=`    float2 dither_uv = uv_orig*texsize.xy*texsize_noise_lq.zw + rand_frame.xy;
+warp_21=`    ret += (tex2D(sampler_noise_lq, dither_uv).xyz-0.5)/256.0*1;
+warp_22=`
+warp_23=`    // mix in img...
+warp_24=`    float2 offset = float2(roam_cos.x, roam_sin.x)*0.4;
+warp_25=`    float3 pic = tex2D(MYSAMP, uv_orig*texsize.xy*texsize_rand00.zw + offset).xyz;
+warp_26=`    ret = lerp(ret, pic, 0.25);    
+warp_27=`
+warp_28=`    // darken over time
+warp_29=`    ret *= 0.96 + 0.03*saturate( length(uv - uv_orig)*200 );  // center only
+warp_30=`}

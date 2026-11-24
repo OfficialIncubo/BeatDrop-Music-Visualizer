@@ -1079,7 +1079,7 @@ comp_28=`dz.y = 2.0*GetBlur1(uv+ver*gk).g-2.0*GetBlur1(uv-ver*gk).g;
 comp_29=`dz *= GetBlur1(uv).g > 0.06;
 comp_30=`dz *= max(1,GetBlur2(uv).g*8);
 comp_31=`
-comp_32=`screen = float3 ((uv-0.5)*aspect.xy+dz*0.25,1);
+comp_32=`screen = float3 ((uv-0.5)*aspect_sd.xy+dz*0.25,1);
 comp_33=`rs = project(); float lrs = length(rs.xy);
 comp_34=`gmask = sat (1-.1*lrs) * (rs.z>0);
 comp_35=`gmask *= sat (2-10*min(abs(rs.x),abs(rs.y)));
@@ -1123,9 +1123,9 @@ comp_72=`//smoke
 comp_73=`ret += smoke.x*q19;
 comp_74=`
 comp_75=`//orb
-comp_76=`uv1 = ((uv0-0.5)-float2(q15,-q16))*aspect.xy+dz*0.2;
+comp_76=`uv1 = ((uv0-0.5)-float2(q15,-q16))*aspect_sd.xy+dz*0.2;
 comp_77=`ret += 0.00015/pow(length(uv1),2)*treb;
-comp_78=`uv1 = ((uv0-0.5)-float2(q5,-q6))*aspect.xy+rip*.02;
+comp_78=`uv1 = ((uv0-0.5)-float2(q5,-q6))*aspect_sd.xy+rip*.02;
 comp_79=`ret += 0.0007/pow(length(uv1+dref),2)*abo*treb*gnd*gmask;
 comp_80=`
 comp_81=`
@@ -1135,9 +1135,9 @@ comp_84=`ret += refl*(1+roam_cos);
 comp_85=`
 comp_86=`//back light
 comp_87=`float bl = 0;
-comp_88=`uv1 = ((uv0-0.5)-rs*0-float2(q1,-q2))*aspect.xy+dz*4;
+comp_88=`uv1 = ((uv0-0.5)-rs*0-float2(q1,-q2))*aspect_sd.xy+dz*4;
 comp_89=`bl += .07/length(uv1)*sat(1-gm0);;
-comp_90=`uv1 = ((uv0-0.5)-rs*0-float2(q10,-q12))*aspect.xy+gnd*0.1+dz*2+rip*.0;
+comp_90=`uv1 = ((uv0-0.5)-rs*0-float2(q10,-q12))*aspect_sd.xy+gnd*0.1+dz*2+rip*.0;
 comp_91=`bl += pow(.07/length(uv1),2)*gmask;
 comp_92=`
 comp_93=`ret += q31*bl*(1+mid_att/2)*sat(1-smoke.x*32*rand_preset.x)*roam_cos;

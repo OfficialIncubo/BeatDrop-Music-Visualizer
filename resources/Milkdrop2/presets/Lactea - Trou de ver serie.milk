@@ -1,0 +1,139 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000000
+fGammaAdj=1.000
+fDecay=1.000
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.500
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.000
+fShader=0.000
+zoom=1.000
+rot=0.000
+cx=0.500
+cy=0.500
+dx=0.000
+dy=0.000
+warp=0.000
+sx=1.000
+sy=1.000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.000
+mv_r=0.000
+mv_g=0.000
+mv_b=0.000
+mv_a=0.000
+per_frame_1=dt = min(max(time - tprev, 0), 0.1);
+per_frame_2=tprev = time;
+per_frame_3=travel = travel + dt * (0.6 + 1.2 * max(bass_att - 0.9, 0));
+per_frame_4=q1 = travel;
+per_frame_5=q2 = min(max(0.5 + 0.8 * sin(time * 0.07), 0), 1);
+per_frame_6=pulse = pulse * 0.85 + 0.15 * min(max(bass_att - 1.1, 0), 1.5);
+per_frame_7=q5 = pulse;
+per_frame_8=q7 = min(max(treb_att - 0.9, 0), 1.5);
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    float2 p = (uv - 0.5) * aspect.xy;
+warp_4=`    float m = q2;
+warp_5=`    float d = max(length(float2(p.x * m, p.y)), 0.001);
+warp_6=`    float z = 0.1 / d + q1 * 1.6;
+warp_7=`    float an = atan2(p.y, p.x) / 6.2831853;
+warp_8=`    float u = lerp(p.x * (0.1 / d) * 0.6, an * 2.0, m);
+warp_9=`    float2 t1 = float2(u, z * 0.18);
+warp_10=`    float n = tex2D(sampler_noise_lq_lite, t1).x * 0.6 + tex2D(sampler_noise_lq_lite, t1 * 2.0 + 0.41).x * 0.4;
+warp_11=`    float stk = tex2D(sampler_noise_lq, float2(u * 3.0, z * 0.03)).x;
+warp_12=`    float lgt = smoothstep(0.4, 0.85, n) * (0.4 + 0.9 * stk * stk);
+warp_13=`    float gp = smoothstep(0.015, 0.11, d);
+warp_14=`    float wl = lerp(1.0, 0.18, m) * (0.8 + 0.4 * q5);
+warp_15=`    float3 blue = float3(0.12, 0.38, 1.0);
+warp_16=`    float3 cyan = float3(0.5, 0.85, 1.0);
+warp_17=`    float3 white = float3(0.95, 0.98, 1.0);
+warp_18=`    float3 col = (blue * lgt + cyan * lgt * lgt + white * pow(lgt, 4.0)) * gp * wl;
+warp_19=`    float r = max(length(p), 0.001);
+warp_20=`    float a2 = atan2(p.y, p.x) / 6.2831853 + 0.5;
+warp_21=`    float sid = floor(a2 * 600.0);
+warp_22=`    float fa = abs(frac(a2 * 600.0) - 0.5);
+warp_23=`    float2 cell = float2((fmod(sid, 256.0) + 0.5) / 256.0, (floor(sid / 256.0) + 0.5) / 256.0);
+warp_24=`    float rnd = tex2D(sampler_noise_lq, cell).x;
+warp_25=`    float rnd2 = tex2D(sampler_noise_lq, cell + float2(0.0, 0.1)).y;
+warp_26=`    float zs = frac(rnd - q1 * 0.35);
+warp_27=`    float rs = 0.03 / (zs + 0.03);
+warp_28=`    float len = rs * (0.1 + 0.08 * q5);
+warp_29=`    float st = step(rs - len, r) * step(r, rs) * step(fa, 0.12 + 0.2 * rs) * step(rnd2, 0.7 + 0.2 * q7);
+warp_30=`    col += white * st * saturate(rs * 4.0) * (1.0 + 0.4 * q7);
+warp_31=`    float sid2 = floor(a2 * 1500.0);
+warp_32=`    float fa2 = abs(frac(a2 * 1500.0) - 0.5);
+warp_33=`    float2 cell2 = float2((fmod(sid2, 256.0) + 0.5) / 256.0, (floor(sid2 / 256.0) + 20.5) / 256.0);
+warp_34=`    float zs2 = frac(tex2D(sampler_noise_lq, cell2).z - q1 * 0.25);
+warp_35=`    float rs2 = 0.02 / (zs2 + 0.02);
+warp_36=`    float st2 = step(rs2 - rs2 * 0.08, r) * step(r, rs2) * step(fa2, 0.15) * step(tex2D(sampler_noise_lq, cell2 + float2(0.0, 0.2)).x, 0.5 + 0.4 * m);
+warp_37=`    col += float3(0.75, 0.85, 1.0) * st2 * saturate(rs2 * 3.0) * (0.5 + 0.5 * m);
+warp_38=`    float2 src = 0.5 + (uv - 0.5) * (0.93 - 0.02 * q5);
+warp_39=`    float3 prev = tex2D(sampler_main, src).xyz;
+warp_40=`    ret = max(col, prev * 0.72);
+warp_41=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float3 c = GetPixel(uv);
+comp_4=`    float3 glow = GetBlur1(uv) * 0.45 + GetBlur2(uv) * 0.35;
+comp_5=`    float2 d = uv - 0.5;
+comp_6=`    float flare = q5 * 0.35 * exp(-abs(d.y) * 60.0) * exp(-abs(d.x) * 3.0);
+comp_7=`    float2 L = float2(0.5 + 0.38 * sin(time * 0.23), 0.5 + 0.24 * sin(time * 0.31 + 1.0));
+comp_8=`    float fvis = saturate(0.55 + 0.6 * sin(time * 0.13)) * (0.7 + 0.5 * q5);
+comp_9=`    float2 dl = (uv - L) * aspect.xy;
+comp_10=`    float sun = exp(-length(dl) * 70.0) * 1.6 + 0.4 * exp(-abs(dl.y) * 260.0) * exp(-abs(dl.x) * 7.0) + 0.25 * exp(-abs(dl.x) * 260.0) * exp(-abs(dl.y) * 12.0);
+comp_11=`    float3 lens = float3(0.85, 0.93, 1.0) * sun;
+comp_12=`    float2 g1 = 0.5 + (L - 0.5) * -0.45;
+comp_13=`    float d1 = length((uv - g1) * aspect.xy);
+comp_14=`    float3 rainbow = 0.5 + 0.5 * cos(6.2831853 * (d1 / 0.09 * 0.8 + float3(0.0, 0.33, 0.67)));
+comp_15=`    lens += rainbow * exp(-pow((d1 - 0.09) / 0.05, 2.0)) * 0.18;
+comp_16=`    float2 g2 = 0.5 + (L - 0.5) * -0.9;
+comp_17=`    float d2 = length((uv - g2) * aspect.xy);
+comp_18=`    lens += float3(0.3, 0.7, 1.0) * smoothstep(0.045, 0.035, d2) * 0.18;
+comp_19=`    float2 g3 = 0.5 + (L - 0.5) * -1.35;
+comp_20=`    float d3 = length((uv - g3) * aspect.xy);
+comp_21=`    lens += float3(1.0, 0.45, 0.6) * smoothstep(0.07, 0.05, d3) * 0.12;
+comp_22=`    ret = (c + glow + float3(0.5, 0.75, 1.0) * flare + lens * fvis) * (1.1 - dot(d, d) * 0.9);
+comp_23=`}

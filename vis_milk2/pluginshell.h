@@ -43,6 +43,11 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define TIME_HIST_SLOTS 128     // # of slots used if fps > 60.  half this many if fps==30.
 #define MAX_SONGS_PER_PAGE 40
+#define BEATDROP_TIMER_RIGHT_CLICK_MENU 1026
+#define BEATDROP_TIMER_TOUCH_MENU 1027
+
+#define BEATDROP_HOTKEY_DESKTOP_MODE 0xBD01
+extern bool desktopModeHotkeyRegistered;
 
 typedef struct
 {
@@ -77,6 +82,14 @@ public:
     wchar_t*  GetConfigIniFile();  // usually returns 'c:\\program files\\winamp\\plugins\\something.ini' - filename is determined from identifiers in 'defines.h'
 	char*     GetConfigIniFileA();
     double    m_dTimeVariableResetDelay = 250000;
+
+    void PrepareForExternalDeviceReset();
+    void RestoreAfterExternalDeviceReset();
+    void ReplaceRenderWindow(HWND hwnd);
+    void StartDesktopModeRecoveryTimers(HWND hwnd);
+    void ResetTimeVariable();
+    void SetMaxFPS(int fps);
+    int  GetMaxFPS() const;
 
 protected:
 
@@ -117,9 +130,9 @@ protected:
     int          m_start_fullscreen;        // 0 or 1
     int          m_start_desktop;           // 0 or 1
     int          m_fake_fullscreen_mode;    // 0 or 1
-    int          m_max_fps_fs;              // 1-120, or 0 for 'unlimited'
-    int          m_max_fps_dm;              // 1-120, or 0 for 'unlimited'
-    int          m_max_fps_w;               // 1-120, or 0 for 'unlimited'
+    int          m_max_fps_fs;              // 1-360, or 0 for 'unlimited'
+    int          m_max_fps_dm;              // 1-360, or 0 for 'unlimited'
+    int          m_max_fps_w;               // 1-360, or 0 for 'unlimited'
     int          m_show_press_f1_msg;       // 0 or 1
     int          m_allow_page_tearing_w;    // 0 or 1
     int          m_allow_page_tearing_fs;   // 0 or 1
@@ -285,6 +298,7 @@ private:
     int  GetCanvasMarginY();     // returns the # of pixels that exist on the canvas, on each side, that the user will never see.  Mainly here for windowed mode, where sometimes, up to 15 pixels get cropped at edges of the screen.
 public:
     void DrawDarkTranslucentBox(RECT* pr);
+    void ToggleDesktopMode(HWND hwnd);
 
 protected:
     void RenderPlaylist();
@@ -339,5 +353,10 @@ protected:
     // CHANGES:
     friend class CShaderParams;
 };
+
+// Opens the same non-blocking command menu used by the notification icon.
+void BeginVisualContextMenu(HWND hwnd);
+bool HandleWebcamOpacityDialogMessage(MSG* message);
+void CloseWebcamOpacityDialog();
 
 #endif

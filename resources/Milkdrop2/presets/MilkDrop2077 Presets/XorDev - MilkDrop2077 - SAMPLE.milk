@@ -127,7 +127,7 @@ warp_7=`    float i = 0.0;
 warp_8=`    float4 o = float4(0.0, 0.0, 0.0, 0.0);
 warp_9=`    
 warp_10=`    for(; i++ < 36; z += d, o += 0.1*(sin(5+bass_att*1.5 + sin(12) + float4(6.0, 1.0, 2.0, 0.0)) + 1.2)/d/z) {
-warp_11=`        p = z * normalize(float3(uv * 2.0 - 1.0, 1.0) * float3(aspect.xy, 1.0));
+warp_11=`        p = z * normalize(float3(uv * 2.0 - 1.0, 1.0) * float3(aspect_sd.xy, 1.0));
 warp_12=`        p.z -= time/0.1;
 warp_13=`        d = 0.01 + 0.5*length(float2(
 warp_14=`            cos(atan2(p.y, p.x)*3.0 + 0.5*p.z) + 0.5,

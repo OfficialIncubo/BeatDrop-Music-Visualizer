@@ -77,7 +77,7 @@ per_frame_13=beatrate = max(if(beat,if(below(time-lastbeat,2*beatrate),0.1*(beat
 per_frame_14=peakbass_att = beat*bass_att + (1-beat)*peakbass_att*(above(time - lastbeat, 2*beatrate)*0.95 + (1-above(time - lastbeat, 2*beatrate))*0.995);
 per_frame_15=lastbeat = beat*time + (1-beat)*lastbeat;
 per_frame_16=peakbass_att = max(peakbass_att,1.1*meanbass_att);
-per_frame_17=effect = if(beat,effect+rand(5)+1,effect);
+per_frame_17=effect = if(beat,effect+int(rand(5))+1,effect);
 per_frame_18=effect = if(above(effect,5),effect-6,effect);
 per_frame_19=q1 = effect+2;
 per_frame_20=monitor = q1;

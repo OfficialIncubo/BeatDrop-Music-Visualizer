@@ -123,10 +123,6 @@
 #include <locale>
 #include <codecvt>
 
-#include <ShellScalingApi.h> // for dpi awareness
-#pragma comment(lib, "shcore.lib") // for dpi awareness
-// older Windows versions: Entry Point Not Found Fix
-
 #include "plugin.h"
 #include "resource.h"
 #include "pluginshell.h"
@@ -145,14 +141,162 @@ namespace fs = std::filesystem;
 
 #define DLL_EXPORT __declspec(dllexport)
 //#define COMPILE_AS_DLL
-#define SAMPLE_SIZE 576
+#define SAMPLE_SIZE 2304
 //#define DEFAULT_WIDTH 720;
 //#define DEFAULT_HEIGHT 720;
+
+namespace
+{
+    // SetProcessDpiAwareness is available only on Windows 8.1 and later.
+    // Resolve it dynamically so the executable still starts on Vista, 7, and
+    // 8, where the older system-DPI-aware API is the best available fallback.
+    void EnableBestAvailableDpiAwareness()
+    {
+        HMODULE shcore = LoadLibraryW(L"shcore.dll");
+        if (shcore)
+        {
+            typedef HRESULT(WINAPI* SetProcessDpiAwarenessFn)(int);
+            SetProcessDpiAwarenessFn setProcessDpiAwareness =
+                reinterpret_cast<SetProcessDpiAwarenessFn>(GetProcAddress(shcore, "SetProcessDpiAwareness"));
+            if (setProcessDpiAwareness)
+            {
+                // PROCESS_PER_MONITOR_DPI_AWARE is 2.  Avoid including or
+                // linking ShellScalingApi.h/shcore.lib, which creates an
+                // unsupported loader dependency on older Windows versions.
+                setProcessDpiAwareness(2);
+                FreeLibrary(shcore);
+                return;
+            }
+            FreeLibrary(shcore);
+        }
+
+        // SetProcessDPIAware is available from Windows Vista onward.
+        SetProcessDPIAware();
+    }
+}
 
 CPlugin g_plugin;
 HINSTANCE api_orig_hinstance = nullptr;
 _locale_t g_use_C_locale;
 char keyMappings[8];
+
+bool fullscreen = false;
+bool stretch = false;
+bool borderless = false;
+static bool suppressRightClickMenu = false;
+static bool twoFingerTouchDown = false;
+static bool twoFingerTapPending = false;
+static DWORD twoFingerTouchDownTick = 0;
+static int activeTouchCount = 0;
+
+static void HandleTwoFingerTap(HWND hwnd)
+{
+    if (twoFingerTapPending)
+    {
+        KillTimer(hwnd, BEATDROP_TIMER_TOUCH_MENU);
+        twoFingerTapPending = false;
+        ToggleStretch(hwnd);
+    }
+    else
+    {
+        twoFingerTapPending = true;
+        SetTimer(hwnd, BEATDROP_TIMER_TOUCH_MENU, GetDoubleClickTime(), NULL);
+    }
+}
+
+static bool IsPromotedTouchInput()
+{
+    // Mouse messages promoted from touch carry this signature. They must stay
+    // in the client area so two-finger gestures are not turned into a drag.
+    return (GetMessageExtraInfo() & 0xFFFFFF00) == 0xFF515700;
+}
+
+namespace
+{
+    const DWORD kCursorHideDelayMs = 3000;
+    bool g_cursorHiddenByAutoHide = false;
+    bool g_cursorHaveLastPosition = false;
+    POINT g_cursorLastPosition = { 0, 0 };
+    DWORD g_cursorLastActivityTick = 0;
+
+    void SetProcessCursorVisible(bool visible)
+    {
+        // ShowCursor uses a process-wide display counter. Drive it to a
+        // known state so fullscreen/stretch transitions cannot inherit a
+        // hidden cursor from an earlier unmatched call.
+        if (visible)
+        {
+            while (ShowCursor(TRUE) < 0)
+                ;
+        }
+        else
+        {
+            while (ShowCursor(FALSE) >= 0)
+                ;
+        }
+    }
+
+    void ResetCursorAutoHide(bool forceVisible)
+    {
+        POINT cursorPosition;
+        if (GetCursorPos(&cursorPosition))
+        {
+            g_cursorLastPosition = cursorPosition;
+            g_cursorHaveLastPosition = true;
+        }
+
+        g_cursorLastActivityTick = GetTickCount();
+        if (forceVisible || g_cursorHiddenByAutoHide)
+            SetProcessCursorVisible(true);
+        g_cursorHiddenByAutoHide = false;
+    }
+
+    void UpdateCursorAutoHide()
+    {
+        if ((!fullscreen && !stretch) || g_plugin.m_bShowCursorOnFullscreenOrStretch)
+        {
+            if (g_cursorHiddenByAutoHide)
+                SetProcessCursorVisible(true);
+            g_cursorHiddenByAutoHide = false;
+            return;
+        }
+
+        POINT cursorPosition;
+        if (GetCursorPos(&cursorPosition))
+        {
+            if (!g_cursorHaveLastPosition ||
+                cursorPosition.x != g_cursorLastPosition.x ||
+                cursorPosition.y != g_cursorLastPosition.y)
+            {
+                g_cursorLastPosition = cursorPosition;
+                g_cursorHaveLastPosition = true;
+                g_cursorLastActivityTick = GetTickCount();
+                if (g_cursorHiddenByAutoHide)
+                {
+                    SetProcessCursorVisible(true);
+                    g_cursorHiddenByAutoHide = false;
+                }
+            }
+        }
+
+        if (!g_cursorHiddenByAutoHide &&
+            (DWORD)(GetTickCount() - g_cursorLastActivityTick) >= kCursorHideDelayMs)
+        {
+            SetProcessCursorVisible(false);
+            g_cursorHiddenByAutoHide = true;
+        }
+    }
+
+    void UpdateDisplayExecutionState()
+    {
+        DWORD executionState = ES_CONTINUOUS;
+        if (fullscreen || stretch)
+            executionState |= ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED;
+
+        if (!SetThreadExecutionState(executionState))
+            OutputDebugStringW(L"BeatDrop: SetThreadExecutionState failed.\n");
+    }
+}
 
 // SPOUT
 // ===============================================
@@ -176,6 +320,10 @@ static HMODULE module = nullptr;
 static std::atomic<HANDLE> thread = nullptr;
 static std::atomic<HANDLE> threadPrecache = nullptr;
 static unsigned threadId = 0;
+static unsigned threadPrecacheId = 0;
+static std::atomic<bool> shaderPrecacheCancel = false;
+static std::atomic<bool> desktopWindowDestroyed = false;
+static std::atomic<bool> intentionalWindowClose = false;
 static std::mutex pcmMutex;
 static unsigned char pcmLeftIn[SAMPLE_SIZE];
 static unsigned char pcmRightIn[SAMPLE_SIZE];
@@ -184,7 +332,39 @@ static unsigned char pcmRightOut[SAMPLE_SIZE];
 
 //static musik::core::sdk::IPlaybackService* playback = nullptr;
 
+void StopShaderPrecacheThread();
+
 static HICON icon = nullptr;
+
+void RestoreRenderWindowIcon(HWND hwnd)
+{
+    if (!hwnd)
+        return;
+
+    // Recreate the normal top-level taskbar entry after fullscreen, borderless,
+    // or Desktop Mode changed the window's parent/style.
+    LONG_PTR exStyle = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
+    exStyle &= ~static_cast<LONG_PTR>(WS_EX_TOOLWINDOW);
+    exStyle |= WS_EX_APPWINDOW;
+    SetWindowLongPtrW(hwnd, GWL_EXSTYLE, exStyle);
+    SetWindowPos(hwnd, NULL, 0, 0, 0, 0,
+        SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE |
+        SWP_FRAMECHANGED);
+
+    if (!icon && module)
+        icon = LoadIconW(module, MAKEINTRESOURCEW(IDI_PLUGIN_ICON));
+
+    if (icon)
+    {
+        SendMessageW(hwnd, WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(icon));
+        SendMessageW(hwnd, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(icon));
+    }
+
+    // Explorer only adds the taskbar button after a top-level app window is
+    // shown. This also refreshes the entry after an Explorer/display refresh.
+    ShowWindow(hwnd, SW_HIDE);
+    ShowWindow(hwnd, SW_SHOW);
+}
 
 
 // SPOUT
@@ -282,10 +462,11 @@ void DeinitD3d() {
 
 //Multiple monitor stretch - Credit to @milkdropper for the code!
 void ToggleStretch(HWND hwnd) {
-    if (!stretch) {
+    if (g_plugin.m_bDesktopMode)
+        g_plugin.ToggleDesktopMode(hwnd, false);
 
-        if (!g_plugin.m_bShowCursorOnFullscreenOrStretch)
-            ShowCursor(FALSE);
+    if (!stretch) {
+        ResetCursorAutoHide(true);
 
         int width = GetSystemMetrics(SM_CXVIRTUALSCREEN);
         int height = GetSystemMetrics(SM_CYVIRTUALSCREEN);
@@ -302,20 +483,19 @@ void ToggleStretch(HWND hwnd) {
         d3dPp.BackBufferWidth = width;
         d3dPp.BackBufferHeight = height;
 
+        g_plugin.PrepareForExternalDeviceReset();
         pD3DDevice->Reset(&d3dPp);
+        g_plugin.RestoreAfterExternalDeviceReset();
 
         SetWindowLongW(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
         SetWindowLongW(hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
         SetWindowPos(hwnd, HWND_NOTOPMOST, left, top, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
-        SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
 		DragAcceptFiles(hwnd, TRUE);
 
         stretch = true;
     }
     else {
-
-        if (!g_plugin.m_bShowCursorOnFullscreenOrStretch)
-            ShowCursor(TRUE);
+        ResetCursorAutoHide(true);
 
         int x = lastRect.left;
         int y = lastRect.top;
@@ -325,8 +505,9 @@ void ToggleStretch(HWND hwnd) {
         d3dPp.BackBufferWidth = width;
         d3dPp.BackBufferHeight = height;
 
+        g_plugin.PrepareForExternalDeviceReset();
         pD3DDevice->Reset(&d3dPp);
-        SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
+        g_plugin.RestoreAfterExternalDeviceReset();
         stretch = false;
 
         SetWindowLongW(hwnd, GWL_STYLE, lastWindowStyle);
@@ -343,13 +524,16 @@ void ToggleStretch(HWND hwnd) {
         }
     }
     fullscreen = false;
+    UpdateDisplayExecutionState();
+    RestoreRenderWindowIcon(hwnd);
 }
 
 void ToggleFullScreen(HWND hwnd) {
-    if (!fullscreen) {
+    if (g_plugin.m_bDesktopMode)
+        g_plugin.ToggleDesktopMode(hwnd, false);
 
-        if (!g_plugin.m_bShowCursorOnFullscreenOrStretch)
-            ShowCursor(FALSE);
+    if (!fullscreen) {
+        ResetCursorAutoHide(true);
 
         if (!stretch) {
             lastWindowStyle = GetWindowLong(hwnd, GWL_STYLE);
@@ -375,15 +559,14 @@ void ToggleFullScreen(HWND hwnd) {
         d3dPp.BackBufferWidth = width;
         d3dPp.BackBufferHeight = height;
 
+        g_plugin.PrepareForExternalDeviceReset();
         pD3DDevice->Reset(&d3dPp);
-        SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
+        g_plugin.RestoreAfterExternalDeviceReset();
 		DragAcceptFiles(hwnd, TRUE);
         fullscreen = true;
     }
     else {
-
-        if (!g_plugin.m_bShowCursorOnFullscreenOrStretch)
-            ShowCursor(TRUE);
+        ResetCursorAutoHide(true);
 
         int x = lastRect.left;
         int y = lastRect.top;
@@ -393,8 +576,9 @@ void ToggleFullScreen(HWND hwnd) {
         d3dPp.BackBufferWidth = width;
         d3dPp.BackBufferHeight = height;
 
+        g_plugin.PrepareForExternalDeviceReset();
         pD3DDevice->Reset(&d3dPp);
-        SetThreadExecutionState(ES_DISPLAY_REQUIRED | ES_SYSTEM_REQUIRED | ES_AWAYMODE_REQUIRED);
+        g_plugin.RestoreAfterExternalDeviceReset();
         fullscreen = false;
 
         SetWindowLongW(hwnd, GWL_STYLE, lastWindowStyle);
@@ -411,10 +595,18 @@ void ToggleFullScreen(HWND hwnd) {
         }
     }
     stretch = false;
+    UpdateDisplayExecutionState();
+    RestoreRenderWindowIcon(hwnd);
 }
 
 void ToggleBorderlessWindow(HWND hwnd)
 {
+    // Desktop Mode reparents the renderer into Explorer's WorkerW and owns
+    // its child-window style.  Do not let borderless toggles overwrite that
+    // state while the renderer is attached to the desktop.
+    if (!hwnd || g_plugin.m_bDesktopMode)
+        return;
+
     if (!borderless)
     {
         RECT rect;
@@ -426,6 +618,7 @@ void ToggleBorderlessWindow(HWND hwnd)
 
         SetWindowLongW(hwnd, GWL_STYLE, WS_POPUP | WS_VISIBLE);
         SetWindowPos(hwnd, HWND_TOPMOST, x, y, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
+        RegisterTouchWindow(hwnd, 0);
         borderless = true;
     }
     else {
@@ -442,15 +635,29 @@ void ToggleBorderlessWindow(HWND hwnd)
         else
             SetWindowPos(hwnd, HWND_NOTOPMOST, x, y, width, height, SWP_DRAWFRAME | SWP_FRAMECHANGED);
         borderless = false;
+        RestoreRenderWindowIcon(hwnd);
     }
 }
 
 LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
-	switch(uMsg) {
+	 switch(uMsg) {
+
+        case WM_CREATE:
+            // Borderless windows do not consistently receive synthesized
+            // gestures, so request raw touch input as a fallback.
+            RegisterTouchWindow(hWnd, 0);
+            // Register Ctrl+Shift+W system-wide so Desktop Mode can be toggled
+            // while another application has focus.
+            desktopModeHotkeyRegistered = RegisterHotKey(
+                hWnd, BEATDROP_HOTKEY_DESKTOP_MODE, MOD_CONTROL | MOD_SHIFT, 'W') != FALSE;
+            // WM_CREATE also initializes the notification-area icon in the
+            // plugin shell. Preserve that initialization path.
+            g_plugin.PluginShellWindowProc(hWnd, uMsg, wParam, lParam);
+            return 0;
 
         case WM_CLOSE: {
-            if (!fullscreen && !stretch)
+            if (!fullscreen && !stretch && !g_plugin.m_bDesktopMode)
                 g_plugin.SaveWindowSizeAndPosition(hWnd);
             if (g_plugin.m_bClearShaderCacheAtExit)
             {
@@ -458,12 +665,20 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                 if (g_plugin.m_bOneTimeClearShaderCache)
                     g_plugin.m_bClearShaderCacheAtExit = false;
             }
+            intentionalWindowClose = true;
             DestroyWindow( hWnd );
             UnregisterClassW(L"Direct3DWindowClass", NULL);
             return 0;
         }
 
         case WM_DESTROY: {
+            if (desktopModeHotkeyRegistered)
+                UnregisterHotKey(hWnd, BEATDROP_HOTKEY_DESKTOP_MODE);
+            desktopModeHotkeyRegistered = false;
+            if (g_plugin.m_bDesktopMode && !intentionalWindowClose.load()) {
+                desktopWindowDestroyed = true;
+                return 0;
+            }
             PostQuitMessage(0);
             break;
         }
@@ -551,7 +766,9 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
                         return HTRIGHT;
                     else if (y > rect.bottom - rect.top - BORDERWIDTH)
                         return HTBOTTOM;
-                return HTCAPTION;
+                // Only the top strip is a drag area. Reporting the visual
+                // interior as a caption prevents client touch delivery.
+                return HTCLIENT;
             }
             break;
         }
@@ -560,17 +777,31 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
             if (wParam == VK_F4) { // SPOUT ??
                 PostQuitMessage(0);
+                return 0;
             }
             else if (wParam == 'S' || wParam == 's')
         	{
             	ToggleStretch(hWnd);
+                return 0;
         	}
              else if (wParam == VK_RETURN) {
                  ToggleFullScreen(hWnd);
+                 return 0;
              }
             else {
-                g_plugin.PluginShellWindowProc(hWnd, uMsg, wParam, lParam);
+                return g_plugin.PluginShellWindowProc(hWnd, uMsg, wParam, lParam);
             }
+        }
+
+        // The keydown handler above owns these Alt shortcuts. Consume the
+        // corresponding system key/character messages as well, otherwise
+        // DefWindowProc can treat them as unhandled menu commands and play
+        // the Windows default notification sound.
+        case WM_SYSKEYUP:
+        case WM_SYSCHAR:
+        {
+            if (wParam == VK_RETURN || wParam == 'S' || wParam == 's')
+                return 0;
             break;
         }
 
@@ -589,11 +820,126 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
             return 0;
         }
 
+        case WM_LBUTTONDOWN:
+        {
+            // Borderless mode uses a client-area hit test for touch support.
+            // Recreate the old caption drag for a real mouse without claiming
+            // touch input as a drag gesture.
+            if (borderless && !fullscreen && !stretch && !IsPromotedTouchInput())
+            {
+                ReleaseCapture();
+                SendMessageW(hWnd, WM_NCLBUTTONDOWN, HTCAPTION, lParam);
+                return 0;
+            }
+            // This window procedure handles the renderer directly instead of
+            // going through CPluginShell::WindowProc. Forward client clicks so
+            // MilkDrop presets receive mouse/mousedown/mouseclick updates.
+            g_plugin.PluginShellWindowProc(hWnd, uMsg, wParam, lParam);
+            break;
+        }
+
         case WM_RBUTTONDBLCLK:
         case WM_NCRBUTTONDBLCLK:
         {
+            KillTimer(hWnd, BEATDROP_TIMER_RIGHT_CLICK_MENU);
+            suppressRightClickMenu = true;
             ToggleStretch(hWnd);
             return 0;
+        }
+
+        case WM_GESTURE:
+        {
+            GESTUREINFO gestureInfo = {};
+            gestureInfo.cbSize = sizeof(gestureInfo);
+            if (GetGestureInfo(reinterpret_cast<HGESTUREINFO>(lParam), &gestureInfo))
+            {
+                if (gestureInfo.dwID == GID_TWOFINGERTAP)
+                    HandleTwoFingerTap(hWnd);
+                CloseGestureInfoHandle(reinterpret_cast<HGESTUREINFO>(lParam));
+            }
+            return 0;
+        }
+
+        case WM_TOUCH:
+        {
+            const UINT touchCount = LOWORD(wParam);
+            if (touchCount > 0)
+            {
+                std::vector<TOUCHINPUT> touchInputs(touchCount);
+                if (GetTouchInputInfo(reinterpret_cast<HTOUCHINPUT>(lParam), touchCount,
+                    touchInputs.data(), sizeof(TOUCHINPUT)))
+                {
+                    for (const TOUCHINPUT& touchInput : touchInputs)
+                    {
+                        if (touchInput.dwFlags & TOUCHEVENTF_DOWN)
+                            ++activeTouchCount;
+                        if (touchInput.dwFlags & TOUCHEVENTF_UP)
+                            activeTouchCount = max(0, activeTouchCount - 1);
+                    }
+                    if (activeTouchCount >= 2 && !twoFingerTouchDown)
+                    {
+                        twoFingerTouchDown = true;
+                        twoFingerTouchDownTick = GetTickCount();
+                    }
+                    if (activeTouchCount == 0 && twoFingerTouchDown)
+                    {
+                        twoFingerTouchDown = false;
+                        if (GetTickCount() - twoFingerTouchDownTick <= GetDoubleClickTime())
+                            HandleTwoFingerTap(hWnd);
+                    }
+                }
+            }
+            CloseTouchInputHandle(reinterpret_cast<HTOUCHINPUT>(lParam));
+            return 0;
+        }
+
+        case WM_RBUTTONUP:
+        case WM_NCRBUTTONUP:
+        {
+            // Keep the preset input state in sync even though this window
+            // procedure also uses right-click release to open its context menu.
+            g_plugin.PluginShellWindowProc(hWnd, uMsg, wParam, lParam);
+            if (suppressRightClickMenu)
+            {
+                suppressRightClickMenu = false;
+                ReleaseCapture();
+                return 0;
+            }
+            // Delay the context menu so the existing double-right-click
+            // gesture remains available for Monitor stretch mode.
+            SetTimer(hWnd, BEATDROP_TIMER_RIGHT_CLICK_MENU, GetDoubleClickTime(), NULL);
+            // Consume WM_RBUTTONUP to avoid DefWindowProc generating a second
+            // context menu; release the capture that began on button-down.
+            ReleaseCapture();
+            return 0;
+        }
+
+        case WM_TIMER:
+        {
+            if (wParam == BEATDROP_TIMER_RIGHT_CLICK_MENU)
+            {
+                KillTimer(hWnd, BEATDROP_TIMER_RIGHT_CLICK_MENU);
+                BeginVisualContextMenu(hWnd);
+                return 0;
+            }
+            if (wParam == BEATDROP_TIMER_TOUCH_MENU)
+            {
+                KillTimer(hWnd, BEATDROP_TIMER_TOUCH_MENU);
+                if (twoFingerTapPending)
+                {
+                    twoFingerTapPending = false;
+                    BeginVisualContextMenu(hWnd);
+                }
+                return 0;
+            }
+            break;
+        }
+
+        case WM_MOUSEMOVE:
+        {
+            if (fullscreen || stretch)
+                ResetCursorAutoHide(false);
+            break;
         }
 
         default:
@@ -604,6 +950,8 @@ LRESULT CALLBACK StaticWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 }
 
 void RenderFrame() {
+
+    UpdateCursorAutoHide();
 
     {
         std::unique_lock<std::mutex> lock(pcmMutex);
@@ -648,10 +996,9 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 	_CrtSetBreakAlloc(60);
 #endif
 
-	// SPOUT
-	// Set Per Monitor awareness
-	SetProcessDpiAwareness(PROCESS_PER_MONITOR_DPI_AWARE); //older Windows versions: Entry Point Not Found Fix
-	// SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE);
+	// Use per-monitor DPI awareness where the OS provides it, while retaining
+	// a Vista-compatible fallback without an app-local shcore/API-set DLL.
+	EnableBestAvailableDpiAwareness();
 
 	// Register the windows class
 	WNDCLASSW wndClass;
@@ -726,29 +1073,33 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 	}
 	// ===============================================
 
+    auto createRenderWindow = [&]() -> HWND {
+        return CreateWindowW(
+	        L"Direct3DWindowClass",
+			// ===========================
+	        // L"BeatDrop Music Visualizer",
+			beatdroptitle,
+			// ===========================
+	        WS_OVERLAPPEDWINDOW, // SPOUT
+			//dwStyle,
+			//WindowPosLeft, // SPOUT
+			//WindowPosTop,
+			// CW_USEDEFAULT,
+			// CW_USEDEFAULT,
+			//(rc.right - rc.left),
+	        //(rc.bottom - rc.top),
+	        g_plugin.m_nWindowPosX,
+	        g_plugin.m_nWindowPosY,
+	        g_plugin.m_nWindowWidth,
+	        g_plugin.m_nWindowHeight,
+	        0,
+	        NULL,
+	        instance,
+	        0);
+    };
+
     // Create the render window
-    HWND hwnd = CreateWindowW(
-        L"Direct3DWindowClass",
-		// ===========================
-        // L"BeatDrop Music Visualizer",
-		beatdroptitle,
-		// ===========================
-        WS_OVERLAPPEDWINDOW, // SPOUT
-		//dwStyle,
-		//WindowPosLeft, // SPOUT
-		//WindowPosTop,
-		// CW_USEDEFAULT,
-		// CW_USEDEFAULT,
-		//(rc.right - rc.left),
-        //(rc.bottom - rc.top),
-        g_plugin.m_nWindowPosX,
-        g_plugin.m_nWindowPosY,
-        g_plugin.m_nWindowWidth,
-        g_plugin.m_nWindowHeight,
-        0,
-        NULL,
-        instance,
-        0);
+    HWND hwnd = createRenderWindow();
 	// ====================================================
 
     if (!hwnd) {
@@ -816,9 +1167,41 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 
     PeekMessage(&msg, NULL, 0U, 0U, PM_NOREMOVE);
     while (WM_QUIT != msg.message) {
+        if (g_plugin.m_bDesktopMode && !intentionalWindowClose.load() && !IsWindow(hwnd))
+            desktopWindowDestroyed = true;
+
+        if (desktopWindowDestroyed.exchange(false)) {
+            HWND replacement = createRenderWindow();
+            if (!replacement) {
+                PostQuitMessage(0);
+                continue;
+            }
+
+            SendMessageW(replacement, WM_SETICON, ICON_BIG, (LPARAM)icon);
+            SendMessageW(replacement, WM_SETICON, ICON_SMALL, (LPARAM)icon);
+
+            g_plugin.PrepareForExternalDeviceReset();
+            d3dPp.hDeviceWindow = replacement;
+            g_plugin.ReplaceRenderWindow(replacement);
+            const HRESULT resetResult = pD3DDevice->Reset(&d3dPp);
+            if (FAILED(resetResult)) {
+                intentionalWindowClose = true;
+                DestroyWindow(replacement);
+                PostQuitMessage(0);
+                continue;
+            }
+
+            g_plugin.RestoreAfterExternalDeviceReset();
+            hwnd = replacement;
+            g_plugin.ToggleDesktopMode(hwnd, true);
+            g_plugin.StartDesktopModeRecoveryTimers(hwnd);
+        }
+
         if (PeekMessage(&msg, NULL, 0U, 0U, PM_REMOVE) != 0) {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
+            if (!HandleWebcamOpacityDialogMessage(&msg)) {
+                TranslateMessage(&msg);
+                DispatchMessage(&msg);
+            }
         }
         else {
             GetAudioBuf(pcmLeftIn, pcmRightIn, SAMPLE_SIZE);
@@ -829,6 +1212,10 @@ unsigned __stdcall CreateWindowAndRun(void* data) {
 		////////////////////////////////////////////////////////////////////////////////////////////////
     }
 
+    // The precache worker calls into the plugin and must finish before plugin
+    // state and Direct3D resources are torn down.
+    CloseWebcamOpacityDialog();
+    StopShaderPrecacheThread();
     g_plugin.MyWriteConfig();
     g_plugin.PluginQuit();
 
@@ -850,9 +1237,25 @@ void StartRenderThread(HINSTANCE instance) {
         &threadId);
 }
 
+void StopShaderPrecacheThread()
+{
+    shaderPrecacheCancel.store(true);
+    HANDLE precacheHandle = threadPrecache.exchange(nullptr);
+    if (precacheHandle)
+    {
+        WaitForSingleObject(precacheHandle, INFINITE);
+        CloseHandle(precacheHandle);
+    }
+}
+
 unsigned __stdcall DoShaderPrecache(void* param) {
 
-    Sleep(3000); // wait for the render thread to initialize the plugin completely
+    // Give the render thread time to finish plugin and Direct3D initialization.
+    for (int waited = 0; waited < 3000 && !shaderPrecacheCancel.load(); waited += 50)
+        Sleep(50);
+    if (shaderPrecacheCancel.load())
+        return 0;
+
     HINSTANCE instance = (HINSTANCE)param;
 
     if (g_plugin.m_bShaderCaching && g_plugin.m_bShaderPrecachingAtStartup) {
@@ -899,6 +1302,8 @@ unsigned __stdcall DoShaderPrecache(void* param) {
         compiledList.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
 
         while (std::getline(file, line)) {
+            if (shaderPrecacheCancel.load())
+                break;
 
             // Skip BOM if present (UTF-8)
             if (!line.empty() && line[0] == '\xEF' && line[1] == '\xBB' && line[2] == '\xBF') {
@@ -925,6 +1330,8 @@ unsigned __stdcall DoShaderPrecache(void* param) {
                 std::wstring dirPath = wLine.substr(0, line.length() - 1); // Remove '*'
                 if (std::filesystem::exists(dirPath)) {
                     for (const auto& entry : std::filesystem::directory_iterator(dirPath)) {
+                        if (shaderPrecacheCancel.load())
+                            break;
                         if (entry.is_regular_file()) {
                             PrecachePresetShaders(entry.path().wstring(), compiledList, compiledShaders);
                         }
@@ -938,6 +1345,9 @@ unsigned __stdcall DoShaderPrecache(void* param) {
 
         file.close();
         compiledList.close();
+        if (shaderPrecacheCancel.load())
+            return 0;
+
         auto end = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration<double>(end - start); // fractional seconds
         std::wstringstream ss;
@@ -1017,13 +1427,14 @@ void DeleteShaderCacheDirectory()
 }
 
 void StartShaderPrecacheThread(HINSTANCE instance) {
+    shaderPrecacheCancel.store(false);
     threadPrecache = (HANDLE)_beginthreadex(
         nullptr,
         0,
         &DoShaderPrecache,
         (void*)instance,
         0,
-        &threadId);
+        &threadPrecacheId);
 }
 
 int StartThreads(HINSTANCE instance) {
@@ -1092,6 +1503,7 @@ int StartThreads(HINSTANCE instance) {
     LoopbackCaptureThreadFunctionArguments threadArgs;
     threadArgs.hr = E_UNEXPECTED; // thread will overwrite this
     threadArgs.pMMDevice = prefs.m_pMMDevice;
+    threadArgs.pMMDevice->AddRef(); // The capture thread owns its device reference.
     threadArgs.bInt16 = prefs.m_bInt16;
     threadArgs.hFile = prefs.m_hFile;
     threadArgs.hStartedEvent = hStartedEvent;
@@ -1105,6 +1517,8 @@ int StartThreads(HINSTANCE instance) {
     );
     if (NULL == hThread) {
         ERR(L"CreateThread failed: last error is %u", GetLastError());
+        threadArgs.pMMDevice->Release();
+        threadArgs.pMMDevice = NULL;
         return -__LINE__;
     }
     CloseHandleOnExit closeThread(hThread);
@@ -1130,9 +1544,12 @@ int StartThreads(HINSTANCE instance) {
     // at this point capture is running
     // wait for the user to press a key or for capture to error out
 
-    /*HANDLE thread =*/ StartRenderThread(instance);
     StartShaderPrecacheThread(instance);
+    /*HANDLE thread =*/ StartRenderThread(instance);
     WaitForSingleObject(thread, INFINITE);
+    // Also cover render-window startup failures that return before the render
+    // loop gets a chance to stop the worker.
+    StopShaderPrecacheThread();
 
     //NEED TO STOP CAPTURE
     // at this point capture is running
@@ -1284,6 +1701,9 @@ int StartThreads(HINSTANCE instance) {
     }
 #else
     int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow) {
+        const int uploadResult = RunBeatDropLyricsUploadHelper(szCmdLine);
+        if (uploadResult >= 0)
+            return uploadResult;
         api_orig_hinstance = hInstance;
 		// SPOUT
 		if (g_plugin.CheckForDirectX9c())

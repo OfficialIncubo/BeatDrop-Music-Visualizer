@@ -1,0 +1,160 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 14/07/2026 at 11:42:51.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.900
+fDecay=0.970
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.630
+fWaveParam=-1.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=q1=0.0;
+per_frame_init_2=q2=40.0;
+per_frame_init_3=q5=0.0;
+per_frame_init_4=q6=0.0;
+per_frame_init_5=time_delay=0.0;
+per_frame_init_6=rand_laser=rand(160);
+per_frame_init_7=spin_dir=1.0;
+per_frame_init_8=temp1 = temp2 = 0;
+per_frame_1=// SKELETON (kept intact, tuned for a slower hypnotic vortex retrigger)
+per_frame_2=time_delay = if(time_delay >= .40 && bass > 2, 0, time_delay += 1/fps);
+per_frame_3=rand_laser = if(time_delay == 0, rand(160), rand_laser);
+per_frame_4=
+per_frame_5=// Flip spiral direction roughly every other beat for variety
+per_frame_6=spin_dir = if(time_delay == 0 && abs(rand_laser*0.5) > 0.5, spin_dir*-1.0, spin_dir);
+per_frame_7=
+per_frame_8=// Custom variable mapping to feed the Comp Shader
+per_frame_9=q1 = rand_laser;
+per_frame_10=q2 = time_delay;
+per_frame_11=temp1 += spin_dir*(0.35 + bass_att*0.5)/fps;
+per_frame_12=temp2 += (0.12 + mid_att*0.2)/fps;
+per_frame_13=q3 = temp1;
+per_frame_14=q4 = temp2;
+per_frame_15=q5 = if(time_delay == 0, 1.0, q5 * 0.93);
+per_frame_16=q6 = 0.6 + 0.4*sin(time*0.5 + rand_laser*0.05);
+per_frame_17=q7 = treb_att;
+warp_1=`shader_body {}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float aspect = texsize.x * texsize.z;
+comp_4=`    float2 p = (uv - 0.5);
+comp_5=`    p.x *= aspect;
+comp_6=`    float r = length(p);
+comp_7=`
+comp_8=`    float col_sel = fmod(q1 * 2.7, 4.0);
+comp_9=`    float3 col1, col2;
+comp_10=`    if (col_sel < 1.0) { col1 = float3(0.1, 0.9, 1.0); col2 = float3(1.0, 0.1, 0.7); }
+comp_11=`    else if (col_sel < 2.0) { col1 = float3(0.6, 0.0, 1.0); col2 = float3(0.0, 1.0, 0.4); }
+comp_12=`    else if (col_sel < 3.0) { col1 = float3(1.0, 0.5, 0.0); col2 = float3(1.0, 0.9, 0.2); }
+comp_13=`    else { col1 = float3(1.0, 1.0, 1.0); col2 = float3(0.2, 0.6, 1.0); }
+comp_14=`
+comp_15=`    float beat_strike = exp(-q2 * 5.0);
+comp_16=`    float beam_focus = 1.0 + beat_strike * 2.5;
+comp_17=`    float base_ang = atan2(p.y, p.x);
+comp_18=`
+comp_19=`    // 1. SPIRAL VORTEX ARMS (logarithmic spiral, continuously winding via q3)
+comp_20=`    float3 lasers = float3(0,0,0);
+comp_21=`    float tightness = 2.2 + sin(q4) * 0.8;
+comp_22=`    for (int i = 0; i < 6; i++) {
+comp_23=`        float arm_offset = (float(i) / 6.0) * 6.28318;
+comp_24=`        float curve_ang = base_ang - q3 - r * tightness - arm_offset;
+comp_25=`        curve_ang = curve_ang - 6.28318*floor(curve_ang/6.28318 + 0.5);
+comp_26=`        float d = abs(curve_ang) * max(r, 0.05);
+comp_27=`        float hw = 0.012 * beam_focus;
+comp_28=`        float core = exp(-pow(d/hw, 2.0));
+comp_29=`        float glow = exp(-pow(d/(hw*5.0), 2.0)) * 0.4;
+comp_30=`        float3 c = lerp(col1, col2, frac(float(i)*0.18 + q6));
+comp_31=`        lasers += c * (core + glow);
+comp_32=`    }
+comp_33=`
+comp_34=`    // 2. Center vortex core flare, brightens hard on beat
+comp_35=`    float core_flare = exp(-r * 7.0) * (0.4 + beat_strike * 1.4);
+comp_36=`    lasers += lerp(col1, col2, 0.5) * core_flare;
+comp_37=`
+comp_38=`    // 3. Smoke via MilkDrop's own blur buffer, tinted
+comp_39=`    float3 smoke = GetBlur2(uv).rgb * 0.7;
+comp_40=`    float3 bg = smoke * col2 * 0.18;
+comp_41=`
+comp_42=`    // 4. Shimmer: fine-grain treble-reactive sparkle riding the spiral arms
+comp_43=`    float shimmer = q7 * 0.25 * (0.5 + 0.5*sin(r*40.0 - time*6.0));
+comp_44=`    lasers *= (1.0 + shimmer);
+comp_45=`
+comp_46=`    // 5. Anti-seizure smooth global pulse + sharp beat strobe add (not multiply, so it never fully blacks out)
+comp_47=`    float slow_pulse = 0.78 + 0.22*sin(time*0.6 + q6*M_PI);
+comp_48=`    float3 final_rgb = (lasers * slow_pulse) + bg;
+comp_49=`    final_rgb += lerp(col1,col2,0.5) * q5 * 0.25 * exp(-r*3.0);
+comp_50=`
+comp_51=`    ret = final_rgb;
+comp_52=`}

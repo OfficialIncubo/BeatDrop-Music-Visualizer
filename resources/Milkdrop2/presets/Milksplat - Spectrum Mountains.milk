@@ -1,0 +1,790 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+FFTAttack=1.000
+FFTDecay=0.000
+fRating=3.0
+fWaveScale=1.0
+fWaveSmoothing=0.0
+fWarpAnimSpeed=1.0
+fWarpScale=1.0
+fShader=0.0
+bModWaveAlphaByVolume=0
+bRedBlueStereo=0
+fModWaveAlphaStart=0
+fModWaveAlphaEnd=1
+zoom=1
+fZoomExponent=1
+rot=0
+warp=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+sx=1
+sy=1
+fDecay=1
+nWaveMode=0
+wave_r=1
+wave_g=1
+wave_b=1
+fWaveAlpha=0
+wave_x=0.5
+wave_y=0.5
+fWaveParam=0
+bWaveDots=0
+bWaveThick=0
+bAdditiveWaves=0
+bMaximizeWaveColor=1
+ob_size=0.01
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0.01
+ib_r=0.25
+ib_g=0.25
+ib_b=0.25
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+fGammaAdj=1
+bInvert=0
+bSolarize=0
+bBrighten=0
+bDarken=0
+bDarkenCenter=0
+bTexWrap=1
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+per_frame_init_1=ms_first=1;ms_frame=-1;ms_time=0;ms_lastbeat=-1;
+per_frame_init_2=hu = 0; fc = 0; sr = 40; sa = 0; cd = 0; cs = 0;
+per_frame_init_3=q32=0;
+per_frame_init_4=q31=0;
+per_frame_init_5=q30=0;
+per_frame_init_6=gmegabuf(1042944)=0;
+per_frame_init_7=gmegabuf(1042945)=0;
+per_frame_init_8=gmegabuf(1042946)=min(1,pixelsx/pixelsy);
+per_frame_init_9=gmegabuf(1042947)=min(1,pixelsy/pixelsx);
+per_frame_init_10=gmegabuf(1042948)=pixelsx;
+per_frame_init_11=gmegabuf(1042949)=pixelsy;
+per_frame_init_12=gmegabuf(1042950)=0;
+per_frame_init_13=gmegabuf(1042951)=0;
+per_frame_init_14=gmegabuf(1042952)=aspectx;
+per_frame_init_15=gmegabuf(1042953)=aspecty;
+per_frame_init_16=ms_acc=0;ms_due=0;ms_last_render=0;ms_keep_q1=q1;ms_keep_q2=q2;ms_keep_q3=q3;ms_keep_q4=q4;ms_keep_q5=q5;ms_keep_q6=q6;ms_keep_q7=q7;ms_keep_q8=q8;ms_keep_q9=q9;ms_keep_q10=q10;ms_keep_q11=q11;ms_keep_q12=q12;ms_keep_q13=q13;ms_keep_q14=q14;ms_keep_q15=q15;ms_keep_q16=q16;ms_keep_q17=q17;ms_keep_q18=q18;ms_keep_q19=q19;ms_keep_q20=q20;ms_keep_q21=q21;ms_keep_q22=q22;ms_keep_q23=q23;ms_keep_q24=q24;ms_keep_q25=q25;ms_keep_q26=q26;ms_keep_q27=q27;ms_keep_q28=q28;ms_keep_q29=q29;ms_keep_q30=q30;ms_keep_q31=q31;ms_keep_q32=q32;gmegabuf(1042954)=0;
+per_frame_1=ms_default_zoom=zoom;ms_default_zoomexp=zoomexp;ms_default_rot=rot;ms_default_warp=warp;ms_default_cx=cx;ms_default_cy=cy;ms_default_dx=dx;ms_default_dy=dy;ms_default_sx=sx;ms_default_sy=sy;ms_default_decay=decay;ms_default_wave_mode=wave_mode;ms_default_wave_r=wave_r;ms_default_wave_g=wave_g;ms_default_wave_b=wave_b;ms_default_wave_a=wave_a;ms_default_wave_x=wave_x;ms_default_wave_y=wave_y;ms_default_wave_mystery=wave_mystery;ms_default_wave_usedots=wave_usedots;ms_default_wave_thick=wave_thick;ms_default_wave_additive=wave_additive;ms_default_wave_brighten=wave_brighten;ms_default_ob_size=ob_size;ms_default_ob_r=ob_r;ms_default_ob_g=ob_g;ms_default_ob_b=ob_b;ms_default_ob_a=ob_a;ms_default_ib_size=ib_size;ms_default_ib_r=ib_r;ms_default_ib_g=ib_g;ms_default_ib_b=ib_b;ms_default_ib_a=ib_a;ms_default_mv_x=mv_x;ms_default_mv_y=mv_y;ms_default_mv_dx=mv_dx;ms_default_mv_dy=mv_dy;ms_default_mv_l=mv_l;ms_default_mv_r=mv_r;ms_default_mv_g=mv_g;ms_default_mv_b=mv_b;ms_default_mv_a=mv_a;ms_default_echo_zoom=echo_zoom;ms_default_echo_alpha=echo_alpha;ms_default_echo_orient=echo_orient;ms_default_gamma=gamma;ms_default_invert=invert;ms_default_solarize=solarize;ms_default_brighten=brighten;ms_default_darken=darken;ms_default_darken_center=darken_center;ms_default_texture_wrap=texture_wrap;ms_default_b1n=b1n;ms_default_b2n=b2n;ms_default_b3n=b3n;ms_default_b1x=b1x;ms_default_b2x=b2x;ms_default_b3x=b3x;ms_default_b1ed=b1ed;ms_default_q1=q1;ms_default_q2=q2;ms_default_q3=q3;ms_default_q4=q4;ms_default_q5=q5;ms_default_q6=q6;ms_default_q7=q7;ms_default_q8=q8;ms_default_q9=q9;ms_default_q10=q10;ms_default_q11=q11;ms_default_q12=q12;ms_default_q13=q13;ms_default_q14=q14;ms_default_q15=q15;ms_default_q16=q16;ms_default_q17=q17;ms_default_q18=q18;ms_default_q19=q19;ms_default_q20=q20;ms_default_q21=q21;ms_default_q22=q22;ms_default_q23=q23;ms_default_q24=q24;ms_default_q25=q25;ms_default_q26=q26;ms_default_q27=q27;ms_default_q28=q28;ms_default_q29=q29;ms_default_q30=q30;ms_default_q31=q31;ms_default_q32=q32;
+per_frame_2=ms_elapsed=if(ms_first,0,max(0,time-ms_last_render));
+per_frame_3=ms_last_render=time;ms_acc=ms_acc+ms_elapsed*60;
+per_frame_4=ms_due=if(ms_first,1,min(4,floor(ms_acc+0.000001)));
+per_frame_5=ms_acc=max(0,ms_acc-floor(ms_acc+0.000001));ms_first=0;
+per_frame_6=
+per_frame_7=ms_spectrum_tick=0;ms_spectrum_init=0;
+per_frame_8=
+per_frame_9=if(above(ms_due,0),loop(ms_due,
+per_frame_10=zoom=ms_default_zoom;zoomexp=ms_default_zoomexp;rot=ms_default_rot;warp=ms_default_warp;cx=ms_default_cx;cy=ms_default_cy;dx=ms_default_dx;dy=ms_default_dy;sx=ms_default_sx;sy=ms_default_sy;decay=ms_default_decay;wave_mode=ms_default_wave_mode;wave_r=ms_default_wave_r;wave_g=ms_default_wave_g;wave_b=ms_default_wave_b;wave_a=ms_default_wave_a;wave_x=ms_default_wave_x;wave_y=ms_default_wave_y;wave_mystery=ms_default_wave_mystery;wave_usedots=ms_default_wave_usedots;wave_thick=ms_default_wave_thick;wave_additive=ms_default_wave_additive;wave_brighten=ms_default_wave_brighten;ob_size=ms_default_ob_size;ob_r=ms_default_ob_r;ob_g=ms_default_ob_g;ob_b=ms_default_ob_b;ob_a=ms_default_ob_a;ib_size=ms_default_ib_size;ib_r=ms_default_ib_r;ib_g=ms_default_ib_g;ib_b=ms_default_ib_b;ib_a=ms_default_ib_a;mv_x=ms_default_mv_x;mv_y=ms_default_mv_y;mv_dx=ms_default_mv_dx;mv_dy=ms_default_mv_dy;mv_l=ms_default_mv_l;mv_r=ms_default_mv_r;mv_g=ms_default_mv_g;mv_b=ms_default_mv_b;mv_a=ms_default_mv_a;echo_zoom=ms_default_echo_zoom;echo_alpha=ms_default_echo_alpha;echo_orient=ms_default_echo_orient;gamma=ms_default_gamma;invert=ms_default_invert;solarize=ms_default_solarize;brighten=ms_default_brighten;darken=ms_default_darken;darken_center=ms_default_darken_center;texture_wrap=ms_default_texture_wrap;b1n=ms_default_b1n;b2n=ms_default_b2n;b3n=ms_default_b3n;b1x=ms_default_b1x;b2x=ms_default_b2x;b3x=ms_default_b3x;b1ed=ms_default_b1ed;q1=ms_default_q1;q2=ms_default_q2;q3=ms_default_q3;q4=ms_default_q4;q5=ms_default_q5;q6=ms_default_q6;q7=ms_default_q7;q8=ms_default_q8;q9=ms_default_q9;q10=ms_default_q10;q11=ms_default_q11;q12=ms_default_q12;q13=ms_default_q13;q14=ms_default_q14;q15=ms_default_q15;q16=ms_default_q16;q17=ms_default_q17;q18=ms_default_q18;q19=ms_default_q19;q20=ms_default_q20;q21=ms_default_q21;q22=ms_default_q22;q23=ms_default_q23;q24=ms_default_q24;q25=ms_default_q25;q26=ms_default_q26;q27=ms_default_q27;q28=ms_default_q28;q29=ms_default_q29;q30=ms_default_q30;q31=ms_default_q31;q32=ms_default_q32;
+per_frame_11=ms_frame=ms_frame+1;ms_time=ms_frame/60;
+per_frame_12=beat=above(bass,bass_att*1.25)*above(ms_time-ms_lastbeat,0.15);
+per_frame_13=ms_lastbeat=if(beat,ms_time,ms_lastbeat);
+per_frame_14=beat_strength=max(0,bass-bass_att);
+per_frame_15=sb = sb + (min(bass_att, 2.5) - sb) * 0.03;
+per_frame_16=st = st + (min(treb_att, 2.5) - st) * 0.1;
+per_frame_17=
+per_frame_18=xb = max(bass - 1, 0); xb = xb / (1 + 0.5 * xb);
+per_frame_19=ob = pb;
+per_frame_20=pb = pb + (xb - pb) * if(xb > pb, 0.6, 0.1);
+per_frame_21=xm = max(mid - 1, 0); xm = xm / (1 + 0.5 * xm);
+per_frame_22=pm = pm + (xm - pm) * if(xm > pm, 0.6, 0.1);
+per_frame_23=xt = max(treb - 1, 0); xt = xt / (1 + 0.5 * xt);
+per_frame_24=pt = pt + (xt - pt) * if(xt > pt, 0.6, 0.1);
+per_frame_25=fc = fc + 1;
+per_frame_26=
+per_frame_27=kk = max(pb - ob, 0);
+per_frame_28=cd = cd + 1;
+per_frame_29=if(kk > 0.1 && cd > 8, cd = 0; sr = 0; sa = min(pb, 1), 0);
+per_frame_30=sr = min(sr + 0.45, 60);
+per_frame_31=sa = sa * 0.975;
+per_frame_32=
+per_frame_33=hu = hu + (0.01 + 0.12 * pm) / 60;
+per_frame_34=hu = hu - floor(hu);
+per_frame_35=
+per_frame_36=cs = cs + 6.2831853 / 40 / 60;
+per_frame_37=cs = cs - 6.2831853 * floor(cs / 6.2831853);
+per_frame_38=q1 = min(128, pixelsx); q2 = min(160, pixelsy); q3 = fc % 3; q4 = hu;
+per_frame_39=q5 = pb; q6 = pm; q7 = pt; q8 = sb;
+per_frame_40=q9 = sr; q10 = sa; q11 = st; q12 = cs;
+per_frame_41=wave_r=min(1,max(0,wave_r))/1;wave_g=min(1,max(0,wave_g))/1;wave_b=min(1,max(0,wave_b))/1;wave_a=min(1,max(0,wave_a));
+per_frame_42=q32=ms_time;
+per_frame_43=q31=ms_frame;
+per_frame_44=gmegabuf(1042944)=ms_time;
+per_frame_45=gmegabuf(1042945)=ms_frame;
+per_frame_46=gmegabuf(1042946)=min(1,pixelsx/pixelsy);
+per_frame_47=gmegabuf(1042947)=min(1,pixelsy/pixelsx);
+per_frame_48=gmegabuf(1042948)=pixelsx;
+per_frame_49=gmegabuf(1042949)=pixelsy;
+per_frame_50=gmegabuf(1042950)=beat;
+per_frame_51=gmegabuf(1042951)=beat_strength;
+per_frame_52=gmegabuf(1042952)=aspectx;
+per_frame_53=gmegabuf(1042953)=aspecty;
+per_frame_54=ms_spectrum_tick=ms_spectrum_tick+1;
+per_frame_55=ms_spectrum_init=max(ms_spectrum_init,below(fc,2));
+per_frame_56=if(equal(ms_spectrum_tick,1),ms_spectrum_b1=q5;ms_spectrum_t1=q7,0);
+per_frame_57=if(equal(ms_spectrum_tick,2),ms_spectrum_b2=q5;ms_spectrum_t2=q7,0);
+per_frame_58=if(equal(ms_spectrum_tick,3),ms_spectrum_b3=q5;ms_spectrum_t3=q7,0);
+per_frame_59=if(equal(ms_spectrum_tick,4),ms_spectrum_b4=q5;ms_spectrum_t4=q7,0);
+per_frame_60=
+per_frame_61=ms_keep_q1=q1;ms_keep_q2=q2;ms_keep_q3=q3;ms_keep_q4=q4;ms_keep_q5=q5;ms_keep_q6=q6;ms_keep_q7=q7;ms_keep_q8=q8;ms_keep_q9=q9;ms_keep_q10=q10;ms_keep_q11=q11;ms_keep_q12=q12;ms_keep_q13=q13;ms_keep_q14=q14;ms_keep_q15=q15;ms_keep_q16=q16;ms_keep_q17=q17;ms_keep_q18=q18;ms_keep_q19=q19;ms_keep_q20=q20;ms_keep_q21=q21;ms_keep_q22=q22;ms_keep_q23=q23;ms_keep_q24=q24;ms_keep_q25=q25;ms_keep_q26=q26;ms_keep_q27=q27;ms_keep_q28=q28;ms_keep_q29=q29;ms_keep_q30=q30;ms_keep_q31=q31;ms_keep_q32=q32;
+per_frame_62=),
+per_frame_63=q1=ms_keep_q1;q2=ms_keep_q2;q3=ms_keep_q3;q4=ms_keep_q4;q5=ms_keep_q5;q6=ms_keep_q6;q7=ms_keep_q7;q8=ms_keep_q8;q9=ms_keep_q9;q10=ms_keep_q10;q11=ms_keep_q11;q12=ms_keep_q12;q13=ms_keep_q13;q14=ms_keep_q14;q15=ms_keep_q15;q16=ms_keep_q16;q17=ms_keep_q17;q18=ms_keep_q18;q19=ms_keep_q19;q20=ms_keep_q20;q21=ms_keep_q21;q22=ms_keep_q22;q23=ms_keep_q23;q24=ms_keep_q24;q25=ms_keep_q25;q26=ms_keep_q26;q27=ms_keep_q27;q28=ms_keep_q28;q29=ms_keep_q29;q30=ms_keep_q30;q31=ms_keep_q31;q32=ms_keep_q32;
+per_frame_64=);
+per_frame_65=if(above(ms_due,0),
+per_frame_66=q13=ms_spectrum_b1;q14=ms_spectrum_t1;q15=ms_spectrum_b2;q16=ms_spectrum_t2;
+per_frame_67=q17=ms_spectrum_b3;q18=ms_spectrum_t3;q19=ms_spectrum_b4;q20=ms_spectrum_t4;
+per_frame_68=q21=ms_due;q22=ms_spectrum_init,0);
+per_frame_69=ms_keep_q1=q1;ms_keep_q2=q2;ms_keep_q3=q3;ms_keep_q4=q4;ms_keep_q5=q5;ms_keep_q6=q6;ms_keep_q7=q7;ms_keep_q8=q8;ms_keep_q9=q9;ms_keep_q10=q10;ms_keep_q11=q11;ms_keep_q12=q12;ms_keep_q13=q13;ms_keep_q14=q14;ms_keep_q15=q15;ms_keep_q16=q16;ms_keep_q17=q17;ms_keep_q18=q18;ms_keep_q19=q19;ms_keep_q20=q20;ms_keep_q21=q21;ms_keep_q22=q22;ms_keep_q23=q23;ms_keep_q24=q24;ms_keep_q25=q25;ms_keep_q26=q26;ms_keep_q27=q27;ms_keep_q28=q28;ms_keep_q29=q29;ms_keep_q30=q30;ms_keep_q31=q31;ms_keep_q32=q32;
+per_frame_70=gmegabuf(1042954)=ms_due;
+per_frame_71=q30=above(ms_due,0);
+per_frame_72=if(above(ms_due,0),0,zoom=1;zoomexp=1;rot=0;warp=0;dx=0;dy=0;sx=1;sy=1;cx=0.5;cy=0.5;decay=1;wave_a=0;ob_a=0;ib_a=0;mv_a=0);
+warp_1=`// MILKSPLAT PORT CREDIT BEGIN
+warp_2=`// Original preset: Spectrum Mountains by Milksplat.
+warp_3=`// Copyright (c) 2026 Milksplat contributors.
+warp_4=`// Original license: MIT OR Apache-2.0; see bundled licenses.
+warp_5=`// Source: https://github.com/delphium226/milksplat/blob/dc87fd6a854f544b0a20bfd801055e4850e1e328/presets/spectrum-mountains.splat
+warp_6=`// Adapted to MilkDrop 2 / BeatDrop HLSL (Shader Model 3, 8-bit feedback).
+warp_7=`// MILKSPLAT PORT CREDIT END
+warp_8=`
+warp_9=`// BeatDrop advertises peak-hold FFT; MilkDrop 3.33+ provides get_fft
+warp_10=`// without that marker. Its mouse_x macro identifies the extended prelude.
+warp_11=`#if defined(HAS_FFT_PEAK) || defined(mouse_x)
+warp_12=`#define ms_spectrum(x) get_fft(x)
+warp_13=`#else
+warp_14=`#define ms_spectrum(x) (max(0.0,lerp(lerp(bass,mid,saturate((x)*12.0)),treb,saturate(((x)-0.08)*2.0)))*0.2)
+warp_15=`#endif
+warp_16=`float4 ms_load_main(int3 p) {
+warp_17=`float4 v=tex2Dlod(sampler_pc_main,float4((float2(p.xy)+0.5)*texsize.zw,0.0,0.0));
+warp_18=`return (p.x>=0 && p.y>=0 && p.x<texsize.x && p.y<texsize.y)?v:0.0;
+warp_19=`}
+warp_20=`float3 ms_spectrum_quantize(float3 v)
+warp_21=`{
+warp_22=`float3 scale = float3(16383.75, 127.5, 127.5);
+warp_23=`return (floor(((clamp(v, (0.0).xxx, float3(4.0, 2.0, 2.0)) * scale) + (0.5).xxx)) / scale);
+warp_24=`}
+warp_25=`
+warp_26=`int2 naga_f2i32(float2 value) {
+warp_27=`return int2(clamp(value, -2147483600.0, 2147483500.0));
+warp_28=`}
+warp_29=`
+warp_30=`float3 ms_spectrum_read_point(float2 c)
+warp_31=`{
+warp_32=`float4 _e4 = ms_load_main(int3(naga_f2i32(c), int(0)));
+warp_33=`float3 v_1 = _e4.xyz;
+warp_34=`return float3((((v_1.x * 255.0) + (v_1.y * 65280.0)) * 6.103609e-5), (v_1.z * 2.0), 0.0);
+warp_35=`}
+warp_36=`
+warp_37=`int naga_f2i32(float value) {
+warp_38=`return int(clamp(value, -2147483600.0, 2147483500.0));
+warp_39=`}
+warp_40=`
+warp_41=`float ms_spectrum_new_height(float2 c_1)
+warp_42=`{
+warp_43=`float4 _e3 = (texsize);
+warp_44=`float2 sz = _e3.xy;
+warp_45=`float _e9 = _qa.x;
+warp_46=`float nb = min(_e9, max(1.0, (sz.x - 1.0)));
+warp_47=`float _e20 = _qa.y;
+warp_48=`float nr = min(_e20, sz.y);
+warp_49=`float due = _qf.x;
+warp_50=`float uu = (c_1.x / max((nb - 1.0), 1.0));
+warp_51=`float bin = (2.5 * pow(190.0, uu));
+warp_52=`float spread = (0.5 + (bin * 0.04));
+warp_53=`float b0_ = clamp((bin - spread), 0.5, 511.5);
+warp_54=`float b1_ = clamp(bin, 0.5, 511.5);
+warp_55=`float b2_ = clamp((bin + spread), 0.5, 511.5);
+warp_56=`float4 _e60 = float4(ms_spectrum((float4(float2((b0_ / 512.0), 0.5),0.0,0.0)).xy.x),0.0,0.0,1.0);
+warp_57=`float4 _e69 = float4(ms_spectrum((float4(float2((b1_ / 512.0), 0.5),0.0,0.0)).xy.x),0.0,0.0,1.0);
+warp_58=`float4 _e79 = float4(ms_spectrum((float4(float2((b2_ / 512.0), 0.5),0.0,0.0)).xy.x),0.0,0.0,1.0);
+warp_59=`float s = ((_e60.x + _e69.x) + _e79.x);
+warp_60=`float hill = (0.5 + ((0.5 * sin(((c_1.x * 0.9) + 1.3))) * sin(((c_1.x * 0.37) + 0.4))));
+warp_61=`float latest = (((s / 3.0) * (0.8 + (1.4 * uu))) + (0.06 * hill));
+warp_62=`float4 _e115 = ms_load_main(int3(int2(naga_f2i32(c_1.x), int(0)), int(0)));
+warp_63=`float2 rawprev = _e115.xy;
+warp_64=`float prev = (((rawprev.x * 255.0) + (rawprev.y * 65280.0)) * 6.103609e-5);
+warp_65=`float weight = ((due - c_1.y) / max(due, 1.0));
+warp_66=`float _e136 = _qf.y;
+warp_67=`float height = ((_e136 > 0.5) ? latest : lerp(prev, latest, weight));
+warp_68=`return (floor(((clamp(height, 0.0, 4.0) * 16383.75) + 0.5)) * 6.103609e-5);
+warp_69=`}
+warp_70=`
+warp_71=`float2 ms_spectrum_pulses(float row)
+warp_72=`{
+warp_73=`float _e5 = _qf.x;
+warp_74=`float tick = (_e5 - row);
+warp_75=`float _e11 = _qd.x;
+warp_76=`float _e16 = _qd.z;
+warp_77=`float _e24 = _qe.x;
+warp_78=`float _e32 = _qe.z;
+warp_79=`float ms_local_bass = ((tick > 3.5) ? _e32 : ((tick > 2.5) ? _e24 : ((tick > 1.5) ? _e16 : _e11)));
+warp_80=`float _e40 = _qd.y;
+warp_81=`float _e45 = _qd.w;
+warp_82=`float _e53 = _qe.y;
+warp_83=`float _e61 = _qe.w;
+warp_84=`float ms_local_treb = ((tick > 3.5) ? _e61 : ((tick > 2.5) ? _e53 : ((tick > 1.5) ? _e45 : _e40)));
+warp_85=`return (floor(((clamp(float2(ms_local_bass, ms_local_treb), (0.0).xx, (2.0).xx) * 127.5) + (0.5).xx)) / (127.5).xx);
+warp_86=`}
+warp_87=`
+warp_88=`float3 ms_spectrum_cell(float2 c_2)
+warp_89=`{
+warp_90=`
+warp_91=`bool ms_function_live=true;
+warp_92=`float3 ms_function_result=0;
+warp_93=`float _e5 = _qa.x;
+warp_94=`float _e9 = (texsize).x;
+warp_95=`float nb_1 = min(_e5, max(1.0, (_e9 - 1.0)));
+warp_96=`float _e30 = _qa.y;
+warp_97=`float _e34 = (texsize).y;
+warp_98=`if(((((c_2.x < 0.0) || (c_2.x >= nb_1)) || (c_2.y < 0.0)) || (c_2.y >= min(_e30, _e34)))) {
+warp_99=`{
+warp_100=`ms_function_result=(0.0).xxx;
+warp_101=`ms_function_live=false;
+warp_102=`}
+warp_103=`}
+warp_104=`if(ms_function_live) {
+warp_105=`float _e44 = _qh.y;
+warp_106=`if((_e44 < 0.5)) {
+warp_107=`{
+warp_108=`const float3 _e47 = ms_spectrum_read_point(c_2);
+warp_109=`ms_function_result=_e47;
+warp_110=`ms_function_live=false;
+warp_111=`}
+warp_112=`}
+warp_113=`if(ms_function_live) {
+warp_114=`float _e53 = _qf.x;
+warp_115=`if((c_2.y >= _e53)) {
+warp_116=`{
+warp_117=`float _e59 = _qf.y;
+warp_118=`if((_e59 > 0.5)) {
+warp_119=`{
+warp_120=`ms_function_result=(0.0).xxx;
+warp_121=`ms_function_live=false;
+warp_122=`}
+warp_123=`}
+warp_124=`if(ms_function_live) {
+warp_125=`float _e68 = _qf.x;
+warp_126=`const float3 _e72 = ms_spectrum_read_point((c_2 - float2(0.0, _e68)));
+warp_127=`ms_function_result=_e72;
+warp_128=`ms_function_live=false;
+warp_129=`}
+warp_130=`}
+warp_131=`}
+warp_132=`if(ms_function_live) {
+warp_133=`const float _e73 = ms_spectrum_new_height(c_2);
+warp_134=`const float2 _e75 = ms_spectrum_pulses(c_2.y);
+warp_135=`ms_function_result=float3(_e73, _e75);
+warp_136=`ms_function_live=false;
+warp_137=`}
+warp_138=`}
+warp_139=`}
+warp_140=`return ms_function_result;
+warp_141=`
+warp_142=`}
+warp_143=`
+warp_144=`float3 ms_spectrum_meta(float2 c_3)
+warp_145=`{
+warp_146=`
+warp_147=`bool ms_function_live=true;
+warp_148=`float3 ms_function_result=0;
+warp_149=`float _e6 = _qa.y;
+warp_150=`float _e10 = (texsize).y;
+warp_151=`if((c_3.y >= min(_e6, _e10))) {
+warp_152=`{
+warp_153=`ms_function_result=(0.0).xxx;
+warp_154=`ms_function_live=false;
+warp_155=`}
+warp_156=`}
+warp_157=`if(ms_function_live) {
+warp_158=`float _e19 = _qh.y;
+warp_159=`if((_e19 < 0.5)) {
+warp_160=`{
+warp_161=`float4 _e25 = ms_load_main(int3(naga_f2i32(c_3), int(0)));
+warp_162=`ms_function_result=float3(0.0, 0.0, (_e25.x * 2.0));
+warp_163=`ms_function_live=false;
+warp_164=`}
+warp_165=`}
+warp_166=`if(ms_function_live) {
+warp_167=`float due_1 = _qf.x;
+warp_168=`if((c_3.y >= due_1)) {
+warp_169=`{
+warp_170=`float _e43 = _qf.y;
+warp_171=`if((_e43 > 0.5)) {
+warp_172=`{
+warp_173=`ms_function_result=(0.0).xxx;
+warp_174=`ms_function_live=false;
+warp_175=`}
+warp_176=`}
+warp_177=`if(ms_function_live) {
+warp_178=`float4 _e54 = ms_load_main(int3(naga_f2i32((c_3 - float2(0.0, due_1))), int(0)));
+warp_179=`ms_function_result=float3(0.0, 0.0, (_e54.x * 2.0));
+warp_180=`ms_function_live=false;
+warp_181=`}
+warp_182=`}
+warp_183=`}
+warp_184=`if(ms_function_live) {
+warp_185=`float tick_1 = (due_1 - c_3.y);
+warp_186=`float _e67 = _qd.y;
+warp_187=`float _e72 = _qd.w;
+warp_188=`float _e80 = _qe.y;
+warp_189=`float _e88 = _qe.w;
+warp_190=`float treb_1 = ((tick_1 > 3.5) ? _e88 : ((tick_1 > 2.5) ? _e80 : ((tick_1 > 1.5) ? _e72 : _e67)));
+warp_191=`const float3 _e95 = ms_spectrum_quantize(float3(0.0, 0.0, treb_1));
+warp_192=`ms_function_result=_e95;
+warp_193=`ms_function_live=false;
+warp_194=`}
+warp_195=`}
+warp_196=`}
+warp_197=`return ms_function_result;
+warp_198=`
+warp_199=`}
+warp_200=`
+warp_201=`float3 ms_user(float2 ms_local_uv, float2 ms_local_uv_orig, float ms_local_rad, float ms_local_ang, float3 ms_local_hue_shader)
+warp_202=`{
+warp_203=`
+warp_204=`bool ms_function_live=true;
+warp_205=`float3 ms_function_result=0;
+warp_206=`float4 _e7 = (texsize);
+warp_207=`float2 c_4 = floor((ms_local_uv_orig * _e7.xy));
+warp_208=`float _e16 = _qa.x;
+warp_209=`float _e20 = (texsize).x;
+warp_210=`if((c_4.x == min(_e16, max(1.0, (_e20 - 1.0))))) {
+warp_211=`{
+warp_212=`const float3 _e27 = ms_spectrum_meta(c_4);
+warp_213=`ms_function_result=_e27;
+warp_214=`ms_function_live=false;
+warp_215=`}
+warp_216=`}
+warp_217=`if(ms_function_live) {
+warp_218=`const float3 _e28 = ms_spectrum_cell(c_4);
+warp_219=`ms_function_result=_e28;
+warp_220=`ms_function_live=false;
+warp_221=`}
+warp_222=`return ms_function_result;
+warp_223=`
+warp_224=`}
+warp_225=`
+warp_226=`shader_body
+warp_227=`{
+warp_228=`if(q30>0.5) {
+warp_229=`
+warp_230=`    ret = ms_user(uv,uv_orig,rad,ang,float3(1.0,1.0,1.0));
+warp_231=`    ret=float3((abs(ret.x)<3.4e38?clamp(ret.x,0.00000001,64.0):0.00000001),(abs(ret.y)<3.4e38?clamp(ret.y,0.00000001,64.0):0.00000001),(abs(ret.z)<3.4e38?clamp(ret.z,0.00000001,64.0):0.00000001));
+warp_232=`float3 ms_hist=floor(saturate(ret/float3(4.0,2.0,2.0))*float3(65535.0,255.0,255.0)+0.5);
+warp_233=`float ms_rh=floor(ms_hist.r/256.0);
+warp_234=`ret=floor(uv_orig.x*texsize.x)==min(q1,max(1.0,texsize.x-1.0))
+warp_235=`    ?float3(ms_hist.b,0.0,0.0)/255.0
+warp_236=`    :float3(ms_hist.r-ms_rh*256.0,ms_rh,ms_hist.g)/255.0;
+warp_237=`
+warp_238=`} else { ret=tex2Dlod(sampler_pc_main,float4(uv_orig,0.0,0.0)).rgb; }
+warp_239=`}
+comp_1=`// MILKSPLAT PORT CREDIT BEGIN
+comp_2=`// Original preset: Spectrum Mountains by Milksplat.
+comp_3=`// Copyright (c) 2026 Milksplat contributors.
+comp_4=`// Original license: MIT OR Apache-2.0; see bundled licenses.
+comp_5=`// Source: https://github.com/delphium226/milksplat/blob/dc87fd6a854f544b0a20bfd801055e4850e1e328/presets/spectrum-mountains.splat
+comp_6=`// Adapted to MilkDrop 2 / BeatDrop HLSL (Shader Model 3, 8-bit feedback).
+comp_7=`// MILKSPLAT PORT CREDIT END
+comp_8=`float ms_dot(float2 a,float2 b) {
+comp_9=`return a.x*b.x+a.y*b.y+0.00000001;
+comp_10=`}
+comp_11=`float ms_length(float2 a) {
+comp_12=`return sqrt(a.x*a.x+a.y*a.y+0.00000001);
+comp_13=`}
+comp_14=`
+comp_15=`
+comp_16=`float ms_dot(float3 a,float3 b) {
+comp_17=`return a.x*b.x+a.y*b.y+a.z*b.z+0.00000001;
+comp_18=`}
+comp_19=`float ms_length(float3 a) {
+comp_20=`return sqrt(a.x*a.x+a.y*a.y+a.z*a.z+0.00000001);
+comp_21=`}
+comp_22=`
+comp_23=`
+comp_24=`float ms_dot(float4 a,float4 b) {
+comp_25=`return a.x*b.x+a.y*b.y+a.z*b.z+a.w*b.w+0.00000001;
+comp_26=`}
+comp_27=`float ms_length(float4 a) {
+comp_28=`return sqrt(a.x*a.x+a.y*a.y+a.z*a.z+a.w*a.w+0.00000001);
+comp_29=`}
+comp_30=`
+comp_31=`
+comp_32=`
+comp_33=`// BeatDrop advertises peak-hold FFT; MilkDrop 3.33+ provides get_fft
+comp_34=`// without that marker. Its mouse_x macro identifies the extended prelude.
+comp_35=`#if defined(HAS_FFT_PEAK) || defined(mouse_x)
+comp_36=`#define ms_spectrum(x) get_fft(x)
+comp_37=`#else
+comp_38=`#define ms_spectrum(x) (max(0.0,lerp(lerp(bass,mid,saturate((x)*12.0)),treb,saturate(((x)-0.08)*2.0)))*0.2)
+comp_39=`#endif
+comp_40=`float4 ms_load_main(int3 p) {
+comp_41=`float4 v=tex2Dlod(sampler_pc_main,float4((float2(p.xy)+0.5)*texsize.zw,0.0,0.0));
+comp_42=`return (p.x>=0 && p.y>=0 && p.x<texsize.x && p.y<texsize.y)?v:0.0;
+comp_43=`}
+comp_44=`float3 ms_spectrum_read_linear(float2 c)
+comp_45=`{
+comp_46=`float4 _e8 = (texsize);
+comp_47=`float4 _e12 = tex2Dlod(sampler_fc_main,float4(((c + (0.5).xx) / _e8.xy),0.0,0.0));
+comp_48=`float3 v = _e12.xyz;
+comp_49=`return float3((((v.x * 255.0) + (v.y * 65280.0)) * 6.103609e-5), (v.z * 2.0), 0.0);
+comp_50=`}
+comp_51=`
+comp_52=`int naga_f2i32(float value) {
+comp_53=`return int(clamp(value, -2147483600.0, 2147483500.0));
+comp_54=`}
+comp_55=`
+comp_56=`float ms_spectrum_new_height(float2 c_1)
+comp_57=`{
+comp_58=`float4 _e3 = (texsize);
+comp_59=`float2 sz = _e3.xy;
+comp_60=`float _e9 = _qa.x;
+comp_61=`float nb = min(_e9, max(1.0, (sz.x - 1.0)));
+comp_62=`float _e20 = _qa.y;
+comp_63=`float nr = min(_e20, sz.y);
+comp_64=`float due = _qf.x;
+comp_65=`float uu = (c_1.x / max((nb - 1.0), 1.0));
+comp_66=`float bin = (2.5 * pow(190.0, uu));
+comp_67=`float spread = (0.5 + (bin * 0.04));
+comp_68=`float b0_ = clamp((bin - spread), 0.5, 511.5);
+comp_69=`float b1_ = clamp(bin, 0.5, 511.5);
+comp_70=`float b2_ = clamp((bin + spread), 0.5, 511.5);
+comp_71=`float4 _e60 = float4(ms_spectrum((float4(float2((b0_ / 512.0), 0.5),0.0,0.0)).xy.x),0.0,0.0,1.0);
+comp_72=`float4 _e69 = float4(ms_spectrum((float4(float2((b1_ / 512.0), 0.5),0.0,0.0)).xy.x),0.0,0.0,1.0);
+comp_73=`float4 _e79 = float4(ms_spectrum((float4(float2((b2_ / 512.0), 0.5),0.0,0.0)).xy.x),0.0,0.0,1.0);
+comp_74=`float s = ((_e60.x + _e69.x) + _e79.x);
+comp_75=`float hill = (0.5 + ((0.5 * sin(((c_1.x * 0.9) + 1.3))) * sin(((c_1.x * 0.37) + 0.4))));
+comp_76=`float latest = (((s / 3.0) * (0.8 + (1.4 * uu))) + (0.06 * hill));
+comp_77=`float4 _e115 = ms_load_main(int3(int2(naga_f2i32(c_1.x), int(0)), int(0)));
+comp_78=`float2 rawprev = _e115.xy;
+comp_79=`float prev = (((rawprev.x * 255.0) + (rawprev.y * 65280.0)) * 6.103609e-5);
+comp_80=`float weight = ((due - c_1.y) / max(due, 1.0));
+comp_81=`float _e136 = _qf.y;
+comp_82=`float height = ((_e136 > 0.5) ? latest : lerp(prev, latest, weight));
+comp_83=`return (floor(((clamp(height, 0.0, 4.0) * 16383.75) + 0.5)) * 6.103609e-5);
+comp_84=`}
+comp_85=`
+comp_86=`float2 ms_spectrum_pulses(float row)
+comp_87=`{
+comp_88=`float _e5 = _qf.x;
+comp_89=`float tick = (_e5 - row);
+comp_90=`float _e11 = _qd.x;
+comp_91=`float _e16 = _qd.z;
+comp_92=`float _e24 = _qe.x;
+comp_93=`float _e32 = _qe.z;
+comp_94=`float ms_local_bass = ((tick > 3.5) ? _e32 : ((tick > 2.5) ? _e24 : ((tick > 1.5) ? _e16 : _e11)));
+comp_95=`float _e40 = _qd.y;
+comp_96=`float _e45 = _qd.w;
+comp_97=`float _e53 = _qe.y;
+comp_98=`float _e61 = _qe.w;
+comp_99=`float ms_local_treb = ((tick > 3.5) ? _e61 : ((tick > 2.5) ? _e53 : ((tick > 1.5) ? _e45 : _e40)));
+comp_100=`return (floor(((clamp(float2(ms_local_bass, ms_local_treb), (0.0).xx, (2.0).xx) * 127.5) + (0.5).xx)) / (127.5).xx);
+comp_101=`}
+comp_102=`
+comp_103=`float3 ms_spectrum_old_history(float2 c_2)
+comp_104=`{
+comp_105=`float _e5 = _qh.y;
+comp_106=`bool ms_tick_active = (_e5 > 0.5);
+comp_107=`float _e13 = _qf.x;
+comp_108=`float row_2 = (c_2.y - (ms_tick_active ? _e13 : 0.0));
+comp_109=`float _e23 = _qa.y;
+comp_110=`float _e27 = (texsize).y;
+comp_111=`float _e35 = _qf.y;
+comp_112=`bool valid = (((row_2 >= 0.0) && (row_2 < min(_e23, _e27))) && !((ms_tick_active && (_e35 > 0.5))));
+comp_113=`const float3 _e43 = ms_spectrum_read_linear(float2(c_2.x, row_2));
+comp_114=`return (valid ? _e43 : (0.0).xxx);
+comp_115=`}
+comp_116=`
+comp_117=`float3 ms_spectrum_history(float2 c_3)
+comp_118=`{
+comp_119=`
+comp_120=`bool ms_function_live=true;
+comp_121=`float3 ms_function_result=0;
+comp_122=`float _e5 = _qh.y;
+comp_123=`float _e13 = _qf.x;
+comp_124=`if(((_e5 < 0.5) || (c_3.y >= _e13))) {
+comp_125=`{
+comp_126=`const float3 _e16 = ms_spectrum_old_history(c_3);
+comp_127=`ms_function_result=_e16;
+comp_128=`ms_function_live=false;
+comp_129=`}
+comp_130=`}
+comp_131=`if(ms_function_live) {
+comp_132=`float x = floor(c_3.x);
+comp_133=`float _e23 = _qa.x;
+comp_134=`float _e27 = (texsize).x;
+comp_135=`float nb_1 = min(_e23, max(1.0, (_e27 - 1.0)));
+comp_136=`const float _e35 = ms_spectrum_new_height(float2(x, c_3.y));
+comp_137=`const float _e43 = ms_spectrum_new_height(float2(min((x + 1.0), (nb_1 - 1.0)), c_3.y));
+comp_138=`const float2 _e48 = ms_spectrum_pulses(c_3.y);
+comp_139=`ms_function_result=float3(lerp(_e35, _e43, (c_3.x - x)), _e48);
+comp_140=`ms_function_live=false;
+comp_141=`}
+comp_142=`return ms_function_result;
+comp_143=`
+comp_144=`}
+comp_145=`
+comp_146=`float ms_spectrum_treble(float row_1)
+comp_147=`{
+comp_148=`
+comp_149=`bool ms_function_live=true;
+comp_150=`float ms_function_result=0;
+comp_151=`float _e5 = _qh.y;
+comp_152=`bool ms_tick_active_1 = (_e5 > 0.5);
+comp_153=`float _e12 = _qf.x;
+comp_154=`if((ms_tick_active_1 && (row_1 < _e12))) {
+comp_155=`{
+comp_156=`const float2 _e15 = ms_spectrum_pulses(row_1);
+comp_157=`ms_function_result=_e15.y;
+comp_158=`ms_function_live=false;
+comp_159=`}
+comp_160=`}
+comp_161=`if(ms_function_live) {
+comp_162=`float _e21 = _qf.x;
+comp_163=`float oldrow = (row_1 - (ms_tick_active_1 ? _e21 : 0.0));
+comp_164=`float _e29 = _qa.x;
+comp_165=`float _e33 = (texsize).x;
+comp_166=`float nb_2 = min(_e29, max(1.0, (_e33 - 1.0)));
+comp_167=`float4 _e44 = ms_load_main(int3(int2(naga_f2i32(nb_2), naga_f2i32(oldrow)), int(0)));
+comp_168=`float value = (_e44.x * 2.0);
+comp_169=`float _e54 = _qf.y;
+comp_170=`ms_function_result=(((oldrow < 0.0) || (ms_tick_active_1 && (_e54 > 0.5))) ? 0.0 : value);
+comp_171=`ms_function_live=false;
+comp_172=`}
+comp_173=`return ms_function_result;
+comp_174=`
+comp_175=`}
+comp_176=`
+comp_177=`float ms_star_hash13_(float3 p)
+comp_178=`{
+comp_179=`float3 a = frac((p * float3(0.1031, 0.103, 0.0973)));
+comp_180=`float d = (((a.x * (a.y + 7.13)) + (a.y * (a.z + 7.13))) + (a.z * (a.x + 7.13)));
+comp_181=`float3 v_1 = (a + (d).xxx);
+comp_182=`return frac(((v_1.x + v_1.y) * v_1.z));
+comp_183=`}
+comp_184=`
+comp_185=`float ms_star_hash12_(float2 p_1)
+comp_186=`{
+comp_187=`const float _e5 = ms_star_hash13_(float3(p_1.x, p_1.y, p_1.x));
+comp_188=`return _e5;
+comp_189=`}
+comp_190=`
+comp_191=`float2 ms_star_hash22_(float2 p_2)
+comp_192=`{
+comp_193=`const float _e1 = ms_star_hash12_(p_2);
+comp_194=`const float _e6 = ms_star_hash12_((p_2 + float2(47.17, 113.53)));
+comp_195=`return float2(_e1, _e6);
+comp_196=`}
+comp_197=`
+comp_198=`float3 ms_user(float2 ms_local_uv, float2 ms_local_uv_orig, float ms_local_rad, float ms_local_ang, float3 ms_local_hue_shader)
+comp_199=`{
+comp_200=`float3 sky = float3(0.004, 0.003, 0.012);
+comp_201=`float3 col = (float3)0;
+comp_202=`float3 halo = (0.0).xxx;
+comp_203=`float3 face = (0.0).xxx;
+comp_204=`bool covered = false;
+comp_205=`int i = int(0);
+comp_206=`float3 hv = (float3)0;
+comp_207=`float h = (float)0;
+comp_208=`float3 rc = (float3)0;
+comp_209=`float ms_hist_treb = (float)0;
+comp_210=`float3 fc = (float3)0;
+comp_211=`float4 _e7 = (texsize);
+comp_212=`float2 sz_1 = _e7.xy;
+comp_213=`float asp = (sz_1.x / sz_1.y);
+comp_214=`float _e16 = _qa.x;
+comp_215=`float _e20 = (texsize).x;
+comp_216=`float nb_3 = min(_e16, max(1.0, (_e20 - 1.0)));
+comp_217=`float _e30 = _qa.y;
+comp_218=`float _e34 = (texsize).y;
+comp_219=`float nr_1 = min(_e30, _e34);
+comp_220=`float mph = _qa.z;
+comp_221=`float hu = _qa.w;
+comp_222=`float pb = _qb.x;
+comp_223=`float pm = _qb.y;
+comp_224=`float pt = _qb.z;
+comp_225=`float _e65 = _qb.w;
+comp_226=`float sb = (min(_e65, 2.0) * 0.5);
+comp_227=`float sr = _qc.x;
+comp_228=`float sa = _qc.y;
+comp_229=`float _e84 = _qc.z;
+comp_230=`float st = max(0.0, (min(_e84, 2.5) - 0.3));
+comp_231=`float cs = _qc.w;
+comp_232=`float lw = (sz_1.y / 540.0);
+comp_233=`float2 sp = float2(((ms_local_uv.x - 0.5) * asp), (0.5 - ms_local_uv.y));
+comp_234=`float px = (sp.x + (0.04 * sin(cs)));
+comp_235=`float ab = (sp.y - 0.2);
+comp_236=`float3 _e139 = sky;
+comp_237=`sky = (_e139 + (((float3(0.85, 0.12, 0.55) * exp((-(abs(ab)) * 14.0))) * 0.55) * (1.0 + (0.9 * pb))));
+comp_238=`float3 _e154 = sky;
+comp_239=`sky = (_e154 + ((float3(0.3, 0.1, 0.65) * exp((-(max(ab, 0.0)) * 3.5))) * 0.22));
+comp_240=`float3 _e168 = sky;
+comp_241=`sky = (_e168 + ((float3(1.0, 0.45, 0.2) * exp((-(abs(ab)) * 45.0))) * 0.35));
+comp_242=`float2 scell = floor((sp * 70.0));
+comp_243=`const float2 _e177 = ms_star_hash22_((scell + float2(6.6875, 8.75)));
+comp_244=`float sd = (((ms_length(((((sp * 70.0) - scell) - (0.5).xx) - ((_e177 - (0.5).xx) * 0.6))) * sz_1.y) / 70.0) / lw);
+comp_245=`float _e198 = (q32);
+comp_246=`float tw = ((0.7 + (0.3 * sin(((_e198 * (1.5 + (_e177.y * 3.0))) + (_e177.x * 30.0))))) + ((0.8 * pt) * step(0.5, _e177.y)));
+comp_247=`float3 _e242 = sky;
+comp_248=`sky = (_e242 + (((((float3(0.7, 0.8, 1.0) * step(0.86, _e177.x)) * exp(((-(sd) * sd) * 0.7))) * smoothstep(0.0, 0.1, ab)) * 0.6) * tw));
+comp_249=`float3 _e244 = sky;
+comp_250=`col = _e244;
+comp_251=`float e1_ = min((0.45 / lw), 0.7);
+comp_252=`float e2_ = min((0.05 / lw), 0.7);
+comp_253=`float e3_ = min((0.025 / lw), 0.7);
+comp_254=`float e4_ = min((0.1 / lw), 0.7);
+comp_255=`float g1_ = (((1.5 * e1_) * lw) / 0.45);
+comp_256=`float g2_ = (((0.3 * e2_) * lw) / 0.05);
+comp_257=`float g3_ = (((0.18 * e3_) * lw) / 0.025);
+comp_258=`float g4_ = (((0.15 * e4_) * lw) / 0.1);
+comp_259=`float ms_age0_ = (mph + 0.0);
+comp_260=`float ms_z0_ = (1.5 + (((145.0 - ms_age0_) / 3.0) * 0.55));
+comp_261=`float ms_uu0_ = (abs(((px * ms_z0_) / 1.1)) / ((0.8 * ms_z0_) + 1.0));
+comp_262=`const float3 _e309 = ms_spectrum_history(float2((min(ms_uu0_, 1.0) * (nb_3 - 1.0)), min(ms_age0_, (nr_1 - 1.0))));
+comp_263=`float ms_age1_ = (mph + 3.0);
+comp_264=`float ms_z1_ = (1.5 + (((145.0 - ms_age1_) / 3.0) * 0.55));
+comp_265=`float ms_uu1_ = (abs(((px * ms_z1_) / 1.1)) / ((0.8 * ms_z1_) + 1.0));
+comp_266=`const float3 _e335 = ms_spectrum_history(float2((min(ms_uu1_, 1.0) * (nb_3 - 1.0)), min(ms_age1_, (nr_1 - 1.0))));
+comp_267=`bool loop_init = true;
+comp_268=`bool ms_loop_live_0=true;
+comp_269=`bool ms_loop_skip_0=false;
+comp_270=`for(;ms_loop_live_0 && ((i < int(float(48)+clamp(progress,0.0,0.25))));i=((i) + (int(1)))) {
+comp_271=`ms_loop_skip_0=false;
+comp_272=`{
+comp_273=`{
+comp_274=`int _e349 = i;
+comp_275=`float age = ((float(((int(47)) - (_e349))) * 3.0) + mph);
+comp_276=`float z = (1.5 + (((145.0 - age) / 3.0) * 0.55));
+comp_277=`float grow = ((smoothstep(0.0, 6.0, age) * smoothstep(1.5, (1.5 + 1.2), z)) * smoothstep((nr_1 - 1.0), (nr_1 - 12.0), age));
+comp_278=`float x_1 = ((px * z) / 1.1);
+comp_279=`float uu_1 = (abs(x_1) / ((0.8 * z) + 1.0));
+comp_280=`float ag = min(age, (nr_1 - 1.0));
+comp_281=`float2 tx = float2((((min(uu_1, 1.0) * (nb_3 - 1.0)) + 0.5) / sz_1.x), ((ag + 0.5) / sz_1.y));
+comp_282=`const float3 _e406 = ms_spectrum_old_history(float2((min(uu_1, 1.0) * (nb_3 - 1.0)), ag));
+comp_283=`hv = _e406;
+comp_284=`int _e408 = i;
+comp_285=`if((_e408 == int(47))) {
+comp_286=`{
+comp_287=`hv = _e309;
+comp_288=`}
+comp_289=`}
+comp_290=`int _e411 = i;
+comp_291=`if((_e411 == int(46))) {
+comp_292=`{
+comp_293=`hv = _e335;
+comp_294=`}
+comp_295=`}
+comp_296=`float edge = smoothstep(1.2, 0.95, uu_1);
+comp_297=`float _e418 = hv.x;
+comp_298=`float _e422 = hv.x;
+comp_299=`float hr = ((_e418 * 1.15) / (1.0 + (0.2 * _e422)));
+comp_300=`float _e434 = hv.x;
+comp_301=`h = ((hr * edge) + ((0.04 * (1.0 - edge)) * _e434));
+comp_302=`float _e439 = hv.y;
+comp_303=`float _e448 = h;
+comp_304=`h = (_e448 + ((_e439 * 0.5) * exp(((-(uu_1) * uu_1) * 5.0))));
+comp_305=`float _e450 = h;
+comp_306=`h = (_e450 * grow);
+comp_307=`float ds = ms_length(float2(x_1, (z - 24.0)));
+comp_308=`float _e466 = h;
+comp_309=`h = (_e466 + ((sa * 0.7) * exp(((-((ds - sr)) * (ds - sr)) * 1.2))));
+comp_310=`float _e468 = h;
+comp_311=`float ys = ((((_e468 - 2.4) / z) * 1.1) + 0.2);
+comp_312=`float dh = (((sp.y - ys) * sz_1.y) / lw);
+comp_313=`if((dh > 40.0)) {
+comp_314=`{
+comp_315=`ms_loop_skip_0=true;
+comp_316=`}
+comp_317=`}
+comp_318=`if(ms_loop_live_0 && !ms_loop_skip_0) {
+comp_319=`float fade = exp((-(z) * 0.055));
+comp_320=`float hh = (6.2831855 * ((hu + (0.55 * uu_1)) + ((0.02 * (145.0 - age)) / 3.0)));
+comp_321=`rc = ((0.55).xxx + (0.45 * float3(cos(hh), cos((hh - 2.094)), cos((hh + 2.094)))));
+comp_322=`float3 _e510 = rc;
+comp_323=`rc = lerp(_e510, float3(1.0, 0.3, 0.8), 0.25);
+comp_324=`ms_hist_treb = 0.0;
+comp_325=`float _e519 = h;
+comp_326=`if((_e519 > 0.7)) {
+comp_327=`{
+comp_328=`const float _e522 = ms_spectrum_treble(ag);
+comp_329=`ms_hist_treb = _e522;
+comp_330=`}
+comp_331=`}
+comp_332=`float _e523 = h;
+comp_333=`float _e527 = ms_hist_treb;
+comp_334=`float _e530 = ms_hist_treb;
+comp_335=`float pk = (smoothstep(0.7, 2.0, _e523) * ((0.3 + ((1.6 * _e527) / (1.0 + _e530))) + ((0.5 * pt) / (1.0 + pt))));
+comp_336=`float _e544 = hv.x;
+comp_337=`float _e553 = hv.y;
+comp_338=`float _e557 = hv.y;
+comp_339=`float lv = ((0.2 + (0.8 * smoothstep(0.08, 0.9, _e544))) + ((0.5 * _e553) / (1.0 + _e557)));
+comp_340=`float3 _e562 = rc;
+comp_341=`float3 lc = (((((_e562 * lv) * (1.0 + (0.35 * pb))) + (float3(1.0, 0.95, 0.9) * pk)) * fade) * grow);
+comp_342=`if((dh <= 0.0)) {
+comp_343=`{
+comp_344=`float d_1 = (-(dh) * lw);
+comp_345=`fc = (lc * ((exp((-(d_1) * e1_)) * g1_) + (exp((-(d_1) * e2_)) * g2_)));
+comp_346=`float stripe = pow((0.5 + (0.5 * cos(((uu_1 * 6.2831855) * 20.0)))), 12.0);
+comp_347=`float3 _e603 = rc;
+comp_348=`float3 _e612 = fc;
+comp_349=`fc = (_e612 + (((((_e603 * fade) * grow) * stripe) * exp((-(d_1) * e3_))) * g3_));
+comp_350=`float3 _e614 = rc;
+comp_351=`float3 _e619 = fc;
+comp_352=`fc = (_e619 + (((_e614 * fade) * grow) * 0.06));
+comp_353=`float3 _e625 = fc;
+comp_354=`face = lerp(float3(0.0875, 0.0125, 0.055), _e625, (0.35 + (0.65 * fade)));
+comp_355=`covered = true;
+comp_356=`ms_loop_live_0=false;
+comp_357=`}
+comp_358=`}
+comp_359=`if(ms_loop_live_0 && !ms_loop_skip_0) {
+comp_360=`float3 _e638 = halo;
+comp_361=`halo = (_e638 + ((lc * exp(((-(dh) * lw) * e4_))) * g4_));
+comp_362=`}
+comp_363=`}
+comp_364=`}
+comp_365=`}
+comp_366=`}
+comp_367=`float3 _e643 = sky;
+comp_368=`float3 _e644 = face;
+comp_369=`bool _e645 = covered;
+comp_370=`float3 _e647 = halo;
+comp_371=`col = ((_e645 ? _e644 : _e643) + _e647);
+comp_372=`float3 _e653 = col;
+comp_373=`col = (_e653 * (1.0 + (0.25 * sb)));
+comp_374=`float3 _e655 = col;
+comp_375=`float lm = ms_dot(_e655, float3(0.3, 0.5, 0.2));
+comp_376=`float3 _e662 = col;
+comp_377=`col = max(((lm).xxx + ((_e662 - (lm).xxx) * 1.15)), (0.0).xxx);
+comp_378=`float3 _e671 = col;
+comp_379=`float3 _e672 = col;
+comp_380=`return (_e671 / ((1.0).xxx + (0.45 * _e672)));
+comp_381=`}
+comp_382=`
+comp_383=`shader_body
+comp_384=`{
+comp_385=`    ret = ms_user(uv,uv_orig,rad,ang,hue_shader);
+comp_386=`    ret=float3((abs(ret.x)<3.4e38?clamp(ret.x,0.00000001,64.0):0.00000001),(abs(ret.y)<3.4e38?clamp(ret.y,0.00000001,64.0):0.00000001),(abs(ret.z)<3.4e38?clamp(ret.z,0.00000001,64.0):0.00000001));
+comp_387=`}

@@ -16,6 +16,8 @@ float4   _c11;  // .xyzw ~= same, but using sin()
 float4   _c12;  // .xyz = mip info for main image (.x=#across, .y=#down, .z=avg); .w = unused
 float4   _c13;  //.xy = blur2_min,blur2_max; .zw = blur3_min, blur3_max.
 float4   _c14;  // mouse
+float4   _c15; // hour, minute, second, time converted to seconds
+float4   _c16; // year, month, day, weekday (as integer; 1-7).
 float4   _qa;  // q vars bank 1 [q1-q4]
 float4   _qb;  // q vars bank 2 [q5-q8]
 float4   _qc;  // q vars ...
@@ -24,6 +26,14 @@ float4   _qe;  // q vars
 float4   _qf;  // q vars
 float4   _qg;  // q vars
 float4   _qh;  // q vars bank 8 [q29-q32]
+float4   _qi;  // q vars bank 9 [q33-q36]
+float4   _qj;  // q vars bank 10 [q37-q40]
+float4   _qk;  // q vars bank 11 [q41-q44]
+float4   _ql;  // q vars bank 12 [q45-q48]
+float4   _qm;  // q vars bank 13 [q49-q52]
+float4   _qn;  // q vars bank 14 [q53-q56]
+float4   _qo;  // q vars bank 15 [q57-q60]
+float4   _qp;  // q vars bank 16 [q61-q64]
 
 // note: in general, don't use the current time w/the *dynamic* rotations!
 float4x3 rot_s1;  // four random, static rotations.  randomized @ preset load time.
@@ -97,8 +107,41 @@ float4x3 rot_rand4;
 #define q30 _qh.y
 #define q31 _qh.z
 #define q32 _qh.w
+#define q33 _qi.x
+#define q34 _qi.y
+#define q35 _qi.z
+#define q36 _qi.w
+#define q37 _qj.x
+#define q38 _qj.y
+#define q39 _qj.z
+#define q40 _qj.w
+#define q41 _qk.x
+#define q42 _qk.y
+#define q43 _qk.z
+#define q44 _qk.w
+#define q45 _ql.x
+#define q46 _ql.y
+#define q47 _ql.z
+#define q48 _ql.w
+#define q49 _qm.x
+#define q50 _qm.y
+#define q51 _qm.z
+#define q52 _qm.w
+#define q53 _qn.x
+#define q54 _qn.y
+#define q55 _qn.z
+#define q56 _qn.w
+#define q57 _qo.x
+#define q58 _qo.y
+#define q59 _qo.z
+#define q60 _qo.w
+#define q61 _qp.x
+#define q62 _qp.y
+#define q63 _qp.z
+#define q64 _qp.w
 
-#define aspect   _c0
+#define aspect   _c0 // normal aspect
+#define aspect_sd _c1 // screen-dependent aspect
 #define texsize  _c7 // .xy = (w,h); .zw = (1/(float)w, 1/(float)h)
 #define roam_cos _c8
 #define roam_sin _c9
@@ -119,6 +162,17 @@ float4x3 rot_rand4;
 #define mouse_y _c14.y
 #define mouse_pos _c14.xy
 #define mouse_clicked _c14.z
+#define mouse_released _c14.w
+#define sysTime _c15
+#define sysDate _c16
+#define sysTimeHour _c15.x
+#define sysTimeMinute _c15.y
+#define sysTimeSecond _c15.z
+#define sysTimeTotalSeconds _c15.w
+#define sysDateYear _c16.x
+#define sysDateMonth _c16.y
+#define sysDateDay _c16.z
+#define sysDateWeekday _c16.w
 #define GetMain(uv) (tex2D(sampler_main,uv).xyz)
 #define GetPixel(uv) (tex2D(sampler_main,uv).xyz)
 #define GetBlur1(uv) (tex2D(sampler_blur1,uv).xyz*_c5.x + _c5.y)

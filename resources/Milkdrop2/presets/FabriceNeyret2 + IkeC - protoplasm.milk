@@ -1,0 +1,170 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+comp_1=// protoplasm by FabriceNeyret2 (Shadertoy lllSWr) / https://www.shadertoy.com/view/lllSWr
+comp_2=// CC BY-NC-SA 3.0
+comp_3=// Transpiled to HLSL using Milkwave
+comp_4=
+comp_5=#define tx (sin(time)*0.5+1)
+comp_6=
+comp_7=// CONV: setting iChannel samplers to default noise texture
+comp_8=#define iChannel0 sampler_noise_lq
+comp_9=
+comp_10=// CONV: adding helper functions
+comp_11=float mod_conv(float x, float y) { return x - y * floor(x / y); }
+comp_12=float2 mod_conv(float2 x, float2 y) { return x - y * floor(x / y); }
+comp_13=float3 mod_conv(float3 x, float3 y) { return x - y * floor(x / y); }
+comp_14=float4 mod_conv(float4 x, float4 y) { return x - y * floor(x / y); }
+comp_15=
+comp_16=// CONV2: guarded length helpers (legacy compiler reports lenv() as division by zero)
+comp_17=float lenv(float2 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_18=float lenv(float3 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_19=
+comp_20=#define T time
+comp_21=#define SQRT3_2  1.26
+comp_22=#define SQRT2_3  1.732
+comp_23=#define smin(a,b) (1./(1./(a)+1./(b)))
+comp_24=
+comp_25=float2 rot2(float2 v, float t) { float a = t*time, c2=cos(a), s2=sin(a); return mul(v, transpose(float2x2(c2,s2,-s2,c2))); }
+comp_26=
+comp_27=static const float3x3 m = float3x3( 0.00,  0.80,  0.60,
+comp_28=-0.80,  0.36, -0.48,
+comp_29=-0.60, -0.48,  0.64 );
+comp_30=
+comp_31=float hash( float n ) {
+comp_32=  return frac(sin(n)*43758.5453);
+comp_33=}
+comp_34=
+comp_35=float noise( in float3 x ) {
+comp_36=// in [0,1]
+comp_37=static float3 p = floor(x);
+comp_38=static float3 f = frac(x);
+comp_39=
+comp_40=f = f*f*(3.-2.*f);
+comp_41=
+comp_42=static float n = p.x + p.y*57. + 113.*p.z;
+comp_43=
+comp_44=static float res = lerp(lerp(lerp( hash(n+  0.), hash(n+  1.),f.x),
+comp_45=lerp( hash(n+ 57.), hash(n+ 58.),f.x),f.y),
+comp_46=lerp(lerp( hash(n+113.), hash(n+114.),f.x),
+comp_47=lerp( hash(n+170.), hash(n+171.),f.x),f.y),f.z);
+comp_48=return res;
+comp_49=}
+comp_50=
+comp_51=float fbm( float3 p ) {
+comp_52=// in [0,1]
+comp_53=static float f;
+comp_54=f  = 0.5000*noise( p ); p = mul(p, m)*2.02;
+comp_55=f += 0.2500*noise( p ); p = mul(p, m)*2.03;
+comp_56=f += 0.1250*noise( p ); p = mul(p, m)*2.01;
+comp_57=f += 0.0625*noise( p );
+comp_58=return f;
+comp_59=}
+comp_60=
+comp_61=#define snoise(x) (2.*noise(x)-1.)
+comp_62=
+comp_63=float sfbm( float3 p ) {
+comp_64=// in [-1,1]
+comp_65=static float f;
+comp_66=f  = 0.5000*snoise( p ); p = mul(p, m)*2.02;
+comp_67=f += 0.2500*snoise( p ); p = mul(p, m)*2.03;
+comp_68=f += 0.1250*snoise( p ); p = mul(p, m)*2.01;
+comp_69=f += 0.0625*snoise( p );
+comp_70=return f;
+comp_71=}
+comp_72=
+comp_73=#define sfbm3(p) float3(sfbm(p), sfbm(p-327.67), sfbm(p+327.67))
+comp_74=
+comp_75=static float4 bg = float4(0,.2,0,0);
+comp_76=
+comp_77=shader_body {
+comp_78=  float4 f = 0;
+comp_79=  float2 w  = uv;
+comp_80=  // CONV: Center on screen, then try some aspect correction
+comp_81=  uv = (uv*2) - 1;
+comp_82=  uv *= aspect.xy;
+comp_83=  // CONV: Adjust this to flip the output (±uv.x, ±uv.y)
+comp_84=  uv = float2(uv.x, -uv.y);
+comp_85=  // CONV: Adjust viewpoint (x,y individually or both)
+comp_86=  uv += float2(0,0) + 0;
+comp_87=  uv *= float2(1,1) * 1;
+comp_88=  // AUDIO: 1 = calm (bass_smooth), 2 = more reactive (bass_att), 3+ = static - see the remote's Version tooltip
+comp_89=  #ifdef vis_version
+comp_90=    float aRng = (int)vis_version == 1 ? 0.36 : 0.30;
+comp_91=    float aFac = (int)vis_version > 2 ? 1*vis_intensity+vis_shift
+comp_92=      : (1.0 - aRng*0.5 + smoothstep(0,2,(int)vis_version == 1 ? bass_smooth : bass_att)*aRng) * vis_intensity + vis_shift;
+comp_93=  #else
+comp_94=    float aFac = (1.0 - 0.15) + smoothstep(0,2,bass_att)*0.30;
+comp_95=  #endif
+comp_96=  float aDev = aFac - 1.0;   // 0 at the track average, +loud, -quiet
+comp_97=  #ifdef vis_version
+comp_98=    float aBe  = aDev * 4.0, aCol = (int)vis_version == 1 ? 0.8 : 0.65;   // beat scale, colour reaction scale
+comp_99=  #else
+comp_100=    float aBe  = aDev * 4.0, aCol = 0.65;   // other MilkDrop variants: v2 tuning
+comp_101=  #endif
+comp_102=  // AUDIO: the structure gently expands and pulls back with the level. The shell pattern is
+comp_103=  // scaled around the centre (multiplied back so the march step stays in world units) and the
+comp_104=  // clip radius stays fixed, so the blob breathes without ballooning out of frame.
+comp_105=  float aScale = 1.0 + aDev * 0.25;
+comp_106=  float aAmp = 1.0 + aDev * 0.45;
+comp_107=
+comp_108=  float4 p = float4((w.x - 0.5) * texsize.x / texsize.y, w.y - 0.5, -.5, 1. / texsize.y - .5);   // CONV: x,y centred first, z/w keep the original -.5 offsets
+comp_109=  float4 d = float4(0., 0., 0., 0.), c = float4(0., 0., 0., 0.);
+comp_110=  // p.x-=.4;   // original composition offset removed so the shape sits in the middle
+comp_111=  // init ray
+comp_112=  // (p.xz,.13); r(p.yz,.2); r(p.xy,.1);   // camera rotations
+comp_113=  // MOUSE: holding the mouse button looks around - pointer X steers yaw, pointer Y steers pitch.
+comp_114=  // Independent of the audio versions; saturate(mouse.z) keeps the un-pressed frame identical.
+comp_115=  float mMx = (mouse.x - 0.5) * saturate(mouse.z);
+comp_116=  float mMy = (mouse.y - 0.5) * saturate(mouse.z);
+comp_117=  float mYaw = mMx * 1.3, mPitch = mMy * 0.75;
+comp_118=  float mCy = cos(mYaw), mSy = sin(mYaw);
+comp_119=  p.xz = mul(transpose(float2x2(mCy, mSy, -mSy, mCy)), p.xz);
+comp_120=  float mCp = cos(mPitch), mSp = sin(mPitch);
+comp_121=  p.yz = mul(transpose(float2x2(mCp, mSp, -mSp, mCp)), p.yz);
+comp_122=  d = p; p.z += 10.;
+comp_123=  // ray dir = ray0-float3(0, 0, 0)
+comp_124=  // p = -float4(0,.5,1,0)*T;
+comp_125=  f = bg;
+comp_126=  float x1,x2,x=1e9;
+comp_127=
+comp_128=  for (float i=min(frame,1.); i>0.; i-=.01)  {
+comp_129=    // CONV: replaced break with breaking condition
+comp_130=    if (f.x>=.99)  i=0.;
+comp_131=    // windows bug: miss it if at end ! thanks Dave_Hoskins
+comp_132=
+comp_133=    float4 u = .03*floor(p/float4(8,8,1,1)+3.5), t = p;
+comp_134=    t.xy = rot2(t.xy, u.x); t.xz = rot2(t.xz, u.y);
+comp_135=    // r(t.yz,1.);    // objects rotations
+comp_136=
+comp_137=    // x1 =lenv(t.xyz)-7.; // if you prefer the clean trim
+comp_138=    t.xyz += sfbm3(t.xyz/2.+float3(.5*T,0,0))*(.6+8.*(.5-.5*cos(T/16.)))*aAmp;
+comp_139=    float nzc = noise(t.xyz + float3(0., 0., 0.5*time));
+comp_140=c = 5.*float4(nzc, nzc, nzc, nzc);
+comp_141=
+comp_142=    x = abs(mod_conv(lenv(t.xyz)/aScale,1.)-1./2.)*aScale;
+comp_143=    x1 = lenv(t.xyz)-7.;
+comp_144=    x = max(x,x1);
+comp_145=    // CONV: replaced break with breaking condition
+comp_146=    if ((x1>.1) && (p.z<0.))  i=0.;
+comp_147=    // optimization
+comp_148=    // x = max(x,-abs(t.x)+.2);
+comp_149=    // x = max(x,-abs(t.y)+.2);
+comp_150=
+comp_151=    if(x<.01) {
+comp_152=    // hit !
+comp_153=    f += (1.-f)*.2*lerp(bg,c,i*i); x=.1;
+comp_154=    // CONV: replaced break with breaking condition
+comp_155=    // if (f.x>=.99)  i=0.; // compiler bug on windows -> moved to begin of loop
+comp_156=    }
+comp_157=    // color texture + black fog
+comp_158=
+comp_159=    p += d*x;
+comp_160=    // march ray
+comp_161=  }
+comp_162=
+comp_163=  ret = f.rgb;
+comp_164=  // AUDIO: the green shifts cool on beats
+comp_165=  ret = lerp(ret, ret * float3(0.88, 1.0, 1.14), saturate(aBe) * 0.35 * aCol);
+comp_166=}

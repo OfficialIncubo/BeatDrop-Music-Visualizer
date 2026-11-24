@@ -1,0 +1,523 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+comp_1=// yasuo - Graphic Design Experiment 17 / https://www.shadertoy.com/view/lXXcDM
+comp_2=// License: Creative Commons Attribution-NonCommercial-ShareAlike 3.0 (Shadertoy default)
+comp_3=// Transpiled to HLSL using Milkwave
+comp_4=
+comp_5=#define tx (sin(time)*0.5+1)
+comp_6=
+comp_7=// CONV: adding helper functions
+comp_8=float mod_conv(float x, float y) { return x - y * floor(x / y); }
+comp_9=float2 mod_conv(float2 x, float2 y) { return x - y * floor(x / y); }
+comp_10=float3 mod_conv(float3 x, float3 y) { return x - y * floor(x / y); }
+comp_11=float4 mod_conv(float4 x, float4 y) { return x - y * floor(x / y); }
+comp_12=
+comp_13=// CONV2: guarded length helpers (legacy compiler reports lenv() as division by zero)
+comp_14=float lenv(float2 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_15=float lenv(float3 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_16=float lenv(float4 v) { return sqrt(max(dot(v, v), 0.000001)); }
+comp_17=
+comp_18=#define MAX_STEPS 64
+comp_19=#define MAX_DIST 64.
+comp_20=#define SURF_DIST .00008   // CONV: tighter than the original, the derivative normal is sensitive to the march end point
+comp_21=#define Rot(a) float2x2(cos(a),-sin(a),sin(a),cos(a))
+comp_22=#define antialiasing(n) n/min(texsize.y,texsize.x)
+comp_23=#define S(d,b) smoothstep(antialiasing(1.0),b,d)
+comp_24=#define B(p,s) max(abs(p).x-s.x,abs(p).y-s.y)
+comp_25=#define deg45 .707
+comp_26=#define R45(p) (( p + float2(p.y,-p.x) ) *deg45)
+comp_27=#define Tri(p,s) max(R45(p).x,max(R45(p).y,B(p,s)))
+comp_28=#define SUV(p) float2(atan2(p.x,p.z),acos(p.y))
+comp_29=#define ZERO (min(frame,0))
+comp_30=
+comp_31=float sdBox( float3 p, float3 b )
+comp_32={
+comp_33=  float3 q = abs(p) - b;
+comp_34=  return lenv(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
+comp_35=}
+comp_36=
+comp_37=float sdTorus( float3 p, float2 t )
+comp_38={
+comp_39=  float2 q = float2(lenv(p.xy)-t.x,p.z);
+comp_40=  return lenv(q)-t.y;
+comp_41=}
+comp_42=
+comp_43=float sdCone( float3 p, float2 c, float h )
+comp_44={
+comp_45=  float2 q = h*float2(c.x/c.y,-1.0);
+comp_46=
+comp_47=  float2 w = float2( lenv(p.xy), -p.z );
+comp_48=  float2 a = w - q*clamp( dot(w,q)/dot(q,q), 0.0, 1.0 );
+comp_49=  float2 b = w - q*float2( clamp( w.x/q.x, 0.0, 1.0 ), 1.0 );
+comp_50=  float k = sign( q.y );
+comp_51=  float d = min(dot( a, a ),dot(b, b));
+comp_52=  float s = max( k*(w.x*q.y-w.y*q.x),k*(w.y-q.y)  );
+comp_53=  return sqrt(d)*sign(s);
+comp_54=}
+comp_55=
+comp_56=float knob(float3 p, float speed){
+comp_57=  p.xy = mul(Rot(radians(30.*sin(time*speed))), p.xy);
+comp_58=  float d = max(abs(p.z)-0.01,lenv(p.xy)-0.015);
+comp_59=  float d2 = sdBox(p-float3(0.,0.,-0.02),float3(0.004,0.1,0.014));
+comp_60=  d = max(-d2,d);
+comp_61=  return d;
+comp_62=}
+comp_63=
+comp_64=float circleSlider(float3 p, float speed){
+comp_65=  p.yz = mul(Rot(radians(30.*sin(time*speed))), p.yz);
+comp_66=  float d = max(abs(p.x)-0.01,lenv(p.yz)-0.02);
+comp_67=  float d2 = sdBox(p-float3(0.,0.,-0.017),float3(0.01,0.008,0.01));
+comp_68=  d = min(d,d2);
+comp_69=  return d;
+comp_70=}
+comp_71=
+comp_72=float rectSlider(float3 p, float speed){
+comp_73=  p.y+=sin(time*speed)*0.025;
+comp_74=  float d = sdBox(p,float3(0.008,0.015,0.02));
+comp_75=  return d;
+comp_76=}
+comp_77=
+comp_78=float upperFarSideItem(float3 p){
+comp_79=  float3 prevP = p;
+comp_80=  float d = sdBox(p,float3(0.05,0.04,0.04));
+comp_81=  float a = radians(-30.);
+comp_82=  p.y = abs(p.y);
+comp_83=  float c = dot(p-float3(0.,0.07,0.),float3(0.0,sin(a),cos(a)));
+comp_84=  d = max(-c,d);
+comp_85=  p = prevP;
+comp_86=  d = max(-sdBox(p-float3(0.,0.0,-0.03),float3(0.04,0.03,0.05)),d);
+comp_87=  float d2 = sdBox(p-float3(0.,0.0,-0.035),float3(0.05,0.004,0.003));
+comp_88=  d = min(d,d2);
+comp_89=  return d;
+comp_90=}
+comp_91=
+comp_92=float centerBottomItem(float3 p){
+comp_93=  float3 prevP = p;
+comp_94=  float d = sdBox(p,float3(0.09,0.025,0.025));
+comp_95=  float a = radians(-30.);
+comp_96=  float c = dot(p-float3(0.,0.04,0.),float3(0.0,sin(a),cos(a)));
+comp_97=  d = max(-c,d);
+comp_98=
+comp_99=  p.x = abs(p.x)-0.01;
+comp_100=  p.y+=-0.013;
+comp_101=  p.z+=0.02;
+comp_102=  p.yz = mul(Rot(radians(-30.)), p.yz);
+comp_103=  float d2 = sdBox(p,float3(0.008,0.015,0.005));
+comp_104=  d = min(d,d2);
+comp_105=  p.x = abs(p.x)-0.02;
+comp_106=  d2 = sdBox(p,float3(0.008,0.015,0.005));
+comp_107=  d = min(d,d2);
+comp_108=  p.x = abs(p.x)-0.02;
+comp_109=  d2 = sdBox(p,float3(0.008,0.015,0.005));
+comp_110=  d = min(d,d2);
+comp_111=  return d;
+comp_112=}
+comp_113=
+comp_114=float speaker(float3 p){
+comp_115=  float3 prevP = p;
+comp_116=  float d = sdTorus(p,float2(0.105,0.005));
+comp_117=  float d2 = sdCone(p-float3(0.,0.0,-0.1),float2(0.15, 0.15),0.13);
+comp_118=  d2 = max((abs(p.z)-0.015),d2);
+comp_119=  d2 = max(-(lenv(p.yx)-0.075),d2);
+comp_120=  d = min(d,d2);
+comp_121=  d2 = lenv(p-float3(0.,0.0,0.05))-0.028;
+comp_122=  d = min(d,d2);
+comp_123=
+comp_124=  p.y = abs(p.y)-0.022;
+comp_125=  p.y+=-0.01;
+comp_126=  p.z+=0.015;
+comp_127=  d2 = sdBox(p,float3(0.1,0.01,0.01));
+comp_128=  float a = radians(-50.);
+comp_129=  p.x = abs(p.x)-0.09;
+comp_130=  float c = dot((p-float3(0.,0.02,0.)),float3(sin(a),cos(a),0.0));
+comp_131=  d2 = max(-c,d2);
+comp_132=  p = prevP;
+comp_133=  p.y = abs(p.y)-0.022;
+comp_134=  p.z+=0.015;
+comp_135=  d2 = max(-d2,sdBox(p,float3(0.09,0.012,0.005)));
+comp_136=  d = min(d,d2);
+comp_137=
+comp_138=  p = prevP;
+comp_139=  p.z+=0.015;
+comp_140=  p.x = abs(p.x)-0.08;
+comp_141=  d2 = sdBox(p,float3(0.01,0.007,0.01));
+comp_142=  d = min(d,d2);
+comp_143=
+comp_144=  return d;
+comp_145=}
+comp_146=
+comp_147=float boomBox(float3 p){
+comp_148=  float3 prevP = p;
+comp_149=  float d = sdBox(p,float3(0.35,0.22,0.08));
+comp_150=  float a = radians(-30.);
+comp_151=  float c = dot(p-float3(0.,0.3,0.),float3(0.0,sin(a),cos(a)));
+comp_152=  d = max(-c,d);
+comp_153=  p.x = abs(p.x)-0.35;
+comp_154=  float d2 = sdBox(p-float3(0.,-0.02,0.),float3(0.005,0.16,0.06));
+comp_155=  d = max(-d2,d);
+comp_156=  p = prevP;
+comp_157=  p+=float3(0.3,-0.19,0.06);
+comp_158=  d2 = max(abs(p.z)-0.02,lenv(p.xy)-0.01);
+comp_159=  d = min(d,d2);
+comp_160=  p = prevP;
+comp_161=  p+=float3(-0.29,-0.175,0.07);
+comp_162=  d2 = max(abs(p.z)-0.02,lenv(p.xy)-0.025);
+comp_163=  d = min(d,d2);
+comp_164=
+comp_165=  p = prevP;
+comp_166=  p.x = abs(p.x)-0.05;
+comp_167=  p.y-=0.25;
+comp_168=  p.xy = mul(Rot(radians(45.)), p.xy);
+comp_169=  d2 = max(abs(p.y)-0.2,lenv(p.xz)-0.005);
+comp_170=  d = min(d,d2);
+comp_171=  p = prevP;
+comp_172=  p.y-=0.21;
+comp_173=  d2 = sdBox(p,float3(0.06,0.02,0.01));
+comp_174=  d = min(d,d2);
+comp_175=
+comp_176=  p = prevP;
+comp_177=  p+=float3(0.0,-0.25,-0.03);
+comp_178=  d2 = sdBox(p,float3(0.32,0.05,0.012));
+comp_179=  d2 = max(-sdBox(p-float3(0.,-0.005,0.),float3(0.305,0.025,0.05)),d2);
+comp_180=  d = min(d,d2);
+comp_181=
+comp_182=  p = prevP;
+comp_183=  p.x -= 0.19;
+comp_184=  p.y+=-0.08;
+comp_185=  p.x = abs(p.x)-0.02;
+comp_186=  p += float3(0.0,0.0,0.08);
+comp_187=  d = max(-sdBox(p,float3(0.017,0.027,0.02)),d);
+comp_188=  p -= float3(0.0,0.0,0.01);
+comp_189=  d2 = circleSlider(p,1.5);
+comp_190=  d = min(d,d2);
+comp_191=
+comp_192=  p = prevP;
+comp_193=  p.y+=-0.08;
+comp_194=  p.x = abs(p.x)-0.1;
+comp_195=  p += float3(0.0,0.0,0.08);
+comp_196=  d = max(-sdBox(p,float3(0.017,0.027,0.02)),d);
+comp_197=  p -= float3(0.0,0.0,0.01);
+comp_198=  d2 = circleSlider(p,-1.2);
+comp_199=  d = min(d,d2);
+comp_200=
+comp_201=  p = prevP;
+comp_202=  p.y+=-0.1;
+comp_203=  p.x = abs(p.x)-0.015;
+comp_204=  p += float3(0.0,0.0,0.08);
+comp_205=  d = max(-sdBox(p,float3(0.012,0.045,0.02)),d);
+comp_206=  p -= float3(0.0,0.0,0.01);
+comp_207=  d2 = rectSlider(p,-1.2);
+comp_208=  d = min(d,d2);
+comp_209=
+comp_210=  p = prevP;
+comp_211=  p.y+=-0.1;
+comp_212=  p.x = abs(p.x)-0.045;
+comp_213=  p += float3(0.0,0.0,0.08);
+comp_214=  d = max(-sdBox(p,float3(0.012,0.045,0.02)),d);
+comp_215=  p -= float3(0.0,0.0,0.01);
+comp_216=  d2 = rectSlider(p,1.7);
+comp_217=  d = min(d,d2);
+comp_218=
+comp_219=  p = prevP;
+comp_220=  p.x += 0.18;
+comp_221=  p.y+=-0.07;
+comp_222=  p.z+=0.08;
+comp_223=  d2 = knob(p,1.7);
+comp_224=  d = min(d,d2);
+comp_225=
+comp_226=  p.x = abs(p.x)-0.04;
+comp_227=  d2 = knob(p,-1.2);
+comp_228=  d = min(d,d2);
+comp_229=
+comp_230=  p = prevP;
+comp_231=  p.y+=-0.095;
+comp_232=  p.z+=0.08;
+comp_233=  p.x = abs(p.x)-0.29;
+comp_234=  d2 = upperFarSideItem(p);
+comp_235=  d = min(d,d2);
+comp_236=
+comp_237=  p = prevP;
+comp_238=  p.z+=0.08;
+comp_239=  p.y-=0.01;
+comp_240=  d2 = sdBox(p,float3(0.09,0.03,0.01));
+comp_241=  d2 = max(-sdBox(p,float3(0.04,0.01,0.02)),d2);
+comp_242=  d = min(d,d2);
+comp_243=  p.y+=0.05;
+comp_244=  d2 = sdBox(p,float3(0.09,0.01,0.01));
+comp_245=  d = min(d,d2);
+comp_246=  p.y+=0.06;
+comp_247=  d2 = sdBox(p,float3(0.09,0.04,0.01));
+comp_248=  d2 = max(-sdBox(p,float3(0.04,0.02,0.02)),d2);
+comp_249=  d = min(d,d2);
+comp_250=  p.y+=0.075;
+comp_251=  d2 = centerBottomItem(p);
+comp_252=  d = min(d,d2);
+comp_253=
+comp_254=  p = prevP;
+comp_255=  p.y+=0.08;
+comp_256=  p.z+=0.08;
+comp_257=  p.x = abs(p.x)-0.22;
+comp_258=  d2 = sdBox(p,float3(0.12,0.12,0.01));
+comp_259=  d = min(d,d2);
+comp_260=  p.z+=0.01;
+comp_261=  d2 = speaker(p);
+comp_262=  p.z+=0.035;
+comp_263=  d = max(-(lenv(p)-0.08),d);
+comp_264=  d = min(d,d2);
+comp_265=  return d;
+comp_266=}
+comp_267=
+comp_268=
+comp_269=
+comp_270=float2 GetDist(float3 p) {
+comp_271=  float3 prevP = p;
+comp_272=
+comp_273=  float d = boomBox(p);
+comp_274=
+comp_275=  return float2(d,0);
+comp_276=}
+comp_277=
+comp_278=// CONV: returns (distance, material, last SDF value). The last value is the SDF at the hit point, which
+comp_279=// lets GetNormal get away with 3 taps instead of 4: the legacy compiler inlines boomBox once per tap
+comp_280=// and the cost grows superlinearly (1 tap 1 s, 3 taps 37 s, 4 taps 93 s, 5 taps 248 s).
+comp_281=float3 RayMarch(float3 ro, float3 rd, float side, int stepnum) {
+comp_282=  float2 dO = float2(0.0, 0.0);
+comp_283=  float lastD = 0.;
+comp_284=
+comp_285=  for (int i=min(frame,0); i<stepnum; i++) {
+comp_286=    float3 p = ro + rd*dO.x;
+comp_287=    float2 dS = GetDist(p);
+comp_288=    dO.x += dS.x*side;
+comp_289=    dO.y = dS.y;
+comp_290=    lastD = dS.x;
+comp_291=
+comp_292=    // CONV: replaced break with breaking condition
+comp_293=    if(dO.x>MAX_DIST || abs(dS.x)<SURF_DIST)  i=stepnum;
+comp_294=  }
+comp_295=
+comp_296=  return float3(dO.x, dO.y, lastD);
+comp_297=}
+comp_298=
+comp_299=// CONV: the geometry normal comes from the screen-space derivatives of the hit position. fxc inlines
+comp_300=// boomBox once per GetDist call and the compile time explodes with the call count (3 taps + march >
+comp_301=// 10 minutes), so the normal costs no extra SDF evaluation at all.
+comp_302=// CONV: the shading normal comes from the screen-space derivatives of the hit point, pulled back
+comp_303=// onto the surface by the SDF value the march left behind (without that the sub-pixel jitter of the
+comp_304=// march end point turns the specular into speckle). Costs no extra SDF evaluation: the compile time
+comp_305=// is superlinear in the number of boomBox inlines and the exact normal needs four of them.
+comp_306=float3 GetNormal(float3 p, float3 rd, float dz) {
+comp_307=  float3 ps = p - rd*dz;
+comp_308=  return normalize(cross(ddx(ps), ddy(ps)));
+comp_309=}
+comp_310=
+comp_311=float3 R(float2 uv_conv,  float3 p, float3 l, float z) {
+comp_312=  float3 f = normalize(l-p);
+comp_313=  float3 r = normalize(cross(float3(0,1,0), f));
+comp_314=  float3 u = cross(f,r);
+comp_315=  float3 c = p+f*z;
+comp_316=  float3 i = c + uv_conv.x*r + uv_conv.y*u;
+comp_317=  float3 d = normalize(i-p);
+comp_318=  return d;
+comp_319=}
+comp_320=
+comp_321=// CONV: a single probe instead of the original's three (compile cost is superlinear in the tap count)
+comp_322=// CONV: the contact shadows do most of the detail work in this shader (the front faces get no direct
+comp_323=// light), so the original's three probes are kept - but they run on the cheap twin, not on boomBox.
+comp_324=// CONV: the contact shadows carry the front-face detail (those faces get no direct light), so they
+comp_325=// use the exact SDF - the loop bound is dynamic, which keeps it to a single inline.
+comp_326=float calcOcclusion( in float3 pos, in float3 nor )
+comp_327={
+comp_328=  float occ = 0.0;
+comp_329=  float sca = 1.0;
+comp_330=  for( int i=min(frame,0); i<3; i++ )
+comp_331=  {
+comp_332=    float h = 0.01 + 0.15*float(i)/4.0;
+comp_333=    float d = GetDist( pos + h*nor ).x;
+comp_334=    occ += (h-d)*sca;
+comp_335=    sca *= 0.95;
+comp_336=  }
+comp_337=
+comp_338=  return clamp( 1.0 - 2.0*occ, 0.0, 1.0 );
+comp_339=}
+comp_340=
+comp_341=float3 diffuseMaterial(float3 n, float3 rd, float3 p, float3 col) {
+comp_342=  float occ = calcOcclusion(p,n);
+comp_343=  float3 diffCol = float3(0.0, 0.0, 0.0);
+comp_344=  float3 lightDir = normalize(float3(1,10,10));
+comp_345=  float diff = clamp(dot(n,lightDir),0.0,1.0);
+comp_346=  float skyDiff = clamp(0.5+0.5*dot(n,float3(0,1,0)),0.0,1.0);
+comp_347=  float bounceDiff = clamp(0.5+0.5*dot(n,float3(0,-1,0)),0.0,1.0);
+comp_348=  diffCol = col*float3(-0.5, -0.5, -0.5)*diff*occ;
+comp_349=  diffCol += col*float3(1.0,1.0,0.9)*skyDiff*occ;
+comp_350=  diffCol += col*float3(0.8, 0.8, 0.8)*bounceDiff*occ;
+comp_351=  diffCol += col*pow(max(dot(rd, reflect(lightDir, n)), 0.0), 60.)*occ;
+comp_352=  // spec
+comp_353=
+comp_354=  return diffCol;
+comp_355=}
+comp_356=
+comp_357=float3 reflectionBg(float2 uv_conv){
+comp_358=  float pi = 3.14159;
+comp_359=  return lerp(float3(0.05, 0.05, 0.05), float3(2., 2., 2.), smoothstep(pi*0.35, pi*0.98, uv_conv.y));
+comp_360=}
+comp_361=
+comp_362=float3 materials(int mat, float3 n, float3 rd, float3 p, float3 col){
+comp_363=  float IOR =	1.309;
+comp_364=  // IOR:index of reflection
+comp_365=  float3 rdir = refract(-rd,n,1.0/IOR);
+comp_366=  col = reflectionBg(SUV(rdir));
+comp_367=  col = diffuseMaterial(n,rd,p,sqrt(col));
+comp_368=  return col;
+comp_369=}
+comp_370=
+comp_371=float dots(float2 p, float size, float dirX, float dirY){
+comp_372=  p.x-=time*0.02*dirX;
+comp_373=  p.y-=time*0.02*dirY;
+comp_374=  return lenv(mod_conv(p,0.03)-0.015)-size;
+comp_375=}
+comp_376=
+comp_377=float bgItem(float2 p){
+comp_378=  p = mul(Rot(radians(-25.)), p);
+comp_379=  p*=0.7;
+comp_380=  p.x-=0.13;
+comp_381=  float2 prevP = p;
+comp_382=  p.y*=1.5;
+comp_383=  p-=float2(0.12,-0.02);
+comp_384=  p = mul(Rot(radians(100.)), p);
+comp_385=  float d = Tri(p,float2(0.2, 0.2));
+comp_386=  p = prevP;
+comp_387=  p-=float2(-0.1,0.03);
+comp_388=  p = mul(Rot(radians(115.)), p);
+comp_389=  float d2 = B(p,float2(0.05,0.12));
+comp_390=  d = min(d,d2);
+comp_391=  p = prevP;
+comp_392=  p-=float2(-0.4,0.04);
+comp_393=  p = mul(Rot(radians(-100.)), p);
+comp_394=  p.x*=4.;
+comp_395=  p.y*=0.9;
+comp_396=  d2 = Tri(p,float2(0.2, 0.2));
+comp_397=
+comp_398=  d = min(d,d2);
+comp_399=  p = prevP;
+comp_400=  return max(d,dots(p,0.007,3.,0.));
+comp_401=}
+comp_402=
+comp_403=float stripes(float2 p, float dir){
+comp_404=  float2 prevP = p;
+comp_405=  p = mul(Rot(radians(30.)), p);
+comp_406=  p.x+=time*0.05*dir;
+comp_407=  p.x = mod_conv(p.x,0.02)-0.01;
+comp_408=
+comp_409=  float d = B(p,float2(0.003,10.));
+comp_410=  return d;
+comp_411=}
+comp_412=
+comp_413=float3 triBg(float2 p, float3 col){
+comp_414=  float2 prevP = p;
+comp_415=  float d = max(Tri(p,float2(0.3, 0.3)),dots(p,0.001,0.,1.));
+comp_416=  return lerp(col,float3(0.7, 0.7, 0.7),S(d,0.0));
+comp_417=}
+comp_418=
+comp_419=float3 circleBg(float2 p, float3 col){
+comp_420=  float2 prevP = p;
+comp_421=  float d = max(abs(lenv(p)-0.15)-0.02,dots(p,0.001,0.,1.));
+comp_422=  return lerp(col,float3(0.7, 0.7, 0.7),S(d,0.0));
+comp_423=}
+comp_424=
+comp_425=float3 stripeBg(float2 p, float3 col){
+comp_426=  float2 prevP = p;
+comp_427=  float d = stripes(p,1.);
+comp_428=  d = max(B(p,float2(0.55,0.25)),d);
+comp_429=  return lerp(col,float3(0.13, 0.13, 0.13),S(d,0.0));
+comp_430=}
+comp_431=
+comp_432=float3 drawBg(float2 p, float3 col, float arrowScale) {
+comp_433=  float2 prevP = p;
+comp_434=  p = mul(Rot(radians(time*-10.0)), p);
+comp_435=  float r = log(sqrt(p.x*p.x+p.y*p.y));
+comp_436=  // or log(lenv(p))
+comp_437=  float theta = atan(p.y/p.x);
+comp_438=  p.x = r;
+comp_439=  p.y = theta;
+comp_440=
+comp_441=  p.x-=time*0.3;
+comp_442=  p*=2.0;
+comp_443=  p = frac(p)-0.5;
+comp_444=  p*=0.75;
+comp_445=
+comp_446=  float d = bgItem(p / arrowScale);   // AUDIO: the arrow motifs grow slightly with the level
+comp_447=  p = prevP;
+comp_448=  col = triBg(p-float2(-0.5,-0.1),col);
+comp_449=  col = triBg((float2(p.x,p.y*-1.)-float2(0.5,-0.1)),col);
+comp_450=  col = circleBg(p-float2(-0.54,0.25),col);
+comp_451=  col = circleBg(float2(p.x,p.y*-1.)-float2(0.54,0.25),col);
+comp_452=  col = stripeBg(p,col);
+comp_453=  col += lerp(col,float3(0.7, 0.7, 0.7),S(d,0.0));
+comp_454=
+comp_455=  d = lenv(p)-0.01;
+comp_456=  col = lerp(col,float3(0.7, 0.7, 0.7),S(d,0.0));
+comp_457=
+comp_458=  return col;
+comp_459=}
+comp_460=
+comp_461=shader_body {
+comp_462=  float4 fragColor = 0;
+comp_463=  // AUDIO: 1 = calm (bass_smooth), 2 = more reactive (bass_att), 3+ = static - see the remote's Version tooltip
+comp_464=  #ifdef vis_version
+comp_465=    float aRng = (int)vis_version == 1 ? 0.34 : 0.45;
+comp_466=    float aFac = (int)vis_version > 2 ? 1*vis_intensity+vis_shift
+comp_467=      : (1.0 - aRng*0.5 + smoothstep(0,2,(int)vis_version == 1 ? bass_smooth : bass_att)*aRng) * vis_intensity + vis_shift;
+comp_468=  #else
+comp_469=    float aFac = (1.0 - 0.15) + smoothstep(0,2,bass_att)*0.30;
+comp_470=  #endif
+comp_471=  float aDev = aFac - 1.0;   // 0 at the track average, +loud, -quiet
+comp_472=  #ifdef vis_version
+comp_473=    float aBe  = aDev * 4.0 * ((int)vis_version == 1 ? 1.6 : 1.0), aCol = (int)vis_version == 1 ? 1.0 : 1.3;   // beat scale (v1 pushed harder), colour reaction scale
+comp_474=    float aK   = (int)vis_version == 1 ? 2.6 : 1.0;   // AUDIO: v1 uses the calm band, so it gets a bigger push
+comp_475=  #else
+comp_476=    float aBe  = aDev * 4.0, aCol = 1.3;    // other MilkDrop variants: v2 tuning
+comp_477=    float aK   = 1.0;
+comp_478=  #endif
+comp_479=  // AUDIO: the arrow motifs swell slightly with the level (identity at aDev = 0)
+comp_480=  float arrowScale = 1.0 + aDev * 0.25;
+comp_481=  // CONV: the shader's uv comes from a pixel-space fragCoord whose origin is the bottom left corner
+comp_482=  float2 fragPixel = uv_orig.xy * texsize.xy;
+comp_483=  fragPixel.y = texsize.y - fragPixel.y;
+comp_484=  float2 shuv = (fragPixel - 0.5*texsize.xy) / texsize.y;
+comp_485=  shuv *= (1.0 - aDev*0.10*aK);   // AUDIO: dolly in on loud parts, out when it is quiet
+comp_486=  float2 prevUV = shuv;
+comp_487=
+comp_488=  float3 ro = float3(0, 0, -1.);
+comp_489=  ro.yz = mul(Rot(radians(-5.0)), ro.yz);
+comp_490=  ro.xz = mul(Rot(radians(sin(time*0.6)*30.0)), ro.xz);
+comp_491=
+comp_492=  // MOUSE: holding the button orbits the boombox - pointer X swings around it, pointer Y raises the
+comp_493=  // view. Both rotations keep the orbit radius and are exact identities while the button is up.
+comp_494=  float2 mMouse = (mouse.xy - 0.5) * saturate(mouse.z);
+comp_495=  ro.xz = mul(Rot(mMouse.x * 1.1), ro.xz);    // +-0.55 rad
+comp_496=  ro.yz = mul(Rot(mMouse.y * 0.6), ro.yz);    // +-0.3 rad
+comp_497=  float3 rd = R(shuv, ro, float3(0,0.0,0), 1.0);
+comp_498=  // CONV: keep the march bound dynamic so the legacy compiler does not inline boomBox 64 times
+comp_499=  // CONV: the step count has to come from a uniform, otherwise fxc folds the bound to 64, unrolls the
+comp_500=  // loop and inlines boomBox 64 times (the compile then never finishes)
+comp_501=  float3 d = RayMarch(ro, rd, 1., 1 + int(63.0*saturate(texsize.x)));
+comp_502=  float3 col = float3(.0, .0, .0);
+comp_503=
+comp_504=  if(d.x<MAX_DIST) {
+comp_505=    float3 p = ro + rd * d.x;
+comp_506=    float3 n = GetNormal(p, rd, d.z);
+comp_507=    int mat = int(d.y);
+comp_508=    col = materials(mat,n,rd,p,col);
+comp_509=  }
+comp_510=
+comp_511=  else {
+comp_512=    col = drawBg(shuv,col,arrowScale);
+comp_513=  }
+comp_514=
+comp_515=  fragColor = float4(col,1.0);
+comp_516=  // AUDIO: the metal warms up on beats
+comp_517=  fragColor.rgb = lerp(fragColor.rgb, fragColor.rgb * float3(1.10, 1.0, 0.88), saturate(aBe) * 0.45 * aCol);
+comp_518=  ret = fragColor;
+comp_519=}

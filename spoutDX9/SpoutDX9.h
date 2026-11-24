@@ -4,7 +4,7 @@
 
 	Functions to manage DirectX 9 texture sharing
 
-	Copyright (c) 2020-2021, Lynn Jarvis. All rights reserved.
+	Copyright (c) 2020-2024, Lynn Jarvis. All rights reserved.
 
 	Redistribution and use in source and binary forms, with or without modification, 
 	are permitted provided that the following conditions are met:
@@ -33,13 +33,33 @@
 
 #pragma warning( disable : 4005 ) // Disable macro re-definition warnings
 
-#include "SpoutCommon.h"
-#include "SpoutSenderNames.h" // for sender creation and update
-#include "SpoutFrameCount.h" // for mutex lock and new frame signal
-#include "SpoutUtils.h" // for logging utilites
+//
+// Include file path
+//
+// 1) If the include files are in the same folder there is no prefix.
+//    This applies for a build using SpoutDX9 dll or static library.
+//
+// 2) If the Spout source is built as a dll or static library,
+//    or an application is built using the repository folder structure
+//    the path prefix for include files is "..\..\..\SpoutGL\"
+//
+// 3) If the include files are in a different folder, change the prefix as required.
+//
+
+#if __has_include("SpoutCommon.h")
+#include "SpoutCommon.h" // include files in the same folder
+#include "SpoutSenderNames.h"
+#include "SpoutFrameCount.h"
+#include "SpoutUtils.h"
+#else
+#include "../../../SpoutGL/SpoutCommon.h" // repository folder structure
+#include "../../../SpoutGL/SpoutSenderNames.h"
+#include "../../../SpoutGL/SpoutFrameCount.h"
+#include "../../../SpoutGL/SpoutUtils.h"
+#endif
 
 #include <direct.h> // for _getcwd
-#include <TlHelp32.h> // for PROCESSENTRY32
+#include <tlhelp32.h> // for PROCESSENTRY32
 #include <tchar.h> // for _tcsicmp
 #include <d3d9.h>
 #pragma comment (lib, "d3d9.lib")
@@ -106,9 +126,9 @@ class SPOUT_DLLEXP spoutDX9 {
 		// Receive a DirectX 9 texture from a sender
 		bool ReceiveDX9Texture(LPDIRECT3DTEXTURE9 &pTexture);
 		// Close receiver and free resources
-		void ReleaseReceiver();
+		void ReleaseReceiver(bool waitForReconnect = true);
 		// Open sender selection dialog
-		void SelectSender();
+		bool SelectSender(HWND hwnd = nullptr);
 		// Sender has changed
 		bool IsUpdated();
 		// Connected to a sender
@@ -131,6 +151,30 @@ class SPOUT_DLLEXP spoutDX9 {
 		long GetSenderFrame();
 
 		//
+		// Sender names
+		//
+
+		// Get number of senders
+		int GetSenderCount();
+		// Get sender name for a given index
+		bool GetSender(int index, char* sendername, int MaxSize = 256);
+		// Return a list of current senders
+		std::vector<std::string> GetSenderList();
+		// Sender index into the set of names
+		int GetSenderIndex(const char* sendername);
+		// Get sender details
+		bool GetSenderInfo(const char* sendername, unsigned int& width, unsigned int& height, HANDLE& dxShareHandle, DWORD& dwFormat);
+		// Get active sender name
+		bool GetActiveSender(char* sendername);
+		// set active sender name
+		bool SetActiveSender(const char* sendername);
+		// Get maximum senders allowed
+		int  GetMaxSenders();
+		// Set maximum senders allowed
+		void SetMaxSenders(int maxSenders);
+
+
+		//
 		// COMMON
 		//
 
@@ -147,6 +191,7 @@ class SPOUT_DLLEXP spoutDX9 {
 
 		IDirect3D9Ex* m_pD3D; // DX9 object
 		IDirect3DDevice9Ex* m_pDevice; // DX9 device
+		bool m_bDeviceIsExternal;
 		bool m_bSpoutInitialized;
 		HANDLE m_dxShareHandle;
 		LPDIRECT3DTEXTURE9 m_pSharedTexture; // Texture to be shared
@@ -178,7 +223,7 @@ class SPOUT_DLLEXP spoutDX9 {
 		// Create receiver resources
 		void CreateReceiver(const char * SenderName, unsigned int width, unsigned int height, DWORD dwFormat);
 		// Pop up SpoutPanel to allow the user to select a sender
-		void SelectSenderPanel();
+		bool SelectSenderPanel(const char* message);
 		// Check whether SpoutPanel opened and return the new sender name
 		bool CheckSpoutPanel(char *sendername, int maxchars = 256);
 

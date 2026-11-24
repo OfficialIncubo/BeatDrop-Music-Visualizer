@@ -1,0 +1,137 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5
+fGammaAdj=1
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0
+fWaveScale=1
+fWaveSmoothing=0.75
+fWaveParam=0
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=1
+rot=0
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=0
+sx=1
+sy=1
+wave_r=1
+wave_g=1
+wave_b=1
+wave_x=0.5
+wave_y=0.5
+ob_size=0
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0
+ib_size=0
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+b1n=0
+b2n=0
+b3n=0
+b1x=1
+b2x=1
+b3x=1
+b1ed=0
+per_frame_init_1=last = 0;
+per_frame_init_2=hit = 0;
+per_frame_init_3=sw = 0;
+per_frame_1=q30 = 60/max(fps, 15);
+per_frame_2=q31 = aspectx;
+per_frame_3=q32 = aspecty;
+per_frame_4=beat = (bass > 1.25)*((time - last) > 0.25);
+per_frame_5=last = if(beat, time, last);
+per_frame_6=hit = max(hit*pow(0.88, q30), beat);
+per_frame_7=sw = sw + (0.3 + 0.6*mid_att)/fps;
+per_frame_8=q1 = sin(sw)*0.5;
+per_frame_9=q2 = sin(sw*0.83 + 2.0)*0.5;
+per_frame_10=q3 = sin(sw*1.17 + 4.0)*0.5;
+per_frame_11=q4 = 0.12 + 0.12*bass_att;
+per_frame_12=q5 = hit;
+per_frame_13=q6 = time*0.03;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`  float2 drift = float2(0.0006, -0.0002) * q30;
+warp_4=`  float h = tex2D(sampler_main, uv + drift).x * pow(0.996, q30);
+warp_5=`  float n = tex3D(sampler_noisevol_hq, float3(uv * float2(0.8, 1.2), q6 * 2.0)).x;
+warp_6=`  n = saturate((n - 0.3) * 1.6);
+warp_7=`  h = lerp(h, n, 0.03 * q30);
+warp_8=`  ret = float3(saturate(h), 0, 0);
+warp_9=`}
+comp_1=`float fan(float2 p, float2 s, float a0, float spread)
+comp_2=`{
+comp_3=`  float2 d = p - s;
+comp_4=`  float ba = atan2(d.x, d.y);
+comp_5=`  float t = 0.0;
+comp_6=`  for (int i = 0; i < 5; i++) {
+comp_7=`    float a = a0 + (i - 2.0) * spread;
+comp_8=`    float diff = abs(ba - a);
+comp_9=`    t += exp(-diff * length(d) * 180.0);
+comp_10=`  }
+comp_11=`  return t * saturate(d.y * 8.0) * exp(-length(d) * 0.9);
+comp_12=`}
+comp_13=`shader_body
+comp_14=`{
+comp_15=`  float2 p = (uv - 0.5) * aspect.xy;
+comp_16=`  float floorY = 0.36;
+comp_17=`  float refl = step(floorY, p.y);
+comp_18=`  float2 q = p;
+comp_19=`  q.y = lerp(p.y, floorY * 2.0 - p.y, refl);
+comp_20=`  float haze = 0.25 + 1.2 * GetBlur1(0.5 + q * aspect.zw).x;
+comp_21=`  float2 s1 = float2(-0.38, -0.33);
+comp_22=`  float2 s2 = float2(0.0, -0.36);
+comp_23=`  float2 s3 = float2(0.38, -0.33);
+comp_24=`  float f1 = fan(q, s1, q1 * 0.6 + 0.25, q4);
+comp_25=`  float f2 = fan(q, s2, q2 * 0.5, q4 * 1.1);
+comp_26=`  float f3 = fan(q, s3, q3 * 0.6 - 0.25, q4);
+comp_27=`  float3 c1 = float3(0.2, 1.0, 0.35);
+comp_28=`  float3 c2 = float3(1.0, 0.2, 0.7);
+comp_29=`  float3 c3 = float3(0.2, 0.7, 1.0);
+comp_30=`  float3 beams = (c1 * f1 + c2 * f2 + c3 * f3) * haze * (0.5 + 0.9 * q5);
+comp_31=`  float3 flare = c1 * exp(-length(q - s1) * 40.0) + c2 * exp(-length(q - s2) * 40.0) + c3 * exp(-length(q - s3) * 40.0);
+comp_32=`  float3 col = beams + flare * 0.8;
+comp_33=`  col += float3(0.025, 0.02, 0.05) * haze;
+comp_34=`  float gloss = 0.35 * saturate(1.0 - (p.y - floorY) * 4.0);
+comp_35=`  col = lerp(col, col * gloss, refl);
+comp_36=`  col += float3(0.15, 0.1, 0.2) * exp(-abs(p.y - floorY) * 120.0) * (0.3 + 0.7 * q5);
+comp_37=`  ret = 1.0 - exp(-col * 1.3);
+comp_38=`}

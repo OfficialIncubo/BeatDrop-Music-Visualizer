@@ -1,0 +1,278 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 28/06/2026 at 20:13:25.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=2
+PSVERSION_COMP=3
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=smooth_reaction = int(rand(2));
+per_frame_1=q1 = smooth_reaction;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`// Samplers for random textures
+comp_2=`sampler sampler_rand00;
+comp_3=`sampler sampler_rand01;
+comp_4=`sampler sampler_rand02;
+comp_5=`sampler sampler_rand03;
+comp_6=`
+comp_7=`// Shader body (comp)
+comp_8=`shader_body
+comp_9=`{
+comp_10=`    float4 color = tex2D(sampler_fc_main, uv);
+comp_11=`    
+comp_12=`   if (q1)
+comp_13=`   {
+comp_14=`       bass = bass_att;
+comp_15=`       mid = mid_att;
+comp_16=`       treb = treb_att;
+comp_17=`   }
+comp_18=`    
+comp_19=`    // Time-based variations
+comp_20=`    float t = time * 0.5;
+comp_21=`    float pulse = 0.5 + 0.5 * sin(t);
+comp_22=`    
+comp_23=`    // Random texture sampling for various effects
+comp_24=`    float2 randUV1 = float2(uv.x + t * 0.1, uv.y + t * 0.05);
+comp_25=`    float4 rand1 = tex2D(sampler_rand00, randUV1);
+comp_26=`    
+comp_27=`    float2 randUV2 = float2(uv.x * 2.0 + t * 0.07, uv.y * 2.0 + t * 0.03);
+comp_28=`    float4 rand2 = tex2D(sampler_rand01, randUV2);
+comp_29=`    
+comp_30=`    float2 randUV3 = float2(uv.x * 3.0 - t * 0.08, uv.y * 3.0 - t * 0.02);
+comp_31=`    float4 rand3 = tex2D(sampler_rand02, randUV3);
+comp_32=`    
+comp_33=`    //--------------------------------------------------
+comp_34=`    // TV Simulation Effects
+comp_35=`    //--------------------------------------------------
+comp_36=`    
+comp_37=`    // TV static/noise (reacts to treble)
+comp_38=`    float staticNoise = rand1.r * treb * 0.4;
+comp_39=`    float staticMask = smoothstep(0.2, 0.8, rand2.g);
+comp_40=`    staticNoise *= staticMask * (0.3 + 0.7 * treb);
+comp_41=`    
+comp_42=`    // Scan lines (vertical)
+comp_43=`    float scanLines = 0.8 + 0.2 * sin(uv.y * 800.0 + t * 2.0);
+comp_44=`    scanLines *= 0.9 + 0.1 * sin(t * 3.0);
+comp_45=`    
+comp_46=`    // Horizontal hold/vibration (reacts to bass)
+comp_47=`    float2 tvWobble = float2(
+comp_48=`        sin(uv.y * 30.0 + t * 5.0) * 0.002 * bass,
+comp_49=`        cos(uv.x * 25.0 + t * 3.0) * 0.001 * bass
+comp_50=`    );
+comp_51=`    
+comp_52=`    // Apply TV effects
+comp_53=`    float2 distortedUV = uv + tvWobble;
+comp_54=`    color = tex2D(sampler_fc_main, distortedUV);
+comp_55=`    color.rgb *= scanLines;
+comp_56=`    color.rgb += staticNoise * float3(0.5, 0.5, 0.5);
+comp_57=`    
+comp_58=`    //--------------------------------------------------
+comp_59=`    // Fireworks Effects
+comp_60=`    //--------------------------------------------------
+comp_61=`    
+comp_62=`    // Multiple firework positions (music-driven)
+comp_63=`    float3 fireworks = float3(0, 0, 0);
+comp_64=`    
+comp_65=`    // Firework 1 - Bass-driven
+comp_66=`    float2 fw1_pos = float2(0.3 + sin(t * 0.3) * 0.1, 0.7 + cos(t * 0.4) * 0.1);
+comp_67=`    float fw1_dist = distance(uv, fw1_pos);
+comp_68=`    float fw1_size = 0.05 + bass * 0.1;
+comp_69=`    float fw1_intensity = bass * 2.0;
+comp_70=`    
+comp_71=`    if (fw1_dist < fw1_size)
+comp_72=`    {
+comp_73=`        float fw1_falloff = 1.0 - (fw1_dist / fw1_size);
+comp_74=`        fw1_falloff = pow(fw1_falloff, 2.0);
+comp_75=`        
+comp_76=`        float fw1_sparkle = sin(uv.x * 50.0 + t * 10.0) * 
+comp_77=`                           sin(uv.y * 50.0 + t * 8.0) * 0.5 + 0.5;
+comp_78=`        
+comp_79=`        float3 fw1_color = float3(
+comp_80=`            1.0, 
+comp_81=`            0.3 + rand1.r * 0.7, 
+comp_82=`            0.1
+comp_83=`        ) * fw1_intensity;
+comp_84=`        
+comp_85=`        fireworks += fw1_color * fw1_falloff * fw1_sparkle;
+comp_86=`    }
+comp_87=`    
+comp_88=`    // Firework 2 - Mid-driven
+comp_89=`    float2 fw2_pos = float2(0.7 + cos(t * 0.5) * 0.15, 0.3 + sin(t * 0.6) * 0.15);
+comp_90=`    float fw2_dist = distance(uv, fw2_pos);
+comp_91=`    float fw2_size = 0.04 + mid * 0.08;
+comp_92=`    float fw2_intensity = mid * 1.8;
+comp_93=`    
+comp_94=`    if (fw2_dist < fw2_size)
+comp_95=`    {
+comp_96=`        float fw2_falloff = 1.0 - (fw2_dist / fw2_size);
+comp_97=`        fw2_falloff = pow(fw2_falloff, 1.5);
+comp_98=`        
+comp_99=`        float fw2_sparkle = sin(uv.x * 60.0 - t * 12.0) * 
+comp_100=`                           cos(uv.y * 60.0 - t * 10.0) * 0.5 + 0.5;
+comp_101=`        
+comp_102=`        float3 fw2_color = float3(
+comp_103=`            0.2 + rand2.g * 0.8,
+comp_104=`            0.8,
+comp_105=`            1.0
+comp_106=`        ) * fw2_intensity;
+comp_107=`        
+comp_108=`        fireworks += fw2_color * fw2_falloff * fw2_sparkle;
+comp_109=`    }
+comp_110=`    
+comp_111=`    // Firework 3 - Treble-driven (smaller, faster)
+comp_112=`    float2 fw3_pos = float2(0.5 + sin(t * 2.0) * 0.2, 0.5 + cos(t * 1.8) * 0.2);
+comp_113=`    float fw3_dist = distance(uv, fw3_pos);
+comp_114=`    float fw3_size = 0.02 + treb * 0.05;
+comp_115=`    float fw3_intensity = treb * 2.5;
+comp_116=`    
+comp_117=`    if (fw3_dist < fw3_size)
+comp_118=`    {
+comp_119=`        float fw3_falloff = 1.0 - (fw3_dist / fw3_size);
+comp_120=`        fw3_falloff = pow(fw3_falloff, 3.0);
+comp_121=`        
+comp_122=`        float fw3_sparkle = sin((uv.x + uv.y) * 100.0 + t * 20.0) * 0.5 + 0.5;
+comp_123=`        
+comp_124=`        float3 fw3_color = float3(
+comp_125=`            1.0,
+comp_126=`            1.0,
+comp_127=`            0.2 + rand3.b * 0.8
+comp_128=`        ) * fw3_intensity;
+comp_129=`        
+comp_130=`        fireworks += fw3_color * fw3_falloff * fw3_sparkle;
+comp_131=`    }
+comp_132=`    
+comp_133=`    // Firework trails/particles
+comp_134=`    float particleNoise = rand1.b * rand2.r * rand3.g;
+comp_135=`    float particles = particleNoise * treb * 0.3;
+comp_136=`    particles *= sin(uv.x * 50.0 + t * 5.0) * 0.5 + 0.5;
+comp_137=`    particles *= cos(uv.y * 50.0 - t * 4.0) * 0.5 + 0.5;
+comp_138=`    
+comp_139=`    fireworks += particles * float3(0.8, 0.9, 1.0);
+comp_140=`    
+comp_141=`    //--------------------------------------------------
+comp_142=`    // Random Texture Overlays
+comp_143=`    //--------------------------------------------------
+comp_144=`    
+comp_145=`    // Subtle random texture overlay (reacts to overall volume)
+comp_146=`    float totalVolume = (bass + mid + treb) * 0.33;
+comp_147=`    float randOverlay = rand1.g * rand2.b * 0.2 * totalVolume;
+comp_148=`    
+comp_149=`    // Warped random pattern
+comp_150=`    float2 warpUV = uv + float2(
+comp_151=`        sin(uv.y * 10.0 + t * 2.0) * 0.02,
+comp_152=`        cos(uv.x * 10.0 + t * 1.5) * 0.02
+comp_153=`    );
+comp_154=`    float4 warpedRand = tex2D(sampler_rand03, warpUV);
+comp_155=`    float warpPattern = warpedRand.r * warpedRand.g * 0.3 * pulse;
+comp_156=`    
+comp_157=`    //--------------------------------------------------
+comp_158=`    // Combine All Effects
+comp_159=`    //--------------------------------------------------
+comp_160=`    
+comp_161=`    // Add random texture patterns
+comp_162=`    color.rgb += randOverlay * 0.3;
+comp_163=`    color.rgb += warpPattern * float3(0.7, 0.5, 0.9) * mid;
+comp_164=`    
+comp_165=`    // Add fireworks (bright additive blending)
+comp_166=`    color.rgb += fireworks;
+comp_167=`    
+comp_168=`    // Color tint based on music
+comp_169=`    float3 musicTint = float3(
+comp_170=`        0.8 + bass * 0.3,
+comp_171=`        0.7 + mid * 0.3,
+comp_172=`        0.6 + treb * 0.4
+comp_173=`    );
+comp_174=`    color.rgb *= musicTint;
+comp_175=`    
+comp_176=`    // Flicker effect (like old TV)
+comp_177=`    float flicker = 0.9 + 0.1 * sin(t * 20.0 + uv.x * 10.0) * (bass*2.5);
+comp_178=`    color.rgb *= flicker;
+comp_179=`    
+comp_180=`    // Vignette effect
+comp_181=`    float2 centeredUV = uv - 0.5;
+comp_182=`    float vignette = 1.0 - dot(centeredUV, centeredUV) * 0.8;
+comp_183=`    vignette = pow(vignette, 0.8);
+comp_184=`    color.rgb *= vignette;
+comp_185=`    
+comp_186=`    // Ensure color stays in reasonable range
+comp_187=`    color.rgb = saturate(color.rgb);
+comp_188=`    
+comp_189=`    ret = color;
+comp_190=`}

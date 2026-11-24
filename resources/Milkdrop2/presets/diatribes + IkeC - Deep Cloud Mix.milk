@@ -1,0 +1,56 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+comp_1=// diatribes + IkeC - Deep Cloud Mix / https://www.shadertoy.com/view/wfScWt
+comp_2=// Transpiled to HLSL using Milkwave
+comp_3=
+comp_4=#define tx sin(time)*0.5+1
+comp_5=
+comp_6=#define R(a) float2x2(cos(a+float4(0,33,11,0)))
+comp_7=
+comp_8=shader_body {
+comp_9=  // MOUSE: pointer Y zooms - up = zoom in, down = zoom out (0.90x .. 1.30x around the frame centre);
+comp_10=  // pointer X pans the view left/right. Centre + released button give the identity transform, so the
+comp_11=  // untouched frame stays byte-identical.
+comp_12=  float2 mwMouse = (mouse.xy - 0.5) * saturate(mouse.z);
+comp_13=  float mwZoomAmt = mwMouse.y > 0.0 ? 0.6 : 0.2;   // zoom in generously, out carefully
+comp_14=  float mwZoom = 1.0 + mwMouse.y * mwZoomAmt;
+comp_15=  uv = (uv - 0.5) / mwZoom + 0.5 + float2(mwMouse.x * 0.35, 0.0);
+comp_16=  float4 o = 0;
+comp_17=
+comp_18=  // CONV: Center on screen, then try some aspect correction
+comp_19=  uv = (uv*2) - 1;
+comp_20=  uv *= aspect.xy;
+comp_21=  // CONV: Adjust this to flip the output (±uv.x, ±uv.y)
+comp_22=  uv = float2(uv.x, -uv.y);
+comp_23=  float2 u = uv;
+comp_24=
+comp_25=  float i=0,a,d,s,t=time*.3;
+comp_26=  float3 p = float3(uv.yx,1);
+comp_27=
+comp_28=  // u = (u-p.xy/2.)/p.y;
+comp_29=
+comp_30=  for(o*=i; i++<1e2;
+comp_31=  d += s = .02 + abs(s)*.5,
+comp_32=  o += 12.*float4(3,2,7,0)/s
+comp_33=  +  6.*float4(19,2,1,0)/max(abs(u.y), .001))
+comp_34=  for (p = float3(u * d, d + t),
+comp_35=  p.x -= t,
+comp_36=  p.z *= .7,
+comp_37=  s = min(2. + p.y+cos(p.y+2.*t+p.x*.4)*.6, 2.-p.y),
+comp_38=  a = .08; a < 2.; a *= 1.6)
+comp_39=  p.xz= mul(p.xz,R(.1)),
+comp_40=  s-=abs(dot(sin(2.*p/a+t),float3(.12,.12,.12)))*a;
+comp_41=  u.x += .3;
+comp_42=
+comp_43=  #ifdef vis_version
+comp_44=    float fac = (int)vis_version > 2 ? 2*vis_intensity+vis_shift : ((int)vis_version == 1 ? 3-2*smoothstep(0,2,bass_smooth) : 3-smoothstep(0,2,bass_att)) * vis_intensity + vis_shift;
+comp_45=  #else
+comp_46=    float fac = 4-smoothstep(0,2,bass_att);
+comp_47=  #endif
+comp_48=  
+comp_49=  o = saturate(o / fac / (3e5 * length(u)));
+comp_50=  
+comp_51=  ret = o;
+comp_52=}

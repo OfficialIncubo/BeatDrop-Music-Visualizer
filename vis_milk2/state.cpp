@@ -28,6 +28,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "state.h"
+#include "preset_code_reader.h"
 #include "support.h"
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
 #include "plugin.h"
@@ -38,12 +39,522 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <vector>
 #include <assert.h>
 #include <ctime>
+#include <string>
+#include <cctype>
 #include "wasabi.h"
 #include "AMDDetection.h"
 
 extern CPlugin g_plugin;		// declared in main.cpp
 
 #define FRAND ((rand() % 7381)/7380.0f)
+
+// projectM-eval's native API reports the source line and column that the
+// ns-eel2 compatibility shim does not include in its legacy error getter.
+struct projectm_eval_context;
+extern "C" const char* projectm_eval_get_error(projectm_eval_context* ctx, int* line, int* column);
+
+namespace
+{
+struct EvalFunctionInfo { const char* name; int argumentCount; };
+
+// Built-ins documented by the projectM-eval/Milkdrop expression syntax.
+static const EvalFunctionInfo kEvalFunctions[] =
+{
+	{ "above", 2 }, { "abs", 1 }, { "acos", 1 }, { "asin", 1 },
+	{ "assign", 2 }, { "atan", 1 }, { "atan2", 2 }, { "band", 2 },
+	{ "below", 2 }, { "bnot", 1 }, { "bor", 2 }, { "ceil", 1 },
+	{ "cos", 1 }, { "equal", 2 }, { "exec2", 2 }, { "exec3", 3 },
+	{ "exp", 1 }, { "floor", 1 }, { "freembuf", 1 }, { "gmegabuf", 1 },
+	{ "if", 3 }, { "int", 1 }, { "invsqrt", 1 }, { "log", 1 },
+	{ "log10", 1 }, { "loop", 2 }, { "max", 2 }, { "megabuf", 1 },
+	{ "memcpy", 3 }, { "memset", 3 }, { "min", 2 }, { "pow", 2 },
+	{ "rand", 1 }, { "sigmoid", 2 }, { "sign", 1 }, { "sin", 1 },
+	{ "sqr", 1 }, { "sqrt", 1 }, { "tan", 1 }, { "while", 1 }
+};
+
+static bool IsIdentifierStart(char c)
+{
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || c == '_';
+}
+
+static bool IsIdentifierChar(char c)
+{
+	return IsIdentifierStart(c) || (c >= '0' && c <= '9');
+}
+
+static std::string LowercaseAscii(const std::string& value)
+{
+	std::string result(value);
+	for (size_t i = 0; i < result.size(); ++i)
+		result[i] = (char)std::tolower((unsigned char)result[i]);
+	return result;
+}
+
+static bool GetBuiltinFunctionArity(const std::string& name, int* argumentCount)
+{
+	const std::string lowered = LowercaseAscii(name);
+	for (size_t i = 0; i < sizeof(kEvalFunctions) / sizeof(kEvalFunctions[0]); ++i)
+	{
+		if (lowered == kEvalFunctions[i].name)
+		{
+			if (argumentCount) *argumentCount = kEvalFunctions[i].argumentCount;
+			return true;
+		}
+	}
+	return false;
+}
+
+static int CountCallArguments(const std::string& source, size_t openParen, size_t closeParen);
+
+static bool FindUserFunctionArity(const std::string& source, const std::string& name, int* argumentCount)
+{
+	const std::string loweredSource = LowercaseAscii(source);
+	const std::string loweredName = LowercaseAscii(name);
+	size_t searchFrom = 0;
+	while ((searchFrom = loweredSource.find("function", searchFrom)) != std::string::npos)
+	{
+		if ((searchFrom == 0 || !IsIdentifierChar(loweredSource[searchFrom - 1])) &&
+			(searchFrom + 8 >= loweredSource.size() || !IsIdentifierChar(loweredSource[searchFrom + 8])))
+		{
+			size_t nameStart = searchFrom + 8;
+			while (nameStart < loweredSource.size() && std::isspace((unsigned char)loweredSource[nameStart])) ++nameStart;
+			size_t nameEnd = nameStart;
+			while (nameEnd < loweredSource.size() && IsIdentifierChar(loweredSource[nameEnd])) ++nameEnd;
+			if (nameEnd > nameStart && loweredSource.compare(nameStart, nameEnd - nameStart, loweredName) == 0)
+			{
+				size_t openParen = nameEnd;
+				while (openParen < loweredSource.size() && std::isspace((unsigned char)loweredSource[openParen])) ++openParen;
+				if (openParen < loweredSource.size() && loweredSource[openParen] == '(')
+				{
+					int depth = 1;
+					size_t closeParen = openParen + 1;
+					for (; closeParen < loweredSource.size() && depth > 0; ++closeParen)
+					{
+						if (loweredSource[closeParen] == '(') ++depth;
+						else if (loweredSource[closeParen] == ')') --depth;
+					}
+					if (depth == 0)
+					{
+						if (argumentCount) *argumentCount = CountCallArguments(loweredSource, openParen, closeParen - 1);
+						return true;
+					}
+				}
+				return true;
+			}
+		}
+		searchFrom += 8;
+	}
+	return false;
+}
+
+static int CountCallArguments(const std::string& source, size_t openParen, size_t closeParen)
+{
+	if (openParen + 1 >= closeParen) return 0;
+	int parenDepth = 0, bracketDepth = 0, count = 0;
+	bool hasContent = false;
+	for (size_t i = openParen + 1; i < closeParen; ++i)
+	{
+		const char c = source[i];
+		if (c == '(') ++parenDepth;
+		else if (c == ')' && parenDepth > 0) --parenDepth;
+		else if (c == '[') ++bracketDepth;
+		else if (c == ']' && bracketDepth > 0) --bracketDepth;
+		else if (c == ',' && parenDepth == 0 && bracketDepth == 0)
+		{
+			++count;
+			hasContent = false;
+			continue;
+		}
+		if (!std::isspace((unsigned char)c)) hasContent = true;
+	}
+	return hasContent ? count + 1 : count;
+}
+
+struct EvalCallSite
+{
+	std::string name;
+	size_t nameStart;
+	size_t openParen;
+	size_t closeParen;
+	int argumentCount;
+};
+
+static bool FindCallAtOffset(const std::string& source, size_t offset, EvalCallSite* result)
+{
+	bool found = false;
+	size_t bestSpan = (size_t)-1;
+	for (size_t i = 0; i < source.size(); )
+	{
+		if (!IsIdentifierStart(source[i])) { ++i; continue; }
+		const size_t nameStart = i++;
+		if (nameStart > offset) break;
+		while (i < source.size() && IsIdentifierChar(source[i])) ++i;
+		const size_t nameEnd = i;
+		size_t openParen = i;
+		while (openParen < source.size() && std::isspace((unsigned char)source[openParen])) ++openParen;
+		if (openParen >= source.size() || source[openParen] != '(') continue;
+
+		int depth = 1;
+		size_t closeParen = source.size();
+		for (size_t j = openParen + 1; j < source.size(); ++j)
+		{
+			if (source[j] == '(') ++depth;
+			else if (source[j] == ')' && --depth == 0) { closeParen = j; break; }
+		}
+		if (offset >= nameStart && offset <= closeParen + (closeParen < source.size() ? 1 : 0) && closeParen - nameStart < bestSpan)
+		{
+			result->name = source.substr(nameStart, nameEnd - nameStart);
+			result->nameStart = nameStart;
+			result->openParen = openParen;
+			result->closeParen = closeParen;
+			result->argumentCount = CountCallArguments(source, openParen, closeParen);
+			bestSpan = closeParen - nameStart;
+			found = true;
+		}
+	}
+	return found;
+}
+
+static bool FindFunctionUsedAsVariable(const std::string& source, size_t offset, std::string* functionName, size_t* functionStart)
+{
+	for (size_t i = 0; i < source.size(); )
+	{
+		if (!IsIdentifierStart(source[i])) { ++i; continue; }
+		const size_t start = i++;
+		while (i < source.size() && IsIdentifierChar(source[i])) ++i;
+		const size_t end = i;
+		const std::string name = source.substr(start, end - start);
+	// Only built-ins are reserved as variable names in this evaluator. Checking
+	// user-defined declarations here would require rescanning the full source
+	// for every token on malformed, potentially large preset code.
+	if (!GetBuiltinFunctionArity(name, NULL)) continue;
+
+		size_t next = end;
+		while (next < source.size() && std::isspace((unsigned char)source[next])) ++next;
+		const bool assignedTo = next < source.size() &&
+			(source[next] == '=' || (next + 1 < source.size() &&
+			 ((source[next] == '+' || source[next] == '-' || source[next] == '*' || source[next] == '/' || source[next] == '%' || source[next] == '^' || source[next] == '&' || source[next] == '|') && source[next + 1] == '=')));
+		const bool called = next < source.size() && source[next] == '(';
+		size_t prev = start;
+		while (prev > 0 && std::isspace((unsigned char)source[prev - 1])) --prev;
+		const char previousChar = prev > 0 ? source[prev - 1] : 0;
+		const bool bareFunctionValue = !called && !assignedTo &&
+			(previousChar == 0 || previousChar == '=' || previousChar == ',' || previousChar == '(' || previousChar == ';' ||
+			 previousChar == '+' || previousChar == '-' || previousChar == '*' || previousChar == '/' || previousChar == '^');
+		if ((assignedTo || bareFunctionValue) && offset + 2 >= start && offset <= next + 2)
+		{
+			*functionName = name;
+			*functionStart = start;
+			return true;
+		}
+	}
+	return false;
+}
+
+static bool FindUnclosedDelimiter(const std::string& source, char* expectedClosing)
+{
+	std::vector<char> delimiters;
+	bool mismatchedClosing = false;
+	for (size_t i = 0; i < source.size(); ++i)
+	{
+		if (source[i] == '$' && i + 2 < source.size() && source[i + 1] == '\'')
+		{
+			i += 2;
+			if (i + 1 < source.size() && source[i + 1] == '\'') ++i;
+			continue;
+		}
+		if (source[i] == '(' || source[i] == '[') delimiters.push_back(source[i]);
+		else if (source[i] == ')' || source[i] == ']')
+		{
+			if (!delimiters.empty() && ((source[i] == ')' && delimiters.back() == '(') || (source[i] == ']' && delimiters.back() == '[')))
+				delimiters.pop_back();
+			else
+				mismatchedClosing = true;
+		}
+	}
+	if (delimiters.empty() || mismatchedClosing) return false;
+	*expectedClosing = delimiters.back() == '(' ? ')' : ']';
+	return true;
+}
+
+static std::wstring NarrowToWide(const std::string& text, UINT codePage)
+{
+	if (text.empty()) return std::wstring();
+	const int required = MultiByteToWideChar(codePage, 0, text.c_str(), (int)text.size(), NULL, 0);
+	if (required <= 0) return std::wstring(text.begin(), text.end());
+	std::wstring wide((size_t)required, L'\0');
+	MultiByteToWideChar(codePage, 0, text.c_str(), (int)text.size(), &wide[0], required);
+	return wide;
+}
+
+static std::string GetLineAt(const std::string& source, int lineNumber)
+{
+	if (lineNumber < 1) return std::string();
+	size_t start = 0;
+	for (int line = 1; line < lineNumber; ++line)
+	{
+		const size_t lineFeed = source.find_first_of(std::string("\n") + (char)LINEFEED_CONTROL_CHAR, start);
+		if (lineFeed == std::string::npos) return std::string();
+		start = lineFeed + 1;
+	}
+	size_t end = source.find_first_of(std::string("\n") + (char)LINEFEED_CONTROL_CHAR, start);
+	if (end == std::string::npos) end = source.size();
+	return source.substr(start, end - start);
+}
+
+static size_t GetOffsetForLineColumn(const std::string& source, int lineNumber, int columnNumber)
+{
+	size_t offset = 0;
+	for (int line = 1; line < lineNumber; ++line)
+	{
+		const size_t lineFeed = source.find('\n', offset);
+		if (lineFeed == std::string::npos) return source.size();
+		offset = lineFeed + 1;
+	}
+	const size_t requested = offset + (size_t)(columnNumber > 0 ? columnNumber - 1 : 0);
+	return requested < source.size() ? requested : source.size();
+}
+
+// MilkDrop removes line comments and internal row separators completely. In
+// particular, a comment-only row must not introduce spaces between identifiers
+// continued across numbered rows ("zm" + "nx" becomes "zmnx"). Keep the
+// original offsets alongside the exact compiler input for diagnostics.
+static void PrepareExpressionSource(const char* source, char* destination,
+	std::vector<size_t>* positions = NULL)
+{
+	size_t output = 0;
+	bool lineComment = false, blockComment = false, hasCode = false;
+	auto append = [&](char value, size_t originalOffset) {
+		if (destination) destination[output] = value;
+		if (positions) positions->push_back(originalOffset);
+		++output;
+	};
+	size_t i = 0;
+	for (; source && source[i]; ++i)
+	{
+		const char value = source[i];
+		if (lineComment)
+		{
+			if (value == LINEFEED_CONTROL_CHAR || value == '\n') lineComment = false;
+			continue;
+		}
+		if (blockComment)
+		{
+			if (value != LINEFEED_CONTROL_CHAR) append(' ', i);
+			if (value == '*' && source[i + 1] == '/')
+			{
+				append(' ', ++i);
+				blockComment = false;
+			}
+			continue;
+		}
+		if ((value == '/' && source[i + 1] == '/') || (value == '\\' && source[i + 1] == '\\'))
+		{
+			lineComment = true;
+			++i;
+			continue;
+		}
+		if (value == '/' && source[i + 1] == '*')
+		{
+			append(' ', i);
+			append(' ', ++i);
+			blockComment = true;
+			continue;
+		}
+		if (value == LINEFEED_CONTROL_CHAR) continue;
+		append(value, i);
+		if (!std::isspace((unsigned char)value)) hasCode = true;
+	}
+	if (!hasCode)
+	{
+		output = 0;
+		if (positions) positions->clear();
+	}
+	if (destination) destination[output] = 0;
+	if (positions) positions->push_back(i); // Also map end-of-input errors.
+}
+
+static size_t GetOriginalOffsetForCompiledOffset(const char* originalCode, size_t compiledOffset)
+{
+	std::vector<size_t> positions;
+	PrepareExpressionSource(originalCode, NULL, &positions);
+	return positions[compiledOffset < positions.size() ? compiledOffset : positions.size() - 1];
+}
+
+static bool FindMissingSemicolon(const std::string& source, size_t errorOffset, size_t* statementStart)
+{
+	// Only classify a failed parse at a new top-level assignment. Existing
+	// whitespace may separate two statements; joined identifiers and omitted
+	// final semicolons remain entirely up to the evaluator.
+	int depth = 0;
+	size_t previousTokenStart = 0;
+	bool previousCanEndExpression = false;
+	for (size_t i = 0; i < source.size(); )
+	{
+		const char c = source[i];
+		if (std::isspace((unsigned char)c)) { ++i; continue; }
+		if (c == '$' && i + 2 < source.size() && source[i + 1] == '\'')
+		{
+			previousTokenStart = i;
+			i += 3;
+			if (i < source.size() && source[i] == '\'') ++i;
+			previousCanEndExpression = true;
+			continue;
+		}
+		if ((c >= '0' && c <= '9') || (c == '.' && i + 1 < source.size() &&
+			source[i + 1] >= '0' && source[i + 1] <= '9'))
+		{
+			previousTokenStart = i;
+			while (i < source.size() && source[i] >= '0' && source[i] <= '9') ++i;
+			if (i < source.size() && source[i] == '.')
+			{
+				++i;
+				while (i < source.size() && source[i] >= '0' && source[i] <= '9') ++i;
+			}
+			if (i < source.size() && (source[i] == 'e' || source[i] == 'E'))
+			{
+				size_t exponent = i + 1;
+				if (exponent < source.size() && (source[exponent] == '+' || source[exponent] == '-')) ++exponent;
+				const size_t digits = exponent;
+				while (exponent < source.size() && source[exponent] >= '0' && source[exponent] <= '9') ++exponent;
+				if (exponent > digits) i = exponent;
+			}
+			previousCanEndExpression = true;
+			continue;
+		}
+		if (c == '(' || c == '[') ++depth;
+		else if (c == ')' || c == ']') --depth;
+		if (!IsIdentifierStart(c))
+		{
+			previousTokenStart = i++;
+			previousCanEndExpression = c == ')' || c == ']';
+			continue;
+		}
+		const size_t start = i++;
+		while (i < source.size() && IsIdentifierChar(source[i])) ++i;
+		const size_t precedingToken = previousTokenStart;
+		const bool followsExpression = previousCanEndExpression;
+		previousTokenStart = start;
+		previousCanEndExpression = true;
+		if (depth != 0 || !followsExpression) continue;
+
+		size_t next = i;
+		while (next < source.size() && std::isspace((unsigned char)source[next])) ++next;
+		if (next >= source.size() || source[next] != '=' ||
+			(next + 1 < source.size() && source[next + 1] == '=')) continue;
+
+		// Evaluator versions can locate an unexpected VAR at the preceding
+		// token, the gap, or VAR itself. Include the whole preceding token:
+		// integer/decimal literals may contain more than one character.
+		if (errorOffset < precedingToken || errorOffset > i) continue;
+		*statementStart = start;
+		return true;
+	}
+	return false;
+}
+
+static std::wstring BuildExpressionCompileError(const wchar_t* presetName, const char* section,
+	const char* originalCode, const char* compiledCode, NSEEL_VMCTX evalContext)
+{
+	int line = 1, column = 1;
+	const char* compilerError = projectm_eval_get_error(reinterpret_cast<projectm_eval_context*>(evalContext), &line, &column);
+	const std::string source = compiledCode ? compiledCode : "";
+	if (line < 1) line = 1;
+	if (column < 1) column = 1;
+	const size_t errorOffset = GetOffsetForLineColumn(source, line, column);
+
+	std::string reason;
+	std::string functionName;
+	size_t functionStart = errorOffset;
+	size_t statementStart = errorOffset;
+	size_t missingSemicolonEnd = 0;
+	if (compilerError && std::string(compilerError).find("unexpected VAR") != std::string::npos &&
+		FindMissingSemicolon(source, errorOffset, &statementStart))
+	{
+		reason = "missing semicolon";
+		missingSemicolonEnd = statementStart;
+		while (missingSemicolonEnd && std::isspace((unsigned char)source[missingSemicolonEnd - 1]))
+			--missingSemicolonEnd;
+	}
+	else if (FindFunctionUsedAsVariable(source, errorOffset, &functionName, &functionStart))
+	{
+		reason = "'" + functionName + "' is a function, not a variable";
+		line = 1;
+		for (size_t i = 0; i < functionStart; ++i) if (source[i] == '\n') ++line;
+		const size_t lineFeed = source.rfind('\n', functionStart);
+		column = (int)(functionStart - (lineFeed == std::string::npos ? 0 : lineFeed + 1)) + 1;
+	}
+	else
+	{
+		EvalCallSite call;
+		if (FindCallAtOffset(source, errorOffset, &call))
+		{
+			int expectedArguments = 0;
+			const bool known = GetBuiltinFunctionArity(call.name, &expectedArguments) ||
+				FindUserFunctionArity(source, call.name, &expectedArguments);
+			char unmatchedDelimiter = 0;
+			if (known && call.argumentCount != expectedArguments && call.closeParen < source.size() &&
+				!FindUnclosedDelimiter(source, &unmatchedDelimiter))
+			{
+				reason = "function '" + call.name + "' expects " + std::to_string(expectedArguments) +
+					(expectedArguments == 1 ? " parameter, got " : " parameters, got ") + std::to_string(call.argumentCount);
+				functionStart = call.closeParen;
+				line = 1;
+				for (size_t i = 0; i < functionStart; ++i) if (source[i] == '\n') ++line;
+				const size_t lineFeed = source.rfind('\n', functionStart);
+				column = (int)(functionStart - (lineFeed == std::string::npos ? 0 : lineFeed + 1)) + 1;
+			}
+			if (reason.empty() && !known)
+			{
+				reason = "function '" + call.name + "' is undefined";
+				functionStart = call.nameStart;
+				line = 1;
+				for (size_t i = 0; i < functionStart; ++i) if (source[i] == '\n') ++line;
+				const size_t lineFeed = source.rfind('\n', functionStart);
+				column = (int)(functionStart - (lineFeed == std::string::npos ? 0 : lineFeed + 1)) + 1;
+			}
+		}
+	}
+
+	char expectedClosing = 0;
+	if (reason.empty() && FindUnclosedDelimiter(source, &expectedClosing))
+		reason = std::string("missing closing '") + expectedClosing + "'";
+	if (reason.empty() && compilerError && compilerError[0]) reason = compilerError;
+	if (reason.empty()) reason = "syntax error";
+
+	// Compilation removes MilkDrop's internal line separators to retain legacy
+	// parsing behavior. Map the compiler's flattened position back to the source
+	// line for a useful diagnostic.
+	const char* diagnosticSource = originalCode ? originalCode : "";
+	// For a missing separator, map the final character of the preceding
+	// expression and advance once. Mapping its end directly would select the
+	// next row after removed line separators, comments and blank rows.
+	const size_t originalOffset = missingSemicolonEnd
+		? GetOriginalOffsetForCompiledOffset(diagnosticSource, missingSemicolonEnd - 1) + 1
+		: GetOriginalOffsetForCompiledOffset(diagnosticSource, GetOffsetForLineColumn(source, line, column));
+	line = 1;
+	size_t lineStart = 0;
+	for (size_t i = 0; i < originalOffset && diagnosticSource[i]; ++i)
+	{
+		if (diagnosticSource[i] == LINEFEED_CONTROL_CHAR || diagnosticSource[i] == '\n')
+		{
+			++line;
+			lineStart = i + 1;
+		}
+	}
+	column = (int)(originalOffset - lineStart) + 1;
+	std::string sourceLine = GetLineAt(diagnosticSource, line);
+	if (sourceLine.empty()) sourceLine = GetLineAt(source, 1);
+	size_t marker = (size_t)(column > 0 ? column - 1 : 0);
+	if (marker > sourceLine.size()) marker = sourceLine.size();
+	sourceLine.insert(marker, "<!>");
+
+	return L"warning: preset \"" + std::wstring(presetName ? presetName : L"") + L"\": error in '" +
+		NarrowToWide(section ? section : "expression", CP_ACP) + L"' code - in line " +
+		std::to_wstring(line) + L", column " + std::to_wstring(column) + L": " +
+		NarrowToWide(reason, CP_ACP) + L": " + NarrowToWide(sourceLine, CP_ACP);
+}
+}
 
 
 
@@ -58,7 +569,11 @@ typedef std::vector<std::string> VarNameList;
 typedef std::vector<int> IntList;
 
 
-FILE* fLastFilePtr = NULL;
+// Preset imports can happen on the render thread and the shader-precache
+// worker at the same time. Keep the fast-reader cache local to each thread;
+// its file pointer and line-index vectors must never be shared across imports.
+thread_local FILE* fLastFilePtr = NULL;
+static std::mutex g_presetImportMutex;
 void GetFast_CLEAR() { fLastFilePtr = NULL; }
 bool _GetLineByName(FILE* f, const char* szVarName, char* szRet, int nMaxRetChars)
 {
@@ -67,9 +582,9 @@ bool _GetLineByName(FILE* f, const char* szVarName, char* szRet, int nMaxRetChar
     // the part of the line after the '=' sign (or space) goes into szRet.
     // szVarName can't have any spaces in it.
 
-    static int MyLineNum = 0;
-    static VarNameList line_varName;
-    static IntList     line_value_bytepos;
+    static thread_local int MyLineNum = 0;
+    static thread_local VarNameList line_varName;
+    static thread_local IntList     line_value_bytepos;
 
     if (f != fLastFilePtr)
     {
@@ -353,6 +868,15 @@ void CState::RegisterBuiltInVariables(int flags)
 		var_pf_ctrlrt        = NSEEL_VM_regvar(m_pf_eel, "ctrlrt");
 		var_pf_ctrldn        = NSEEL_VM_regvar(m_pf_eel, "ctrldn");
 		var_pf_ctrlup        = NSEEL_VM_regvar(m_pf_eel, "ctrlup");
+		var_pf_year          = NSEEL_VM_regvar(m_pf_eel, "year");
+		var_pf_month         = NSEEL_VM_regvar(m_pf_eel, "month");
+		var_pf_day           = NSEEL_VM_regvar(m_pf_eel, "day");
+		var_pf_weekday       = NSEEL_VM_regvar(m_pf_eel, "weekday");
+		var_pf_hour          = NSEEL_VM_regvar(m_pf_eel, "hour");
+		var_pf_minute        = NSEEL_VM_regvar(m_pf_eel, "minute");
+		var_pf_second        = NSEEL_VM_regvar(m_pf_eel, "second");
+		var_pf_milliseconds  = NSEEL_VM_regvar(m_pf_eel, "milliseconds");
+		var_pf_totalseconds  = NSEEL_VM_regvar(m_pf_eel, "totalseconds");
         var_pf_blur1min      = NSEEL_VM_regvar(m_pf_eel, "blur1_min");
         var_pf_blur2min      = NSEEL_VM_regvar(m_pf_eel, "blur2_min");
         var_pf_blur3min      = NSEEL_VM_regvar(m_pf_eel, "blur3_min");
@@ -798,9 +1322,6 @@ void CState::StartBlendFrom(CState *s_from, float fAnimTime, float fTimespan)
 	m_fVideoEchoZoom .StartBlendFrom(&s_from->m_fVideoEchoZoom , fAnimTime, fTimespan);
 	m_fVideoEchoAlpha.StartBlendFrom(&s_from->m_fVideoEchoAlpha, fAnimTime, fTimespan);
 	m_fDecay         .StartBlendFrom(&s_from->m_fDecay         , fAnimTime, fTimespan);
-	m_fDecayR        .StartBlendFrom(&s_from->m_fDecayR        , fAnimTime, fTimespan);
-	m_fDecayG        .StartBlendFrom(&s_from->m_fDecayG        , fAnimTime, fTimespan);
-	m_fDecayB        .StartBlendFrom(&s_from->m_fDecayB        , fAnimTime, fTimespan);
 	m_fFFTAttack     .StartBlendFrom(&s_from->m_fFFTAttack     , fAnimTime, fTimespan);
 	m_fFFTDecay      .StartBlendFrom(&s_from->m_fFFTDecay      , fAnimTime, fTimespan);
 	m_fWaveAlpha     .StartBlendFrom(&s_from->m_fWaveAlpha     , fAnimTime, fTimespan);
@@ -915,11 +1436,11 @@ bool CState::Export(const wchar_t *szIniFile)
 	FILE *fOut = _wfopen(szIniFile, L"w");
 	if (!fOut) return false;
 
-	time_t timestamp = time(nullptr);
-	tm* local = localtime(&timestamp);
+	SYSTEMTIME st;
+	GetLocalTime(&st);
 
-	fprintf(fOut, "This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on %02d/%02d/%02d at %02d:%02d:%02d.\n", local->tm_mday, local->tm_mon + 1, local->tm_year + 1900, local->tm_hour, local->tm_min, local->tm_sec);
-	fprintf(fOut, "Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer\n");
+	fprintf(fOut, "This preset has been created/edited using BeatDrop Music Visualizer v1.5.1 on %02d/%02d/%02d at %02d:%02d:%02d.\n", st.wDay, st.wMonth, st.wYear, st.wHour, st.wMinute, st.wSecond);
+	fprintf(fOut, "Try creating your own preset by getting this from https://officialincubo.github.io/BeatDrop-Music-Visualizer\n");
 	fprintf(fOut, "Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.\n");
 	fprintf(fOut, "Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM\n");
 	fprintf(fOut, "###################################################################################################\n\n");
@@ -1119,113 +1640,19 @@ int  CShape::Export(FILE* fOut, const wchar_t *szFile, int i)
     return 1;
 }
 
-void ReadCode(FILE* f, char* pStr, char* prefix)
+template <size_t Capacity>
+bool ReadCode(FILE* f, char (&text)[Capacity], const char* prefix)
 {
-    if (!pStr)
-        return;
-    pStr[0] = 0;
-
-	// read in & compile arbitrary expressions
-	char szLineName[32];
-	char szLine[MAX_BIGSTRING_LEN];
-	int len;
-
-	int line = 1;
-	int char_pos = 0;
-	bool bDone = false;
-
-	while (!bDone)
-	{
-		sprintf(szLineName, "%s%d", prefix, line);
-
-		GetFastString(szLineName, "~!@#$", szLine, MAX_BIGSTRING_LEN, f);	// fixme
-		len = strlen(szLine);
-
-		if ((strcmp(szLine, "~!@#$")==0) ||		// if the key was missing,
-			(len >= MAX_BIGSTRING_LEN-1-char_pos-1))			// or if we're out of space
-		{
-			bDone = true;
-		}
-		else
-		{
-            sprintf(&pStr[char_pos], "%s%c", (szLine[0]=='`') ? &szLine[1] : szLine, LINEFEED_CONTROL_CHAR);
-            if (szLine[0] == '`')
-                len--;
-		}
-
-		char_pos += len + 1;
-		line++;
-	}
-	pStr[char_pos++] = 0;	// null-terminate
-
-	// read in & compile arbitrary expressions
-    /*
-    int n2 = 3 + MAX_CUSTOM_WAVES*3 + MAX_CUSTOM_SHAPES*2;
-	for (int n=0; n<n2; n++)
-	{
-		char *pStr;
-        char prefix[64];
-		char szLineName[32];
-		char szLine[MAX_BIGSTRING_LEN];
-		int len;
-
-		int line = 1;
-		int char_pos = 0;
-		bool bDone = false;
-
-		switch(n)
-		{
-		case 0: pStr = m_szPerFrameExpr; strcpy(prefix, "per_frame_"); break;
-		case 1: pStr = m_szPerPixelExpr; strcpy(prefix, "per_pixel_"); break;
-		case 2: pStr = m_szPerFrameInit; strcpy(prefix, "per_frame_init_"); break;
-        default:
-            if (n < 3 + 3*MAX_CUSTOM_WAVES)
-            {
-                int i = (n-3) / 3;
-                int j = (n-3) % 3;
-                switch(j)
-                {
-                case 0: pStr = m_wave[i].m_szInit;     sprintf(prefix, "wave_%d_init",      i); break;
-                case 1: pStr = m_wave[i].m_szPerFrame; sprintf(prefix, "wave_%d_per_frame", i); break;
-                case 2: pStr = m_wave[i].m_szPerPoint; sprintf(prefix, "wave_%d_per_point", i); break;
-                }
-            }
-            else
-            {
-                int i = (n-3-3*MAX_CUSTOM_WAVES) / 2;
-                int j = (n-3-3*MAX_CUSTOM_WAVES) % 2;
-                switch(j)
-                {
-                case 0: pStr = m_shape[i].m_szInit;     sprintf(prefix, "shape_%d_init",      i); break;
-                case 1: pStr = m_shape[i].m_szPerFrame; sprintf(prefix, "shape_%d_per_frame", i); break;
-                }
-            }
-		}
-
-		while (!bDone)
-		{
-			sprintf(szLineName, "%s%d", prefix, line);
-
-			GetPrivateProfileString(szSectionName, szLineName, "~!@#$", szLine, MAX_BIGSTRING_LEN, szIniFile);	// fixme
-			len = strlen(szLine);
-
-			if ((strcmp(szLine, "~!@#$")==0) ||		// if the key was missing,
-				(len >= MAX_BIGSTRING_LEN-1-char_pos-1))			// or if we're out of space
-			{
-				bDone = true;
-			}
-			else
-			{
-				sprintf(&pStr[char_pos], "%s%c", szLine, LINEFEED_CONTROL_CHAR);
-			}
-
-			char_pos += len + 1;
-			line++;
-		}
-		pStr[char_pos++] = 0;	// null-terminate
-	}
-    */
+    const bool complete = ReadPresetCode(text, prefix, LINEFEED_CONTROL_CHAR,
+        [f](const char* key, char* line, int capacity) {
+            GetFastString(key, "~!@#$", line, capacity, f);
+        });
+    if (!complete)
+        g_plugin.AddError(L"Preset code exceeds its import buffer; the code was not loaded.",
+                          6.0f, ERR_PRESET, true);
+    return complete;
 }
+
 
 int CWave::Import(FILE* f, const wchar_t* szFile, int i)
 {
@@ -1313,6 +1740,11 @@ int  CShape::Import(FILE* f, const wchar_t* szFile, int i)
 
 bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DWORD ApplyFlags)
 {
+    // Shader precaching imports into a temporary CState on a worker thread.
+    // Serialize imports because preset parsing and EEL compilation also touch
+    // plugin-wide state that is not safe to mutate concurrently.
+    std::lock_guard<std::mutex> importLock(g_presetImportMutex);
+
     // if any ApplyFlags are missing, the settings will be copied from pOldState.  =)
 
     if (!pOldState)
@@ -1497,7 +1929,10 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
     if (ApplyFlags & STATE_WARP)
     {
         //m_szWarpShadersText[0] = 0;
-        ReadCode(f, m_szWarpShadersText, "warp_");
+        if (!ReadCode(f, m_szWarpShadersText, "warp_")) {
+            fclose(f);
+            return false;
+        }
         if (!m_szWarpShadersText[0])
 			g_plugin.GenWarpPShaderText(m_szWarpShadersText, m_fDecay.eval(-1), m_fDecayR.eval(-1), m_fDecayG.eval(-1), m_fDecayB.eval(-1), m_bTexWrap);
         m_nWarpPSVersion = nWarpPSVersionInFile;
@@ -1507,7 +1942,10 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
     if (ApplyFlags & STATE_COMP)
     {
         //m_szCompShadersText[0] = 0;
-        ReadCode(f, m_szCompShadersText, "comp_");
+        if (!ReadCode(f, m_szCompShadersText, "comp_")) {
+            fclose(f);
+            return false;
+        }
         if (!m_szCompShadersText[0])
             g_plugin.GenCompPShaderText(m_szCompShadersText, m_fGammaAdj.eval(-1), m_fVideoEchoAlpha.eval(-1), m_fVideoEchoZoom.eval(-1), m_nVideoEchoOrientation, m_fShader.eval(-1), m_bBrighten, m_bDarken, m_bSolarize, m_bInvert);
         m_nCompPSVersion = nCompPSVersionInFile;
@@ -1592,29 +2030,7 @@ void CState::FreeVarsAndCode(bool bFree)
 
 void CState::StripLinefeedCharsAndComments(char *src, char *dest)
 {
-	// replaces all LINEFEED_CONTROL_CHAR characters in src with a space in dest;
-	// also strips out all comments (beginning with '//' and going til end of line).
-	// Restriction: sizeof(dest) must be >= sizeof(src).
-
-	int i2 = 0;
-	int len = strlen(src);
-	int bComment = false;
-	for (int i=0; i<len; i++)
-	{
-		if (bComment)
-		{
-			if (src[i] == LINEFEED_CONTROL_CHAR)
-				bComment = false;
-		}
-		else
-		{
-			if ((src[i] =='\\' && src[i+1] =='\\') || (src[i] =='/' && src[i+1] =='/'))
-				bComment = true;
-			else if (src[i] != LINEFEED_CONTROL_CHAR)
-				dest[i2++] = src[i];
-		}
-	}
-	dest[i2] = 0;
+	PrepareExpressionSource(src, dest);
 }
 
 void CState::RecompileExpressions(int flags, int bReInit)
@@ -1776,9 +2192,8 @@ void CState::RecompileExpressions(int flags, int bReInit)
 
 			    if ( ! (pf_codehandle_init = NSEEL_code_compile(m_pf_eel, buf)))
 			    {
-                    wchar_t buf[1024];
-				    swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_PRESET_INIT_CODE), m_szDesc);
-                    g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				    std::wstring message = BuildExpressionCompileError(m_szDesc, "preset_init", m_szPerFrameInit, buf, m_pf_eel);
+				    g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 
                     for (int vi=0; vi<NUM_Q_VAR; vi++)
 				        q_values_after_init_code[vi] = 0;
@@ -1788,7 +2203,10 @@ void CState::RecompileExpressions(int flags, int bReInit)
 			    {
 				    // now execute the code, save the values of q1..q32, and clean up the code!
 
-                    g_plugin.LoadPerFrameEvallibVars(g_plugin.m_pState);
+                    // This state may be compiled asynchronously as m_pNewState.
+                    // Populate the variables for the state being initialized,
+                    // rather than whichever state is currently on screen.
+                    g_plugin.LoadPerFrameEvallibVars(this);
 
 				    NSEEL_code_execute(pf_codehandle_init);
 
@@ -1807,9 +2225,8 @@ void CState::RecompileExpressions(int flags, int bReInit)
 	        {
 			    if ( ! (m_pf_codehandle = NSEEL_code_compile(m_pf_eel, buf)))
 			    {
-                    wchar_t buf[1024];
-				    swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_PER_FRAME_CODE), m_szDesc);
-                    g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				    std::wstring message = BuildExpressionCompileError(m_szDesc, "per-frame", m_szPerFrameExpr, buf, m_pf_eel);
+				    g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 			    }
 	        }
 
@@ -1819,9 +2236,8 @@ void CState::RecompileExpressions(int flags, int bReInit)
 	        {
 			    if ( ! (m_pp_codehandle = NSEEL_code_compile(m_pv_eel, buf)))
 			    {
-                    wchar_t buf[1024];
-				    swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_PER_VERTEX_CODE), m_szDesc);
-                    g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				    std::wstring message = BuildExpressionCompileError(m_szDesc, "per-vertex", m_szPerPixelExpr, buf, m_pv_eel);
+				    g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 			    }
 	        }
 
@@ -1841,9 +2257,10 @@ void CState::RecompileExpressions(int flags, int bReInit)
 		                NSEEL_CODEHANDLE	codehandle_temp;
 			            if ( ! (codehandle_temp = NSEEL_code_compile(m_wave[i].m_pf_eel, buf)))
 			            {
-                            wchar_t buf[1024];
-				            swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_WAVE_X_INIT_CODE), m_szDesc, i);
-                            g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				            char section[64];
+				            sprintf(section, "wave %d init", i);
+				            std::wstring message = BuildExpressionCompileError(m_szDesc, section, m_wave[i].m_szInit, buf, m_wave[i].m_pf_eel);
+				            g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 
                             for (int vi=0; vi<NUM_Q_VAR; vi++)
                                 *m_wave[i].var_pf_q[vi] = q_values_after_init_code[vi];
@@ -1854,7 +2271,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 			            {
 				            // now execute the code, save the values of t1..t8, and clean up the code!
 
-                            g_plugin.LoadCustomWavePerFrameEvallibVars(g_plugin.m_pState, i);
+                            g_plugin.LoadCustomWavePerFrameEvallibVars(this, i);
                                 // note: q values at this point will actually be same as
                                 //       q_values_after_init_code[], since no per-frame code
                                 //       has actually been executed yet!
@@ -1878,9 +2295,10 @@ void CState::RecompileExpressions(int flags, int bReInit)
 		            #ifndef _NO_EXPR_
 			            if ( ! (m_wave[i].m_pf_codehandle = NSEEL_code_compile(m_wave[i].m_pf_eel, buf)))
 			            {
-                            wchar_t buf[1024];
-				            swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_WAVE_X_PER_FRAME_CODE), m_szDesc, i);
-                            g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				            char section[64];
+				            sprintf(section, "wave %d per-frame", i);
+				            std::wstring message = BuildExpressionCompileError(m_szDesc, section, m_wave[i].m_szPerFrame, buf, m_wave[i].m_pf_eel);
+				            g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 			            }
                     #endif
                 }
@@ -1891,9 +2309,10 @@ void CState::RecompileExpressions(int flags, int bReInit)
                 {
 			        if ( ! (m_wave[i].m_pp_codehandle = NSEEL_code_compile(m_wave[i].m_pp_eel, buf)))
 			        {
-                        wchar_t buf[1024];
-				        swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_WAVE_X_PER_POINT_CODE), m_szDesc, i);
-                        g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				        char section[64];
+				        sprintf(section, "wave %d per-point", i);
+				        std::wstring message = BuildExpressionCompileError(m_szDesc, section, m_wave[i].m_szPerPoint, buf, m_wave[i].m_pp_eel);
+				        g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 			        }
                 }
             }
@@ -1912,9 +2331,10 @@ void CState::RecompileExpressions(int flags, int bReInit)
 		                NSEEL_CODEHANDLE	codehandle_temp;
 			            if ( ! (codehandle_temp = NSEEL_code_compile(m_shape[i].m_pf_eel, buf)))
 			            {
-                            wchar_t buf[1024];
-				            swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_SHAPE_X_INIT_CODE), m_szDesc, i);
-                            g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				            char section[64];
+				            sprintf(section, "shape %d init", i);
+				            std::wstring message = BuildExpressionCompileError(m_szDesc, section, m_shape[i].m_szInit, buf, m_shape[i].m_pf_eel);
+				            g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 
                             for (int vi=0; vi<NUM_Q_VAR; vi++)
                                 *m_shape[i].var_pf_q[vi] = q_values_after_init_code[vi];
@@ -1925,7 +2345,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 			            {
 				            // now execute the code, save the values of q1..q8, and clean up the code!
 
-                            g_plugin.LoadCustomShapePerFrameEvallibVars(g_plugin.m_pState, i, 0);
+                            g_plugin.LoadCustomShapePerFrameEvallibVars(this, i, 0);
                                 // note: q values at this point will actually be same as
                                 //       q_values_after_init_code[], since no per-frame code
                                 //       has actually been executed yet!
@@ -1949,9 +2369,10 @@ void CState::RecompileExpressions(int flags, int bReInit)
 		            #ifndef _NO_EXPR_
 			            if ( ! (m_shape[i].m_pf_codehandle = NSEEL_code_compile(m_shape[i].m_pf_eel, buf)))
 			            {
-                            wchar_t buf[1024];
-				            swprintf(buf, wasabiApiLangString(IDS_WARNING_PRESET_X_ERROR_IN_SHAPE_X_PER_FRAME_CODE), m_szDesc, i);
-                            g_plugin.AddError(buf, 6.0f, ERR_PRESET, true);
+				            char section[64];
+				            sprintf(section, "shape %d per-frame", i);
+				            std::wstring message = BuildExpressionCompileError(m_szDesc, section, m_shape[i].m_szPerFrame, buf, m_shape[i].m_pf_eel);
+				            g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
 			            }
 		            #endif
                 }

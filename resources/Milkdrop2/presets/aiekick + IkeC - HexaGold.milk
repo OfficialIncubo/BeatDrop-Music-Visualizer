@@ -1,0 +1,265 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+comp_1=// aiekick + IkeC - HexaGold / https://www.shadertoy.com/view/7lV3Wd
+comp_2=// Transpiled to HLSL using Milkwave
+comp_3=
+comp_4=#define tx sin(time)*0.5+1
+comp_5=
+comp_6=// 0.5 <= tx <= 1.5
+comp_7=
+comp_8=#define iChannel0 sampler_stoy_cubemap_uffizi_blurred
+comp_9=
+comp_10=sampler2D iChannel0;
+comp_11=
+comp_12=// CONV: adding helper functions
+comp_13=float mod_conv(float x, float y) { return x - y * floor(x / y); }
+comp_14=float2 mod_conv(float2 x, float2 y) { return x - y * floor(x / y); }
+comp_15=float3 mod_conv(float3 x, float3 y) { return x - y * floor(x / y); }
+comp_16=float4 mod_conv(float4 x, float4 y) { return x - y * floor(x / y); }
+comp_17=
+comp_18=#define THUMBNAIL_ANGLE_OFFSET 0.35
+comp_19=#define LOOPS 200
+comp_20=
+comp_21=float sdHexPrism( float3 p, float2 h )
+comp_22={
+comp_23=  float3 q = abs(p);
+comp_24=  float3 k = float3(-0.8660254, 0.5, 0.57735);
+comp_25=  p = abs(p);
+comp_26=
+comp_27=  p.xy -= 2.0*min(dot(k.xy, p.xy), 0.0)*k.xy;
+comp_28=  float2 d = float2(
+comp_29=  length(p.xy - float2(clamp(p.x, -k.z*h.x, k.z*h.x), h.x))*sign(p.y - h.x),
+comp_30=  p.z-h.y );
+comp_31=
+comp_32=  return min(max(d.x,d.y),0.0) + length(max(d,0.0));
+comp_33=}
+comp_34=
+comp_35=#define ox 1.3
+comp_36=#define oz 1.5
+comp_37=
+comp_38=#define hex_size float2(0.5 - p.y * 0.1, 10)
+comp_39=
+comp_40=void common_map(float3 p, out float df0, out float df1)
+comp_41={
+comp_42=  df0 = p.y - 1.0 + sin(length(p.xz) * 0.8 - time);
+comp_43=
+comp_44=  float3 q0 = p;
+comp_45=  q0.x = mod_conv(q0.x - ox, ox + ox) - ox;
+comp_46=  q0.z = mod_conv(q0.z - oz * 0.5, oz) - oz * 0.5;
+comp_47=
+comp_48=  float hex0 = sdHexPrism(q0.xzy, hex_size) - 0.2;
+comp_49=
+comp_50=  float3 q1_c = p;
+comp_51=  q1_c.x = mod_conv(q1_c.x, ox + ox) - ox;
+comp_52=  q1_c.z = mod_conv(q1_c.z, oz) - oz * 0.5;
+comp_53=  float hex1 = sdHexPrism(q1_c.xzy, hex_size) - 0.2;
+comp_54=
+comp_55=  df1 = min(hex0, hex1);
+comp_56=}
+comp_57=
+comp_58=float smin( float a, float b, float k )
+comp_59={
+comp_60=  float h = clamp( 0.5 + 0.5*(b-a)/k, 0.0, 1.0 );
+comp_61=  return lerp( b, a, h ) - k*h*(1.0-h);
+comp_62=}
+comp_63=
+comp_64=float smax(float a, float b, float k)
+comp_65={
+comp_66=  return smin(a, b, -k);
+comp_67=}
+comp_68=
+comp_69=float map(float3 p)
+comp_70={
+comp_71=  float df0, df1;
+comp_72=  common_map(p, df0, df1);
+comp_73=
+comp_74=  return smax(df0, df1, 0.1);
+comp_75=}
+comp_76=
+comp_77=float mat(float3 p)
+comp_78={
+comp_79=  float df0, df1;
+comp_80=  common_map(p, df0, df1);
+comp_81=  float res = 0;
+comp_82=  if (df0 > df1) {
+comp_83=    res = 1;
+comp_84=  }
+comp_85=
+comp_86=  else {
+comp_87=    res = 0;
+comp_88=  }
+comp_89=
+comp_90=  return res;
+comp_91=}
+comp_92=
+comp_93=float3 getNormal(float3 p, float prec)
+comp_94={
+comp_95=  float3 e = float3(prec, 0, 0);
+comp_96=  return normalize(float3(
+comp_97=  map(p+e)-map(p-e),
+comp_98=  map(p+e.yxz)-map(p-e.yxz),
+comp_99=  map(p+e.zyx)-map(p-e.zyx)));
+comp_100=}
+comp_101=
+comp_102=float getAmbiantOcclusion(float3 p, float3 n, float k)
+comp_103={
+comp_104=  const float aoStep = 0.1;
+comp_105=  float occl = 0.;
+comp_106=  for(int i = min(frame,0); i < 6; ++i)
+comp_107=  {
+comp_108=    float diff = float(i)*aoStep;
+comp_109=    float d = map(p + n*diff);
+comp_110=    occl += (diff - d) * pow(2., float(-i));
+comp_111=  }
+comp_112=
+comp_113=  return min(1., 1. - k*occl);
+comp_114=}
+comp_115=
+comp_116=float getShadow(float3 ro, float3 rd, float minD, float maxD, float k)
+comp_117={
+comp_118=  float res = 1.0;
+comp_119=  float d = minD;
+comp_120=  float s = 0.;
+comp_121=  for(int i = min(frame,0); i < 20; ++i)
+comp_122=  {
+comp_123=    s = map(ro + rd * d);
+comp_124=    if( abs(s)<d*d*1e-5 ) {
+comp_125=      res = 0;
+comp_126=      // return 0.0;
+comp_127=    }
+comp_128=
+comp_129=    else {
+comp_130=      res = min( res, k * s / d );
+comp_131=      d += s;
+comp_132=      // CONV: break unsupported, see Milkwave manual
+comp_133=      if(d >= maxD) i=20;
+comp_134=    }
+comp_135=
+comp_136=  }
+comp_137=
+comp_138=  return res;
+comp_139=}
+comp_140=
+comp_141=float3 cam(float2 uv_conv,  float3 ro, float3 cv, float fov)
+comp_142={
+comp_143=  float3 cu = normalize(float3(0,1,0));
+comp_144=  float3 z = normalize(cv-ro);
+comp_145=  float3 x = normalize(cross(cu,z));
+comp_146=  float3 y = cross(z,x);
+comp_147=  return normalize(z + fov*uv_conv.x*x + fov*uv_conv.y*y);
+comp_148=}
+comp_149=
+comp_150=float3 hsv2rgb_smooth( in float3 c )
+comp_151={
+comp_152=  float3 rgb = clamp( abs(mod_conv(c.x*6.0+float3(0.0,4.0,2.0),6.0)-3.0)-1.0, 0.0, 1.0 );
+comp_153=  rgb = rgb*rgb*(3.0-2.0*rgb);
+comp_154=  // cubic smoothing
+comp_155=
+comp_156=  #ifdef vis_version
+comp_157=    float fac = (int)vis_version > 2 ? 1*vis_intensity+vis_shift : (0.65 + smoothstep(0,2,(int)vis_version == 1 ? bass_smooth : bass_att)*0.5)*vis_intensity+vis_shift;
+comp_158=  #else
+comp_159=    float fac = 0.8 + clamp(bass_att,0.6,1.2)*0.2;
+comp_160=  #endif
+comp_161=
+comp_162=  return c.z * fac * lerp( float3(1.0, 1.0, 1.0), rgb, c.y);
+comp_163=}
+comp_164=
+comp_165=shader_body {
+comp_166=  // MOUSE: pointer Y zooms - up = zoom in, down = zoom out (0.90x .. 1.30x around the frame centre);
+comp_167=  // pointer X pans the view left/right. Centre + released button give the identity transform, so the
+comp_168=  // untouched frame stays byte-identical.
+comp_169=  float2 mwMouse = (mouse.xy - 0.5) * saturate(mouse.z);
+comp_170=  float mwZoomAmt = mwMouse.y > 0.0 ? 0.6 : 0.2;   // zoom in generously, out carefully
+comp_171=  float mwZoom = 1.0 + mwMouse.y * mwZoomAmt;
+comp_172=  uv = (uv - 0.5) / mwZoom + 0.5 + float2(mwMouse.x * 0.35, 0.0);
+comp_173=  float4 fragColor = 0;
+comp_174=  // CONV: Center on screen, then try some aspect correction
+comp_175=  uv = (uv*2) - 1;
+comp_176=  uv *= aspect.xy;
+comp_177=  // CONV: Adjust this to flip the output (±uv.x, ±uv.y)
+comp_178=  uv = float2(uv.x, -uv.y);
+comp_179=  float2 fragCoord  = uv;
+comp_180=
+comp_181=  float2 si = uv.xy;
+comp_182=
+comp_183=  // central uv
+comp_184=  float2 uvc = uv;
+comp_185=  // (2.*fragCoord.xy-si)/si.y;
+comp_186=
+comp_187=  // classice turning table camera
+comp_188=  float a = time * 0.1 + THUMBNAIL_ANGLE_OFFSET;
+comp_189=  float3 ro = float3(cos(a), 0.0, sin(a)) * 20.0;
+comp_190=  ro.y = 20.0;
+comp_191=  float3 rd = cam(uvc, ro, float3(0, 0, 0), 0.4);
+comp_192=
+comp_193=  float3 col = float3(0.1, 0.1, 0.1);
+comp_194=
+comp_195=  // log raymarching
+comp_196=  float s = 1., d = 0., md = 100.;
+comp_197=  for (int i = min(frame,0); i < LOOPS; i++)
+comp_198=  {
+comp_199=    // CONV: break unsupported, see Milkwave manual
+comp_200=    if (d*d/s>1e8 || d > 70.) {
+comp_201=      i=LOOPS;
+comp_202=    }
+comp_203=
+comp_204=    else {
+comp_205=      s = map(ro + rd * d);
+comp_206=      d += s * 0.5;
+comp_207=    }
+comp_208=
+comp_209=  }
+comp_210=
+comp_211=  if (d < md)
+comp_212=  {
+comp_213=    // surface point
+comp_214=    float3 p = ro + rd * d;
+comp_215=
+comp_216=    // surface normal, precision of 0.1 for remove some aliasing
+comp_217=    float3 n = getNormal(p, 0.1);
+comp_218=
+comp_219=    // light pos
+comp_220=    float3 lp = float3(0,5,0);
+comp_221=
+comp_222=    // light dir
+comp_223=    float3 ld = normalize(lp - p);
+comp_224=
+comp_225=    // diffuse, ambiant occlusion, shadow, specular
+comp_226=    float diff = pow(dot(n, ld) * .5 + .5,2.0);
+comp_227=    float ao = getAmbiantOcclusion(p, n, 40.0);
+comp_228=    float sha = clamp(getShadow(p, ld, 0.01, 150.0, 5.0), 0. ,0.9);
+comp_229=    float spe = pow(max(dot(-rd, reflect(-ld, n)), 0.0), 32.0);
+comp_230=
+comp_231=    if (mat(p) < 0.5)
+comp_232=    // hexa sides
+comp_233=    {
+comp_234=      // smooth hsv
+comp_235=      float3 base = hsv2rgb_smooth(float3(atan2(p.x,p.z)/3.14159*0.5 - time * 0.1, 0.8, 0.8));
+comp_236=
+comp_237=      // vary base color according to ao
+comp_238=      col = lerp(base, float3(1, 1, 1), ao) * 0.5;
+comp_239=    }
+comp_240=
+comp_241=    else
+comp_242=    // hexa face
+comp_243=    {
+comp_244=      // reflected gold
+comp_245=      col = float3(1.0, 0.85, 0.0) * tex2D(iChannel0, reflect(rd, n)).rgb;
+comp_246=    }
+comp_247=
+comp_248=    // final brdf
+comp_249=    col += diff * sha * 0.5 + spe;
+comp_250=
+comp_251=    // clamp for avoid overlight
+comp_252=    col = clamp(col, 0., 1.);
+comp_253=  }
+comp_254=
+comp_255=  // distance fog
+comp_256=  col *= exp(1.0-d*d*0.001);
+comp_257=
+comp_258=  // final color
+comp_259=  fragColor = float4(col,1);
+comp_260=  ret = fragColor;
+comp_261=}

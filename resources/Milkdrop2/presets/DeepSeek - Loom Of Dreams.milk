@@ -1,0 +1,523 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 28/06/2026 at 20:07:54.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=1.000
+fGammaAdj=1.980
+fDecay=0.500
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.118
+fWaveSmoothing=0.900
+fWaveParam=-0.480
+fModWaveAlphaStart=0.400
+fModWaveAlphaEnd=1.600
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.800
+wave_g=0.490
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.035
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.260
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.850
+mv_r=0.500
+mv_g=0.500
+mv_b=0.500
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+per_frame_init_1=smooth_reaction = int(rand(2))
+per_frame_1=q1 = smooth_reaction
+warp_1=`shader_body
+warp_2=`{
+warp_3=`   
+warp_4=`}
+comp_1=`sampler sampler_rand00;
+comp_2=`sampler sampler_rand01;
+comp_3=`sampler sampler_rand02;
+comp_4=`sampler sampler_rand03;
+comp_5=`
+comp_6=`// Golden ratio for harmonious distribution
+comp_7=`#define PHI 1.6180339887498948482
+comp_8=`
+comp_9=`// Weaving function - creates interlocking patterns
+comp_10=`float weavePattern(float2 uva, float timea, float density) {
+comp_11=`    float2 grid = uva * density;
+comp_12=`    float2 cell = floor(grid);
+comp_13=`    float2 fractUV = frac(grid);
+comp_14=`    
+comp_15=`    float pattern = 0.0;
+comp_16=`    
+comp_17=`    // Create warp and weft patterns
+comp_18=`    for(int i = 0; i < 4; i++) {
+comp_19=`        float fi = float(i);
+comp_20=`        
+comp_21=`        // Warp threads (vertical)
+comp_22=`        float warp = sin(fractUV.x * 6.2831 * (2.0 + fi) + timea * (0.3 + fi * 0.1));
+comp_23=`        warp = abs(warp) * (0.8 - fi * 0.15);
+comp_24=`        
+comp_25=`        // Weft threads (horizontal)
+comp_26=`        float weft = cos(fractUV.y * 6.2831 * (2.5 + fi) + timea * (0.4 + fi * 0.12));
+comp_27=`        weft = abs(weft) * (0.7 - fi * 0.12);
+comp_28=`        
+comp_29=`        // Interlace warp and weft
+comp_30=`        float thread = min(warp, weft);
+comp_31=`        thread = smoothstep(0.1, 0.3, thread);
+comp_32=`        
+comp_33=`        pattern = max(pattern, thread);
+comp_34=`    }
+comp_35=`    
+comp_36=`    return pattern;
+comp_37=`}
+comp_38=`
+comp_39=`// Mandala/Radial weaving
+comp_40=`float mandalaWeave(float2 uvb, float timeb) {
+comp_41=`    float2 centered = uvb - 0.5;
+comp_42=`    float radius = length(centered);
+comp_43=`    float angle = atan2(centered.y, centered.x);
+comp_44=`    
+comp_45=`    float mandala = 0.0;
+comp_46=`    
+comp_47=`    // Multiple concentric layers
+comp_48=`    for(int i = 0; i < 6; i++) {
+comp_49=`        float layer = float(i);
+comp_50=`        
+comp_51=`        // Radial threads
+comp_52=`        float radial = sin(radius * 40.0 + angle * (5.0 + layer * 2.0) + timeb * (0.2 + layer * 0.15));
+comp_53=`        radial = abs(radial) * (0.6 - layer * 0.08);
+comp_54=`        
+comp_55=`        // Circular threads
+comp_56=`        float circular = cos(angle * 30.0 + radius * (15.0 + layer * 3.0) + timeb * (0.25 + layer * 0.12));
+comp_57=`        circular = abs(circular) * (0.5 - layer * 0.07);
+comp_58=`        
+comp_59=`        // Combine with music modulation
+comp_60=`        float musicScale = 1.0 + bass * 0.2 * sin(timeb + layer) + mid * 0.15 * cos(timeb * 1.3 + layer);
+comp_61=`        radial *= musicScale;
+comp_62=`        circular *= musicScale;
+comp_63=`        
+comp_64=`        // Interlace
+comp_65=`        float layerPattern = min(radial, circular);
+comp_66=`        layerPattern = smoothstep(0.15, 0.35, layerPattern);
+comp_67=`        
+comp_68=`        // Radial fade
+comp_69=`        float layerFade = 1.0 - smoothstep(layer * 0.1, 0.6 + layer * 0.05, radius);
+comp_70=`        mandala += layerPattern * layerFade * (0.7 - layer * 0.1);
+comp_71=`    }
+comp_72=`    
+comp_73=`    return min(mandala, 1.0);
+comp_74=`}
+comp_75=`
+comp_76=`// Ethereal thread glow
+comp_77=`float3 glowingThreads(float2 uvc, float timec) {
+comp_78=`    float3 rand00 = tex2D(sampler_rand00, uvc * 3.0).rgb;
+comp_79=`    float3 rand01 = tex2D(sampler_rand01, uvc * 5.0).rgb;
+comp_80=`    
+comp_81=`    // Create fine threads
+comp_82=`    float threads = 0.0;
+comp_83=`    
+comp_84=`    // Multiple thread directions
+comp_85=`    for(int i = 0; i < 3; i++) {
+comp_86=`        float angle = float(i) * 1.047; // 60 degrees
+comp_87=`        float2 dir = float2(sin(angle), cos(angle));
+comp_88=`        
+comp_89=`        float projection = dot(uvc - 0.5, dir) * 50.0;
+comp_90=`        float thread = sin(projection + timec * (1.5 + float(i) * 0.5));
+comp_91=`        thread = (thread * 0.5 + 0.5) * 0.3;
+comp_92=`        
+comp_93=`        threads += thread;
+comp_94=`    }
+comp_95=`    
+comp_96=`    // Add random thread sparkles
+comp_97=`    float sparkles = rand00.r * rand01.g;
+comp_98=`    sparkles = pow(sparkles, 3.0) * smoothstep(0.2, 0.8, sparkles);
+comp_99=`    sparkles *= treb * 1.5 + treb_att;
+comp_100=`    
+comp_101=`    threads = max(threads, sparkles * 0.5);
+comp_102=`    
+comp_103=`    // Ethereal colors
+comp_104=`    float3 threadColor = float3(
+comp_105=`        0.7 + 0.3 * sin(timec * 0.5),
+comp_106=`        0.8 + 0.2 * cos(timec * 0.3),
+comp_107=`        1.0
+comp_108=`    );
+comp_109=`    
+comp_110=`    // Music affects color
+comp_111=`    threadColor.r += bass * 0.1;
+comp_112=`    threadColor.g += mid * 0.08;
+comp_113=`    threadColor.b += treb * 0.12;
+comp_114=`    
+comp_115=`    return threadColor * threads * 0.8;
+comp_116=`}
+comp_117=`
+comp_118=`// Dreamcatcher net pattern
+comp_119=`float3 dreamcatcherNet(float2 uvd, float timed) {
+comp_120=`    float2 centered = uvd - 0.5;
+comp_121=`    float radius = length(centered);
+comp_122=`    float angle = atan2(centered.y, centered.x);
+comp_123=`    
+comp_124=`    // Create web pattern
+comp_125=`    float web = 0.0;
+comp_126=`    
+comp_127=`    // Multiple web rings
+comp_128=`    for(int ring = 0; ring < 5; ring++) {
+comp_129=`        float ringRadius = 0.1 + float(ring) * 0.15;
+comp_130=`        float ringDist = abs(radius - ringRadius);
+comp_131=`        
+comp_132=`        // Web connections
+comp_133=`        float connections = 0.0;
+comp_134=`        int spokes = 8 + ring * 2;
+comp_135=`        
+comp_136=`        for(int s = 0; s < spokes; s++) {
+comp_137=`            float spokeAngle = float(s) * 6.2831 / float(spokes);
+comp_138=`            float angleDist = abs(angle - spokeAngle);
+comp_139=`            angleDist = min(angleDist, 6.2831 - angleDist);
+comp_140=`            
+comp_141=`            // Connect to next spoke
+comp_142=`            float nextSpoke = float(s + 1) * 6.2831 / float(spokes);
+comp_143=`            float nextDist = abs(angle - nextSpoke);
+comp_144=`            nextDist = min(nextDist, 6.2831 - nextDist);
+comp_145=`            
+comp_146=`            // Create connecting thread
+comp_147=`            float thread = max(1.0 - angleDist * 10.0, 1.0 - nextDist * 10.0);
+comp_148=`            thread = smoothstep(0.3, 0.5, thread);
+comp_149=`            
+comp_150=`            connections = max(connections, thread);
+comp_151=`        }
+comp_152=`        
+comp_153=`        // Ring threads
+comp_154=`        float ringThread = 1.0 - smoothstep(0.0, 0.02, ringDist);
+comp_155=`        
+comp_156=`        // Combine
+comp_157=`        float ringPattern = max(connections * 0.7, ringThread);
+comp_158=`        
+comp_159=`        // Animate with music
+comp_160=`        float ringPulse = sin(timed * 0.8 + float(ring) * 1.2 + bass * 3.0) * 0.1 + 0.9;
+comp_161=`        ringPattern *= ringPulse;
+comp_162=`        
+comp_163=`        web = max(web, ringPattern);
+comp_164=`    }
+comp_165=`    
+comp_166=`    // Radial threads from center
+comp_167=`    float radials = 0.0;
+comp_168=`    for(int r = 0; r < 12; r++) {
+comp_169=`        float radialAngle = float(r) * 6.2831 / 12.0;
+comp_170=`        float angleDist = abs(angle - radialAngle);
+comp_171=`        angleDist = min(angleDist, 6.2831 - angleDist);
+comp_172=`        
+comp_173=`        float radial = 1.0 - smoothstep(0.0, 0.05, angleDist);
+comp_174=`        radial *= 1.0 - smoothstep(0.0, 0.4, radius);
+comp_175=`        
+comp_176=`        // Add music pulse to radials
+comp_177=`        radial *= 0.6 + 0.4 * sin(timed * 1.5 + float(r) * 0.5 + mid * 2.0);
+comp_178=`        
+comp_179=`        radials = max(radials, radial);
+comp_180=`    }
+comp_181=`    
+comp_182=`    web = max(web, radials * 0.8);
+comp_183=`    
+comp_184=`    // Web colors - silver and moonlight
+comp_185=`    float3 webColor = float3(0.9, 0.95, 1.0); // Silver
+comp_186=`    float3 glowColor = float3(0.7, 0.8, 1.0);  // Moonlight
+comp_187=`    
+comp_188=`    // Add color variation
+comp_189=`    webColor = lerp(webColor, float3(1.0, 0.95, 0.9), sin(timed * 0.2) * 0.3);
+comp_190=`    
+comp_191=`    // Music affects color temperature
+comp_192=`    webColor.r += bass * 0.05;
+comp_193=`    webColor.b += treb * 0.08;
+comp_194=`    
+comp_195=`    float3 finalWeb = webColor * web * 0.7;
+comp_196=`    finalWeb += glowColor * pow(web, 2.0) * 0.4;
+comp_197=`    
+comp_198=`    return finalWeb;
+comp_199=`}
+comp_200=`
+comp_201=`// Feather/detail particles
+comp_202=`float3 floatingFeathers(float2 uve, float timee) {
+comp_203=`    float3 feathers = float3(0.0, 0.0, 0.0);
+comp_204=`    
+comp_205=`    // Create floating feathers
+comp_206=`    for(int i = 0; i < 8; i++) {
+comp_207=`        float fi = float(i);
+comp_208=`        
+comp_209=`        // Feather parameters
+comp_210=`        float speed = 0.2 + fi * 0.05;
+comp_211=`        float size = 0.02 + fi * 0.005;
+comp_212=`        float2 startPos = float2(
+comp_213=`            0.3 + 0.4 * sin(fi * 12.34),
+comp_214=`            0.3 + 0.4 * cos(fi * 56.78)
+comp_215=`        );
+comp_216=`        
+comp_217=`        // Animate feather movement
+comp_218=`        float2 featherPos = startPos + float2(
+comp_219=`            sin(timee * speed * 0.5 + fi * 1.7) * 0.2,
+comp_220=`            cos(timee * speed * 0.6 + fi * 2.3) * 0.2
+comp_221=`        );
+comp_222=`        
+comp_223=`        // Add music-driven drift
+comp_224=`        featherPos.x += bass * 0.05 * sin(timee * 0.8 + fi);
+comp_225=`        featherPos.y += mid * 0.04 * cos(timee * 1.2 + fi);
+comp_226=`        
+comp_227=`        // Create feather shape
+comp_228=`        float2 toFeather = uve - featherPos;
+comp_229=`        float dist = length(toFeather);
+comp_230=`        
+comp_231=`        // Feather with soft edges
+comp_232=`        float feather = 1.0 - smoothstep(0.0, size, dist);
+comp_233=`        feather = pow(feather, 1.5);
+comp_234=`        
+comp_235=`        // Add feather details (veins)
+comp_236=`        float angle = atan2(toFeather.y, toFeather.x);
+comp_237=`        float veins = sin(angle * 10.0 + timee * 2.0 + fi) * 0.5 + 0.5;
+comp_238=`        veins = 1.0 - veins * 0.3;
+comp_239=`        feather *= veins;
+comp_240=`        
+comp_241=`        // Feather colors (soft whites and pastels)
+comp_242=`        float3 featherColor = float3(
+comp_243=`            0.95 + 0.05 * sin(fi * 0.7),
+comp_244=`            0.97 + 0.03 * cos(fi * 0.9),
+comp_245=`            1.0
+comp_246=`        );
+comp_247=`        
+comp_248=`        // Add slight tint from music
+comp_249=`        featherColor.r += bass * 0.03;
+comp_250=`        featherColor.g += mid * 0.02;
+comp_251=`        featherColor.b += treb * 0.04;
+comp_252=`        
+comp_253=`        // Music affects feather brightness
+comp_254=`        float brightness = 0.4 + (treb * 0.3 + mid * 0.2) * 0.5;
+comp_255=`        
+comp_256=`        feathers += featherColor * feather * brightness * 0.15;
+comp_257=`    }
+comp_258=`    
+comp_259=`    return feathers;
+comp_260=`}
+comp_261=`
+comp_262=`// Stardust/shimmer effect
+comp_263=`float3 stardust(float2 uvf, float timef) {
+comp_264=`    // Sample multiple random textures
+comp_265=`    float3 rand00 = tex2D(sampler_rand00, uvf * 10.0).rgb;
+comp_266=`    float3 rand01 = tex2D(sampler_rand01, uvf * 15.0).rgb;
+comp_267=`    float3 rand02 = tex2D(sampler_rand02, uvf * 20.0).rgb;
+comp_268=`    
+comp_269=`    // Create stardust particles
+comp_270=`    float dust = rand00.r * rand01.g * rand02.b;
+comp_271=`    dust = pow(dust, 4.0);
+comp_272=`    dust *= smoothstep(0.1, 0.3, dust);
+comp_273=`    
+comp_274=`    // Music controls dust density
+comp_275=`    dust *= 0.3 + treb * 0.7 + mid * 0.3;
+comp_276=`    
+comp_277=`    // Animate dust
+comp_278=`    float animation = sin(uvf.x * 30.0 + timef * 2.0) * 0.5 + 0.5;
+comp_279=`    animation *= sin(uvf.y * 25.0 + timef * 1.7) * 0.5 + 0.5;
+comp_280=`    dust *= 0.5 + 0.5 * animation;
+comp_281=`    
+comp_282=`    // Stardust colors (golden and silver)
+comp_283=`    float3 dustColor = float3(
+comp_284=`        1.0,  // Gold
+comp_285=`        0.95, // Warm white
+comp_286=`        0.8   // Peach
+comp_287=`    );
+comp_288=`    
+comp_289=`    // Add color variation
+comp_290=`    dustColor = lerp(dustColor, float3(0.9, 0.95, 1.0), sin(timef * 0.3) * 0.5 + 0.5);
+comp_291=`    
+comp_292=`    return dustColor * dust * 0.4;
+comp_293=`}
+comp_294=`
+comp_295=`// Main weaving pattern
+comp_296=`float3 wovenTapestry(float2 uvg, float timeg) {
+comp_297=`    // Create multiple weaving layers
+comp_298=`    float weave1 = weavePattern(uvg, timeg * 0.8, 8.0);
+comp_299=`    float weave2 = weavePattern(uvg * 1.3 + 0.1, timeg * 1.2, 12.0);
+comp_300=`    float weave3 = weavePattern(uvg * 1.7 + 0.3, timeg * 1.5, 16.0);
+comp_301=`    
+comp_302=`    // Music modulates weaving intensity
+comp_303=`    weave1 *= 0.6 + bass * 0.4;
+comp_304=`    weave2 *= 0.5 + mid * 0.3;
+comp_305=`    weave3 *= 0.4 + treb * 0.2;
+comp_306=`    
+comp_307=`    // Combine layers
+comp_308=`    float pattern = weave1 * 0.5 + weave2 * 0.3 + weave3 * 0.2;
+comp_309=`    
+comp_310=`    // Tapestry colors (rich fabrics)
+comp_311=`    float3 color1 = float3(0.4, 0.3, 0.6);  // Royal purple
+comp_312=`    float3 color2 = float3(0.6, 0.4, 0.3);  // Terracotta
+comp_313=`    float3 color3 = float3(0.3, 0.5, 0.4);  // Forest green
+comp_314=`    float3 color4 = float3(0.5, 0.4, 0.6);  // Lavender
+comp_315=`    
+comp_316=`    // Music-driven color mixing
+comp_317=`    float colorMix = sin(timeg * 0.2 + bass * 2.0) * 0.3 + 0.5;
+comp_318=`    colorMix += mid * 0.1 - treb * 0.05;
+comp_319=`    
+comp_320=`    float3 tapestryColor = lerp(
+comp_321=`        lerp(color1, color2, colorMix),
+comp_322=`        lerp(color3, color4, colorMix),
+comp_323=`        sin(timeg * 0.15 + pattern * 5.0) * 0.3 + 0.5
+comp_324=`    );
+comp_325=`    
+comp_326=`    return tapestryColor * pattern * 0.8;
+comp_327=`}
+comp_328=`
+comp_329=`shader_body {
+comp_330=`
+comp_331=`    if (q1)
+comp_332=`    {
+comp_333=`        bass = bass_att;
+comp_334=`        mid = mid_att;
+comp_335=`        treb = treb_att;
+comp_336=`    }
+comp_337=`
+comp_338=`    //float2 uv = vv_frag_normcoord;
+comp_339=`    
+comp_340=`    // Time with music modulation
+comp_341=`    float dreamTime = time * 0.7;
+comp_342=`    dreamTime += bass * 0.25 + mid * 0.15 + treb * 0.1;
+comp_343=`    
+comp_344=`    // Gentle, flowing distortion
+comp_345=`    float flow = (bass * 0.3 + mid * 0.2 + treb * 0.1) * 0.15;
+comp_346=`    flow += (bass_att + mid_att + treb_att) * 0.1;
+comp_347=`    
+comp_348=`    // Apply gentle weaving motion
+comp_349=`    float2 wovenUV = uv;
+comp_350=`    wovenUV.x += sin(uv.y * 6.0 + dreamTime * 1.5) * flow * 0.03;
+comp_351=`    wovenUV.y += cos(uv.x * 5.0 + dreamTime * 1.3) * flow * 0.03;
+comp_352=`    
+comp_353=`    // Add subtle random texture for organic feel
+comp_354=`    float3 randTex = tex2D(sampler_rand03, uv * 4.0).rgb;
+comp_355=`    wovenUV += (randTex.rg - 0.5) * flow * 0.02;
+comp_356=`    
+comp_357=`    // Generate all dreamweaver layers
+comp_358=`    float3 tapestryLayer = wovenTapestry(wovenUV, dreamTime);
+comp_359=`    float3 mandalaLayer = dreamcatcherNet(wovenUV, dreamTime);
+comp_360=`    float3 threadLayer = glowingThreads(wovenUV, dreamTime);
+comp_361=`    float3 featherLayer = floatingFeathers(wovenUV, dreamTime);
+comp_362=`    float3 dustLayer = stardust(wovenUV, dreamTime);
+comp_363=`    
+comp_364=`    // Combine layers with ethereal blending
+comp_365=`    
+comp_366=`    // Start with tapestry as base
+comp_367=`    float3 finalColor = tapestryLayer;
+comp_368=`    
+comp_369=`    // Overlay mandala (like embroidery)
+comp_370=`    finalColor = lerp(finalColor, mandalaLayer, mandalaLayer.r * 0.6);
+comp_371=`    
+comp_372=`    // Add glowing threads (screen blend)
+comp_373=`    float3 threadBlend = 1.0 - (1.0 - finalColor) * (1.0 - threadLayer * 0.5);
+comp_374=`    finalColor = lerp(finalColor, threadBlend, threadLayer.b * 0.4);
+comp_375=`    
+comp_376=`    // Add floating feathers (soft light)
+comp_377=`    float3 featherBlend = finalColor * (1.0 + featherLayer * 0.3);
+comp_378=`    finalColor = lerp(finalColor, featherBlend, featherLayer.r * 0.5);
+comp_379=`    
+comp_380=`    // Add stardust (additive)
+comp_381=`    finalColor += dustLayer * 0.3;
+comp_382=`    
+comp_383=`    // Create gentle pulsing with bass
+comp_384=`    float gentlePulse = sin(dreamTime * 1.0 + bass * 3.0) * 0.03 + 0.97;
+comp_385=`    gentlePulse += mid * 0.02 * sin(dreamTime * 2.0);
+comp_386=`    finalColor *= gentlePulse;
+comp_387=`    
+comp_388=`    // Add ethereal glow from music
+comp_389=`    float musicGlow = (bass * 0.2 + mid * 0.15 + treb * 0.1) * 0.3;
+comp_390=`    finalColor += float3(0.1, 0.15, 0.2) * musicGlow * 0.2;
+comp_391=`    
+comp_392=`    // Radial glow from center
+comp_393=`    float2 centerVec = uv - 0.5;
+comp_394=`    float centerDist = length(centerVec);
+comp_395=`    float radialGlow = 1.0 - smoothstep(0.0, 0.7, centerDist);
+comp_396=`    radialGlow = pow(radialGlow, 1.5);
+comp_397=`    
+comp_398=`    // Make glow pulse with music
+comp_399=`    radialGlow *= 0.8 + 0.2 * sin(dreamTime * 0.5 + mid * 2.0);
+comp_400=`    finalColor *= 0.9 + radialGlow * 0.1;
+comp_401=`    
+comp_402=`    // Add subtle dreamlike vignette
+comp_403=`    float vignette = 1.0 - smoothstep(0.0, 0.8, centerDist);
+comp_404=`    vignette = pow(vignette, 1.2);
+comp_405=`    finalColor *= vignette;
+comp_406=`    
+comp_407=`    // Dreamlike color processing
+comp_408=`    
+comp_409=`    // Boost subtle colors while preventing white
+comp_410=`    float luminance = dot(finalColor, float3(0.299, 0.587, 0.114));
+comp_411=`    float3 chroma = finalColor - luminance;
+comp_412=`    
+comp_413=`    // Enhance colors gently
+comp_414=`    chroma *= 1.3;
+comp_415=`    
+comp_416=`    // Recombine with controlled brightness
+comp_417=`    finalColor = luminance * 0.9 + chroma * 1.1;
+comp_418=`    
+comp_419=`    // Apply dreamlike soft contrast
+comp_420=`    finalColor = pow(finalColor, 1.1);
+comp_421=`    
+comp_422=`    // Soft saturation curve
+comp_423=`    finalColor = finalColor * (1.0 - 0.2) + finalColor * finalColor * 0.2;
+comp_424=`    
+comp_425=`    // Dreamlike clamp - keep soft, never harsh
+comp_426=`    finalColor = min(finalColor, 0.95);
+comp_427=`    finalColor = max(finalColor, 0.05);
+comp_428=`    
+comp_429=`    // Add final ethereal shimmer
+comp_430=`    float shimmer = sin(uv.x * 100.0 + dreamTime * 3.0) * 0.02;
+comp_431=`    shimmer *= treb * 0.5;
+comp_432=`    finalColor += float3(shimmer * 0.7, shimmer * 0.8, shimmer);
+comp_433=`    
+comp_434=`    ret = float4(finalColor, 1.0);
+comp_435=`}

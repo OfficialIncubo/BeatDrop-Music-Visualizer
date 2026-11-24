@@ -166,7 +166,7 @@ warp_83=`    float core_glow = 0.01 / (r + 0.01);
 warp_84=`    float core_solid = smoothstep(0.08 + bassfft*0.05, 0.07 + bassfft*0.05, r);
 warp_85=`    float3 core_col = hsv2rgb(float3(t*0.2, 0.8, 1.0));
 warp_86=`    final_col += core_col * core_glow * bassfft;
-warp_87=`    final_col += float3(1.0, 1.0, 1.0) * core_solid * (0.5 + bassfft);
+warp_87=`    //final_col += float3(1.0, 1.0, 1.0) * core_solid * (0.5 + bassfft);
 warp_88=`    
 warp_89=`    // --- FEEDBACK TRAILS ---
 warp_90=`    // Zoom the previous frame slightly based on the bass drop to create speed lines

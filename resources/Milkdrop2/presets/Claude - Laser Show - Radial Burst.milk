@@ -1,0 +1,164 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 14/07/2026 at 11:43:55.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=2.000
+fDecay=0.960
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.630
+fWaveParam=-1.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_init_1=q1=0.0;
+per_frame_init_2=q2=12.0;
+per_frame_init_3=time_delay=0.0;
+per_frame_init_4=rand_laser=rand(220);
+per_frame_init_5=temp1 = temp2 = temp3 = temp4 = temp5 = temp6 = 0;
+per_frame_1=time_delay = if(time_delay >= .30 && bass > 2, 0, time_delay += 1/fps);
+per_frame_2=rand_laser = if(time_delay == 0, rand(220), rand_laser);
+per_frame_3=is_beat = if(time_delay == 0, 1, 0);
+per_frame_4=temp1 += .01 + mid*0.0075;
+per_frame_5=q1 = temp1;
+per_frame_6=q2 = 8.0 + rand_laser*0.06;
+per_frame_7=temp2 = temp2*0.82 + is_beat*1.0;
+per_frame_8=q3 = temp2;
+per_frame_9=temp3 = temp3*0.88 + bass_att*0.12;
+per_frame_10=q4 = temp3;
+per_frame_11=temp4 = temp4 + 0.004*(0.6*sin(0.31*time)+0.4*sin(0.47*time));
+per_frame_12=q5 = temp4;
+per_frame_13=q6 = rand_laser;
+per_frame_14=temp5 = if(above(bass,2.0), 1.0, temp5*0.78);
+per_frame_15=q7 = temp5;
+per_frame_16=q9 = 0.50+0.50*sin(time*0.5+rand_laser*0.04);
+per_frame_17=q10 = 0.50+0.50*sin(time*0.44+rand_laser*0.06+2.1);
+per_frame_18=q11 = 0.50+0.50*sin(time*0.38+rand_laser*0.08+4.2);
+per_frame_19=q12 = 0.30 + bass_att*0.30 + q7*0.30;
+per_frame_20=q13 = 0.40 + treb_att*0.20;
+per_frame_21=q16 = is_beat;
+per_frame_22=zoom = 0.985 - bass_att*0.02 + q7*0.02;
+per_frame_23=rot = rot + 0.004*(0.6*sin(0.4*time)+0.4*sin(0.6*time)) + q7*0.01;
+per_frame_24=warp = 0.7+bass*0.4;
+per_frame_25=decay = if(above(bass,2.0), 0.94, 0.97);
+per_frame_26=cx = 0.5;
+per_frame_27=cy = 0.5;
+per_frame_28=echo_alpha = 0.0;
+per_frame_29=echo_zoom = 1.0;
+per_frame_30=gamma = 2.0 + q7*0.7;
+per_frame_31=wave_a = 0.0;
+per_frame_32=darken_center = 1;
+warp_1=`shader_body {}
+comp_1=`float3 hsv2rgb(float h, float s, float v) {
+comp_2=`  float3 k = frac(float3(h,h+0.3333,h+0.6667))*6.0-3.0;
+comp_3=`  float3 p = clamp(abs(k)-1.0, 0.0, 1.0);
+comp_4=`  return v * lerp(float3(1,1,1), p, s);
+comp_5=`}
+comp_6=`float beamMask(float2 uva, float2 origin, float angle, float halfWidth, float len) {
+comp_7=`  float2 d = uva - origin;
+comp_8=`  float r = length(d);
+comp_9=`  float a = atan2(d.y, d.x);
+comp_10=`  float da = a - angle;
+comp_11=`  da = da - M_PI_2*floor(da/M_PI_2+.5);
+comp_12=`  float perpDist = abs(da) * max(r, 0.04);
+comp_13=`  float core = exp(-pow(perpDist/halfWidth, 2.0));
+comp_14=`  float glow = exp(-pow(perpDist/(halfWidth*5.5), 2.0)) * 0.5;
+comp_15=`  float fall = smoothstep(len, len*0.3, r);
+comp_16=`  return (core*1.0 + glow) * fall;
+comp_17=`}
+comp_18=`shader_body {
+comp_19=`  float3 c = tex2D(sampler_main, uv).rgb;
+comp_20=`  float2 origin = float2(0.5, 0.5);
+comp_21=`  float2 uvA = uv;
+comp_22=`  int N = 14;
+comp_23=`  float len = 0.55 + q12*0.45;
+comp_24=`  float3 laser = float3(0,0,0);
+comp_25=`  for (int i = 0; i < N; i++) {
+comp_26=`    float t = float(i) / float(N);
+comp_27=`    float angle = t*M_PI_2 + q1 + 0.15*sin(q1*2.3+float(i));
+comp_28=`    float hw = 0.0030 + 0.0020*q13;
+comp_29=`    float m = beamMask(uvA, origin, angle, hw, len);
+comp_30=`    float hue = frac(0.0 + float(i)*0.07 + q9*0.2);
+comp_31=`    float3 col = hsv2rgb(hue, 0.6, 1.0);
+comp_32=`    laser += col * m;
+comp_33=`  }
+comp_34=`  float core = exp(-length(uv-origin)*9.0) * (0.5+0.5*q7);
+comp_35=`  laser += float3(1.0,0.95,0.85) * core * 1.2;
+comp_36=`  float strobeFlick = step(0.5, frac(q16+0.0005));
+comp_37=`  float strobe = 1.0 + q7*1.8*strobeFlick;
+comp_38=`  laser *= strobe;
+comp_39=`  float haze = exp(-length(uv-float2(0.5,0.55))*1.0) * 0.06 * (0.5+0.5*sin(time*0.05+uv.y*5.0));
+comp_40=`  float3 smoke = float3(0.55,0.55,0.65) * haze;
+comp_41=`  float3 outc = c*0.92 + smoke + laser;
+comp_42=`  outc = outc / (1.0 + outc*0.4);
+comp_43=`  ret = float4(outc, 1.0);
+comp_44=`}

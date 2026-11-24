@@ -4,21 +4,29 @@
    ALT + ENTER          toggle fullscreen (or double-click)
    ALT + S              toggle multiple monitor stretch (or double-right click)
    CTRL + Z             enable/disable spout output
+   CTRL + H             toggle hdr (needs compatible hdr display)
    CTRL + X             save screenshot
-   CTRL + W             hide render window (it pops up the icon on the taskbar tray icon when hidden; hover for tooltip)
+   CTRL + W             hide render window (it pops up the icon on the taskbar tray icon; hover for tooltip)
    CTRL + D             toggle output/input audio device
    CTRL + T             instantly reset time variable
+   CTRL + L             enable/disable synchronized lyrics
+   CTRL + SHIFT + E     open lyrics editor
    SHIFT + UP           increase window opacity
    SHIFT + DOWN         decrease window opacity
+   CTRL + SHIFT + W     desktop mode (it pops up the icon on the taskbar tray icon; hover for tooltip)
    Q                    reset audio sensitivity
    UP                   increase audio sensitivity
    DOWN                 decrease audio sensitivity
+   U                    freeze/unfreeze beat detection
+   W                    toggle webcam; deep/deep (with burn)/top/off
+   SHIFT + W            next webcam (wraps to the first camera)
 
  PRESETS:
 
    SPACE / H            soft / hard cut to next preset
    BACKSPACE            go back to previous preset
    ` / ~                [un]lock current preset
+   O                    toggle auto-lock preset when silence
    R                    toggle random/sequential preset order 
    L                    load specific preset
    M                    show/hide preset-editing menu
@@ -35,6 +43,7 @@
    F5                   show/hide fps
    F6                   show/hide rating
    F8                   show/hide song title
+   F10                  show/hide song time (elapsed/remaining cycle)
    
  HOTKEYS:
 

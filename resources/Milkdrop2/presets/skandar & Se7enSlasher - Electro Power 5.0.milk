@@ -1,0 +1,205 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5 on 06/09/2026 at 18:48:39.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=5.000
+fGammaAdj=1.000
+fDecay=0.985
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.000
+fWaveSmoothing=0.900
+fWaveParam=0.000
+fModWaveAlphaStart=0.000
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=0.000
+fWarpScale=0.000
+fZoomExponent=1.00000
+fShader=1.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=1.000
+wave_g=0.250
+wave_b=0.050
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=temp=0.72*temp+0.98*bass_att;
+per_frame_2=q1=temp;
+per_frame_3=q2=0.25+0.10*sin(time*0.11);
+per_frame_4=q3=0.25+0.02*sin(time*0.07);
+per_frame_5=q4=0.13;
+per_frame_6=q5=0.80;
+per_frame_7=q6=0.50;
+per_frame_8=q7=0.95;
+per_frame_9=q8=0.15;
+per_frame_10=wave_a=0;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    ret = tex2D(sampler_main,uv).xyz;
+warp_4=`    ret *= 0.985;
+warp_5=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float2 p=(uv-0.5)*aspect.xy;
+comp_4=`    float r=length(p);
+comp_5=`    float2 safeP=p/max(r,0.00001);
+comp_6=`
+comp_7=`    float pulse=q1*0.08;
+comp_8=`    // Reversed vertical light direction (lighting from bottom up)
+comp_9=`    float3 L=normalize(float3(0.0, -1.0, 1.5-q7));
+comp_10=`
+comp_11=`    float3 bg=float3(0.015,0.015,0.015);
+comp_12=`    ret=bg;
+comp_13=`
+comp_14=`    float scale=0.90;
+comp_15=`
+comp_16=`    float frameOuter=1.0-smoothstep(0.47*scale,0.48*scale,r);
+comp_17=`    float frameInner=smoothstep(0.39*scale,0.40*scale,r);
+comp_18=`    float frameMask=frameOuter*frameInner;
+comp_19=`
+comp_20=`    float3 frameN=normalize(float3(p,0.20));
+comp_21=`    float frameShade=0.5+0.5*dot(frameN,L);
+comp_22=`    float3 frameCol=float3(0.018,0.020,0.022)+frameShade*0.025;
+comp_23=`
+comp_24=`    // 8 Symmetrical Mounting Holes on Outer Frame
+comp_25=`    float angle = atan2(p.y, p.x);
+comp_26=`    float sector = 6.28318530 / 8.0;
+comp_27=`    float holeIndex = floor((angle + sector * 0.5) / sector);
+comp_28=`    float holeAngle = holeIndex * sector;
+comp_29=`    float holeRadius = 0.435 * scale;
+comp_30=`    float2 holeCenter = float2(cos(holeAngle), sin(holeAngle)) * holeRadius;
+comp_31=`    float holeDist = length(p - holeCenter);
+comp_32=`    float holeSize = 0.012 * scale;
+comp_33=`    float holeBezel = 0.018 * scale;
+comp_34=`
+comp_35=`    float holeMask = 1.0 - smoothstep(holeSize - 0.002*scale, holeSize, holeDist);
+comp_36=`    float bezelMask = (1.0 - smoothstep(holeBezel - 0.002*scale, holeBezel, holeDist)) * (1.0 - holeMask);
+comp_37=`
+comp_38=`    float3 darkRimCol = float3(0.010, 0.010, 0.012);
+comp_39=`    float3 darkCenterCol = float3(0.015, 0.015, 0.018) + frameShade * 0.01;
+comp_40=`    frameCol = lerp(frameCol, darkRimCol, bezelMask);
+comp_41=`    frameCol = lerp(frameCol, darkCenterCol, holeMask);
+comp_42=`
+comp_43=`    ret=lerp(ret,frameCol,frameMask);
+comp_44=`
+comp_45=`    float surrCenter=(0.36+pulse*0.03)*scale;
+comp_46=`    float surrWidth=0.045*scale;
+comp_47=`    float surrDist=abs(r-surrCenter);
+comp_48=`    float surrMask=1.0-smoothstep(surrWidth-0.005*scale,surrWidth,surrDist);
+comp_49=`
+comp_50=`    float surrNX=(r-surrCenter)/max(surrWidth,0.00001);
+comp_51=`    float surrNZ=sqrt(max(0.0,1.0-surrNX*surrNX));
+comp_52=`    float3 surrN=normalize(float3(safeP*surrNX,surrNZ));
+comp_53=`    float surrDiff=pow(max(0.0,dot(surrN,L)),1.05);
+comp_54=`    float3 surrCol=float3(0.035,0.037,0.040);
+comp_55=`    surrCol+=surrDiff*0.10;
+comp_56=`    surrCol+=pow(surrDiff,7.0)*0.53;
+comp_57=`    ret=lerp(ret,surrCol,surrMask);
+comp_58=`
+comp_59=`    // Diaphragm excursion calculations
+comp_60=`    float excursion = q1 * 0.06;
+comp_61=`    float r_cone = r * (1.0 - excursion);
+comp_62=`
+comp_63=`    float coneInner=(0.12-pulse*0.02)*scale;
+comp_64=`    float coneOuter=(0.32+pulse*0.06)*scale;
+comp_65=`    float coneMask=(1.0-smoothstep(coneOuter-0.005*scale,coneOuter,r))*smoothstep(coneInner,coneInner+0.01*scale,r);
+comp_66=`
+comp_67=`    float grooves=0.5+0.5*sin((r_cone*400.0/scale) - excursion*15.0);
+comp_68=`    float grooveLight=pow(max(0.0,dot(safeP,L.xy)),1.15)*grooves;
+comp_69=`    float coneDepth=saturate((r_cone-coneInner)/max(coneOuter-coneInner,0.00001));
+comp_70=`
+comp_71=`    // Base Vertical Color Gradient: Midnight Blue (Bottom) -> Deep Pink (Top)
+comp_72=`    float yPos = saturate((p.y - (-coneOuter)) / max(2.0 * coneOuter, 0.00001));
+comp_73=`    float3 cMidnightBlue = float3(0.02, 0.05, 0.20);
+comp_74=`    float3 cDeepPink = float3(1.00, 0.08, 0.58);
+comp_75=`    float3 coneBase = lerp(cMidnightBlue, cDeepPink, yPos);
+comp_76=`
+comp_77=`    // Transparent Desaturated Waves overlay (20% opacity)
+comp_78=`    float b=saturate(q1);
+comp_79=`    float h=time*0.2 + r_cone*(12.0 + b*10.0) + sin(r_cone*30.0 - time*6.0 + excursion*12.0)*b*4.0;
+comp_80=`    float wavePattern=pow(0.5+0.5*sin(h), 1.0 + b*3.0);
+comp_81=`    float3 cBlueWave=float3(1.0, 1.0, 1.0) * wavePattern * (0.4 + b*0.8) * 0.20;
+comp_82=`
+comp_83=`    // Add waves and shading to base cone
+comp_84=`    coneBase += cBlueWave;
+comp_85=`    coneBase *= 0.35 + coneDepth*0.65;
+comp_86=`    coneBase += grooveLight*0.53*0.40;
+comp_87=`    coneBase *= 0.75 + 0.25*max(0.0,dot(safeP,L.xy));
+comp_88=`    ret=lerp(ret,max(coneBase,bg),coneMask);
+comp_89=`
+comp_90=`    float capSize=(0.13+pulse*0.02)*scale;
+comp_91=`    float capMask=1.0-smoothstep(capSize-0.005*scale,capSize,r);
+comp_92=`    float2 capP=p/max(capSize,0.00001);
+comp_93=`    float capZ=sqrt(max(0.0,1.0-dot(capP,capP)));
+comp_94=`    float3 capN=normalize(float3(capP,capZ));
+comp_95=`    float capDiff=pow(max(0.0,dot(capN,L)),1.05);
+comp_96=`    float3 R=reflect(-L,capN);
+comp_97=`    float capSpec=pow(max(0.0,dot(R,float3(0,0,1))),24.0);
+comp_98=`    float3 capCol=float3(0.028,0.028,0.030)+capDiff*0.05+capSpec*0.53*0.40;
+comp_99=`    ret=lerp(ret,capCol,capMask);
+comp_100=`
+comp_101=`    float ao=(0.55+0.45*smoothstep(0.0,0.06*scale,abs(r-coneOuter)))*(0.65+0.35*smoothstep(0.0,0.04*scale,abs(r-capSize)));
+comp_102=`    ret*=max(ao,0.10+0.50*0.15);
+comp_103=`    ret+=0.25*0.20;
+comp_104=`
+comp_105=`    float silhouette=1.0-smoothstep(0.475*scale,0.48*scale,r);
+comp_106=`    ret=lerp(bg,ret,silhouette);
+comp_107=`    ret+=q1*0.003*silhouette;
+comp_108=`}

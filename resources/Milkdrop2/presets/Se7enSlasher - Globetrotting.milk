@@ -1,0 +1,248 @@
+This preset has been created/edited using BeatDrop Music Visualizer v1.5dev1 on 12/03/2026 at 15:32:49.
+Try creating your own preset by getting this from https://github.com/OfficialIncubo/BeatDrop-Music-Visualizer
+Please refer the preset authoring guide on BeatDrop Resources/docs folder before creating your own.
+Follow @BeatDropVis on Twitter/X for news! Also join and chat with us on Discord: https://discord.gg/rp5cBDtGuM
+###################################################################################################
+
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=3
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000
+fGammaAdj=1.460
+fDecay=1.000
+FFTAttack=0.500
+FFTDecay=0.700
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=0.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.000
+wave_y=0.000
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+warp_1=`// Bypass warp. The entire 3D scene is generated in the COMP shader.
+warp_2=`shader_body {
+warp_3=`    ret = GetPixel(uv);
+warp_4=`}
+comp_1=`// 3D Cosmic Globe & Galaxy EQ
+comp_2=`// Generated from scratch using Raymarching and FBM Noise
+comp_3=`
+comp_4=`// --- UTILITY MATH & NOISE FUNCTIONS ---
+comp_5=`float hash12(float2 p) {
+comp_6=`    float3 p3 = frac(float3(p.x, p.y, p.x) * 0.1031);
+comp_7=`    p3 += dot(p3, p3.yzx + 33.33);
+comp_8=`    return frac((p3.x + p3.y) * p3.z);
+comp_9=`}
+comp_10=`
+comp_11=`float noise(float2 p) {
+comp_12=`    float2 i = floor(p);
+comp_13=`    float2 f = frac(p);
+comp_14=`    float2 u = f * f * (3.0 - 2.0 * f);
+comp_15=`    return lerp(lerp(hash12(i + float2(0.0, 0.0)), hash12(i + float2(1.0, 0.0)), u.x),
+comp_16=`                lerp(hash12(i + float2(0.0, 1.0)), hash12(i + float2(1.0, 1.0)), u.x), u.y);
+comp_17=`}
+comp_18=`
+comp_19=`float fbm(float2 p) {
+comp_20=`    float f = 0.0;
+comp_21=`    float a = 0.5;
+comp_22=`    for (int i = 0; i < 5; i++) {
+comp_23=`        f += a * noise(p);
+comp_24=`        p = p * 2.01;
+comp_25=`        a *= 0.5;
+comp_26=`    }
+comp_27=`    return f;
+comp_28=`}
+comp_29=`
+comp_30=`float3 hsv2rgb(float3 c) {
+comp_31=`    float4 K = float4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+comp_32=`    float3 p = abs(frac(c.xxx + K.xyz) * 6.0 - K.www);
+comp_33=`    return c.z * lerp(K.xxx, saturate(p - K.xxx), c.y);
+comp_34=`}
+comp_35=`
+comp_36=`float2x2 rot(float a) {
+comp_37=`    float s = sin(a), c = cos(a);
+comp_38=`    return float2x2(c, -s, s, c);
+comp_39=`}
+comp_40=`
+comp_41=`// --- MAIN SHADER ---
+comp_42=`shader_body {
+comp_43=`    uv = 1.0 - uv; // MilkDrop Flip Fix
+comp_44=`    float2 aspect_texsize = float2(1, texsize.y/texsize.x);
+comp_45=`    float2 c_uv = (uv - 0.5) * aspect_texsize;
+comp_46=`    float t = time;
+comp_47=`    
+comp_48=`    // ----------------------------------------------------
+comp_49=`    // 1. BACKGROUND: AUDIO REACTIVE GALAXY NEBULA & STARS
+comp_50=`    // ----------------------------------------------------
+comp_51=`    float3 bg = float3(0.0, 0.0, 0.0);
+comp_52=`    
+comp_53=`    // Nebula
+comp_54=`    float2 neb_uv = mul(c_uv * 1.5, rot(t * 0.02));
+comp_55=`    float n1 = fbm(neb_uv + t * 0.05);
+comp_56=`    float n2 = fbm(neb_uv * 2.0 - t * 0.03);
+comp_57=`    float bassfft = get_fft(0.02);
+comp_58=`    float midfft = get_fft(0.2);
+comp_59=`    
+comp_60=`    float3 neb_col1 = float3(0.05, 0.0, 0.2); // Deep Space Purple
+comp_61=`    float3 neb_col2 = float3(0.0, 0.3, 0.4);  // Teal Gas
+comp_62=`    bg += lerp(neb_col1, neb_col2, n2) * n1 * (1.0 + bassfft * 3.0);
+comp_63=`    
+comp_64=`    // Stars
+comp_65=`    float star_hash = hash12(floor(c_uv * 200.0));
+comp_66=`    float star_bright = smoothstep(0.98, 1.0, star_hash);
+comp_67=`    float twinkle = sin(t * 3.0 + star_hash * 100.0) * 0.5 + 0.5;
+comp_68=`    bg += float3(1.0, 0.9, 1.0) * star_bright * twinkle * (0.5 + midfft * 1.5);
+comp_69=`    
+comp_70=`    // Radial EQ Aura (Orbiting behind the Earth)
+comp_71=`    float r = length(c_uv);
+comp_72=`    float a = atan2(c_uv.y, c_uv.x);
+comp_73=`    float norm_a = (a + M_PI) / M_PI_2;
+comp_74=`    float eq_idx = abs(norm_a - 0.5) * 2.0; 
+comp_75=`    float fft_val = get_fft(eq_idx * 0.8 + 0.02);
+comp_76=`    
+comp_77=`    // The visual radius of the 3D Earth on screen is exactly ~0.436
+comp_78=`    float earth_vis_radius = 0.169; 
+comp_79=`    float is_bar = smoothstep(0.1, 0.4, abs(frac(eq_idx * 90.0) - 0.5));
+comp_80=`    float bar_h = earth_vis_radius + pow(fft_val, 1.5) * 0.4;
+comp_81=`    float bar_mask = is_bar * smoothstep(bar_h, bar_h - 0.02, r) * smoothstep(earth_vis_radius - 0.02, earth_vis_radius, r);
+comp_82=`    
+comp_83=`    float3 bar_col = hsv2rgb(float3(eq_idx * 0.5 - t * 0.1, 0.8, 1.0));
+comp_84=`    bg += bar_col * bar_mask * (fft_val + 0.1) * 2.0;
+comp_85=`    
+comp_86=`    // ----------------------------------------------------
+comp_87=`    // 2. 3D RAYMARCHED GLOBE
+comp_88=`    // ----------------------------------------------------
+comp_89=`    float3 ro = float3(0.0, 0.0, -1.5); // Camera position
+comp_90=`    float3 rd = normalize(float3(c_uv, 1.0)); // Ray direction
+comp_91=`    
+comp_92=`    float sphere_r = 0.25;
+comp_93=`    // Sphere Intersection Math
+comp_94=`    float a_sph = dot(rd, rd);
+comp_95=`    float b_sph = 2.0 * dot(ro, rd);
+comp_96=`    float c_sph = dot(ro, ro) - sphere_r * sphere_r;
+comp_97=`    float disc = b_sph * b_sph - 4.0 * a_sph * c_sph;
+comp_98=`    
+comp_99=`    float3 final_col = bg;
+comp_100=`    
+comp_101=`    // If the ray hits the sphere...
+comp_102=`    if (disc > 0.0) {
+comp_103=`        float t_sph = (-b_sph - sqrt(disc)) / (2.0 * a_sph);
+comp_104=`        if (t_sph > 0.0) {
+comp_105=`            float3 p = ro + rd * t_sph; // 3D Hit position
+comp_106=`            float3 n_sph = normalize(p); // 3D Normal
+comp_107=`            
+comp_108=`            // Rotate Earth
+comp_109=`            float3 n_rot = n_sph;
+comp_110=`            n_rot.xz = mul(n_rot.xz, rot(t * 0.1));
+comp_111=`            n_rot.xy = mul(n_rot.xy, rot(0.4)); // Axial tilt
+comp_112=`            
+comp_113=`            // Generate Procedural Continents
+comp_114=`            float geo = fbm(n_rot.xy * 3.0 + fbm(n_rot.yz * 4.0));
+comp_115=`            
+comp_116=`            float3 water = float3(0.01, 0.05, 0.3);
+comp_117=`            float3 land = float3(0.05, 0.35, 0.1);
+comp_118=`            float3 mountain = float3(0.4, 0.3, 0.2);
+comp_119=`            float3 snow = float3(0.9, 0.9, 0.95);
+comp_120=`            
+comp_121=`            float3 earth_col = water;
+comp_122=`            earth_col = lerp(earth_col, float3(0.0, 0.3, 0.5), smoothstep(0.35, 0.45, geo)); // Shallows
+comp_123=`            earth_col = lerp(earth_col, land, smoothstep(0.45, 0.5, geo)); // Coast
+comp_124=`            earth_col = lerp(earth_col, mountain, smoothstep(0.65, 0.75, geo)); // Inland
+comp_125=`            earth_col = lerp(earth_col, snow, smoothstep(0.85, 0.95, geo)); // Peaks
+comp_126=`            
+comp_127=`            // Add procedural clouds floating slightly above
+comp_128=`            float clouds = fbm(n_rot.zx * 5.0 - t * 0.04 + fbm(n_rot.xy * 3.0));
+comp_129=`            earth_col = lerp(earth_col, float3(0.9, 0.9, 1.0), smoothstep(0.45, 0.8, clouds) * 0.8);
+comp_130=`            
+comp_131=`            // Lighting (Sun is top-right)
+comp_132=`            float3 light_dir = normalize(float3(1.0, 0.4, -0.6));
+comp_133=`            float diff = max(dot(n_sph, light_dir), 0.0);
+comp_134=`            
+comp_135=`            // Night Side City Lights
+comp_136=`            float night_mask = 1.0 - smoothstep(-0.2, 0.2, dot(n_sph, light_dir));
+comp_137=`            float city_noise = fbm(n_rot.xy * 20.0);
+comp_138=`            float is_land = smoothstep(0.45, 0.5, geo) * (1.0 - smoothstep(0.5, 0.8, clouds)); 
+comp_139=`            float3 city_lights = float3(1.0, 0.8, 0.3) * smoothstep(0.6, 0.8, city_noise) * is_land * night_mask * 2.5;
+comp_140=`            
+comp_141=`            earth_col = earth_col * (diff + 0.02) + city_lights;
+comp_142=`            
+comp_143=`            // Atmosphere Rim Lighting
+comp_144=`            float rim = 1.0 - max(dot(n_sph, normalize(-rd)), 0.0);
+comp_145=`            earth_col += float3(0.2, 0.5, 1.0) * pow(rim, 3.0) * diff * 2.0;
+comp_146=`            
+comp_147=`            final_col = earth_col;
+comp_148=`        }
+comp_149=`    } else {
+comp_150=`        // ----------------------------------------------------
+comp_151=`        // 3. OUTER ATMOSPHERE GLOW (Rendered over the galaxy)
+comp_152=`        // ----------------------------------------------------
+comp_153=`        float dist_to_earth = r - earth_vis_radius;
+comp_154=`        if (dist_to_earth > 0.0) {
+comp_155=`            float atmo_glow = exp(-dist_to_earth * 12.0);
+comp_156=`            float sun_side = max(dot(normalize(float3(c_uv, 0.0)), normalize(float3(1.0, 0.4, 0.0))), 0.0);
+comp_157=`            final_col += float3(0.1, 0.4, 0.9) * atmo_glow * (sun_side * 0.8 + 0.2);
+comp_158=`        }
+comp_159=`    }
+comp_160=`    
+comp_161=`    ret = float4(final_col, 1.0);
+comp_162=`}

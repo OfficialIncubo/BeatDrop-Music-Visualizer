@@ -7,3 +7,4 @@ szFontFace number meanings:
 3 - Playlist
 4 - Tooltips
 5 - Animated Songtitles
+6 - Lyrics

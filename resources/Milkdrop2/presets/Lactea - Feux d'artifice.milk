@@ -1,0 +1,361 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=2
+[preset00]
+fRating=5.000000
+fGammaAdj=1.000
+fDecay=1.000
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.000
+fWaveScale=1.000
+fWaveSmoothing=0.500
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.000
+fShader=0.000
+zoom=1.000
+rot=0.000
+cx=0.500
+cy=0.500
+dx=0.000
+dy=0.000
+warp=0.000
+sx=1.000
+sy=1.000
+wave_r=1.000
+wave_g=1.000
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.000
+mv_r=0.000
+mv_g=0.000
+mv_b=0.000
+mv_a=0.000
+per_frame_1=dt = min(max(time - tprev, 0), 0.1);
+per_frame_2=tprev = time;
+per_frame_3=rise = bass - bprev;
+per_frame_4=bprev = bass;
+per_frame_5=beat = above(rise, 0.1) * above(bass, bass_att) * above(time - lastfire, 0.3);
+per_frame_6=auto = above(time - lastfire, 1.4) * above(time - lastbeat, 2.5);
+per_frame_7=lastbeat = if(beat, time, lastbeat);
+per_frame_8=fire = max(beat, auto);
+per_frame_9=lastfire = if(fire, time, lastfire);
+per_frame_10=force = if(beat, min(max(floor(rise * 12), 0), 4), 1);
+per_frame_11=slot = if(fire, (slot + 1) % 5, slot);
+per_frame_12=treb = treb * 0.9 + 0.1 * min(max(treb_att - 0.8, 0), 1.5);
+per_frame_13=s0 = fire * equal(slot, 0);
+per_frame_14=x0 = if(s0, 0.15 + rand(1000) * 0.0007, x0);
+per_frame_15=y0 = if(s0, 0.35 + rand(1000) * 0.00035 + force, y0);
+per_frame_16=t0 = if(s0, time, t0);
+per_frame_17=h0 = if(s0, rand(4) + rand(1000) * 0.001, h0);
+per_frame_18=s1 = fire * equal(slot, 1);
+per_frame_19=x1 = if(s1, 0.15 + rand(1000) * 0.0007, x1);
+per_frame_20=y1 = if(s1, 0.35 + rand(1000) * 0.00035 + force, y1);
+per_frame_21=t1 = if(s1, time, t1);
+per_frame_22=h1 = if(s1, rand(4) + rand(1000) * 0.001, h1);
+per_frame_23=s2 = fire * equal(slot, 2);
+per_frame_24=x2 = if(s2, 0.15 + rand(1000) * 0.0007, x2);
+per_frame_25=y2 = if(s2, 0.35 + rand(1000) * 0.00035 + force, y2);
+per_frame_26=t2 = if(s2, time, t2);
+per_frame_27=h2 = if(s2, rand(4) + rand(1000) * 0.001, h2);
+per_frame_28=s3 = fire * equal(slot, 3);
+per_frame_29=x3 = if(s3, 0.15 + rand(1000) * 0.0007, x3);
+per_frame_30=y3 = if(s3, 0.35 + rand(1000) * 0.00035 + force, y3);
+per_frame_31=t3 = if(s3, time, t3);
+per_frame_32=h3 = if(s3, rand(4) + rand(1000) * 0.001, h3);
+per_frame_33=s4 = fire * equal(slot, 4);
+per_frame_34=x4 = if(s4, 0.15 + rand(1000) * 0.0007, x4);
+per_frame_35=y4 = if(s4, 0.35 + rand(1000) * 0.00035 + force, y4);
+per_frame_36=t4 = if(s4, time, t4);
+per_frame_37=h4 = if(s4, rand(4) + rand(1000) * 0.001, h4);
+per_frame_38=q2 = treb;
+per_frame_39=q9 = x0;
+per_frame_40=q10 = y0;
+per_frame_41=q11 = t0;
+per_frame_42=q12 = h0;
+per_frame_43=q13 = x1;
+per_frame_44=q14 = y1;
+per_frame_45=q15 = t1;
+per_frame_46=q16 = h1;
+per_frame_47=q17 = x2;
+per_frame_48=q18 = y2;
+per_frame_49=q19 = t2;
+per_frame_50=q20 = h2;
+per_frame_51=q21 = x3;
+per_frame_52=q22 = y3;
+per_frame_53=q23 = t3;
+per_frame_54=q24 = h3;
+per_frame_55=q25 = x4;
+per_frame_56=q26 = y4;
+per_frame_57=q27 = t4;
+per_frame_58=q28 = h4;
+warp_1=`float hsh(float x)
+warp_2=`{
+warp_3=`    return frac(sin(x * 12.9898) * 43758.5453);
+warp_4=`}
+warp_5=`float3 hcol(float h)
+warp_6=`{
+warp_7=`    float3 c = saturate(abs(frac(h + float3(0.0, 0.6666667, 0.3333333)) * 6.0 - 3.0) - 1.0);
+warp_8=`    return lerp(c, float3(1.0, 1.0, 1.0), 0.2);
+warp_9=`}
+warp_10=`float shapeMag(float sh, float an, float h)
+warp_11=`{
+warp_12=`    float sphere = sqrt(max(1.0 - (2.0 * h - 1.0) * (2.0 * h - 1.0), 0.0)) * (0.4 + 0.6 * frac(h * 7.31));
+warp_13=`    float ring = (0.8 + 0.4 * h) / sqrt(cos(an) * cos(an) + sin(an) * sin(an) / 0.03);
+warp_14=`    float star = lerp(0.4, 1.0, step(0.5, h));
+warp_15=`    float heart = 0.42 * (1.0 - sin(an)) * (0.92 + 0.08 * h);
+warp_16=`    float m = sphere;
+warp_17=`    m = lerp(m, ring, step(0.5, sh) * step(sh, 1.5));
+warp_18=`    m = lerp(m, star, step(1.5, sh) * step(sh, 2.5));
+warp_19=`    m = lerp(m, heart, step(2.5, sh));
+warp_20=`    return m;
+warp_21=`}
+warp_22=`float trailFade(float2 p, float2 a, float2 b)
+warp_23=`{
+warp_24=`    float2 ab = b - a;
+warp_25=`    return saturate(dot(p - a, ab) / max(dot(ab, ab), 0.0000001));
+warp_26=`}
+warp_27=`float segDist(float2 p, float2 a, float2 b)
+warp_28=`{
+warp_29=`    float2 ab = b - a;
+warp_30=`    float t = saturate(dot(p - a, ab) / max(dot(ab, ab), 0.0000001));
+warp_31=`    return length(p - a - ab * t);
+warp_32=`}
+warp_33=`shader_body
+warp_34=`{
+warp_35=`    float SC = 25.0 / 600.0;
+warp_36=`    float2 P = float2(uv.x * texsize.x / texsize.y, 1.0 - uv.y);
+warp_37=`    float3 acc = float3(0.0, 0.0, 0.0);
+warp_38=`    float n;
+warp_39=`    float pw;
+warp_40=`    float2 org;
+warp_41=`    float sh;
+warp_42=`    float hu;
+warp_43=`    float fn;
+warp_44=`    float n2;
+warp_45=`    float fn2;
+warp_46=`    float hS;
+warp_47=`    float tS;
+warp_48=`    float hG;
+warp_49=`    float tG;
+warp_50=`    float life;
+warp_51=`    float pbr;
+warp_52=`    float2 rel;
+warp_53=`    float bin0;
+warp_54=`    float bn;
+warp_55=`    float h1;
+warp_56=`    float h2;
+warp_57=`    float an;
+warp_58=`    float mg;
+warp_59=`    float2 dir;
+warp_60=`    float2 head;
+warp_61=`    float2 tail;
+warp_62=`    float sd;
+warp_63=`    float3 cl;
+warp_64=`    n = (time - q11) * 60.0;
+warp_65=`    if (q11 > 0.001 && n > 0.0 && n < 100.0)
+warp_66=`    {
+warp_67=`        pw = 7.0 + floor(q10) * 0.3;
+warp_68=`        org = float2(q9 * texsize.x / texsize.y, frac(q10));
+warp_69=`        sh = floor(q12);
+warp_70=`        hu = frac(q12);
+warp_71=`        fn = pow(0.96, n);
+warp_72=`        n2 = max(n - 10.0, 0.0);
+warp_73=`        fn2 = pow(0.96, n2);
+warp_74=`        hS = 2.5 * (1.0 - fn) * pw * SC;
+warp_75=`        tS = 2.5 * (1.0 - fn2) * pw * SC;
+warp_76=`        hG = 0.0625 * ((1.0 - fn) / 0.04 - n) * SC;
+warp_77=`        tG = 0.0625 * ((1.0 - fn2) / 0.04 - n2) * SC;
+warp_78=`        life = 1.0 - n * 0.01;
+warp_79=`        pbr = 1.3 + floor(q10) * 0.12;
+warp_80=`        rel = P - org - float2(0.0, hG);
+warp_81=`        bin0 = floor(atan2(rel.y, rel.x) / 6.2831853 * 240.0 + 120.0);
+warp_82=`        for (float ray = 0; ray < 6.0 + floor(saturate(progress) * 0.25); ray += 1.0) {
+warp_83=`        bn = bin0 + floor(ray * 0.5) - 1.0;
+warp_84=`        h1 = (frac(ray * 0.5) < 0.25 ? hsh(bn * 1.37 + 0.13) : hsh(bn * 1.37 + 5.13));
+warp_85=`        h2 = (frac(ray * 0.5) < 0.25 ? hsh(bn * 2.71 + 0.59) : hsh(bn * 2.71 + 7.59));
+warp_86=`        an = (bn + h1) / 240.0 * 6.2831853 - 3.1415927;
+warp_87=`        mg = shapeMag(sh, an, h2);
+warp_88=`        dir = float2(cos(an), sin(an)) * mg;
+warp_89=`        head = org + dir * hS + float2(0.0, hG);
+warp_90=`        tail = org + dir * tS + float2(0.0, tG);
+warp_91=`        sd = segDist(P, tail, head);
+warp_92=`        cl = hcol(hu + (h1 - 0.5) * 0.1);
+warp_93=`        acc += cl * ((1.0 - smoothstep(0.0, 0.0022, sd)) * 0.55 * trailFade(P, tail, head) + (1.0 - smoothstep(0.0, 0.0042, length(P - head))) * 1.1) * saturate(life * 1.5) * pbr;
+warp_94=`        }
+warp_95=`    }
+warp_96=`    n = (time - q15) * 60.0;
+warp_97=`    if (q15 > 0.001 && n > 0.0 && n < 100.0)
+warp_98=`    {
+warp_99=`        pw = 7.0 + floor(q14) * 0.3;
+warp_100=`        org = float2(q13 * texsize.x / texsize.y, frac(q14));
+warp_101=`        sh = floor(q16);
+warp_102=`        hu = frac(q16);
+warp_103=`        fn = pow(0.96, n);
+warp_104=`        n2 = max(n - 10.0, 0.0);
+warp_105=`        fn2 = pow(0.96, n2);
+warp_106=`        hS = 2.5 * (1.0 - fn) * pw * SC;
+warp_107=`        tS = 2.5 * (1.0 - fn2) * pw * SC;
+warp_108=`        hG = 0.0625 * ((1.0 - fn) / 0.04 - n) * SC;
+warp_109=`        tG = 0.0625 * ((1.0 - fn2) / 0.04 - n2) * SC;
+warp_110=`        life = 1.0 - n * 0.01;
+warp_111=`        pbr = 1.3 + floor(q14) * 0.12;
+warp_112=`        rel = P - org - float2(0.0, hG);
+warp_113=`        bin0 = floor(atan2(rel.y, rel.x) / 6.2831853 * 240.0 + 120.0);
+warp_114=`        for (float ray = 0; ray < 6.0 + floor(saturate(progress) * 0.25); ray += 1.0) {
+warp_115=`        bn = bin0 + floor(ray * 0.5) - 1.0;
+warp_116=`        h1 = (frac(ray * 0.5) < 0.25 ? hsh(bn * 1.37 + 17.13) : hsh(bn * 1.37 + 22.13));
+warp_117=`        h2 = (frac(ray * 0.5) < 0.25 ? hsh(bn * 2.71 + 31.59) : hsh(bn * 2.71 + 38.59));
+warp_118=`        an = (bn + h1) / 240.0 * 6.2831853 - 3.1415927;
+warp_119=`        mg = shapeMag(sh, an, h2);
+warp_120=`        dir = float2(cos(an), sin(an)) * mg;
+warp_121=`        head = org + dir * hS + float2(0.0, hG);
+warp_122=`        tail = org + dir * tS + float2(0.0, tG);
+warp_123=`        sd = segDist(P, tail, head);
+warp_124=`        cl = hcol(hu + (h1 - 0.5) * 0.1);
+warp_125=`        acc += cl * ((1.0 - smoothstep(0.0, 0.0022, sd)) * 0.55 * trailFade(P, tail, head) + (1.0 - smoothstep(0.0, 0.0042, length(P - head))) * 1.1) * saturate(life * 1.5) * pbr;
+warp_126=`        }
+warp_127=`    }
+warp_128=`    n = (time - q19) * 60.0;
+warp_129=`    if (q19 > 0.001 && n > 0.0 && n < 100.0)
+warp_130=`    {
+warp_131=`        pw = 7.0 + floor(q18) * 0.3;
+warp_132=`        org = float2(q17 * texsize.x / texsize.y, frac(q18));
+warp_133=`        sh = floor(q20);
+warp_134=`        hu = frac(q20);
+warp_135=`        fn = pow(0.96, n);
+warp_136=`        n2 = max(n - 10.0, 0.0);
+warp_137=`        fn2 = pow(0.96, n2);
+warp_138=`        hS = 2.5 * (1.0 - fn) * pw * SC;
+warp_139=`        tS = 2.5 * (1.0 - fn2) * pw * SC;
+warp_140=`        hG = 0.0625 * ((1.0 - fn) / 0.04 - n) * SC;
+warp_141=`        tG = 0.0625 * ((1.0 - fn2) / 0.04 - n2) * SC;
+warp_142=`        life = 1.0 - n * 0.01;
+warp_143=`        pbr = 1.3 + floor(q18) * 0.12;
+warp_144=`        rel = P - org - float2(0.0, hG);
+warp_145=`        bin0 = floor(atan2(rel.y, rel.x) / 6.2831853 * 240.0 + 120.0);
+warp_146=`        for (float ray = 0; ray < 6.0 + floor(saturate(progress) * 0.25); ray += 1.0) {
+warp_147=`        bn = bin0 + floor(ray * 0.5) - 1.0;
+warp_148=`        h1 = (frac(ray * 0.5) < 0.25 ? hsh(bn * 1.37 + 34.13) : hsh(bn * 1.37 + 39.13));
+warp_149=`        h2 = (frac(ray * 0.5) < 0.25 ? hsh(bn * 2.71 + 62.59) : hsh(bn * 2.71 + 69.59));
+warp_150=`        an = (bn + h1) / 240.0 * 6.2831853 - 3.1415927;
+warp_151=`        mg = shapeMag(sh, an, h2);
+warp_152=`        dir = float2(cos(an), sin(an)) * mg;
+warp_153=`        head = org + dir * hS + float2(0.0, hG);
+warp_154=`        tail = org + dir * tS + float2(0.0, tG);
+warp_155=`        sd = segDist(P, tail, head);
+warp_156=`        cl = hcol(hu + (h1 - 0.5) * 0.1);
+warp_157=`        acc += cl * ((1.0 - smoothstep(0.0, 0.0022, sd)) * 0.55 * trailFade(P, tail, head) + (1.0 - smoothstep(0.0, 0.0042, length(P - head))) * 1.1) * saturate(life * 1.5) * pbr;
+warp_158=`        }
+warp_159=`    }
+warp_160=`    n = (time - q23) * 60.0;
+warp_161=`    if (q23 > 0.001 && n > 0.0 && n < 100.0)
+warp_162=`    {
+warp_163=`        pw = 7.0 + floor(q22) * 0.3;
+warp_164=`        org = float2(q21 * texsize.x / texsize.y, frac(q22));
+warp_165=`        sh = floor(q24);
+warp_166=`        hu = frac(q24);
+warp_167=`        fn = pow(0.96, n);
+warp_168=`        n2 = max(n - 10.0, 0.0);
+warp_169=`        fn2 = pow(0.96, n2);
+warp_170=`        hS = 2.5 * (1.0 - fn) * pw * SC;
+warp_171=`        tS = 2.5 * (1.0 - fn2) * pw * SC;
+warp_172=`        hG = 0.0625 * ((1.0 - fn) / 0.04 - n) * SC;
+warp_173=`        tG = 0.0625 * ((1.0 - fn2) / 0.04 - n2) * SC;
+warp_174=`        life = 1.0 - n * 0.01;
+warp_175=`        pbr = 1.3 + floor(q22) * 0.12;
+warp_176=`        rel = P - org - float2(0.0, hG);
+warp_177=`        bin0 = floor(atan2(rel.y, rel.x) / 6.2831853 * 240.0 + 120.0);
+warp_178=`        for (float ray = 0; ray < 6.0 + floor(saturate(progress) * 0.25); ray += 1.0) {
+warp_179=`        bn = bin0 + floor(ray * 0.5) - 1.0;
+warp_180=`        h1 = (frac(ray * 0.5) < 0.25 ? hsh(bn * 1.37 + 51.13) : hsh(bn * 1.37 + 56.13));
+warp_181=`        h2 = (frac(ray * 0.5) < 0.25 ? hsh(bn * 2.71 + 93.59) : hsh(bn * 2.71 + 100.59));
+warp_182=`        an = (bn + h1) / 240.0 * 6.2831853 - 3.1415927;
+warp_183=`        mg = shapeMag(sh, an, h2);
+warp_184=`        dir = float2(cos(an), sin(an)) * mg;
+warp_185=`        head = org + dir * hS + float2(0.0, hG);
+warp_186=`        tail = org + dir * tS + float2(0.0, tG);
+warp_187=`        sd = segDist(P, tail, head);
+warp_188=`        cl = hcol(hu + (h1 - 0.5) * 0.1);
+warp_189=`        acc += cl * ((1.0 - smoothstep(0.0, 0.0022, sd)) * 0.55 * trailFade(P, tail, head) + (1.0 - smoothstep(0.0, 0.0042, length(P - head))) * 1.1) * saturate(life * 1.5) * pbr;
+warp_190=`        }
+warp_191=`    }
+warp_192=`    n = (time - q27) * 60.0;
+warp_193=`    if (q27 > 0.001 && n > 0.0 && n < 100.0)
+warp_194=`    {
+warp_195=`        pw = 7.0 + floor(q26) * 0.3;
+warp_196=`        org = float2(q25 * texsize.x / texsize.y, frac(q26));
+warp_197=`        sh = floor(q28);
+warp_198=`        hu = frac(q28);
+warp_199=`        fn = pow(0.96, n);
+warp_200=`        n2 = max(n - 10.0, 0.0);
+warp_201=`        fn2 = pow(0.96, n2);
+warp_202=`        hS = 2.5 * (1.0 - fn) * pw * SC;
+warp_203=`        tS = 2.5 * (1.0 - fn2) * pw * SC;
+warp_204=`        hG = 0.0625 * ((1.0 - fn) / 0.04 - n) * SC;
+warp_205=`        tG = 0.0625 * ((1.0 - fn2) / 0.04 - n2) * SC;
+warp_206=`        life = 1.0 - n * 0.01;
+warp_207=`        pbr = 1.3 + floor(q26) * 0.12;
+warp_208=`        rel = P - org - float2(0.0, hG);
+warp_209=`        bin0 = floor(atan2(rel.y, rel.x) / 6.2831853 * 240.0 + 120.0);
+warp_210=`        for (float ray = 0; ray < 6.0 + floor(saturate(progress) * 0.25); ray += 1.0) {
+warp_211=`        bn = bin0 + floor(ray * 0.5) - 1.0;
+warp_212=`        h1 = (frac(ray * 0.5) < 0.25 ? hsh(bn * 1.37 + 68.13) : hsh(bn * 1.37 + 73.13));
+warp_213=`        h2 = (frac(ray * 0.5) < 0.25 ? hsh(bn * 2.71 + 124.59) : hsh(bn * 2.71 + 131.59));
+warp_214=`        an = (bn + h1) / 240.0 * 6.2831853 - 3.1415927;
+warp_215=`        mg = shapeMag(sh, an, h2);
+warp_216=`        dir = float2(cos(an), sin(an)) * mg;
+warp_217=`        head = org + dir * hS + float2(0.0, hG);
+warp_218=`        tail = org + dir * tS + float2(0.0, tG);
+warp_219=`        sd = segDist(P, tail, head);
+warp_220=`        cl = hcol(hu + (h1 - 0.5) * 0.1);
+warp_221=`        acc += cl * ((1.0 - smoothstep(0.0, 0.0022, sd)) * 0.55 * trailFade(P, tail, head) + (1.0 - smoothstep(0.0, 0.0042, length(P - head))) * 1.1) * saturate(life * 1.5) * pbr;
+warp_222=`        }
+warp_223=`    }
+warp_224=`    float tw = 1.0 + q2 * (tex2D(sampler_noise_lq, uv * 3.0 + time * 7.0).x - 0.5) * 1.6;
+warp_225=`    float3 prev = tex2D(sampler_main, uv).xyz;
+warp_226=`    ret = acc * tw + prev * 0.0;
+warp_227=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float3 c = tex2D(sampler_main, uv).xyz;
+comp_4=`    float3 glow = GetBlur1(uv) * 2.2 + GetBlur2(uv) * 1.6;
+comp_5=`    float3 sky = lerp(float3(0.012, 0.016, 0.05), float3(0.03, 0.035, 0.09), uv.y);
+comp_6=`    float2 sc = floor(uv * texsize.xy / 3.0);
+comp_7=`    float star = step(0.9985, frac(sin(dot(sc, float2(12.9898, 78.233))) * 43758.5453)) * 0.3 * (0.6 + 0.4 * sin(time * 2.0 + sc.x));
+comp_8=`    ret = sky + star + c + glow;
+comp_9=`}

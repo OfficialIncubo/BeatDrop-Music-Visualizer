@@ -1,0 +1,160 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=3
+PSVERSION_COMP=4
+[preset00]
+FFTAttack=0.500
+FFTDecay=0.500
+fRating=3.000
+fGammaAdj=2.000
+fDecay=0.980
+fVideoEchoZoom=2.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=1
+nWaveMode=2
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=2.917
+fWaveScale=2.815
+fWaveSmoothing=0.900
+fWaveParam=-0.400
+fModWaveAlphaStart=0.000
+fModWaveAlphaEnd=0.800
+fWarpAnimSpeed=0.550
+fWarpScale=3.545
+fZoomExponent=16.70885
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.500
+wave_g=0.500
+wave_b=0.500
+wave_x=0.500
+wave_y=0.500
+ob_size=0.010
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+per_frame_1=wave_a = 0;
+per_frame_2=
+per_frame_3=q5 = aspecty;
+per_frame_4=
+per_frame_5=q1 = treb_att*.0085;
+per_frame_6=q2 = mid_att*.0085;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`
+warp_4=`    float lines1 = get_fft(.5+.5*sin(uv.y*10-time*1.5434));
+warp_5=`    float bars1 = get_fft(.5+.5*sin(uv.x*10-time*2));
+warp_6=`    float lines2 = get_fft(.5+.5*sin(uv.y*12+time*.9987));
+warp_7=`    float bars2 = get_fft(.5+.5*sin(uv.x*12-time*.67788));
+warp_8=`    float lines3 = get_fft(.5+.5*sin(uv.y*5+time));
+warp_9=`    float bars3 = get_fft(.5+.5*sin(uv.x*5+time*1.334));
+warp_10=`
+warp_11=`    // sample previous frame
+warp_12=`    ret = tex2D( sampler_main, uv ).xyz;
+warp_13=`    
+warp_14=`    ret.x += min(bars1,lines1)*.7;
+warp_15=`    ret.y += min(bars2,lines2)*.7;
+warp_16=`    ret.z += min(bars3,lines3)*.7;
+warp_17=`
+warp_18=`    // darken (decay) over time
+warp_19=`
+warp_20=`    if(ret.x + ret.y + ret.z >= 1){
+warp_21=`      ret -= .05;
+warp_22=`    }
+warp_23=`
+warp_24=`    ret *= 0.92; 
+warp_25=`    ret -= 0.002;
+warp_26=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    float2 p;
+comp_4=`
+comp_5=`    p.x = uv.x * 3.0 - (1.5);
+comp_6=`    p.y = uv.y * 3.0 - (1.5);
+comp_7=`
+comp_8=`    p.x *= aspect.w;
+comp_9=`    float dist = length(p);
+comp_10=`    float angle = atan2(p.y, p.x);
+comp_11=`
+comp_12=`    float2 t_uv;
+comp_13=`    t_uv.x = angle/M_PI+time*.1;
+comp_14=`    t_uv.y = (0.2 / dist) + (time * 0.5 + (abs(min(dist,.5)-1)));
+comp_15=`
+comp_16=`    float2 t_uvw1;
+comp_17=`    t_uvw1.x = angle/M_PI+time*.25+dist*.08;
+comp_18=`    t_uvw1.y = (0.2 / dist) + (time * 0.5 + (abs(min(dist,.5)-1)));
+comp_19=`
+comp_20=`    float2 t_uvw2;
+comp_21=`    t_uvw2.x = angle/M_PI-time*.25-dist*.08;
+comp_22=`    t_uvw2.y = (0.2 / dist) + (time * 0.5 + (abs(min(dist,.5)-1)));
+comp_23=`
+comp_24=`    float2 dsx = ddx(t_uv);
+comp_25=`    float2 dsy = ddy(t_uv);
+comp_26=`
+comp_27=`    if (length(dsx) > 0.5) dsx = float2(0.0, 0.0);
+comp_28=`    if (length(dsy) > 0.5) dsy = float2(0.0, 0.0);
+comp_29=`
+comp_30=`    float3 col = tex2Dgrad(sampler_main, t_uv, dsx, dsy).rgb;
+comp_31=`
+comp_32=`    float3 col1 = tex2Dgrad(sampler_main, t_uvw1, dsx, dsy).rgb;
+comp_33=`    float3 col2 = tex2Dgrad(sampler_main, t_uvw2, dsx, dsy).rgb;
+comp_34=`
+comp_35=`    float lines = get_fft(.5+.5*sin(t_uv.y*50));
+comp_36=`    float bars = get_fft(.5+.5*sin(t_uv.x*50));
+comp_37=`
+comp_38=`    ret = col;
+comp_39=`    ret *= 2.00; //gamma
+comp_40=`
+comp_41=`    ret -= min(col2*4,1);
+comp_42=`    ret -= min(col1*4,1);
+comp_43=`
+comp_44=`    ret *= ret-(bass_att*.05);
+comp_45=`    ret *= abs(ret-3)*rad;
+comp_46=`    ret -= max(pow(lines,3),pow(bars,3))*.5;
+comp_47=`    
+comp_48=`    ret = ret - abs(min(pow(dist,3),1)-1)*.15;
+comp_49=`    float3 ret2 = lum(ret*.2);
+comp_50=`    ret = lerp(ret,ret2,bass_att*.25);
+comp_51=`
+comp_52=`}
