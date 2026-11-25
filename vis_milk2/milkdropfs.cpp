@@ -46,6 +46,8 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <assert.h>
 #include <cstdint>
 #include <math.h>
+#include <new>
+#include <utility>
 
 #define D3DCOLOR_RGBA_01(r,g,b,a) D3DCOLOR_RGBA(((int)(r*255)),((int)(g*255)),((int)(b*255)),((int)(a*255)))
 #define FRAND ((rand() % 7381)/7380.0f)
@@ -985,6 +987,7 @@ void CPlugin::RenderFrame(int bRedraw)
 		    if (m_pState->m_fBlendProgress > 1.0f)
 		    {
 			    m_pState->m_bBlending = false;
+                m_oldShapeTextureCaptures = {};
                 m_OldShaders.comp.Clear();
                 m_OldShaders.warp.Clear();
 		    }
@@ -2692,25 +2695,135 @@ void CPlugin::WarpedBlit_Shaders(int nPass, bool bAlphaBlend, bool bFlipAlpha, b
     RestoreShaderParams();
 }
 
+static bool CopyShapeFeedback(IDirect3DDevice9* device, IDirect3DTexture9* feedback,
+                              IDirect3DSurface9* destination, const D3DSURFACE_DESC& desc)
+{
+    BeatDropText::ComPtr<IDirect3DSurface9> original;
+    BeatDropText::ComPtr<IDirect3DStateBlock9> state;
+    BeatDropText::ComPtr<IDirect3DPixelShader9> shader;
+    if (FAILED(device->GetRenderTarget(0, &original.p)) ||
+        FAILED(device->CreateStateBlock(D3DSBT_ALL, &state.p)) ||
+        FAILED(state.p->Capture()))
+        return false;
+
+    // Fixed-function sampling clamps floating-point color. Use a precompiled
+    // tex2D(s0, uv) shader for floating-point feedback.
+    if (desc.Format == D3DFMT_A16B16G16R16F || desc.Format == D3DFMT_A32B32G32R32F)
+    {
+        static constexpr DWORD copyCode[] = {
+            0xffff0300, // ps_3_0
+            0x0200001f, 0x80000005, 0x90030000, // dcl_texcoord v0.xy
+            0x0200001f, 0x90000000, 0xa00f0800, // dcl_2d s0
+            0x03000042, 0x800f0800, 0x90e40000, 0xa0e40800, // texld oC0, v0, s0
+            0x0000ffff,
+        };
+        if (FAILED(device->CreatePixelShader(copyCode, &shader.p)))
+            return false;
+    }
+
+    if (FAILED(device->SetRenderTarget(0, destination)))
+        return false;
+
+    // The shape pass already has an open scene. Copy with a draw and restore
+    // the original render target and state before drawing any more shapes.
+    const float right = static_cast<float>(desc.Width) - 0.5f;
+    const float bottom = static_cast<float>(desc.Height) - 0.5f;
+    struct Vertex { float x, y, z, rhw, u, v; };
+    const Vertex quad[] = {
+        {-0.5f, -0.5f, 0, 1, 0, 0}, {right, -0.5f, 0, 1, 1, 0},
+        {-0.5f, bottom, 0, 1, 0, 1}, {right, bottom, 0, 1, 1, 1},
+    };
+    const D3DVIEWPORT9 viewport = {0, 0, desc.Width, desc.Height, 0, 1};
+    device->SetViewport(&viewport);
+    device->SetVertexShader(nullptr);
+    device->SetPixelShader(shader.p);
+    device->SetFVF(D3DFVF_XYZRHW | D3DFVF_TEX1);
+    device->SetTexture(0, feedback);
+    device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+    device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+    device->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_SELECTARG1);
+    device->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+    device->SetTextureStageState(0, D3DTSS_RESULTARG, D3DTA_CURRENT);
+    device->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0);
+    device->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
+    device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+    device->SetSamplerState(0, D3DSAMP_SRGBTEXTURE, FALSE);
+    device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+    device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+    device->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_NONE);
+    device->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
+    device->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+    device->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+    device->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+    device->SetRenderState(D3DRS_ZENABLE, FALSE);
+    device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+    device->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+    device->SetRenderState(D3DRS_FOGENABLE, FALSE);
+    device->SetRenderState(D3DRS_STENCILENABLE, FALSE);
+    device->SetRenderState(D3DRS_SCISSORTESTENABLE, FALSE);
+    device->SetRenderState(D3DRS_SRGBWRITEENABLE, FALSE);
+    device->SetRenderState(D3DRS_COLORWRITEENABLE, D3DCOLORWRITEENABLE_RED |
+        D3DCOLORWRITEENABLE_GREEN | D3DCOLORWRITEENABLE_BLUE | D3DCOLORWRITEENABLE_ALPHA);
+
+    const HRESULT draw = device->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, 2, quad, sizeof(Vertex));
+    device->SetTexture(0, nullptr);
+    const HRESULT restoreTarget = device->SetRenderTarget(0, original.p);
+    const HRESULT restoreState = state.p->Apply();
+    return SUCCEEDED(draw) && SUCCEEDED(restoreTarget) && SUCCEEDED(restoreState);
+}
+
 void CPlugin::DrawCustomShapes()
 {
     LPDIRECT3DDEVICE9 lpDevice = GetDevice();
     if (!lpDevice)
         return;
 
-    //lpDevice->SetTexture(0, m_lpVS[0]);//NULL);
-    //lpDevice->SetVertexShader( SPRITEVERTEX_FORMAT );
+    const bool refreshHeldTextures = m_shapeTextureMidpointPending &&
+        GetTime() - m_pState->m_fBlendStartTime >= m_pState->m_fBlendDuration * 0.5f;
+    bool captureAttempted = false;
+    std::shared_ptr<IDirect3DTexture9> frameCapture;
+    auto captureFeedback = [&]() {
+        if (captureAttempted)
+            return;
+        captureAttempted = true;
+
+        D3DSURFACE_DESC desc = {};
+        BeatDropText::ComPtr<IDirect3DTexture9> snapshot;
+        BeatDropText::ComPtr<IDirect3DSurface9> destination;
+        if (FAILED(m_lpVS[0]->GetLevelDesc(0, &desc)) ||
+            FAILED(lpDevice->CreateTexture(desc.Width, desc.Height, 1, D3DUSAGE_RENDERTARGET,
+                desc.Format, D3DPOOL_DEFAULT, &snapshot.p, nullptr)) ||
+            FAILED(snapshot.p->GetSurfaceLevel(0, &destination.p)))
+            return;
+
+        if (!CopyShapeFeedback(lpDevice, m_lpVS[0], destination.p, desc))
+            return;
+
+        try
+        {
+            frameCapture.reset(std::exchange(snapshot.p, nullptr), [](IDirect3DTexture9* texture) {
+                texture->Release();
+            });
+        }
+        catch (const std::bad_alloc&)
+        {
+            // The shared pointer releases the snapshot if ownership allocation fails.
+        }
+    };
 
 	int num_reps = (m_pState->m_bBlending) ? 2 : 1;
 	for (int rep=0; rep<num_reps; rep++)
 	{
         CState *pState = (rep==0) ? m_pState : m_pOldState;
+        auto& captures = (rep == 0) ? m_shapeTextureCaptures : m_oldShapeTextureCaptures;
         float alpha_mult = 1;
         if (num_reps==2)
             alpha_mult = (rep==0) ? m_pState->m_fBlendProgress : (1-m_pState->m_fBlendProgress);
 
         for (int i=0; i<MAX_CUSTOM_SHAPES; i++)
         {
+            auto& heldTexture = captures[i];
+            bool holdTexture = false;
             if (pState->m_shape[i].enabled)
             {
                 /*
@@ -2810,10 +2923,24 @@ void CPlugin::DrawCustomShapes()
                     }
                     v[sides+1] = v[1];
 
-                    if ((int)(*pState->m_shape[i].var_pf_textured) != 0)
+                    const bool textured = (int)*pState->m_shape[i].var_pf_textured != 0;
+                    const bool capture = *pState->m_shape[i].var_pf_tex_capture != 0.0;
+                    if (!capture)
                     {
-                        // draw textured version
-                        lpDevice->SetTexture(0, m_lpVS[0]);
+                        holdTexture = true;
+                        if ((textured && !heldTexture) || (refreshHeldTextures && heldTexture))
+                        {
+                            captureFeedback();
+                            if (frameCapture)
+                                heldTexture = frameCapture;
+                        }
+                    }
+
+                    if (textured)
+                    {
+                        // Live instances use the current feedback. Frozen instances of a shape
+                        // share that shape's held image, even when other instances are live.
+                        lpDevice->SetTexture(0, !capture && heldTexture ? heldTexture.get() : m_lpVS[0]);
                         lpDevice->SetVertexShader( NULL );
                         lpDevice->SetFVF( SPRITEVERTEX_FORMAT );
                         lpDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, sides, (void*)v, sizeof(SPRITEVERTEX));
@@ -2875,8 +3002,13 @@ void CPlugin::DrawCustomShapes()
                     lpDevice->SetFVF( SPRITEVERTEX_FORMAT );
                 }
             }
+            if (!holdTexture)
+                heldTexture.reset();
         }
     }
+
+    if (refreshHeldTextures && (!captureAttempted || frameCapture))
+        m_shapeTextureMidpointPending = false;
 
 	lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 	lpDevice->SetRenderState(D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA);
@@ -2905,6 +3037,7 @@ void CPlugin::LoadCustomShapePerFrameEvallibVars(CState* pState, int i, int inst
 	*pState->m_shape[i].var_pf_ang      = pState->m_shape[i].ang;
 	*pState->m_shape[i].var_pf_tex_zoom = pState->m_shape[i].tex_zoom;
 	*pState->m_shape[i].var_pf_tex_ang  = pState->m_shape[i].tex_ang;
+	*pState->m_shape[i].var_pf_tex_capture = pState->m_shape[i].tex_capture;
 	*pState->m_shape[i].var_pf_tex_cx   = pState->m_shape[i].tex_cx;
 	*pState->m_shape[i].var_pf_tex_cy   = pState->m_shape[i].tex_cy;
 	*pState->m_shape[i].var_pf_sides    = pState->m_shape[i].sides;

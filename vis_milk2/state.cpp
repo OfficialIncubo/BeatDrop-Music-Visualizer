@@ -1040,6 +1040,7 @@ void CState::RegisterBuiltInVariables(int flags)
 	        m_shape[i].var_pf_ang        = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "ang");         // i/o
 	        m_shape[i].var_pf_tex_ang    = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "tex_ang");         // i/o
 	        m_shape[i].var_pf_tex_zoom   = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "tex_zoom");         // i/o
+	        m_shape[i].var_pf_tex_capture = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "tex_capture");      // i/o
 	        m_shape[i].var_pf_tex_cx     = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "tex_cx");           // i/o
 	        m_shape[i].var_pf_tex_cy     = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "tex_cy");           // i/o
 	        m_shape[i].var_pf_sides      = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "sides");         // i/o
@@ -1172,6 +1173,7 @@ void CState::Default(DWORD ApplyFlags)
             m_shape[i].instances = 1;
             m_shape[i].tex_zoom = 1.0f;
             m_shape[i].tex_ang  = 0.0f;
+            m_shape[i].tex_capture = 1;
             m_shape[i].tex_cx   = 0.5f;
             m_shape[i].tex_cy   = 0.5f;
             m_shape[i].x = 0.5f;
@@ -1620,6 +1622,7 @@ int  CShape::Export(FILE* fOut, const wchar_t *szFile, int i)
 	fprintf(f2, "shapecode_%d_%s=%.5f\n", i, "ang",        ang);
 	fprintf(f2, "shapecode_%d_%s=%.5f\n", i, "tex_ang",    tex_ang);
 	fprintf(f2, "shapecode_%d_%s=%.5f\n", i, "tex_zoom",   tex_zoom);
+	fprintf(f2, "shapecode_%d_tex_capture=%d\n", i, tex_capture);
 	fprintf(f2, "shapecode_%d_tex_cx=%.6f\n", i, tex_cx);
 	fprintf(f2, "shapecode_%d_tex_cy=%.6f\n", i, tex_cy);
 	fprintf(f2, "shapecode_%d_%s=%.3f\n", i, "r",          r);
@@ -1720,6 +1723,7 @@ int  CShape::Import(FILE* f, const wchar_t* szFile, int i)
 	sprintf(buf, "shapecode_%d_%s", i, "ang"         ); ang          = GetFastFloat(buf, ang         , f2);
 	sprintf(buf, "shapecode_%d_%s", i, "tex_ang"     ); tex_ang      = GetFastFloat(buf, tex_ang     , f2);
 	sprintf(buf, "shapecode_%d_%s", i, "tex_zoom"    ); tex_zoom     = GetFastFloat(buf, tex_zoom    , f2);
+	sprintf(buf, "shapecode_%d_tex_capture", i); tex_capture = GetFastInt(buf, 1, f2) != 0;
 	sprintf(buf, "shapecode_%d_tex_cx", i); tex_cx = GetFastFloat(buf, 0.5f, f2);
 	sprintf(buf, "shapecode_%d_tex_cy", i); tex_cy = GetFastFloat(buf, 0.5f, f2);
 	sprintf(buf, "shapecode_%d_%s", i, "r"           ); r            = GetFastFloat(buf, r           , f2);

@@ -4540,6 +4540,9 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
     // 2. release stuff
     SafeRelease(m_lpFFTTexture);
     SafeRelease(m_lpWaveTexture);
+    m_shapeTextureCaptures = {};
+    m_oldShapeTextureCaptures = {};
+    m_shapeTextureMidpointPending = false;
     SafeRelease(m_lpVS[0]);
     SafeRelease(m_lpVS[1]);
     SafeRelease(m_lpDDSTitle);
@@ -5759,6 +5762,10 @@ void CPlugin::MyRenderUI(
                         std::wstring szFile = std::wstring(m_szPresetDir) + m_presets[m_nMashPreset[mash]].szFilename;
 
                         m_pState->Import(szFile.c_str(), GetTime(), m_pState, ApplyFlags);
+                        if (ApplyFlags & STATE_WAVE)
+                            m_shapeTextureCaptures = {};
+                        m_oldShapeTextureCaptures = {};
+                        m_shapeTextureMidpointPending = false;
 
                         if (ApplyFlags & STATE_WARP)
                             SafeRelease( m_shaders.warp.ptr );
@@ -7150,7 +7157,11 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                         {
                         case UI_IMPORT_WAVE : ret = m_pState->m_wave[i].Import(NULL, m_waitstring.szText, 0); break;
                         case UI_EXPORT_WAVE : ret = m_pState->m_wave[i].Export(NULL, m_waitstring.szText, 0); break;
-                        case UI_IMPORT_SHAPE: ret = m_pState->m_shape[i].Import(NULL, m_waitstring.szText, 0); break;
+                        case UI_IMPORT_SHAPE:
+                            ret = m_pState->m_shape[i].Import(NULL, m_waitstring.szText, 0);
+                            if (ret)
+                                m_shapeTextureCaptures[i].reset();
+                            break;
                         case UI_EXPORT_SHAPE: ret = m_pState->m_shape[i].Export(NULL, m_waitstring.szText, 0); break;
                         }
 
@@ -8722,6 +8733,7 @@ void CPlugin::BuildMenus()
 	    m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_RADIUS),				&m_pState->m_shape[i].rad,		MENUITEMTYPE_LOGFLOAT, MEN_TT(IDS_MENU_RADIUS_TT));
 	    m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_ANGLE),				&m_pState->m_shape[i].ang,		MENUITEMTYPE_FLOAT,	MEN_TT(IDS_MENU_ANGLE_TT), 0, 3.1415927f*2.0f);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURED),			&m_pState->m_shape[i].textured,	MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_TEXTURED_TT)); // bool
+        m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_CAPTURE), &m_pState->m_shape[i].tex_capture, MENUITEMTYPE_BOOL, MEN_TT(IDS_MENU_TEXTURE_CAPTURE_TT));
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_CENTER_X), &m_pState->m_shape[i].tex_cx, MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_TEXTURE_CENTER_X_TT), 0, 1);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_CENTER_Y), &m_pState->m_shape[i].tex_cy, MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_TEXTURE_CENTER_Y_TT), 0, 1);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_ZOOM),		&m_pState->m_shape[i].tex_zoom,	MENUITEMTYPE_LOGFLOAT, MEN_TT(IDS_MENU_TEXTURE_ZOOM_TT)); // bool
@@ -10225,6 +10237,13 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
 
 void CPlugin::OnFinishedLoadingPreset()
 {
+    m_shapeTextureMidpointPending = m_pState->m_bBlending && m_pState->m_fBlendDuration > 0.0f;
+    if (m_shapeTextureMidpointPending)
+        m_oldShapeTextureCaptures.swap(m_shapeTextureCaptures);
+    else
+        m_oldShapeTextureCaptures = {};
+    m_shapeTextureCaptures = {};
+
     // note: only used this if you loaded the preset *intact* (or mostly intact)
 
     SetMenusForPresetVersion( m_pState->m_nWarpPSVersion, m_pState->m_nCompPSVersion );

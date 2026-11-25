@@ -47,7 +47,9 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "lyrics_renderer.h"
 #include "webcam.h"
 #include "hdr.h"
+#include <array>
 #include <vector>
+#include <memory>
 #include <random>
 #include <mutex>
 #include "../ns-eel2-shim/ns-eel.h" //Use projectM-eval library. Thanks, Kai Blaschke (CodAv)!
@@ -672,6 +674,10 @@ public:
 
         // DIRECTX 9:
         IDirect3DTexture9 *m_lpVS[2];
+        // Each slot remembers its own held frame, but slots can share a snapshot.
+        std::array<std::shared_ptr<IDirect3DTexture9>, MAX_CUSTOM_SHAPES> m_shapeTextureCaptures;
+        std::array<std::shared_ptr<IDirect3DTexture9>, MAX_CUSTOM_SHAPES> m_oldShapeTextureCaptures;
+        bool m_shapeTextureMidpointPending = false;
         IDirect3DTexture9* m_lpFFTTexture = nullptr;  // FFT Samplesx2 R32F FFT spectrum texture (row 0: smoothed, row 1: peak hold)
         IDirect3DTexture9* m_lpWaveTexture = nullptr; // Waveform Samplesx2 R32F Waveform texture (row 0: left, row 1: right)
         float m_fFFTSmoothed[MY_FFT_SHADER_SAMPLES] = {};    // smoothed mono FFT buffer
