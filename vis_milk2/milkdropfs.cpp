@@ -2779,8 +2779,8 @@ void CPlugin::DrawCustomShapes()
                     v[0].x = (float)(*pState->m_shape[i].var_pf_x* 2-1);// * ASPECT;
                     v[0].y = (float)(*pState->m_shape[i].var_pf_y*-2+1);
                     v[0].z = 0;
-                    v[0].tu = 0.5f;
-                    v[0].tv = 0.5f;
+                    v[0].tu = (float)*pState->m_shape[i].var_pf_tex_cx;
+                    v[0].tv = (float)*pState->m_shape[i].var_pf_tex_cy;
                     v[0].Diffuse =
                         ((((int)(*pState->m_shape[i].var_pf_a * 255 * alpha_mult)) & 0xFF) << 24) |
                         ((((int)(*pState->m_shape[i].var_pf_r * 255)) & 0xFF) << 16) |
@@ -2802,10 +2802,10 @@ void CPlugin::DrawCustomShapes()
                         v[j].y = v[0].y + (float)*pState->m_shape[i].var_pf_rad*sinf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_ang + 3.1415927f*0.25f);  // DON'T TOUCH!
                         v[j].z = 0;
 						if (m_bScreenDependentRenderMode)
-						v[j].tu = 0.5f + 0.5f*cosf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_tex_ang + 3.1415927f*0.25f)/((float)*pState->m_shape[i].var_pf_tex_zoom);
+						v[j].tu = v[0].tu + 0.5f*cosf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_tex_ang + 3.1415927f*0.25f)/((float)*pState->m_shape[i].var_pf_tex_zoom);
 						else
-                        v[j].tu = 0.5f + 0.5f*cosf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_tex_ang + 3.1415927f*0.25f)/((float)*pState->m_shape[i].var_pf_tex_zoom)*m_fAspectY;  // DON'T TOUCH!
-                        v[j].tv = 0.5f + 0.5f*sinf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_tex_ang + 3.1415927f*0.25f)/((float)*pState->m_shape[i].var_pf_tex_zoom);  // DON'T TOUCH!
+                        v[j].tu = v[0].tu + 0.5f*cosf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_tex_ang + 3.1415927f*0.25f)/((float)*pState->m_shape[i].var_pf_tex_zoom)*m_fAspectY;  // DON'T TOUCH!
+                        v[j].tv = v[0].tv + 0.5f*sinf(t*3.1415927f*2 + (float)*pState->m_shape[i].var_pf_tex_ang + 3.1415927f*0.25f)/((float)*pState->m_shape[i].var_pf_tex_zoom);  // DON'T TOUCH!
                         v[j].Diffuse = v[1].Diffuse;
                     }
                     v[sides+1] = v[1];
@@ -2905,6 +2905,8 @@ void CPlugin::LoadCustomShapePerFrameEvallibVars(CState* pState, int i, int inst
 	*pState->m_shape[i].var_pf_ang      = pState->m_shape[i].ang;
 	*pState->m_shape[i].var_pf_tex_zoom = pState->m_shape[i].tex_zoom;
 	*pState->m_shape[i].var_pf_tex_ang  = pState->m_shape[i].tex_ang;
+	*pState->m_shape[i].var_pf_tex_cx   = pState->m_shape[i].tex_cx;
+	*pState->m_shape[i].var_pf_tex_cy   = pState->m_shape[i].tex_cy;
 	*pState->m_shape[i].var_pf_sides    = pState->m_shape[i].sides;
     *pState->m_shape[i].var_pf_additive = pState->m_shape[i].additive;
     *pState->m_shape[i].var_pf_textured = pState->m_shape[i].textured;

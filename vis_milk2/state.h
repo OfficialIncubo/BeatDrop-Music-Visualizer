@@ -112,6 +112,7 @@ public:
     float r2,g2,b2,a2;
     float border_r,border_g,border_b,border_a;
     float tex_ang, tex_zoom;
+    float tex_cx, tex_cy;
 
     char  m_szInit[MAX_BIGSTRING_LEN]; // note: only executed once -> don't need to save codehandle
     char  m_szPerFrame[MAX_BIGSTRING_LEN];
@@ -136,6 +137,7 @@ public:
     double *var_pf_x, *var_pf_y, *var_pf_rad, *var_pf_ang;
     double *var_pf_sides, *var_pf_textured, *var_pf_additive, *var_pf_thick, *var_pf_instances, *var_pf_instance;
     double *var_pf_tex_zoom, *var_pf_tex_ang;
+    double *var_pf_tex_cx, *var_pf_tex_cy;
 
 	// for per-point expression evaluation:
     /*

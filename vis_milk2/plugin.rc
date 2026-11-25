@@ -684,11 +684,11 @@ BEGIN
     IDS_MENU_NUMBER_OF_INSTANCES_TT 
                             "the number of times (num_inst) to draw this shape.  Each instance will have a different value for 'instance' in the per-frame eqs (0,1,2...)"
     IDS_MENU_EDIT_INIT_CODE_SHAPE_TT 
-                            "IN: time, frame, fps, progress; q1-q64 (from preset init); x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured\nOUT: t1-t8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured"
+                            "IN: time, frame, fps, progress; q1-q64 (from preset init); x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured; tex_cx, tex_cy\nOUT: t1-t8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured"
     IDS_MENU_EDIT_PER_FRAME_INSTANCE_CODE 
                             "[ edit per-frame(/per-instance) code ]"
     IDS_MENU_EDIT_PER_FRAME_INSTANCE_CODE_TT 
-                            "IN: instance, num_inst, time, frame, fps, progress; q1-q64 (from preset init); x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured\nOUT: t1-t8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured"
+                            "IN: instance, num_inst, time, frame, fps, progress; q1-q64 (from preset init); x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured; tex_cx, tex_cy\nOUT: t1-t8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured; tex_cx, tex_cy"
 END
 
 STRINGTABLE
@@ -741,6 +741,10 @@ BEGIN
     IDS_MENU_ANGLE_TT       "default rotation angle of the shape (0...3.14*2)"
     IDS_MENU_TEXTURED       "textured"
     IDS_MENU_TEXTURED_TT    "if ON, the shape will be textured with the image from the previous frame"
+    IDS_MENU_TEXTURE_CENTER_X "texture center X"
+    IDS_MENU_TEXTURE_CENTER_X_TT "default X value of the texture center"
+    IDS_MENU_TEXTURE_CENTER_Y "texture center Y"
+    IDS_MENU_TEXTURE_CENTER_Y_TT "default Y value of the texture center"
     IDS_MENU_TEXTURE_ZOOM   "texture zoom"
 END
 
