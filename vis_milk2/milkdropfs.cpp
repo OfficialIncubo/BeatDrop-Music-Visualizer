@@ -48,6 +48,59 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <math.h>
 #include <new>
 #include <utility>
+namespace
+{
+    class ScopedTextureAddress
+    {
+    public:
+        ScopedTextureAddress(IDirect3DDevice9* device, double x, double y)
+        {
+            if ((x == -1.0 && y == -1.0) || FAILED(device->BeginStateBlock()))
+                return;
+
+            // Record just the overridden axes. BeatDrop also uses pure devices,
+            // which do not expose the current sampler state through a getter.
+            SetAxes(device, x, y);
+            if (FAILED(device->EndStateBlock(&m_previous)) || !m_previous)
+                return;
+            if (FAILED(m_previous->Capture()))
+            {
+                m_previous->Release();
+                m_previous = nullptr;
+                return;
+            }
+            SetAxes(device, x, y);
+        }
+
+        ~ScopedTextureAddress()
+        {
+            if (m_previous)
+            {
+                m_previous->Apply();
+                m_previous->Release();
+            }
+        }
+
+        ScopedTextureAddress(const ScopedTextureAddress&) = delete;
+        ScopedTextureAddress& operator=(const ScopedTextureAddress&) = delete;
+
+    private:
+        static DWORD Address(double mode)
+        {
+            if (mode == 1.0) return D3DTADDRESS_WRAP;
+            if (mode == 2.0) return D3DTADDRESS_MIRROR;
+            return D3DTADDRESS_CLAMP;
+        }
+
+        static void SetAxes(IDirect3DDevice9* device, double x, double y)
+        {
+            if (x != -1.0) device->SetSamplerState(0, D3DSAMP_ADDRESSU, Address(x));
+            if (y != -1.0) device->SetSamplerState(0, D3DSAMP_ADDRESSV, Address(y));
+        }
+
+        IDirect3DStateBlock9* m_previous = nullptr;
+    };
+}
 
 #define D3DCOLOR_RGBA_01(r,g,b,a) D3DCOLOR_RGBA(((int)(r*255)),((int)(g*255)),((int)(b*255)),((int)(a*255)))
 #define FRAND ((rand() % 7381)/7380.0f)
@@ -643,6 +696,10 @@ void CPlugin::LoadPerFrameEvallibVars(CState* pState)
     *pState->var_pf_darken_center = (double)pState->m_bDarkenCenter;
     *pState->var_pf_gamma         = (double)pState->m_fGammaAdj.eval(GetTime());
     *pState->var_pf_wrap          = (double)pState->m_bTexWrap;
+    *pState->var_pf_x_echo_wrap = pState->m_nEchoWrapX;
+    *pState->var_pf_y_echo_wrap = pState->m_nEchoWrapY;
+    *pState->var_pf_x_wrap_mode = pState->m_nWrapModeX;
+    *pState->var_pf_y_wrap_mode = pState->m_nWrapModeY;
     *pState->var_pf_invert        = (double)pState->m_bInvert;
     *pState->var_pf_brighten      = (double)pState->m_bBrighten;
     *pState->var_pf_darken        = (double)pState->m_bDarken;
@@ -890,6 +947,13 @@ void CPlugin::RunPerFrameEquations(int code)
         *m_pState->var_pf_darken_center= (mix < m_fSnapPoint) ? *m_pOldState->var_pf_darken_center : *m_pState->var_pf_darken_center;
         *m_pState->var_pf_gamma        = mix*(*m_pState->var_pf_gamma       ) + mix2*(*m_pOldState->var_pf_gamma       );
         *m_pState->var_pf_wrap         = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_wrap          : *m_pState->var_pf_wrap         ;
+        if (mix < m_fSnapPoint)
+        {
+            *m_pState->var_pf_x_echo_wrap = *m_pOldState->var_pf_x_echo_wrap;
+            *m_pState->var_pf_y_echo_wrap = *m_pOldState->var_pf_y_echo_wrap;
+            *m_pState->var_pf_x_wrap_mode = *m_pOldState->var_pf_x_wrap_mode;
+            *m_pState->var_pf_y_wrap_mode = *m_pOldState->var_pf_y_wrap_mode;
+        }
         *m_pState->var_pf_invert       = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_invert        : *m_pState->var_pf_invert       ;
         *m_pState->var_pf_brighten     = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_brighten      : *m_pState->var_pf_brighten     ;
         *m_pState->var_pf_darken       = (mix < m_fSnapPoint) ? *m_pOldState->var_pf_darken        : *m_pState->var_pf_darken       ;
@@ -2404,6 +2468,13 @@ void CPlugin::WarpedBlit_NoShaders(int nPass, bool bAlphaBlend, bool bFlipAlpha,
     lpDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, texaddr);
     lpDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, texaddr);
     lpDevice->SetSamplerState(0, D3DSAMP_ADDRESSW, texaddr);
+    // In beta 6.1, wrap is the master switch for per-axis feedback wrapping.
+    const bool wrapFeedback = *m_pState->var_pf_wrap == 1.0;
+    const double xWrap = *m_pState->var_pf_x_wrap_mode;
+    const double yWrap = *m_pState->var_pf_y_wrap_mode;
+    const ScopedTextureAddress feedbackAddress(lpDevice,
+        wrapFeedback || xWrap == -1.0 ? xWrap : 0.0,
+        wrapFeedback || yWrap == -1.0 ? yWrap : 0.0);
 
     const float decay = (float)*m_pState->var_pf_decay;
     const auto format = GetBackBufFormat();
@@ -2929,6 +3000,8 @@ void CPlugin::DrawCustomShapes(bool background)
                         if (capture.texture || !background)
                         {
                             lpDevice->SetTexture(0, capture.texture ? capture.texture.get() : m_lpVS[0]);
+                            const ScopedTextureAddress shapeAddress(lpDevice, *pState->m_shape[i].var_pf_x_wrap_mode,
+                                *pState->m_shape[i].var_pf_y_wrap_mode);
                             lpDevice->SetVertexShader( NULL );
                             lpDevice->SetFVF( SPRITEVERTEX_FORMAT );
                             lpDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, sides, (void*)v, sizeof(SPRITEVERTEX));
@@ -3111,6 +3184,8 @@ void CPlugin::LoadCustomShapePerFrameEvallibVars(CState* pState, int i, int inst
 	*pState->m_shape[i].var_pf_sides    = pState->m_shape[i].sides;
     *pState->m_shape[i].var_pf_additive = pState->m_shape[i].additive;
     *pState->m_shape[i].var_pf_textured = pState->m_shape[i].textured;
+    *pState->m_shape[i].var_pf_x_wrap_mode = pState->m_shape[i].x_wrap_mode;
+    *pState->m_shape[i].var_pf_y_wrap_mode = pState->m_shape[i].y_wrap_mode;
     *pState->m_shape[i].var_pf_instances = pState->m_shape[i].instances;
     *pState->m_shape[i].var_pf_instance = instance;
     *pState->m_shape[i].var_pf_thick    = pState->m_shape[i].thickOutline;
@@ -5916,6 +5991,9 @@ void CPlugin::ShowToUser_NoShaders()//int bRedraw, int nPassOverride)
 				}
 
 				float mix = (i==1) ? fVideoEchoAlpha : 1.0f - fVideoEchoAlpha;
+                const ScopedTextureAddress echoAddress(lpDevice,
+                    i == 1 ? *m_pState->var_pf_x_echo_wrap : -1.0,
+                    i == 1 ? *m_pState->var_pf_y_echo_wrap : -1.0);
 				for (int k=0; k<4; k++)
 					v3[k].Diffuse = D3DCOLOR_RGBA_01(mix*shade[k][0],mix*shade[k][1],mix*shade[k][2],1);
 

@@ -856,6 +856,10 @@ void CState::RegisterBuiltInVariables(int flags)
         var_pf_darken_center = NSEEL_VM_regvar(m_pf_eel, "darken_center");
         var_pf_gamma         = NSEEL_VM_regvar(m_pf_eel, "gamma");
         var_pf_wrap          = NSEEL_VM_regvar(m_pf_eel, "wrap");
+        var_pf_x_echo_wrap = NSEEL_VM_regvar(m_pf_eel, "x_echo_wrap");
+        var_pf_y_echo_wrap = NSEEL_VM_regvar(m_pf_eel, "y_echo_wrap");
+        var_pf_x_wrap_mode = NSEEL_VM_regvar(m_pf_eel, "x_wrap_mode");
+        var_pf_y_wrap_mode = NSEEL_VM_regvar(m_pf_eel, "y_wrap_mode");
         var_pf_invert        = NSEEL_VM_regvar(m_pf_eel, "invert");
         var_pf_brighten      = NSEEL_VM_regvar(m_pf_eel, "brighten");
         var_pf_darken        = NSEEL_VM_regvar(m_pf_eel, "darken");
@@ -1075,6 +1079,8 @@ void CState::RegisterBuiltInVariables(int flags)
 	        m_shape[i].var_pf_tex_cy     = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "tex_cy");           // i/o
 	        m_shape[i].var_pf_sides      = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "sides");         // i/o
 	        m_shape[i].var_pf_textured   = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "textured");         // i/o
+            m_shape[i].var_pf_x_wrap_mode = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "x_wrap_mode");
+            m_shape[i].var_pf_y_wrap_mode = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "y_wrap_mode");
 	        m_shape[i].var_pf_instance   = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "instance");         // i/o
 	        m_shape[i].var_pf_instances  = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "num_inst");         // i/o
 	        m_shape[i].var_pf_additive   = NSEEL_VM_regvar(m_shape[i].m_pf_eel, "additive");         // i/o
@@ -1128,10 +1134,12 @@ void CState::Default(DWORD ApplyFlags)
 	    m_fVideoEchoZoom		= 2.0f;
 	    m_fVideoEchoAlpha		= 0.0f;
 	    m_nVideoEchoOrientation	= 0;		// 0-3
+        m_nEchoWrapX = m_nEchoWrapY = -1;
 	    m_bRedBlueStereo		= false;
 	    m_bBrighten				= false;
 	    m_bDarken				= false;
 	    m_bTexWrap				= true;
+        m_nWrapModeX = m_nWrapModeY = -1;
 	    m_bDarkenCenter			= false;
 	    m_bSolarize				= false;
 	    m_bInvert				= false;
@@ -1203,6 +1211,7 @@ void CState::Default(DWORD ApplyFlags)
             m_shape[i].sides   = 4;
             m_shape[i].additive = 0;
             m_shape[i].thickOutline = 0;
+            m_shape[i].x_wrap_mode = m_shape[i].y_wrap_mode = -1;
             m_shape[i].bDrawBack = 0;
             m_shape[i].textured = 0;
             m_shape[i].instances = 1;
@@ -1511,6 +1520,8 @@ bool CState::Export(const wchar_t *szIniFile)
 	fprintf(fOut, "%s=%.3f\n", "fVideoEchoAlpha",        m_fVideoEchoAlpha.eval(-1));
 
 	fprintf(fOut, "%s=%d\n", "nVideoEchoOrientation",  m_nVideoEchoOrientation);
+    if (m_nEchoWrapX >= 0) fprintf(fOut, "nEchoWrap_x=%d\n", m_nEchoWrapX);
+    if (m_nEchoWrapY >= 0) fprintf(fOut, "nEchoWrap_y=%d\n", m_nEchoWrapY);
 	fprintf(fOut, "%s=%d\n", "nWaveMode",              m_nWaveMode);
 	fprintf(fOut, "%s=%d\n", "bAdditiveWaves",         m_bAdditiveWaves);
 	fprintf(fOut, "%s=%d\n", "bWaveDots",              m_bWaveDots);
@@ -1518,6 +1529,8 @@ bool CState::Export(const wchar_t *szIniFile)
 	fprintf(fOut, "%s=%d\n", "bModWaveAlphaByVolume",  m_bModWaveAlphaByVolume);
 	fprintf(fOut, "%s=%d\n", "bMaximizeWaveColor",     m_bMaximizeWaveColor);
 	fprintf(fOut, "%s=%d\n", "bTexWrap",               m_bTexWrap			);
+    if (m_nWrapModeX >= 0) fprintf(fOut, "nWrapMode_x=%d\n", m_nWrapModeX);
+    if (m_nWrapModeY >= 0) fprintf(fOut, "nWrapMode_y=%d\n", m_nWrapModeY);
 	fprintf(fOut, "%s=%d\n", "bDarkenCenter",          m_bDarkenCenter		);
 	fprintf(fOut, "%s=%d\n", "bRedBlueStereo",         m_bRedBlueStereo     );
 	fprintf(fOut, "%s=%d\n", "bBrighten",              m_bBrighten			);
@@ -1660,6 +1673,8 @@ int  CShape::Export(FILE* fOut, const wchar_t *szFile, int i)
 	fprintf(f2, "shapecode_%d_%s=%.5f\n", i, "tex_ang",    tex_ang);
 	fprintf(f2, "shapecode_%d_%s=%.5f\n", i, "tex_zoom",   tex_zoom);
 	fprintf(f2, "shapecode_%d_tex_capture=%d\n", i, tex_capture);
+    if (x_wrap_mode >= 0) fprintf(f2, "shapecode_%d_x_wrap_mode=%d\n", i, x_wrap_mode);
+    if (y_wrap_mode >= 0) fprintf(f2, "shapecode_%d_y_wrap_mode=%d\n", i, y_wrap_mode);
 	fprintf(f2, "shapecode_%d_tex_cx=%.6f\n", i, tex_cx);
 	fprintf(f2, "shapecode_%d_tex_cy=%.6f\n", i, tex_cy);
 	fprintf(f2, "shapecode_%d_%s=%.3f\n", i, "r",          r);
@@ -1763,6 +1778,8 @@ int  CShape::Import(FILE* f, const wchar_t* szFile, int i)
 	sprintf(buf, "shapecode_%d_%s", i, "tex_ang"     ); tex_ang      = GetFastFloat(buf, tex_ang     , f2);
 	sprintf(buf, "shapecode_%d_%s", i, "tex_zoom"    ); tex_zoom     = GetFastFloat(buf, tex_zoom    , f2);
 	sprintf(buf, "shapecode_%d_tex_capture", i); tex_capture = GetFastInt(buf, 1, f2) != 0;
+    sprintf(buf, "shapecode_%d_x_wrap_mode", i); x_wrap_mode = GetFastInt(buf, -1, f2);
+    sprintf(buf, "shapecode_%d_y_wrap_mode", i); y_wrap_mode = GetFastInt(buf, -1, f2);
 	sprintf(buf, "shapecode_%d_tex_cx", i); tex_cx = GetFastFloat(buf, 0.5f, f2);
 	sprintf(buf, "shapecode_%d_tex_cy", i); tex_cy = GetFastFloat(buf, 0.5f, f2);
 	sprintf(buf, "shapecode_%d_%s", i, "r"           ); r            = GetFastFloat(buf, r           , f2);
@@ -1886,6 +1903,8 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
 	    m_fVideoEchoZoom        = GetFastFloat("fVideoEchoZoom",m_fVideoEchoZoom.eval(-1),f);
 	    m_fVideoEchoAlpha       = GetFastFloat("fVideoEchoAlpha",m_fVideoEchoAlpha.eval(-1),f);
 	    m_nVideoEchoOrientation = GetFastInt  ("nVideoEchoOrientation",m_nVideoEchoOrientation,f);
+        m_nEchoWrapX = GetFastInt("nEchoWrap_x", -1, f);
+        m_nEchoWrapY = GetFastInt("nEchoWrap_y", -1, f);
         m_bRedBlueStereo        = (GetFastInt ("bRedBlueStereo", m_bRedBlueStereo,f) != 0);
 	    m_bBrighten				= (GetFastInt ("bBrighten",m_bBrighten	,f) != 0);
 	    m_bDarken				= (GetFastInt ("bDarken"  ,m_bDarken	,f) != 0);
@@ -1957,6 +1976,8 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
 	    m_fStretchX				= GetFastFloat("sx",m_fStretchX.eval(-1),f);
 	    m_fStretchY				= GetFastFloat("sy",m_fStretchY.eval(-1),f);
         m_bTexWrap			    = (GetFastInt ("bTexWrap", m_bTexWrap,f) != 0);
+        m_nWrapModeX = GetFastInt("nWrapMode_x", -1, f);
+        m_nWrapModeY = GetFastInt("nWrapMode_y", -1, f);
 	    m_bDarkenCenter			= (GetFastInt ("bDarkenCenter", m_bDarkenCenter,f) != 0);
 	    m_fWarpAnimSpeed        = GetFastFloat("fWarpAnimSpeed",m_fWarpAnimSpeed,f);
 	    m_fWarpScale            = GetFastFloat("fWarpScale",m_fWarpScale.eval(-1),f);

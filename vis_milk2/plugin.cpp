@@ -8875,6 +8875,14 @@ void CPlugin::BuildMenus()
 	m_menuPost.AddItem(MEN_T(IDS_MENU_VIDEO_ECHO_ZOOM),			&m_pState->m_fVideoEchoZoom,	MENUITEMTYPE_LOGBLENDABLE, MEN_TT(IDS_MENU_VIDEO_ECHO_ZOOM_TT));
 	m_menuPost.AddItem(MEN_T(IDS_MENU_VIDEO_ECHO_ORIENTATION),	&m_pState->m_nVideoEchoOrientation, MENUITEMTYPE_INT,	MEN_TT(IDS_MENU_VIDEO_ECHO_ORIENTATION_TT), 0.0f, 3.0f);
 	 m_menuPost.AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP),			&m_pState->m_bTexWrap,              MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_TEXTURE_WRAP_TT));
+    m_menuPost.AddItem(MEN_T(IDS_MENU_ECHO_WRAP_X), &m_pState->m_nEchoWrapX,
+        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_AXIS_WRAP_TT), -1, 2);
+    m_menuPost.AddItem(MEN_T(IDS_MENU_ECHO_WRAP_Y), &m_pState->m_nEchoWrapY,
+        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_AXIS_WRAP_TT), -1, 2);
+    m_menuPost.AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP_X), &m_pState->m_nWrapModeX,
+        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_AXIS_WRAP_TT), -1, 2);
+    m_menuPost.AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP_Y), &m_pState->m_nWrapModeY,
+        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_AXIS_WRAP_TT), -1, 2);
 	//m_menuPost.AddItem("stereo 3D",               &m_pState->m_bRedBlueStereo,        MENUITEMTYPE_BOOL, "displays the image in stereo 3D; you need 3D glasses (with red and blue lenses) for this.");
 	m_menuPost.AddItem(MEN_T(IDS_MENU_FILTER_INVERT),			&m_pState->m_bInvert,			MENUITEMTYPE_BOOL, MEN_TT(IDS_MENU_FILTER_INVERT_TT));
 	m_menuPost.AddItem(MEN_T(IDS_MENU_FILTER_BRIGHTEN),			&m_pState->m_bBrighten,			MENUITEMTYPE_BOOL, MEN_TT(IDS_MENU_FILTER_BRIGHTEN_TT));
@@ -8931,6 +8939,10 @@ void CPlugin::BuildMenus()
 	    m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_RADIUS),				&m_pState->m_shape[i].rad,		MENUITEMTYPE_LOGFLOAT, MEN_TT(IDS_MENU_RADIUS_TT));
 	    m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_ANGLE),				&m_pState->m_shape[i].ang,		MENUITEMTYPE_FLOAT,	MEN_TT(IDS_MENU_ANGLE_TT), 0, 3.1415927f*2.0f);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURED),			&m_pState->m_shape[i].textured,	MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_TEXTURED_TT)); // bool
+        m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP_X), &m_pState->m_shape[i].x_wrap_mode,
+            MENUITEMTYPE_INT, MEN_TT(IDS_MENU_AXIS_WRAP_TT), -1, 2);
+        m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP_Y), &m_pState->m_shape[i].y_wrap_mode,
+            MENUITEMTYPE_INT, MEN_TT(IDS_MENU_AXIS_WRAP_TT), -1, 2);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_CAPTURE), &m_pState->m_shape[i].tex_capture, MENUITEMTYPE_BOOL, MEN_TT(IDS_MENU_TEXTURE_CAPTURE_TT));
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_CENTER_X), &m_pState->m_shape[i].tex_cx, MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_TEXTURE_CENTER_X_TT), 0, 1);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_CENTER_Y), &m_pState->m_shape[i].tex_cy, MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_TEXTURE_CENTER_Y_TT), 0, 1);

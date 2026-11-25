@@ -116,6 +116,7 @@ public:
     float tex_ang, tex_zoom;
     float tex_cx, tex_cy;
     int tex_capture;
+    int x_wrap_mode = -1, y_wrap_mode = -1;
 
     char  m_szInit[MAX_BIGSTRING_LEN]; // note: only executed once -> don't need to save codehandle
     char  m_szPerFrame[MAX_BIGSTRING_LEN];
@@ -140,6 +141,7 @@ public:
 	double *var_pf_border_r, *var_pf_border_g, *var_pf_border_b, *var_pf_border_a;
     double *var_pf_x, *var_pf_y, *var_pf_rad, *var_pf_ang;
     double *var_pf_sides, *var_pf_textured, *var_pf_additive, *var_pf_thick, *var_pf_instances, *var_pf_instance;
+    double *var_pf_x_wrap_mode, *var_pf_y_wrap_mode;
     double *var_pf_tex_zoom, *var_pf_tex_ang;
     double *var_pf_tex_cx, *var_pf_tex_cy, *var_pf_tex_capture;
 
@@ -276,6 +278,7 @@ public:
 	CBlendableFloat 	m_fVideoEchoAlpha;
 	float				m_fVideoEchoAlphaOld;
 	int					m_nVideoEchoOrientation;
+    int m_nEchoWrapX = -1, m_nEchoWrapY = -1;
 	int					m_nVideoEchoOrientationOld;
 
 	// fps-dependant:
@@ -307,6 +310,7 @@ public:
 	CBlendableFloat		m_fShader;			// 0 = no color shader, 1 = full color shader
 	bool				m_bMaximizeWaveColor;
 	bool				m_bTexWrap;
+    int m_nWrapModeX = -1, m_nWrapModeY = -1;
 	bool				m_bDarkenCenter;
 	bool				m_bRedBlueStereo;
 	bool				m_bBrighten;
@@ -429,6 +433,8 @@ public:
     // new in v1.04:
 	double *var_pf_wave_usedots, *var_pf_wave_thick, *var_pf_wave_additive, *var_pf_wave_brighten;
     double *var_pf_darken_center, *var_pf_gamma, *var_pf_wrap;
+    double *var_pf_x_wrap_mode, *var_pf_y_wrap_mode;
+    double *var_pf_x_echo_wrap, *var_pf_y_echo_wrap;
     double *var_pf_invert, *var_pf_brighten, *var_pf_darken, *var_pf_solarize;
     double *var_pf_meshx, *var_pf_meshy;
     double *var_pf_pixelsx, *var_pf_pixelsy;
