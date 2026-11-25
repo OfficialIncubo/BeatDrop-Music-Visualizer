@@ -81,6 +81,7 @@ class MediaTexture;
 HRESULT DetectSampleRate();
 extern int SAMPLE_RATE;
 bool GetCaptureMicFlag();
+NSEEL_CODEHANDLE CompileEelWithSoundFallback(NSEEL_VMCTX vm, char* code);
 
 typedef struct
 {

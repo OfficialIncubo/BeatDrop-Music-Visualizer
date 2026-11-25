@@ -626,6 +626,7 @@ SPOUT :
 #include <assert.h>
 #include <algorithm>
 #include <cmath>
+#include <string_view>
 #include <cctype>
 #include <process.h>  // for beginthread, etc.
 #include <shellapi.h>
@@ -692,6 +693,197 @@ void CPlugin::ToggleAutoLockPresetWhenNoMusic(bool showNotification)
             ? L"Preset auto-lock when silence enabled."
             : L"Preset auto-lock when silence disabled.");
     }
+}
+
+namespace
+{
+    constexpr int legacyWaveSamples = 576;
+    std::mutex soundSpectrumMutex;
+    FFT soundBandFFT;
+    float soundBandWaveform[2][legacyWaveSamples] = {};
+    std::array<double, MY_FFT_SAMPLES + 1> soundSpectrumSums{};
+    bool soundSpectrumDirty = false;
+
+    void SetSoundBandWaveform(const float (&waveform)[2][legacyWaveSamples])
+    {
+        std::lock_guard<std::mutex> lock(soundSpectrumMutex);
+        memcpy(soundBandWaveform, waveform, sizeof(soundBandWaveform));
+        soundSpectrumDirty = true;
+    }
+
+    double SumSoundBand(double firstBound, double secondBound)
+    {
+        if (!std::isfinite(firstBound) || !std::isfinite(secondBound))
+            return 0.0;
+
+        // Beta 5 truncates and sorts its FFT bin indices, then excludes the upper bin.
+        const int first = static_cast<int>((std::clamp)((std::min)(firstBound, secondBound), 0.0,
+            double(MY_FFT_SAMPLES)));
+        const int end = static_cast<int>((std::clamp)((std::max)(firstBound, secondBound), 0.0,
+            double(MY_FFT_SAMPLES)));
+        if (first == end)
+            return 0.0;
+
+        std::lock_guard<std::mutex> lock(soundSpectrumMutex);
+        if (soundSpectrumDirty)
+        {
+            // Use the beta's 576-sample envelope and 512 output bins.
+            // Compute once per frame when a preset actually requests a band.
+            if (soundBandFFT.GetNumFreq() == 0)
+                soundBandFFT.Init(legacyWaveSamples, MY_FFT_SAMPLES, -1);
+
+            float left[MY_FFT_SAMPLES] = {}, right[MY_FFT_SAMPLES] = {};
+            soundBandFFT.time_to_frequency_domain(soundBandWaveform[0], left);
+            soundBandFFT.time_to_frequency_domain(soundBandWaveform[1], right);
+            for (int bin = 0; bin < MY_FFT_SAMPLES; ++bin)
+            {
+                const double leftMagnitude = std::isfinite(left[bin]) ? left[bin] : 0.0;
+                const double rightMagnitude = std::isfinite(right[bin]) ? right[bin] : 0.0;
+                soundSpectrumSums[bin + 1] = soundSpectrumSums[bin] + (leftMagnitude + rightMagnitude) * 0.5;
+            }
+            soundSpectrumDirty = false;
+        }
+        return soundSpectrumSums[end] - soundSpectrumSums[first];
+    }
+
+    // projectM-eval 1.0.x has no public native-function registration API.
+    // Its compiler context starts with the function-list head. The parser copies
+    // the callback into each compiled expression, so our list entry only needs
+    // to live for this compile and never transfers ownership to the evaluator.
+    struct EelNode;
+    using EelCallback = void (*)(EelNode*, EEL_F**);
+
+    struct EelNode
+    {
+        EelCallback callback;
+        EEL_F value;
+        void* data;
+        EelNode** args;
+    };
+
+    struct EelFunction
+    {
+        char* name;
+        EelCallback callback;
+        int argCount;
+        bool isConst;
+        bool changesState;
+    };
+
+    struct EelFunctionEntry
+    {
+        EelFunction* function;
+        EelFunctionEntry* next;
+    };
+
+    void EvalSound(EelNode* node, EEL_F** result)
+    {
+        EEL_F low = 0;
+        EEL_F high = 0;
+        EEL_F* arg = &low;
+        node->args[0]->callback(node->args[0], &arg);
+        low = *arg;
+        arg = &high;
+        node->args[1]->callback(node->args[1], &arg);
+        **result = SumSoundBand(low, *arg);
+    }
+
+    // Keep this token scan in step with the evaluator's identifier and comment rules.
+    constexpr std::string_view eelWordChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_0123456789";
+
+    size_t SkipEelTrivia(std::string_view text, size_t pos)
+    {
+        while ((pos = text.find_first_not_of(" \t\r\n", pos)) != std::string_view::npos)
+        {
+            const auto token = text.substr(pos, 2);
+            if (token == "//")
+            {
+                pos = text.find('\n', pos + 2);
+            }
+            else if (token == "/*")
+            {
+                pos = text.find("*/", pos + 2);
+                if (pos != std::string_view::npos)
+                    pos += 2;
+            }
+            else
+                break;
+        }
+        return pos;
+    }
+}
+
+extern "C" EelFunction* prjm_eval_compiler_get_function(NSEEL_VMCTX vm, const char* name);
+
+NSEEL_CODEHANDLE CompileEelWithSoundFallback(NSEEL_VMCTX vm, char* code)
+{
+    if (!vm || !code)
+        return nullptr;
+
+    // Preserve the stock compiler path, including any native sound() support.
+    if (auto compiled = NSEEL_code_compile(vm, code))
+        return compiled;
+
+    // projectM-eval tokenizes a registered name as a function even when there
+    // is no parenthesis. Preserve bare variables named "sound" in old presets.
+    std::string_view text(code);
+    std::vector<size_t> calls;
+    bool hasSoundVariable = false;
+    for (size_t pos = SkipEelTrivia(text, 0); pos != std::string_view::npos; pos = SkipEelTrivia(text, pos))
+    {
+        if (eelWordChars.find(text[pos]) == std::string_view::npos)
+        {
+            ++pos;
+            continue;
+        }
+
+        size_t end = text.find_first_not_of(eelWordChars, pos);
+        if (end == std::string_view::npos)
+            end = text.size();
+
+        if (end - pos == 5 && _strnicmp(text.data() + pos, "sound", 5) == 0)
+        {
+            const size_t next = SkipEelTrivia(text, end);
+            if (next != std::string_view::npos && text[next] == '(')
+                calls.push_back(pos);
+            else
+                hasSoundVariable = true;
+        }
+        pos = end;
+    }
+
+    if (calls.empty())
+        return nullptr;
+
+    std::string name = "sound";
+    std::string rewritten;
+    if (hasSoundVariable)
+    {
+        name = "__beatdrop_sound";
+        while (std::search(text.begin(), text.end(), name.begin(), name.end(),
+            [](char a, char b) { return _strnicmp(&a, &b, 1) == 0; }) != text.end())
+        {
+            name += '_';
+        }
+
+        rewritten = text;
+        for (auto call = calls.rbegin(); call != calls.rend(); ++call)
+            rewritten.replace(*call, 5, name);
+    }
+
+    EelFunctionEntry* originalHead = nullptr;
+    memcpy(&originalHead, vm, sizeof(originalHead));
+    EelFunction function{ name.data(), EvalSound, 2, false, false };
+    EelFunctionEntry entry{ &function, originalHead };
+    EelFunctionEntry* head = &entry;
+    memcpy(vm, &head, sizeof(head));
+    const bool registered = prjm_eval_compiler_get_function(vm, name.c_str()) == &function;
+    const auto handle = registered
+        ? NSEEL_code_compile(vm, rewritten.empty() ? code : rewritten.data())
+        : nullptr;
+    memcpy(vm, &originalHead, sizeof(originalHead));
+
+    return handle;
 }
 
 void NSEEL_HOSTSTUB_EnterMutex() {}
@@ -11737,6 +11929,7 @@ void CPlugin::DoCustomSoundAnalysis()
     // Keep that buffer bounded; the FFT below uses a larger zero-padded window.
     memcpy(mysound.fWave[0], m_sound.fWaveform[0], sizeof(mysound.fWave[0]));
     memcpy(mysound.fWave[1], m_sound.fWaveform[1], sizeof(mysound.fWave[1]));
+    SetSoundBandWaveform(mysound.fWave);
 
     // do our own [UN-NORMALIZED] fft
     // m_sound.fWaveform contains 576 samples, while MY_FFT_WINDOW is 1024.

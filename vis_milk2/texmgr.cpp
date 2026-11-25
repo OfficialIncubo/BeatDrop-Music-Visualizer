@@ -390,7 +390,7 @@ bool texmgr::RecompileExpressions(int iSlot)
 		//resetVars(m_tex[iSlot].m_vars);
 		//g_dumpmsg("texmgr: compiling string: ");
 		//g_dumpmsg(buf);
-		if (!(m_tex[iSlot].m_codehandle = NSEEL_code_compile(m_tex[iSlot].tex_eel_ctx, buf)))
+		if (!(m_tex[iSlot].m_codehandle = CompileEelWithSoundFallback(m_tex[iSlot].tex_eel_ctx, buf)))
 		{
 			//g_dumpmsg(" -error!");
 			//MessageBox( NULL, "error in per-frame code", "MILKDROP ERROR", MB_OK|MB_SETFOREGROUND|MB_TOPMOST );

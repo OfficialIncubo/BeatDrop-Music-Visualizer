@@ -2244,7 +2244,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 	        {
 		        NSEEL_CODEHANDLE	pf_codehandle_init;
 
-			    if ( ! (pf_codehandle_init = NSEEL_code_compile(m_pf_eel, buf)))
+			    if ( ! (pf_codehandle_init = CompileEelWithSoundFallback(m_pf_eel, buf)))
 			    {
 				    std::wstring message = BuildExpressionCompileError(m_szDesc, "preset_init", m_szPerFrameInit, buf, m_pf_eel);
 				    g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
@@ -2277,7 +2277,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
             StripLinefeedCharsAndComments(m_szPerFrameExpr, buf);
 	        if (buf[0])
 	        {
-			    if ( ! (m_pf_codehandle = NSEEL_code_compile(m_pf_eel, buf)))
+			    if ( ! (m_pf_codehandle = CompileEelWithSoundFallback(m_pf_eel, buf)))
 			    {
 				    std::wstring message = BuildExpressionCompileError(m_szDesc, "per-frame", m_szPerFrameExpr, buf, m_pf_eel);
 				    g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
@@ -2288,7 +2288,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 		    StripLinefeedCharsAndComments(m_szPerPixelExpr, buf);
 	        if (buf[0])
 	        {
-			    if ( ! (m_pp_codehandle = NSEEL_code_compile(m_pv_eel, buf)))
+			    if ( ! (m_pp_codehandle = CompileEelWithSoundFallback(m_pv_eel, buf)))
 			    {
 				    std::wstring message = BuildExpressionCompileError(m_szDesc, "per-vertex", m_szPerPixelExpr, buf, m_pv_eel);
 				    g_plugin.AddError(message.data(), 6.0f, ERR_PRESET, true);
@@ -2309,7 +2309,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 		            #ifndef _NO_EXPR_
 		            {
 		                NSEEL_CODEHANDLE	codehandle_temp;
-			            if ( ! (codehandle_temp = NSEEL_code_compile(m_wave[i].m_pf_eel, buf)))
+			            if ( ! (codehandle_temp = CompileEelWithSoundFallback(m_wave[i].m_pf_eel, buf)))
 			            {
 				            char section[64];
 				            sprintf(section, "wave %d init", i);
@@ -2347,7 +2347,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 	            if (buf[0])
                 {
 		            #ifndef _NO_EXPR_
-			            if ( ! (m_wave[i].m_pf_codehandle = NSEEL_code_compile(m_wave[i].m_pf_eel, buf)))
+			            if ( ! (m_wave[i].m_pf_codehandle = CompileEelWithSoundFallback(m_wave[i].m_pf_eel, buf)))
 			            {
 				            char section[64];
 				            sprintf(section, "wave %d per-frame", i);
@@ -2361,7 +2361,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 		        StripLinefeedCharsAndComments(m_wave[i].m_szPerPoint, buf);
 	            if (buf[0])
                 {
-			        if ( ! (m_wave[i].m_pp_codehandle = NSEEL_code_compile(m_wave[i].m_pp_eel, buf)))
+			        if ( ! (m_wave[i].m_pp_codehandle = CompileEelWithSoundFallback(m_wave[i].m_pp_eel, buf)))
 			        {
 				        char section[64];
 				        sprintf(section, "wave %d per-point", i);
@@ -2383,7 +2383,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 		            #ifndef _NO_EXPR_
 		            {
 		                NSEEL_CODEHANDLE	codehandle_temp;
-			            if ( ! (codehandle_temp = NSEEL_code_compile(m_shape[i].m_pf_eel, buf)))
+			            if ( ! (codehandle_temp = CompileEelWithSoundFallback(m_shape[i].m_pf_eel, buf)))
 			            {
 				            char section[64];
 				            sprintf(section, "shape %d init", i);
@@ -2421,7 +2421,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 	            if (buf[0])
                 {
 		            #ifndef _NO_EXPR_
-			            if ( ! (m_shape[i].m_pf_codehandle = NSEEL_code_compile(m_shape[i].m_pf_eel, buf)))
+			            if ( ! (m_shape[i].m_pf_codehandle = CompileEelWithSoundFallback(m_shape[i].m_pf_eel, buf)))
 			            {
 				            char section[64];
 				            sprintf(section, "shape %d per-frame", i);
