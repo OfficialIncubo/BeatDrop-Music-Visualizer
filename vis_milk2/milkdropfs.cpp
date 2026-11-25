@@ -987,7 +987,6 @@ void CPlugin::RenderFrame(int bRedraw)
 		    if (m_pState->m_fBlendProgress > 1.0f)
 		    {
 			    m_pState->m_bBlending = false;
-                m_oldShapeTextureCaptures = {};
                 m_OldShaders.comp.Clear();
                 m_OldShaders.warp.Clear();
 		    }
@@ -1258,6 +1257,9 @@ void CPlugin::RenderFrame(int bRedraw)
 	{
 		ShowSongTitleAnim(m_nTexSizeX, m_nTexSizeY, 1.0f);
 	}
+
+    if (!bRedraw)
+        UpdateShapeTextureCaptures(lpDevice);
 
     IDirect3DTexture9* cleanFeedback = m_lpVS[1];
     IDirect3DTexture9* cleanInput = m_lpVS[0];
@@ -2696,7 +2698,8 @@ void CPlugin::WarpedBlit_Shaders(int nPass, bool bAlphaBlend, bool bFlipAlpha, b
 }
 
 static bool CopyShapeFeedback(IDirect3DDevice9* device, IDirect3DTexture9* feedback,
-                              IDirect3DSurface9* destination, const D3DSURFACE_DESC& desc)
+                              IDirect3DSurface9* destination, const D3DSURFACE_DESC& desc,
+                              float centerX, float centerY)
 {
     BeatDropText::ComPtr<IDirect3DSurface9> original;
     BeatDropText::ComPtr<IDirect3DStateBlock9> state;
@@ -2729,9 +2732,11 @@ static bool CopyShapeFeedback(IDirect3DDevice9* device, IDirect3DTexture9* feedb
     const float right = static_cast<float>(desc.Width) - 0.5f;
     const float bottom = static_cast<float>(desc.Height) - 0.5f;
     struct Vertex { float x, y, z, rhw, u, v; };
+    const float u = centerX - 0.5f;
+    const float v = centerY - 0.5f;
     const Vertex quad[] = {
-        {-0.5f, -0.5f, 0, 1, 0, 0}, {right, -0.5f, 0, 1, 1, 0},
-        {-0.5f, bottom, 0, 1, 0, 1}, {right, bottom, 0, 1, 1, 1},
+        {-0.5f, -0.5f, 0, 1, u, v}, {right, -0.5f, 0, 1, u + 1.0f, v},
+        {-0.5f, bottom, 0, 1, u, v + 1.0f}, {right, bottom, 0, 1, u + 1.0f, v + 1.0f},
     };
     const D3DVIEWPORT9 viewport = {0, 0, desc.Width, desc.Height, 0, 1};
     device->SetViewport(&viewport);
@@ -2748,11 +2753,11 @@ static bool CopyShapeFeedback(IDirect3DDevice9* device, IDirect3DTexture9* feedb
     device->SetTextureStageState(0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE);
     device->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
     device->SetSamplerState(0, D3DSAMP_SRGBTEXTURE, FALSE);
-    device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
-    device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+    device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+    device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
     device->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_NONE);
-    device->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_CLAMP);
-    device->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_CLAMP);
+    device->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
+    device->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
     device->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
     device->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
     device->SetRenderState(D3DRS_ZENABLE, FALSE);
@@ -2778,52 +2783,24 @@ void CPlugin::DrawCustomShapes()
     if (!lpDevice)
         return;
 
-    const bool refreshHeldTextures = m_shapeTextureMidpointPending &&
-        GetTime() - m_pState->m_fBlendStartTime >= m_pState->m_fBlendDuration * 0.5f;
-    bool captureAttempted = false;
-    std::shared_ptr<IDirect3DTexture9> frameCapture;
-    auto captureFeedback = [&]() {
-        if (captureAttempted)
-            return;
-        captureAttempted = true;
-
-        D3DSURFACE_DESC desc = {};
-        BeatDropText::ComPtr<IDirect3DTexture9> snapshot;
-        BeatDropText::ComPtr<IDirect3DSurface9> destination;
-        if (FAILED(m_lpVS[0]->GetLevelDesc(0, &desc)) ||
-            FAILED(lpDevice->CreateTexture(desc.Width, desc.Height, 1, D3DUSAGE_RENDERTARGET,
-                desc.Format, D3DPOOL_DEFAULT, &snapshot.p, nullptr)) ||
-            FAILED(snapshot.p->GetSurfaceLevel(0, &destination.p)))
-            return;
-
-        if (!CopyShapeFeedback(lpDevice, m_lpVS[0], destination.p, desc))
-            return;
-
-        try
-        {
-            frameCapture.reset(std::exchange(snapshot.p, nullptr), [](IDirect3DTexture9* texture) {
-                texture->Release();
-            });
-        }
-        catch (const std::bad_alloc&)
-        {
-            // The shared pointer releases the snapshot if ownership allocation fails.
-        }
-    };
+    for (auto& capture : m_shapeTextureCaptures)
+    {
+        capture.used = false;
+        capture.update = false;
+        capture.hasCurrentCenter = false;
+    }
 
 	int num_reps = (m_pState->m_bBlending) ? 2 : 1;
 	for (int rep=0; rep<num_reps; rep++)
 	{
         CState *pState = (rep==0) ? m_pState : m_pOldState;
-        auto& captures = (rep == 0) ? m_shapeTextureCaptures : m_oldShapeTextureCaptures;
         float alpha_mult = 1;
         if (num_reps==2)
             alpha_mult = (rep==0) ? m_pState->m_fBlendProgress : (1-m_pState->m_fBlendProgress);
 
         for (int i=0; i<MAX_CUSTOM_SHAPES; i++)
         {
-            auto& heldTexture = captures[i];
-            bool holdTexture = false;
+            auto& capture = m_shapeTextureCaptures[i];
             if (pState->m_shape[i].enabled)
             {
                 /*
@@ -2892,8 +2869,8 @@ void CPlugin::DrawCustomShapes()
                     v[0].x = (float)(*pState->m_shape[i].var_pf_x* 2-1);// * ASPECT;
                     v[0].y = (float)(*pState->m_shape[i].var_pf_y*-2+1);
                     v[0].z = 0;
-                    v[0].tu = (float)*pState->m_shape[i].var_pf_tex_cx;
-                    v[0].tv = (float)*pState->m_shape[i].var_pf_tex_cy;
+                    v[0].tu = 0.5f;
+                    v[0].tv = 0.5f;
                     v[0].Diffuse =
                         ((((int)(*pState->m_shape[i].var_pf_a * 255 * alpha_mult)) & 0xFF) << 24) |
                         ((((int)(*pState->m_shape[i].var_pf_r * 255)) & 0xFF) << 16) |
@@ -2923,24 +2900,19 @@ void CPlugin::DrawCustomShapes()
                     }
                     v[sides+1] = v[1];
 
-                    const bool textured = (int)*pState->m_shape[i].var_pf_textured != 0;
-                    const bool capture = *pState->m_shape[i].var_pf_tex_capture != 0.0;
-                    if (!capture)
+                    if ((int)*pState->m_shape[i].var_pf_textured != 0)
                     {
-                        holdTexture = true;
-                        if ((textured && !heldTexture) || (refreshHeldTextures && heldTexture))
+                        capture.used = true;
+                        capture.update |= *pState->m_shape[i].var_pf_tex_capture != 0.0;
+                        // MilkDrop uses the incoming shape's center for its slot, even
+                        // when the outgoing shape is the one still requesting a capture.
+                        if (rep == 0 || !capture.hasCurrentCenter)
                         {
-                            captureFeedback();
-                            if (frameCapture)
-                                heldTexture = frameCapture;
+                            capture.centerX = (float)*pState->m_shape[i].var_pf_tex_cx;
+                            capture.centerY = (float)*pState->m_shape[i].var_pf_tex_cy;
+                            capture.hasCurrentCenter = rep == 0;
                         }
-                    }
-
-                    if (textured)
-                    {
-                        // Live instances use the current feedback. Frozen instances of a shape
-                        // share that shape's held image, even when other instances are live.
-                        lpDevice->SetTexture(0, !capture && heldTexture ? heldTexture.get() : m_lpVS[0]);
+                        lpDevice->SetTexture(0, capture.texture ? capture.texture.get() : m_lpVS[0]);
                         lpDevice->SetVertexShader( NULL );
                         lpDevice->SetFVF( SPRITEVERTEX_FORMAT );
                         lpDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, sides, (void*)v, sizeof(SPRITEVERTEX));
@@ -3002,17 +2974,94 @@ void CPlugin::DrawCustomShapes()
                     lpDevice->SetFVF( SPRITEVERTEX_FORMAT );
                 }
             }
-            if (!holdTexture)
-                heldTexture.reset();
         }
     }
-
-    if (refreshHeldTextures && (!captureAttempted || frameCapture))
-        m_shapeTextureMidpointPending = false;
 
 	lpDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 	lpDevice->SetRenderState(D3DRS_SRCBLEND,  D3DBLEND_SRCALPHA);
 	lpDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+}
+
+void CPlugin::UpdateShapeTextureCaptures(IDirect3DDevice9* device)
+{
+    const bool refreshHeldTextures = m_shapeTextureMidpointPending &&
+        GetTime() - m_pState->m_fBlendStartTime >= m_pState->m_fBlendDuration * 0.5f;
+    bool captureCentered = false;
+    for (auto& capture : m_shapeTextureCaptures)
+    {
+        if (!capture.used)
+            capture = {};
+        else
+        {
+            // Bootstrap a slot that starts held, and refresh held slots once at
+            // the midpoint even if neither preset is capturing live.
+            capture.update |= !capture.texture || refreshHeldTextures;
+            if (capture.update && capture.IsCentered())
+            {
+                captureCentered = true;
+                if (capture.texture == m_centeredShapeCapture)
+                    capture.texture.reset(); // allow the shared live texture to be reused
+            }
+        }
+    }
+    if (!captureCentered)
+        m_centeredShapeCapture.reset();
+
+    D3DSURFACE_DESC desc = {};
+    if (FAILED(m_lpVS[1]->GetLevelDesc(0, &desc)))
+        return;
+
+    auto updateTexture = [&](std::shared_ptr<IDirect3DTexture9>& texture, float x, float y) {
+        BeatDropText::ComPtr<IDirect3DTexture9> replacement;
+        IDirect3DTexture9* target = texture.get();
+        if (!target || texture.use_count() > 1)
+        {
+            if (FAILED(device->CreateTexture(desc.Width, desc.Height, 1, D3DUSAGE_RENDERTARGET,
+                desc.Format, D3DPOOL_DEFAULT, &replacement.p, nullptr)))
+                return false;
+            target = replacement.p;
+        }
+
+        BeatDropText::ComPtr<IDirect3DSurface9> surface;
+        if (FAILED(target->GetSurfaceLevel(0, &surface.p)) ||
+            !CopyShapeFeedback(device, m_lpVS[1], surface.p, desc, x, y))
+            return false;
+
+        if (replacement.p)
+        {
+            try
+            {
+                texture.reset(std::exchange(replacement.p, nullptr), [](IDirect3DTexture9* value) {
+                    value->Release();
+                });
+            }
+            catch (const std::bad_alloc&)
+            {
+                return false;
+            }
+        }
+        return true;
+    };
+
+    // Centered slots need identical pixels. Share one copy, but keep any
+    // snapshots that are still referenced by held slots immutable.
+    const bool centeredUpdated = !captureCentered || updateTexture(m_centeredShapeCapture, 0.5f, 0.5f);
+    bool allUpdated = centeredUpdated;
+    for (auto& capture : m_shapeTextureCaptures)
+    {
+        if (!capture.update)
+            continue;
+        if (capture.IsCentered())
+        {
+            if (centeredUpdated)
+                capture.texture = m_centeredShapeCapture;
+        }
+        else if (!updateTexture(capture.texture, capture.centerX, capture.centerY))
+            allUpdated = false;
+    }
+
+    if (refreshHeldTextures && allUpdated)
+        m_shapeTextureMidpointPending = false;
 }
 
 void CPlugin::LoadCustomShapePerFrameEvallibVars(CState* pState, int i, int instance)

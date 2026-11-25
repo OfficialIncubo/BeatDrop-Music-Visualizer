@@ -4541,7 +4541,7 @@ void CPlugin::CleanUpMyDX9Stuff(int final_cleanup)
     SafeRelease(m_lpFFTTexture);
     SafeRelease(m_lpWaveTexture);
     m_shapeTextureCaptures = {};
-    m_oldShapeTextureCaptures = {};
+    m_centeredShapeCapture.reset();
     m_shapeTextureMidpointPending = false;
     SafeRelease(m_lpVS[0]);
     SafeRelease(m_lpVS[1]);
@@ -5763,8 +5763,10 @@ void CPlugin::MyRenderUI(
 
                         m_pState->Import(szFile.c_str(), GetTime(), m_pState, ApplyFlags);
                         if (ApplyFlags & STATE_WAVE)
+                        {
                             m_shapeTextureCaptures = {};
-                        m_oldShapeTextureCaptures = {};
+                            m_centeredShapeCapture.reset();
+                        }
                         m_shapeTextureMidpointPending = false;
 
                         if (ApplyFlags & STATE_WARP)
@@ -7160,7 +7162,7 @@ LRESULT CPlugin::MyWindowProc(HWND hWnd, unsigned uMsg, WPARAM wParam, LPARAM lP
                         case UI_IMPORT_SHAPE:
                             ret = m_pState->m_shape[i].Import(NULL, m_waitstring.szText, 0);
                             if (ret)
-                                m_shapeTextureCaptures[i].reset();
+                                m_shapeTextureCaptures[i] = {};
                             break;
                         case UI_EXPORT_SHAPE: ret = m_pState->m_shape[i].Export(NULL, m_waitstring.szText, 0); break;
                         }
@@ -10238,11 +10240,6 @@ void CPlugin::LoadPreset(const wchar_t *szPresetFilename, float fBlendTime)
 void CPlugin::OnFinishedLoadingPreset()
 {
     m_shapeTextureMidpointPending = m_pState->m_bBlending && m_pState->m_fBlendDuration > 0.0f;
-    if (m_shapeTextureMidpointPending)
-        m_oldShapeTextureCaptures.swap(m_shapeTextureCaptures);
-    else
-        m_oldShapeTextureCaptures = {};
-    m_shapeTextureCaptures = {};
 
     // note: only used this if you loaded the preset *intact* (or mostly intact)
 

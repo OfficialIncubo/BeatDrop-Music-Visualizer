@@ -674,9 +674,19 @@ public:
 
         // DIRECTX 9:
         IDirect3DTexture9 *m_lpVS[2];
-        // Each slot remembers its own held frame, but slots can share a snapshot.
-        std::array<std::shared_ptr<IDirect3DTexture9>, MAX_CUSTOM_SHAPES> m_shapeTextureCaptures;
-        std::array<std::shared_ptr<IDirect3DTexture9>, MAX_CUSTOM_SHAPES> m_oldShapeTextureCaptures;
+        struct ShapeTextureCapture
+        {
+            std::shared_ptr<IDirect3DTexture9> texture;
+            float centerX = 0.5f;
+            float centerY = 0.5f;
+            bool used = false;
+            bool update = false;
+            bool hasCurrentCenter = false;
+
+            bool IsCentered() const { return centerX == 0.5f && centerY == 0.5f; }
+        };
+        std::array<ShapeTextureCapture, MAX_CUSTOM_SHAPES> m_shapeTextureCaptures;
+        std::shared_ptr<IDirect3DTexture9> m_centeredShapeCapture;
         bool m_shapeTextureMidpointPending = false;
         IDirect3DTexture9* m_lpFFTTexture = nullptr;  // FFT Samplesx2 R32F FFT spectrum texture (row 0: smoothed, row 1: peak hold)
         IDirect3DTexture9* m_lpWaveTexture = nullptr; // Waveform Samplesx2 R32F Waveform texture (row 0: left, row 1: right)
@@ -782,6 +792,7 @@ public:
 	    void		DrawWave(float *fL, float *fR);
         void        DrawCustomWaves();
         void        DrawCustomShapes();
+        void        UpdateShapeTextureCaptures(IDirect3DDevice9* device);
 	    void		DrawSprites();
         void        ComputeGridAlphaValues();
         //void        WarpedBlit();
