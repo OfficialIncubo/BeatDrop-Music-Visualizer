@@ -42,7 +42,7 @@ v1.5.1:
 # MilkDrop BETA Feature Revival
 
 * \[x] Revive color-based decay (decay_r, decay_g, decay_b)
-* \[ ] Revive tex_cx, tex_cy and tex_capture
+* \[x] Revive tex_cx, tex_cy and tex_capture
 * \[ ] For more undocumented variables, check references below:
 - https://forums.winamp.com/forum/visualizations/milkdrop/milkdrop-development/213770-mini-update-beta-6-1
 - https://forums.winamp.com/forum/visualizations/milkdrop/milkdrop-development/208490-sound-variable

@@ -8714,6 +8714,8 @@ void CPlugin::BuildMenus()
         m_menuWavecode[i].AddItem(MEN_T(IDS_MENU_USE_SPECTRUM),		&m_pState->m_wave[i].bSpectrum,	MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_USE_SPECTRUM_TT));        // 0-5 [0=wave left, 1=wave center, 2=wave right; 3=spectrum left, 4=spec center, 5=spec right]
         m_menuWavecode[i].AddItem(MEN_T(IDS_MENU_USE_DOTS),			&m_pState->m_wave[i].bUseDots,	MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_USE_DOTS_WAVE_TT)); // bool
         m_menuWavecode[i].AddItem(MEN_T(IDS_MENU_DRAW_THICK),		&m_pState->m_wave[i].bDrawThick,MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_DRAW_THICK_WAVE_TT)); // bool
+        m_menuWavecode[i].AddItem(MEN_T(IDS_MENU_DRAW_IN_BACKGROUND), &m_pState->m_wave[i].bDrawBack,
+            MENUITEMTYPE_BOOL, MEN_TT(IDS_MENU_DRAW_IN_BACKGROUND_WAVE_TT));
         m_menuWavecode[i].AddItem(MEN_T(IDS_MENU_ADDITIVE_DRAWING),	&m_pState->m_wave[i].bAdditive,	MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_ADDITIVE_DRAWING_WAVE_TT)); // bool
         m_menuWavecode[i].AddItem(MEN_T(IDS_MENU_EXPORT_TO_FILE),	(void*)UI_EXPORT_WAVE,			MENUITEMTYPE_UIMODE,MEN_TT(IDS_MENU_EXPORT_TO_FILE_TT), 0, 0, NULL, UI_EXPORT_WAVE, i);
         m_menuWavecode[i].AddItem(MEN_T(IDS_MENU_IMPORT_FROM_FILE),	(void*)UI_IMPORT_WAVE,			MENUITEMTYPE_UIMODE,MEN_TT(IDS_MENU_IMPORT_FROM_FILE_TT), 0, 0, NULL, UI_IMPORT_WAVE, i);
@@ -8729,6 +8731,8 @@ void CPlugin::BuildMenus()
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_NUMBER_OF_INSTANCES),	&m_pState->m_shape[i].instances,MENUITEMTYPE_INT,	MEN_TT(IDS_MENU_NUMBER_OF_INSTANCES_TT), 1, 1024);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_NUMBER_OF_SIDES),		&m_pState->m_shape[i].sides,	MENUITEMTYPE_INT,	MEN_TT(IDS_MENU_NUMBER_OF_SIDES_TT), 3, 100);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_DRAW_THICK),			&m_pState->m_shape[i].thickOutline,	MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_DRAW_THICK_SHAPE_TT)); // bool
+        m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_DRAW_IN_BACKGROUND), &m_pState->m_shape[i].bDrawBack,
+            MENUITEMTYPE_BOOL, MEN_TT(IDS_MENU_DRAW_IN_BACKGROUND_SHAPE_TT));
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_ADDITIVE_DRAWING),	&m_pState->m_shape[i].additive,	MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_ADDITIVE_DRAWING_SHAPE_TT)); // bool
 	    m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_X_POSITION),			&m_pState->m_shape[i].x,		MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_X_POSITION_TT), 0, 1);
 	    m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_Y_POSITION),			&m_pState->m_shape[i].y,		MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_Y_POSITION_TT), 0, 1);

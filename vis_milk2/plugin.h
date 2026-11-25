@@ -790,8 +790,8 @@ public:
 	    bool		RenderStringToTitleTexture();
 	    void		ShowSongTitleAnim(/*IDirect3DTexture9* lpRenderTarget,*/ int w, int h, float fProgress);
 	    void		DrawWave(float *fL, float *fR);
-        void        DrawCustomWaves();
-        void        DrawCustomShapes();
+        void        DrawCustomWaves(bool background, bool publishWaveValues);
+        void        DrawCustomShapes(bool background);
         void        UpdateShapeTextureCaptures(IDirect3DDevice9* device);
 	    void		DrawSprites();
         void        ComputeGridAlphaValues();

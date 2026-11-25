@@ -49,6 +49,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define NUM_Q_VAR 64
 #define NUM_T_VAR 8
+#define NUM_W_VAR 8
 
 #define MAX_BIGSTRING_LEN    32768
 
@@ -105,6 +106,7 @@ public:
     int   sides;
     int   additive;
     int   thickOutline;
+    int   bDrawBack;
     int   textured;
     int   instances;
     float x,y,rad,ang;
@@ -130,6 +132,7 @@ public:
 	//double *var_pf_q1, *var_pf_q2, *var_pf_q3, *var_pf_q4, *var_pf_q5, *var_pf_q6, *var_pf_q7, *var_pf_q8;
 	//double *var_pf_t1, *var_pf_t2, *var_pf_t3, *var_pf_t4, *var_pf_t5, *var_pf_t6, *var_pf_t7, *var_pf_t8;
     double* var_pf_q[NUM_Q_VAR];
+    double* var_pf_w[NUM_W_VAR];
     double* var_pf_t[NUM_T_VAR];
 	double *var_pf_bass, *var_pf_mid, *var_pf_treb, *var_pf_bass_att, *var_pf_mid_att, *var_pf_treb_att;
 	double *var_pf_r, *var_pf_g, *var_pf_b, *var_pf_a;
@@ -173,6 +176,7 @@ public:
     int   bSpectrum;
     int   bUseDots;
     int   bDrawThick;
+    int   bDrawBack;
     int   bAdditive;
 
     char  m_szInit[MAX_BIGSTRING_LEN]; // note: only executed once -> don't need to save codehandle
@@ -189,6 +193,7 @@ public:
 	//double *var_pf_q1, *var_pf_q2, *var_pf_q3, *var_pf_q4, *var_pf_q5, *var_pf_q6, *var_pf_q7, *var_pf_q8;
 	//double *var_pf_t1, *var_pf_t2, *var_pf_t3, *var_pf_t4, *var_pf_t5, *var_pf_t6, *var_pf_t7, *var_pf_t8;
     double* var_pf_q[NUM_Q_VAR];
+    double* var_pf_w[NUM_W_VAR];
     double* var_pf_t[NUM_T_VAR];
 	double *var_pf_bass, *var_pf_mid, *var_pf_treb, *var_pf_bass_att, *var_pf_mid_att, *var_pf_treb_att;
 	double *var_pf_r, *var_pf_g, *var_pf_b, *var_pf_a;
@@ -202,6 +207,7 @@ public:
 	//double *var_pp_q1, *var_pp_q2, *var_pp_q3, *var_pp_q4, *var_pp_q5, *var_pp_q6, *var_pp_q7, *var_pp_q8;
 	//double *var_pp_t1, *var_pp_t2, *var_pp_t3, *var_pp_t4, *var_pp_t5, *var_pp_t6, *var_pp_t7, *var_pp_t8;
     double* var_pp_q[NUM_Q_VAR];
+    double* var_pp_w[NUM_W_VAR];
     double* var_pp_t[NUM_T_VAR];
 	double *var_pp_bass, *var_pp_mid, *var_pp_treb, *var_pp_bass_att, *var_pp_mid_att, *var_pp_treb_att;
     double *var_pp_sample, *var_pp_value1, *var_pp_value2;
@@ -405,6 +411,7 @@ public:
 	double *var_pf_frame;
 	//double *var_pf_q1, *var_pf_q2, *var_pf_q3, *var_pf_q4, *var_pf_q5, *var_pf_q6, *var_pf_q7, *var_pf_q8;
     double* var_pf_q[NUM_Q_VAR];
+    double* var_pf_w[NUM_W_VAR];
 	double *var_pf_progress;
 	double *var_pf_ob_size, *var_pf_ob_r, *var_pf_ob_g, *var_pf_ob_b, *var_pf_ob_a;
 	double *var_pf_ib_size, *var_pf_ib_r, *var_pf_ib_g, *var_pf_ib_b, *var_pf_ib_a;
@@ -448,6 +455,7 @@ public:
 	double *var_pv_frame;
 	//double *var_pv_q1, *var_pv_q2, *var_pv_q3, *var_pv_q4, *var_pv_q5, *var_pv_q6, *var_pv_q7, *var_pv_q8;
     double* var_pv_q[NUM_Q_VAR];
+    double* var_pv_w[NUM_W_VAR];
 	double *var_pv_progress;
     double *var_pv_meshx, *var_pv_meshy;
     double *var_pv_pixelsx, *var_pv_pixelsy;
@@ -459,6 +467,7 @@ public:
 	double *var_pv_decay_r, *var_pv_decay_g, *var_pv_decay_b;
 
 	double q_values_after_init_code[NUM_Q_VAR];
+    double w_values_from_wave[NUM_W_VAR] = {};
     double monitor_after_init_code;
 
     float GetPresetStartTime() { return m_fPresetStartTime; }

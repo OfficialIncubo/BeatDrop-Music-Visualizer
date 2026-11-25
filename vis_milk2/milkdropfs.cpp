@@ -595,6 +595,8 @@ void CPlugin::LoadPerFrameEvallibVars(CState* pState)
 	//*pState->var_pf_monitor     = 0;   -leave this as it was set in the per-frame INIT code!
     for (int vi=0; vi<NUM_Q_VAR; vi++)
 	    *pState->var_pf_q[vi]	= pState->q_values_after_init_code[vi];//0.0f;
+    for (int wi = 0; wi < NUM_W_VAR; ++wi)
+        *pState->var_pf_w[wi] = pState->w_values_from_wave[wi];
     *pState->var_pf_monitor     = pState->monitor_after_init_code;
 	*pState->var_pf_progress    = (GetTime() - m_fPresetStartTime) / (m_fNextPresetTime - m_fPresetStartTime);
 
@@ -825,6 +827,8 @@ void CPlugin::RunPerFrameEquations(int code)
         // save some things for per-vertex code:
         for (int vi=0; vi<NUM_Q_VAR; vi++)
             *pState->var_pv_q[vi] = *pState->var_pf_q[vi];
+        for (int wi = 0; wi < NUM_W_VAR; ++wi)
+            *pState->var_pv_w[wi] = *pState->var_pf_w[wi];
 
         // (a few range checks:)
         *pState->var_pf_gamma     = max(0    , min(    8, *pState->var_pf_gamma    ));
@@ -1165,6 +1169,21 @@ void CPlugin::RenderFrame(int bRedraw)
     if (m_webcam.GetMode() == BeatDropWebcam::DeepBurn)
         m_webcam.DrawBurn(lpDevice, m_nTexSizeX, m_nTexSizeY, m_fWebcamBurnOpacity, fDeltaT);
 
+    if (!bRedraw)
+    {
+        for (auto& capture : m_shapeTextureCaptures)
+        {
+            capture.used = false;
+            capture.update = false;
+            capture.hasCurrentCenter = false;
+        }
+
+        // Draw into the warp input once. Redraws reuse that input.
+        lpDevice->SetPixelShader(nullptr);
+        DrawCustomShapes(true);
+        DrawCustomWaves(true, true);
+    }
+
     // set up to render [from VS0] to VS1.
     {
         IDirect3DSurface9* pNewTarget = NULL;
@@ -1243,8 +1262,8 @@ void CPlugin::RenderFrame(int bRedraw)
 	    BlurPasses();
 
 	// draw audio data
-    DrawCustomShapes(); // draw these first; better for feedback if the waves draw *over* them.
-	DrawCustomWaves();
+    DrawCustomShapes(false); // draw these first; better for feedback if the waves draw *over* them.
+	DrawCustomWaves(false, !bRedraw);
 	DrawWave(mysound.fWave[0], mysound.fWave[1]);
 	DrawSprites();
 
@@ -2777,18 +2796,11 @@ static bool CopyShapeFeedback(IDirect3DDevice9* device, IDirect3DTexture9* feedb
     return SUCCEEDED(draw) && SUCCEEDED(restoreTarget) && SUCCEEDED(restoreState);
 }
 
-void CPlugin::DrawCustomShapes()
+void CPlugin::DrawCustomShapes(bool background)
 {
     LPDIRECT3DDEVICE9 lpDevice = GetDevice();
     if (!lpDevice)
         return;
-
-    for (auto& capture : m_shapeTextureCaptures)
-    {
-        capture.used = false;
-        capture.update = false;
-        capture.hasCurrentCenter = false;
-    }
 
 	int num_reps = (m_pState->m_bBlending) ? 2 : 1;
 	for (int rep=0; rep<num_reps; rep++)
@@ -2801,7 +2813,7 @@ void CPlugin::DrawCustomShapes()
         for (int i=0; i<MAX_CUSTOM_SHAPES; i++)
         {
             auto& capture = m_shapeTextureCaptures[i];
-            if (pState->m_shape[i].enabled)
+            if (pState->m_shape[i].enabled && (pState->m_shape[i].bDrawBack != 0) == background)
             {
                 /*
                 int bAdditive = 0;
@@ -2912,10 +2924,15 @@ void CPlugin::DrawCustomShapes()
                             capture.centerY = (float)*pState->m_shape[i].var_pf_tex_cy;
                             capture.hasCurrentCenter = rep == 0;
                         }
-                        lpDevice->SetTexture(0, capture.texture ? capture.texture.get() : m_lpVS[0]);
-                        lpDevice->SetVertexShader( NULL );
-                        lpDevice->SetFVF( SPRITEVERTEX_FORMAT );
-                        lpDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, sides, (void*)v, sizeof(SPRITEVERTEX));
+                        // The old feedback frame is the active render target in the
+                        // background pass. Wait for the first completed capture there.
+                        if (capture.texture || !background)
+                        {
+                            lpDevice->SetTexture(0, capture.texture ? capture.texture.get() : m_lpVS[0]);
+                            lpDevice->SetVertexShader( NULL );
+                            lpDevice->SetFVF( SPRITEVERTEX_FORMAT );
+                            lpDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, sides, (void*)v, sizeof(SPRITEVERTEX));
+                        }
                     }
                     else
                     {
@@ -2969,7 +2986,7 @@ void CPlugin::DrawCustomShapes()
                         }
                     }
 
-                    lpDevice->SetTexture(0, m_lpVS[0]);
+                    lpDevice->SetTexture(0, background ? nullptr : m_lpVS[0]);
                     lpDevice->SetVertexShader( NULL );
                     lpDevice->SetFVF( SPRITEVERTEX_FORMAT );
                 }
@@ -3078,6 +3095,8 @@ void CPlugin::LoadCustomShapePerFrameEvallibVars(CState* pState, int i, int inst
 	*pState->m_shape[i].var_pf_treb_att	= (double)mysound.avg_rel[2];
     for (int vi=0; vi<NUM_Q_VAR; vi++)
         *pState->m_shape[i].var_pf_q[vi] = *pState->var_pf_q[vi];
+    for (int wi = 0; wi < NUM_W_VAR; ++wi)
+        *pState->m_shape[i].var_pf_w[wi] = *pState->var_pf_w[wi];
     for (vi=0; vi<NUM_T_VAR; vi++)
 	    *pState->m_shape[i].var_pf_t[vi] = pState->m_shape[i].t_values_after_init_code[vi];
 	*pState->m_shape[i].var_pf_x        = pState->m_shape[i].x;
@@ -3123,6 +3142,8 @@ void CPlugin::LoadCustomWavePerFrameEvallibVars(CState* pState, int i)
 	*pState->m_wave[i].var_pf_treb_att	= (double)mysound.avg_rel[2];
     for (int vi=0; vi<NUM_Q_VAR; vi++)
 	    *pState->m_wave[i].var_pf_q[vi] = *pState->var_pf_q[vi];
+    for (int wi = 0; wi < NUM_W_VAR; ++wi)
+        *pState->m_wave[i].var_pf_w[wi] = *pState->var_pf_w[wi];
     for (vi=0; vi<NUM_T_VAR; vi++)
 	    *pState->m_wave[i].var_pf_t[vi] = pState->m_wave[i].t_values_after_init_code[vi];
 	*pState->m_wave[i].var_pf_r         = pState->m_wave[i].r;
@@ -3163,7 +3184,7 @@ int SmoothWave(WFVERTEX* vi, int nVertsIn, WFVERTEX* vo)
     return j;
 }
 
-void CPlugin::DrawCustomWaves()
+void CPlugin::DrawCustomWaves(bool background, bool publishWaveValues)
 {
     LPDIRECT3DDEVICE9 lpDevice = GetDevice();
     if (!lpDevice)
@@ -3184,7 +3205,7 @@ void CPlugin::DrawCustomWaves()
 
         for (int i=0; i<MAX_CUSTOM_WAVES; i++)
         {
-            if (pState->m_wave[i].enabled)
+            if (pState->m_wave[i].enabled && (pState->m_wave[i].bDrawBack != 0) == background)
             {
                 // 1. execute per-frame code
                 LoadCustomWavePerFrameEvallibVars(pState, i);
@@ -3206,6 +3227,8 @@ void CPlugin::DrawCustomWaves()
 
                 for (int vi=0; vi<NUM_Q_VAR; vi++)
                     *pState->m_wave[i].var_pp_q[vi] = *pState->m_wave[i].var_pf_q[vi];
+                for (int wi = 0; wi < NUM_W_VAR; ++wi)
+                    *pState->m_wave[i].var_pp_w[wi] = *pState->m_wave[i].var_pf_w[wi];
                 for (vi=0; vi<NUM_T_VAR; vi++)
                     *pState->m_wave[i].var_pp_t[vi] = *pState->m_wave[i].var_pf_t[vi];
 
@@ -3317,6 +3340,13 @@ void CPlugin::DrawCustomWaves()
 		            pState->m_wave[i].t_values_after_init_code[6] = *pState->m_wave[i].var_pp_t7;
 		            pState->m_wave[i].t_values_after_init_code[7] = *pState->m_wave[i].var_pp_t8;
                     */
+
+                    // Wave 1 publishes its final point's q values for the next frame.
+                    if (i == 0 && publishWaveValues)
+                    {
+                        for (int wi = 0; wi < NUM_W_VAR; ++wi)
+                            pState->w_values_from_wave[wi] = *pState->m_wave[i].var_pp_q[wi];
+                    }
 
                     // 3. smooth it
                     WFVERTEX v2[2048];

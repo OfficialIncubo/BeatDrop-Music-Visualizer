@@ -819,6 +819,12 @@ void CState::RegisterBuiltInVariables(int flags)
             sprintf(buf, "q%d", vi+1);
             var_pf_q[vi] = NSEEL_VM_regvar(m_pf_eel, buf);
         }
+        for (int wi = 0; wi < NUM_W_VAR; ++wi)
+        {
+            char buf[16];
+            sprintf(buf, "w%d", wi + 1);
+            var_pf_w[wi] = NSEEL_VM_regvar(m_pf_eel, buf);
+        }
 	    var_pf_progress = NSEEL_VM_regvar(m_pf_eel, "progress");
 	    var_pf_ob_size	= NSEEL_VM_regvar(m_pf_eel, "ob_size");
 	    var_pf_ob_r		= NSEEL_VM_regvar(m_pf_eel, "ob_r");
@@ -930,6 +936,12 @@ void CState::RegisterBuiltInVariables(int flags)
             sprintf(buf, "q%d", vi+1);
             var_pv_q[vi] = NSEEL_VM_regvar(m_pv_eel, buf);
         }
+        for (int wi = 0; wi < NUM_W_VAR; ++wi)
+        {
+            char buf[16];
+            sprintf(buf, "w%d", wi + 1);
+            var_pv_w[wi] = NSEEL_VM_regvar(m_pv_eel, buf);
+        }
 	    var_pv_progress = NSEEL_VM_regvar(m_pv_eel, "progress");
         var_pv_meshx    = NSEEL_VM_regvar(m_pv_eel, "meshx");
         var_pv_meshy    = NSEEL_VM_regvar(m_pv_eel, "meshy");
@@ -953,6 +965,12 @@ void CState::RegisterBuiltInVariables(int flags)
                 char buf[16];
                 sprintf(buf, "q%d", vi+1);
                 m_wave[i].var_pf_q[vi] = NSEEL_VM_regvar(m_wave[i].m_pf_eel, buf);
+            }
+            for (int wi = 0; wi < NUM_W_VAR; ++wi)
+            {
+                char buf[16];
+                sprintf(buf, "w%d", wi + 1);
+                m_wave[i].var_pf_w[wi] = NSEEL_VM_regvar(m_wave[i].m_pf_eel, buf);
             }
             for (vi=0; vi<NUM_T_VAR; vi++)
             {
@@ -982,6 +1000,12 @@ void CState::RegisterBuiltInVariables(int flags)
                 char buf[16];
                 sprintf(buf, "q%d", vi+1);
                 m_wave[i].var_pp_q[vi] = NSEEL_VM_regvar(m_wave[i].m_pp_eel, buf);
+            }
+            for (int wi = 0; wi < NUM_W_VAR; ++wi)
+            {
+                char buf[16];
+                sprintf(buf, "w%d", wi + 1);
+                m_wave[i].var_pp_w[wi] = NSEEL_VM_regvar(m_wave[i].m_pp_eel, buf);
             }
             for (vi=0; vi<NUM_T_VAR; vi++)
             {
@@ -1021,6 +1045,12 @@ void CState::RegisterBuiltInVariables(int flags)
                 char buf[16];
                 sprintf(buf, "q%d", vi+1);
                 m_shape[i].var_pf_q[vi] = NSEEL_VM_regvar(m_shape[i].m_pf_eel, buf);
+            }
+            for (int wi = 0; wi < NUM_W_VAR; ++wi)
+            {
+                char buf[16];
+                sprintf(buf, "w%d", wi + 1);
+                m_shape[i].var_pf_w[wi] = NSEEL_VM_regvar(m_shape[i].m_pf_eel, buf);
             }
             for (vi=0; vi<NUM_T_VAR; vi++)
             {
@@ -1147,6 +1177,9 @@ void CState::Default(DWORD ApplyFlags)
 	    m_fMvB                  = 1.0f;
 	    m_fMvA                  = 1.0f;
 
+        for (double& value : w_values_from_wave)
+            value = 0;
+
         for (int i=0; i<MAX_CUSTOM_WAVES; i++)
         {
             m_wave[i].enabled = 0;
@@ -1161,6 +1194,7 @@ void CState::Default(DWORD ApplyFlags)
             m_wave[i].bSpectrum = 0;
             m_wave[i].bUseDots = 0;
             m_wave[i].bDrawThick = 0;
+            m_wave[i].bDrawBack = 0;
             m_wave[i].bAdditive = 0;
         }
         for (i=0; i<MAX_CUSTOM_SHAPES; i++)
@@ -1169,6 +1203,7 @@ void CState::Default(DWORD ApplyFlags)
             m_shape[i].sides   = 4;
             m_shape[i].additive = 0;
             m_shape[i].thickOutline = 0;
+            m_shape[i].bDrawBack = 0;
             m_shape[i].textured = 0;
             m_shape[i].instances = 1;
             m_shape[i].tex_zoom = 1.0f;
@@ -1580,6 +1615,7 @@ int  CWave::Export(FILE* fOut, const wchar_t *szFile, int i)
 	fprintf(f2, "wavecode_%d_%s=%d\n", i, "bSpectrum",  bSpectrum);
 	fprintf(f2, "wavecode_%d_%s=%d\n", i, "bUseDots",   bUseDots);
 	fprintf(f2, "wavecode_%d_%s=%d\n", i, "bDrawThick", bDrawThick);
+	fprintf(f2, "wavecode_%d_bDrawBack=%d\n", i, bDrawBack);
 	fprintf(f2, "wavecode_%d_%s=%d\n", i, "bAdditive",  bAdditive);
 	fprintf(f2, "wavecode_%d_%s=%.5f\n", i, "scaling",    scaling);
 	fprintf(f2, "wavecode_%d_%s=%.5f\n", i, "smoothing",  smoothing);
@@ -1614,6 +1650,7 @@ int  CShape::Export(FILE* fOut, const wchar_t *szFile, int i)
 	fprintf(f2, "shapecode_%d_%s=%d\n", i, "sides",      sides);
 	fprintf(f2, "shapecode_%d_%s=%d\n", i, "additive",   additive);
 	fprintf(f2, "shapecode_%d_%s=%d\n", i, "thickOutline",thickOutline);
+	fprintf(f2, "shapecode_%d_bDrawBack=%d\n", i, bDrawBack);
 	fprintf(f2, "shapecode_%d_%s=%d\n", i, "textured",   textured);
 	fprintf(f2, "shapecode_%d_%s=%d\n", i, "num_inst",   instances);
 	fprintf(f2, "shapecode_%d_%s=%.3f\n", i, "x",          x);
@@ -1680,6 +1717,7 @@ int CWave::Import(FILE* f, const wchar_t* szFile, int i)
     sprintf(buf, "wavecode_%d_%s", i, "bSpectrum" ); bSpectrum  = GetFastInt  (buf, bSpectrum , f2);
     sprintf(buf, "wavecode_%d_%s", i, "bUseDots"  ); bUseDots   = GetFastInt  (buf, bUseDots  , f2);
     sprintf(buf, "wavecode_%d_%s", i, "bDrawThick"); bDrawThick = GetFastInt  (buf, bDrawThick, f2);
+    sprintf(buf, "wavecode_%d_bDrawBack", i); bDrawBack = GetFastInt(buf, 0, f2) != 0;
     sprintf(buf, "wavecode_%d_%s", i, "bAdditive" ); bAdditive  = GetFastInt  (buf, bAdditive , f2);
     sprintf(buf, "wavecode_%d_%s", i, "scaling"   ); scaling    = GetFastFloat(buf, scaling   , f2);
     sprintf(buf, "wavecode_%d_%s", i, "smoothing" ); smoothing  = GetFastFloat(buf, smoothing , f2);
@@ -1715,6 +1753,7 @@ int  CShape::Import(FILE* f, const wchar_t* szFile, int i)
 	sprintf(buf, "shapecode_%d_%s", i, "sides"       ); sides        = GetFastInt  (buf, sides       , f2);
 	sprintf(buf, "shapecode_%d_%s", i, "additive"    ); additive     = GetFastInt  (buf, additive    , f2);
 	sprintf(buf, "shapecode_%d_%s", i, "thickOutline"); thickOutline = GetFastInt  (buf, thickOutline, f2);
+	sprintf(buf, "shapecode_%d_bDrawBack", i); bDrawBack = GetFastInt(buf, 0, f2) != 0;
 	sprintf(buf, "shapecode_%d_%s", i, "textured"    ); textured     = GetFastInt  (buf, textured    , f2);
 	sprintf(buf, "shapecode_%d_%s", i, "num_inst"    ); instances    = GetFastInt  (buf, instances   , f2);
 	sprintf(buf, "shapecode_%d_%s", i, "x"           ); x            = GetFastFloat(buf, x           , f2);
@@ -1865,6 +1904,9 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
     // wave:
     if (ApplyFlags & STATE_WAVE)
     {
+        for (double& value : w_values_from_wave)
+            value = 0;
+
 	    m_nWaveMode             = GetFastInt  ("nWaveMode",m_nWaveMode,f);
 	    m_bAdditiveWaves		= (GetFastInt ("bAdditiveWaves",m_bAdditiveWaves,f) != 0);
 	    m_bWaveDots		        = (GetFastInt ("bWaveDots",m_bWaveDots,f) != 0);
