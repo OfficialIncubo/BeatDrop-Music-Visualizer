@@ -95,7 +95,7 @@ BEGIN
             VALUE "FileDescription", "BeatDrop Music Visualizer"
             VALUE "FileVersion", "1.6"
             VALUE "InternalName", "BeatDrop"
-            VALUE "LegalCopyright", "Copyright © 2026 BeatDrop development team"
+            VALUE "LegalCopyright", "Copyright \x00A9 2026 BeatDrop development team"
             VALUE "OriginalFilename", "BeatDrop.exe"
             VALUE "ProductName", "BeatDrop"
             VALUE "ProductVersion", "1.6"
