@@ -714,9 +714,8 @@ void CPlugin::LoadPerFrameEvallibVars(CState* pState)
     *pState->var_pf_x_echo_wrap = pState->m_nEchoWrapX;
     *pState->var_pf_y_echo_wrap = pState->m_nEchoWrapY;
     // Inherited axes follow the master switch, including changes from frame code.
-    const int defaultWrapMode = pState->m_bTexWrap ? 1 : 0;
-    *pState->var_pf_x_wrap_mode = pState->m_bInheritedWrapModeX && pState->m_nWrapModeX == defaultWrapMode ? 1 : pState->m_nWrapModeX;
-    *pState->var_pf_y_wrap_mode = pState->m_bInheritedWrapModeY && pState->m_nWrapModeY == defaultWrapMode ? 1 : pState->m_nWrapModeY;
+    *pState->var_pf_x_wrap_mode = pState->m_nWrapModeX;
+    *pState->var_pf_y_wrap_mode = pState->m_nWrapModeY;
     *pState->var_pf_invert        = (double)pState->m_bInvert;
     *pState->var_pf_brighten      = (double)pState->m_bBrighten;
     *pState->var_pf_darken        = (double)pState->m_bDarken;
@@ -2485,11 +2484,9 @@ void CPlugin::WarpedBlit_NoShaders(int nPass, bool bAlphaBlend, bool bFlipAlpha,
     lpDevice->SetSamplerState(0, D3DSAMP_ADDRESSU, texaddr);
     lpDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, texaddr);
     lpDevice->SetSamplerState(0, D3DSAMP_ADDRESSW, texaddr);
-    // In beta 6.1, wrap is the master switch for per-axis feedback wrapping.
-    const double xWrap = *m_pState->var_pf_x_wrap_mode;
-    const double yWrap = *m_pState->var_pf_y_wrap_mode;
-    const ScopedTextureAddress feedbackAddress(lpDevice, xWrap, yWrap,
-        texaddr == D3DTADDRESS_WRAP && (xWrap != 1.0 || yWrap != 1.0));
+    // Legacy axes keep the sampler mode selected by wrap.
+    const ScopedTextureAddress feedbackAddress(lpDevice,
+        *m_pState->var_pf_x_wrap_mode, *m_pState->var_pf_y_wrap_mode);
 
     const auto format = GetBackBufFormat();
     const bool limitDecay = m_n16BitGamma > 0 &&

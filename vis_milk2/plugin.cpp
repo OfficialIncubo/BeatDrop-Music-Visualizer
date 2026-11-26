@@ -1169,25 +1169,6 @@ bool ReadFileToString(const wchar_t* szBaseFilename, char* szDestText, int nMaxB
 }
 
 // these callback functions are called by menu.cpp whenever the user finishes editing an eval_ expression.
-static void OnTextureWrapToggled(LPARAM, LPARAM)
-{
-    CState* state = g_plugin.m_pState;
-    const int defaultMode = state->m_bTexWrap ? 1 : 0;
-    if (state->m_bInheritedWrapModeX)
-        state->m_nWrapModeX = defaultMode;
-    if (state->m_bInheritedWrapModeY)
-        state->m_nWrapModeY = defaultMode;
-}
-
-static void OnFeedbackWrapModeEdited(LPARAM axis, LPARAM)
-{
-    CState* state = g_plugin.m_pState;
-    if (axis == 0)
-        state->m_bInheritedWrapModeX = false;
-    else
-        state->m_bInheritedWrapModeY = false;
-}
-
 void OnUserEditedPerFrame(LPARAM param1, LPARAM param2)
 {
 	g_plugin.m_pState->RecompileExpressions(RECOMPILE_PRESET_CODE, 0);
@@ -8898,14 +8879,14 @@ void CPlugin::BuildMenus()
 	m_menuPost.AddItem(MEN_T(IDS_MENU_VIDEO_ECHO_ZOOM),			&m_pState->m_fVideoEchoZoom,	MENUITEMTYPE_LOGBLENDABLE, MEN_TT(IDS_MENU_VIDEO_ECHO_ZOOM_TT));
 	m_menuPost.AddItem(MEN_T(IDS_MENU_VIDEO_ECHO_ORIENTATION),	&m_pState->m_nVideoEchoOrientation, MENUITEMTYPE_INT,	MEN_TT(IDS_MENU_VIDEO_ECHO_ORIENTATION_TT), 0.0f, 3.0f);
     m_menuPost.AddItem(MEN_T(IDS_MENU_ECHO_WRAP_X), &m_pState->m_nEchoWrapX,
-        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_ECHO_WRAP_X_TT), 0, 2);
+        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_ECHO_WRAP_X_TT), -1, 2);
     m_menuPost.AddItem(MEN_T(IDS_MENU_ECHO_WRAP_Y), &m_pState->m_nEchoWrapY,
-        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_ECHO_WRAP_Y_TT), 0, 2);
-	 m_menuPost.AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP),			&m_pState->m_bTexWrap,              MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_TEXTURE_WRAP_TT), 0, 0, &OnTextureWrapToggled);
+        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_ECHO_WRAP_Y_TT), -1, 2);
+	 m_menuPost.AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP),			&m_pState->m_bTexWrap,              MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_TEXTURE_WRAP_TT));
     m_menuPost.AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP_X), &m_pState->m_nWrapModeX,
-        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_TEXTURE_WRAP_X_TT), 0, 2, &OnFeedbackWrapModeEdited, 0);
+        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_TEXTURE_WRAP_X_TT), -1, 2);
     m_menuPost.AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP_Y), &m_pState->m_nWrapModeY,
-        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_TEXTURE_WRAP_Y_TT), 0, 2, &OnFeedbackWrapModeEdited, 1);
+        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_TEXTURE_WRAP_Y_TT), -1, 2);
 	//m_menuPost.AddItem("stereo 3D",               &m_pState->m_bRedBlueStereo,        MENUITEMTYPE_BOOL, "displays the image in stereo 3D; you need 3D glasses (with red and blue lenses) for this.");
 	m_menuPost.AddItem(MEN_T(IDS_MENU_FILTER_INVERT),			&m_pState->m_bInvert,			MENUITEMTYPE_BOOL, MEN_TT(IDS_MENU_FILTER_INVERT_TT));
 	m_menuPost.AddItem(MEN_T(IDS_MENU_FILTER_BRIGHTEN),			&m_pState->m_bBrighten,			MENUITEMTYPE_BOOL, MEN_TT(IDS_MENU_FILTER_BRIGHTEN_TT));

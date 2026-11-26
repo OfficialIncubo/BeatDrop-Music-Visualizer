@@ -50,7 +50,7 @@ extern CPlugin g_plugin;		// declared in main.cpp
 
 static int NormalizeTextureWrap(int mode)
 {
-    return mode >= 0 && mode <= 2 ? mode : 1;
+    return mode >= -1 && mode <= 2 ? mode : -1;
 }
 
 
@@ -1140,13 +1140,12 @@ void CState::Default(DWORD ApplyFlags)
 	    m_fVideoEchoZoom		= 2.0f;
 	    m_fVideoEchoAlpha		= 0.0f;
 	    m_nVideoEchoOrientation	= 0;		// 0-3
-        m_nEchoWrapX = m_nEchoWrapY = 1;
+        m_nEchoWrapX = m_nEchoWrapY = -1;
 	    m_bRedBlueStereo		= false;
 	    m_bBrighten				= false;
 	    m_bDarken				= false;
 	    m_bTexWrap				= true;
-        m_nWrapModeX = m_nWrapModeY = 1;
-        m_bInheritedWrapModeX = m_bInheritedWrapModeY = true;
+        m_nWrapModeX = m_nWrapModeY = -1;
 	    m_bDarkenCenter			= false;
 	    m_bSolarize				= false;
 	    m_bInvert				= false;
@@ -1527,8 +1526,10 @@ bool CState::Export(const wchar_t *szIniFile)
 	fprintf(fOut, "%s=%.3f\n", "fVideoEchoAlpha",        m_fVideoEchoAlpha.eval(-1));
 
 	fprintf(fOut, "%s=%d\n", "nVideoEchoOrientation",  m_nVideoEchoOrientation);
-    fprintf(fOut, "nEchoWrap_x=%d\n", m_nEchoWrapX);
-    fprintf(fOut, "nEchoWrap_y=%d\n", m_nEchoWrapY);
+    if (m_nEchoWrapX >= 0)
+        fprintf(fOut, "nEchoWrap_x=%d\n", m_nEchoWrapX);
+    if (m_nEchoWrapY >= 0)
+        fprintf(fOut, "nEchoWrap_y=%d\n", m_nEchoWrapY);
 	fprintf(fOut, "%s=%d\n", "nWaveMode",              m_nWaveMode);
 	fprintf(fOut, "%s=%d\n", "bAdditiveWaves",         m_bAdditiveWaves);
 	fprintf(fOut, "%s=%d\n", "bWaveDots",              m_bWaveDots);
@@ -1537,9 +1538,9 @@ bool CState::Export(const wchar_t *szIniFile)
 	fprintf(fOut, "%s=%d\n", "bMaximizeWaveColor",     m_bMaximizeWaveColor);
 	fprintf(fOut, "%s=%d\n", "bTexWrap",               m_bTexWrap			);
     // Missing axes continue to follow bTexWrap when reloaded.
-    if (!m_bInheritedWrapModeX)
+    if (m_nWrapModeX >= 0)
         fprintf(fOut, "nWrapMode_x=%d\n", m_nWrapModeX);
-    if (!m_bInheritedWrapModeY)
+    if (m_nWrapModeY >= 0)
         fprintf(fOut, "nWrapMode_y=%d\n", m_nWrapModeY);
 	fprintf(fOut, "%s=%d\n", "bDarkenCenter",          m_bDarkenCenter		);
 	fprintf(fOut, "%s=%d\n", "bRedBlueStereo",         m_bRedBlueStereo     );
@@ -1915,8 +1916,8 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
 	    m_fVideoEchoZoom        = GetFastFloat("fVideoEchoZoom",m_fVideoEchoZoom.eval(-1),f);
 	    m_fVideoEchoAlpha       = GetFastFloat("fVideoEchoAlpha",m_fVideoEchoAlpha.eval(-1),f);
 	    m_nVideoEchoOrientation = GetFastInt  ("nVideoEchoOrientation",m_nVideoEchoOrientation,f);
-        m_nEchoWrapX = NormalizeTextureWrap(GetFastInt("nEchoWrap_x", 1, f));
-        m_nEchoWrapY = NormalizeTextureWrap(GetFastInt("nEchoWrap_y", 1, f));
+        m_nEchoWrapX = NormalizeTextureWrap(GetFastInt("nEchoWrap_x", -1, f));
+        m_nEchoWrapY = NormalizeTextureWrap(GetFastInt("nEchoWrap_y", -1, f));
         m_bRedBlueStereo        = (GetFastInt ("bRedBlueStereo", m_bRedBlueStereo,f) != 0);
 	    m_bBrighten				= (GetFastInt ("bBrighten",m_bBrighten	,f) != 0);
 	    m_bDarken				= (GetFastInt ("bDarken"  ,m_bDarken	,f) != 0);
@@ -1988,13 +1989,8 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
 	    m_fStretchX				= GetFastFloat("sx",m_fStretchX.eval(-1),f);
 	    m_fStretchY				= GetFastFloat("sy",m_fStretchY.eval(-1),f);
         m_bTexWrap			    = (GetFastInt ("bTexWrap", m_bTexWrap,f) != 0);
-        const int defaultWrapMode = m_bTexWrap ? 1 : 0;
-        const int wrapX = GetFastInt("nWrapMode_x", -1, f);
-        const int wrapY = GetFastInt("nWrapMode_y", -1, f);
-        m_bInheritedWrapModeX = wrapX == -1;
-        m_bInheritedWrapModeY = wrapY == -1;
-        m_nWrapModeX = wrapX == -1 ? defaultWrapMode : NormalizeTextureWrap(wrapX);
-        m_nWrapModeY = wrapY == -1 ? defaultWrapMode : NormalizeTextureWrap(wrapY);
+        m_nWrapModeX = NormalizeTextureWrap(GetFastInt("nWrapMode_x", -1, f));
+        m_nWrapModeY = NormalizeTextureWrap(GetFastInt("nWrapMode_y", -1, f));
 	    m_bDarkenCenter			= (GetFastInt ("bDarkenCenter", m_bDarkenCenter,f) != 0);
 	    m_fWarpAnimSpeed        = GetFastFloat("fWarpAnimSpeed",m_fWarpAnimSpeed,f);
 	    m_fWarpScale            = GetFastFloat("fWarpScale",m_fWarpScale.eval(-1),f);

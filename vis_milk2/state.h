@@ -283,7 +283,7 @@ public:
 	CBlendableFloat 	m_fVideoEchoAlpha;
 	float				m_fVideoEchoAlphaOld;
 	int					m_nVideoEchoOrientation;
-    int m_nEchoWrapX = 1, m_nEchoWrapY = 1;
+    int m_nEchoWrapX = -1, m_nEchoWrapY = -1;
 	int					m_nVideoEchoOrientationOld;
 
 	// fps-dependant:
@@ -315,8 +315,7 @@ public:
 	CBlendableFloat		m_fShader;			// 0 = no color shader, 1 = full color shader
 	bool				m_bMaximizeWaveColor;
 	bool				m_bTexWrap;
-    int m_nWrapModeX = 1, m_nWrapModeY = 1;
-    bool m_bInheritedWrapModeX = true, m_bInheritedWrapModeY = true;
+    int m_nWrapModeX = -1, m_nWrapModeY = -1;
 	bool				m_bDarkenCenter;
 	bool				m_bRedBlueStereo;
 	bool				m_bBrighten;
