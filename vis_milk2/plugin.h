@@ -106,7 +106,7 @@ typedef struct
 	int 	bOvertypeMode;
 	wchar_t	szText[MAX_SHADER_TEXT_LEN];
 	wchar_t	szPrompt[512];
-	wchar_t	szToolTip[512];
+	wchar_t	szToolTip[1024];
 	char	szClipboard[MAX_SHADER_EDIT_SCRATCH_LEN];
 	wchar_t	szClipboardW[MAX_SHADER_EDIT_SCRATCH_LEN];
 } td_waitstr;

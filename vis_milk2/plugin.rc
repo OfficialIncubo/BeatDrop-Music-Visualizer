@@ -463,10 +463,10 @@ BEGIN
     IDS_CUSTOM_SHAPE_X      "--custom shape %d"
     IDS_MENU_EDIT_PRESET_INIT_CODE "[ edit preset initialization code ]"
     IDS_MENU_EDIT_PRESET_INIT_CODE_TT 
-                            "read-only: zoom, rot, warp, cx, cy, dx, dy, sx, sy; decay, decay_r, decay_g, decay_b, gamma;\n           echo_zoom, echo_scale, echo_orient;\n           ib_{size|r|g|b|a}, ob_{size|r|g|b|a}, mv_{x|y|dx|dy|l|r|g|b|a};\n           wave_{r|g|b|a|x|y|mode|mystery|usedots|thick|additive|brighten};\n           darken_center, wrap; invert, brighten, darken, solarize\n           time, fps, frame, progress; w1-w8 (zero on preset load);\n           mousex, mousey, mousedown, mouseclick;\n           ctrllt, ctrlrt, ctrldn, ctrlup, year, month, day, weekday;\n           hour, minute, second, milliseconds, totalseconds;\n           {bass|mid|treb}[_att]\nwrite:     q1-q64, monitor"
+                            "read-only: zoom, rot, warp, cx, cy, dx, dy, sx, sy; decay, decay_r, decay_g, decay_b, gamma;\n           echo_zoom, echo_scale, echo_orient;\n           x_wrap_mode, y_wrap_mode, x_echo_wrap, y_echo_wrap;\n           ib_{size|r|g|b|a}, ob_{size|r|g|b|a}, mv_{x|y|dx|dy|l|r|g|b|a};\n           wave_{r|g|b|a|x|y|mode|mystery|usedots|thick|additive|brighten};\n           darken_center, wrap; invert, brighten, darken, solarize\n           time, fps, frame, progress; w1-w8 (zero on preset load);\n           mousex, mousey, mousedown, mouseclick;\n           ctrllt, ctrlrt, ctrldn, ctrlup, year, month, day, weekday;\n           hour, minute, second, milliseconds, totalseconds;\n           {bass|mid|treb}[_att]\nwrite:     q1-q64, monitor"
     IDS_MENU_EDIT_PER_FRAME_EQUATIONS "[ edit per_frame equations ]"
     IDS_MENU_EDIT_PER_FRAME_EQUATIONS_TT 
-                            "read-only:  time, fps, frame, progress;\nw1-w8 (wave 1 final per-point q1-q8 from the previous frame);\nmousex, mousey, mousedown, mouseclick;\nctrllt, ctrlrt, ctrldn, ctrlup, year, month, day, weekday;\nhour, minute, second, milliseconds, totalseconds;\n{bass|mid|treb}[_att]\nread/write: zoom, rot, warp, cx, cy, dx, dy, sx, sy; q1-q64; monitor\n            mv_{x|y|dx|dy|l|r|g|b|a}, ib_{size|r|g|b|a}, ob_{size|r|g|b|a};\n            wave_{r|g|b|a|x|y|mode|mystery|usedots|thick|additive|brighten};\n            darken_center, wrap; invert, brighten, darken, solarize\n            decay, decay_r, decay_g, decay_b, gamma, echo_zoom, echo_alpha, echo_orient"
+                            "read-only:  time, fps, frame, progress;\nw1-w8 (wave 1 final per-point q1-q8 from the previous frame);\nmousex, mousey, mousedown, mouseclick;\nctrllt, ctrlrt, ctrldn, ctrlup, year, month, day, weekday;\nhour, minute, second, milliseconds, totalseconds;\n{bass|mid|treb}[_att]\nread/write: x_wrap_mode, y_wrap_mode, x_echo_wrap, y_echo_wrap;\n            zoom, rot, warp, cx, cy, dx, dy, sx, sy; q1-q64; monitor\n            mv_{x|y|dx|dy|l|r|g|b|a}, ib_{size|r|g|b|a}, ob_{size|r|g|b|a};\n            wave_{r|g|b|a|x|y|mode|mystery|usedots|thick|additive|brighten};\n            darken_center, wrap; invert, brighten, darken, solarize\n            decay, decay_r, decay_g, decay_b, gamma, echo_zoom, echo_alpha, echo_orient"
 END
 
 STRINGTABLE
@@ -493,11 +493,11 @@ BEGIN
     IDS_MENU_SUSTAIN_LEVEL_TT 
                             "controls the eventual fade to black; 1=no fade, 0.9=strong fade; 0.98=recommended."
     IDS_MENU_SUSTAIN_LEVEL_R " sustain level (red)"
-    IDS_MENU_SUSTAIN_LEVEL_R_TT "controls the decay rate for the red channel; 1=no fade, 0.9=strong fade; 0.98=recommended."
+    IDS_MENU_SUSTAIN_LEVEL_R_TT "decay for the red channel. 0 uses the sustain level, 1 keeps the channel unchanged."
     IDS_MENU_SUSTAIN_LEVEL_G " sustain level (green)"
-    IDS_MENU_SUSTAIN_LEVEL_G_TT "controls the decay rate for the green channel; 1=no fade, 0.9=strong fade; 0.98=recommended."
+    IDS_MENU_SUSTAIN_LEVEL_G_TT "decay for the green channel. 0 uses the sustain level, 1 keeps the channel unchanged."
     IDS_MENU_SUSTAIN_LEVEL_B " sustain level (blue)"
-    IDS_MENU_SUSTAIN_LEVEL_B_TT "controls the decay rate for the blue channel; 1=no fade, 0.9=strong fade; 0.98=recommended."
+    IDS_MENU_SUSTAIN_LEVEL_B_TT "decay for the blue channel. 0 uses the sustain level, 1 keeps the channel unchanged."
     IDS_MENU_DARKEN_CENTER  "darken center"
 END
 
@@ -684,11 +684,11 @@ BEGIN
     IDS_MENU_NUMBER_OF_INSTANCES_TT 
                             "the number of times (num_inst) to draw this shape.  Each instance will have a different value for 'instance' in the per-frame eqs (0,1,2...)"
     IDS_MENU_EDIT_INIT_CODE_SHAPE_TT 
-                            "IN: time, frame, fps, progress; q1-q64 (from preset init); w1-w8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured; tex_capture, tex_cx, tex_cy\nOUT: t1-t8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured"
+                            "IN: time, frame, fps, progress; q1-q64 (from preset init); w1-w8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured; tex_capture, tex_cx, tex_cy, x_wrap_mode, y_wrap_mode\nOUT: t1-t8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured"
     IDS_MENU_EDIT_PER_FRAME_INSTANCE_CODE 
                             "[ edit per-frame(/per-instance) code ]"
     IDS_MENU_EDIT_PER_FRAME_INSTANCE_CODE_TT 
-                            "IN: instance, num_inst, time, frame, fps, progress; q1-q64 (from preset init); w1-w8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured; tex_capture, tex_cx, tex_cy\nOUT: t1-t8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured; tex_capture, tex_cx, tex_cy"
+                            "IN: instance, num_inst, time, frame, fps, progress; q1-q64 (from preset init); w1-w8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured; tex_capture, tex_cx, tex_cy, x_wrap_mode, y_wrap_mode\nOUT: t1-t8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured; tex_capture, tex_cx, tex_cy, x_wrap_mode, y_wrap_mode"
 END
 
 STRINGTABLE
@@ -744,11 +744,18 @@ BEGIN
     IDS_MENU_DRAW_IN_BACKGROUND "draw in background"
     IDS_MENU_DRAW_IN_BACKGROUND_WAVE_TT "if ON, the samples will be drawn before the effects of the preset"
     IDS_MENU_DRAW_IN_BACKGROUND_SHAPE_TT "if ON, the shape will be drawn before the effects of the preset"
-    IDS_MENU_ECHO_WRAP_X "video echo wrap X"
-    IDS_MENU_ECHO_WRAP_Y "video echo wrap Y"
-    IDS_MENU_TEXTURE_WRAP_X "texture wrap X"
-    IDS_MENU_TEXTURE_WRAP_Y "texture wrap Y"
-    IDS_MENU_AXIS_WRAP_TT "-1 = legacy, 0 = clamp, 1 = repeat, 2 = mirror"
+    IDS_MENU_ECHO_WRAP_X " video echo: wrap mode X"
+    IDS_MENU_ECHO_WRAP_Y " video echo: wrap mode Y"
+    IDS_MENU_TEXTURE_WRAP_X "texture wrap mode X"
+    IDS_MENU_TEXTURE_WRAP_Y "texture wrap mode Y"
+    IDS_MENU_SHAPE_WRAP_X "x_wrap_mode"
+    IDS_MENU_SHAPE_WRAP_Y "y_wrap_mode"
+    IDS_MENU_ECHO_WRAP_X_TT "texture wrap mode for video echo X axis - 0 = clamp, 1 = repeat, 2 = mirror"
+    IDS_MENU_ECHO_WRAP_Y_TT "texture wrap mode for video echo Y axis - 0 = clamp, 1 = repeat, 2 = mirror"
+    IDS_MENU_TEXTURE_WRAP_X_TT "texture wrap mode in X axis - 0 = clamp, 1 = repeat, 2 = mirror"
+    IDS_MENU_TEXTURE_WRAP_Y_TT "texture wrap mode in Y axis - 0 = clamp, 1 = repeat, 2 = mirror"
+    IDS_MENU_SHAPE_WRAP_X_TT "wrap mode for textured shape, X axis - 0 = clamp, 1 = repeat, 2 = mirror"
+    IDS_MENU_SHAPE_WRAP_Y_TT "wrap mode for textured shape, Y axis - 0 = clamp, 1 = repeat, 2 = mirror"
     IDS_MENU_TEXTURE_CAPTURE "texture capture"
     IDS_MENU_TEXTURE_CAPTURE_TT "if ON, the texture is updated with the previous frame's image. If OFF, it holds the texture"
     IDS_MENU_TEXTURE_CENTER_X "texture center X"

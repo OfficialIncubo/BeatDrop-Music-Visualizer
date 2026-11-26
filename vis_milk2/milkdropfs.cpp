@@ -53,23 +53,34 @@ namespace
     class ScopedTextureAddress
     {
     public:
-        ScopedTextureAddress(IDirect3DDevice9* device, double x, double y)
-        {
-            if ((x == -1.0 && y == -1.0) || FAILED(device->BeginStateBlock()))
-                return;
+        explicit ScopedTextureAddress(IDirect3DDevice9* device) : m_device(device) {}
 
-            // Record just the overridden axes. BeatDrop also uses pure devices,
-            // which do not expose the current sampler state through a getter.
-            SetAxes(device, x, y);
-            if (FAILED(device->EndStateBlock(&m_previous)) || !m_previous)
-                return;
-            if (FAILED(m_previous->Capture()))
+        ScopedTextureAddress(IDirect3DDevice9* device, double x, double y, bool enabled = true)
+            : ScopedTextureAddress(device)
+        {
+            if (enabled)
+                Set(x, y);
+        }
+
+        void Set(double x, double y)
+        {
+            if (!m_previous)
             {
-                m_previous->Release();
-                m_previous = nullptr;
-                return;
+                if (FAILED(m_device->BeginStateBlock()))
+                    return;
+
+                // Capture only the two sampler axes, including on pure devices.
+                SetAxes(m_device, x, y);
+                if (FAILED(m_device->EndStateBlock(&m_previous)) || !m_previous)
+                    return;
+                if (FAILED(m_previous->Capture()))
+                {
+                    m_previous->Release();
+                    m_previous = nullptr;
+                    return;
+                }
             }
-            SetAxes(device, x, y);
+            SetAxes(m_device, x, y);
         }
 
         ~ScopedTextureAddress()
@@ -94,10 +105,11 @@ namespace
 
         static void SetAxes(IDirect3DDevice9* device, double x, double y)
         {
-            if (x != -1.0) device->SetSamplerState(0, D3DSAMP_ADDRESSU, Address(x));
-            if (y != -1.0) device->SetSamplerState(0, D3DSAMP_ADDRESSV, Address(y));
+            device->SetSamplerState(0, D3DSAMP_ADDRESSU, Address(x));
+            device->SetSamplerState(0, D3DSAMP_ADDRESSV, Address(y));
         }
 
+        IDirect3DDevice9* m_device;
         IDirect3DStateBlock9* m_previous = nullptr;
     };
 }
@@ -908,7 +920,6 @@ void CPlugin::RunPerFrameEquations(int code)
         // so later the user can just access m_pState->m_pf_whatever.
 		double mix  = (double)CosineInterp(m_pState->m_fBlendProgress);
 		double mix2 = 1.0 - mix;
-        *m_pState->var_pf_decay        = mix*(*m_pState->var_pf_decay       ) + mix2*(*m_pOldState->var_pf_decay       );
         *m_pState->var_pf_wave_a       = mix*(*m_pState->var_pf_wave_a      ) + mix2*(*m_pOldState->var_pf_wave_a      );
         *m_pState->var_pf_wave_r       = mix*(*m_pState->var_pf_wave_r      ) + mix2*(*m_pOldState->var_pf_wave_r      );
         *m_pState->var_pf_wave_g       = mix*(*m_pState->var_pf_wave_g      ) + mix2*(*m_pOldState->var_pf_wave_g      );
@@ -2245,10 +2256,11 @@ void CPlugin::ComputeGridAlphaValues()
 		float fDY		= (float)(*pState->var_pf_dy);
 		float fSX		= (float)(*pState->var_pf_sx);
 		float fSY		= (float)(*pState->var_pf_sy);
-        const float frameDecay[] = {
-            (float)*pState->var_pf_decay_r,
-            (float)*pState->var_pf_decay_g,
-            (float)*pState->var_pf_decay_b
+        const double scalarDecay = *pState->var_pf_decay;
+        const double frameDecay[] = {
+            *pState->var_pf_decay_r,
+            *pState->var_pf_decay_g,
+            *pState->var_pf_decay_b
         };
         const bool legacyWarp = pState->m_nWarpPSVersion <= 0;
         const bool hasPerVertexCode = pState->m_pp_codehandle != nullptr;
@@ -2320,9 +2332,9 @@ void CPlugin::ComputeGridAlphaValues()
                 }
 
                 const float decay[] = {
-                    hasPerVertexCode ? (float)*pState->var_pv_decay_r : frameDecay[0],
-                    hasPerVertexCode ? (float)*pState->var_pv_decay_g : frameDecay[1],
-                    hasPerVertexCode ? (float)*pState->var_pv_decay_b : frameDecay[2]
+                    (float)ResolveChannelDecay(hasPerVertexCode ? *pState->var_pv_decay_r : frameDecay[0], scalarDecay),
+                    (float)ResolveChannelDecay(hasPerVertexCode ? *pState->var_pv_decay_g : frameDecay[1], scalarDecay),
+                    (float)ResolveChannelDecay(hasPerVertexCode ? *pState->var_pv_decay_b : frameDecay[2], scalarDecay)
                 };
 
 				float fZoom2 = powf(fZoom, powf(fZoomExp, m_vertinfo[n].rad*2.0f - 1.0f));
@@ -2469,21 +2481,17 @@ void CPlugin::WarpedBlit_NoShaders(int nPass, bool bAlphaBlend, bool bFlipAlpha,
     lpDevice->SetSamplerState(0, D3DSAMP_ADDRESSV, texaddr);
     lpDevice->SetSamplerState(0, D3DSAMP_ADDRESSW, texaddr);
     // In beta 6.1, wrap is the master switch for per-axis feedback wrapping.
-    const bool wrapFeedback = *m_pState->var_pf_wrap == 1.0;
     const double xWrap = *m_pState->var_pf_x_wrap_mode;
     const double yWrap = *m_pState->var_pf_y_wrap_mode;
-    const ScopedTextureAddress feedbackAddress(lpDevice,
-        wrapFeedback || xWrap == -1.0 ? xWrap : 0.0,
-        wrapFeedback || yWrap == -1.0 ? yWrap : 0.0);
+    const ScopedTextureAddress feedbackAddress(lpDevice, xWrap, yWrap,
+        texaddr == D3DTADDRESS_WRAP && (xWrap != 1.0 || yWrap != 1.0));
 
-    const float decay = (float)*m_pState->var_pf_decay;
     const auto format = GetBackBufFormat();
     const bool limitDecay = m_n16BitGamma > 0 &&
         (format == D3DFMT_R5G6B5 || format == D3DFMT_X1R5G5B5 ||
          format == D3DFMT_A1R5G5B5 || format == D3DFMT_A4R4G4B4);
     const float decayLimit = (32.0f - m_n16BitGamma) / 32.0f;
-    auto decayBits = [&](float multiplier) -> DWORD {
-        float channel = decay * multiplier;
+    auto decayBits = [&](float channel) -> DWORD {
         if (limitDecay && channel < 0.9999f)
             channel = min(channel, decayLimit);
         // MilkDrop 1.03 used single-precision scaling and truncated through
@@ -2873,6 +2881,8 @@ void CPlugin::DrawCustomShapes(bool background)
     if (!lpDevice)
         return;
 
+    ScopedTextureAddress shapeAddress(lpDevice);
+
 	int num_reps = (m_pState->m_bBlending) ? 2 : 1;
 	for (int rep=0; rep<num_reps; rep++)
 	{
@@ -3000,7 +3010,7 @@ void CPlugin::DrawCustomShapes(bool background)
                         if (capture.texture || !background)
                         {
                             lpDevice->SetTexture(0, capture.texture ? capture.texture.get() : m_lpVS[0]);
-                            const ScopedTextureAddress shapeAddress(lpDevice, *pState->m_shape[i].var_pf_x_wrap_mode,
+                            shapeAddress.Set(*pState->m_shape[i].var_pf_x_wrap_mode,
                                 *pState->m_shape[i].var_pf_y_wrap_mode);
                             lpDevice->SetVertexShader( NULL );
                             lpDevice->SetFVF( SPRITEVERTEX_FORMAT );
@@ -5992,8 +6002,7 @@ void CPlugin::ShowToUser_NoShaders()//int bRedraw, int nPassOverride)
 
 				float mix = (i==1) ? fVideoEchoAlpha : 1.0f - fVideoEchoAlpha;
                 const ScopedTextureAddress echoAddress(lpDevice,
-                    i == 1 ? *m_pState->var_pf_x_echo_wrap : -1.0,
-                    i == 1 ? *m_pState->var_pf_y_echo_wrap : -1.0);
+                    *m_pState->var_pf_x_echo_wrap, *m_pState->var_pf_y_echo_wrap, i == 1);
 				for (int k=0; k<4; k++)
 					v3[k].Diffuse = D3DCOLOR_RGBA_01(mix*shade[k][0],mix*shade[k][1],mix*shade[k][2],1);
 

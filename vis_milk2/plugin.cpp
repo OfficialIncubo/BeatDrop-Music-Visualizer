@@ -8716,6 +8716,10 @@ void CPlugin::SetMenusForPresetVersion(int WarpPSVersion, int CompPSVersion)
 	m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_VIDEO_ECHO_ALPHA), CompPSVersion==0);
 	m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_VIDEO_ECHO_ZOOM), CompPSVersion==0);
 	m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_VIDEO_ECHO_ORIENTATION), CompPSVersion==0);
+    m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_ECHO_WRAP_X), MaxPSVersion == 0);
+    m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_ECHO_WRAP_Y), MaxPSVersion == 0);
+    m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_TEXTURE_WRAP_X), MaxPSVersion == 0);
+    m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_TEXTURE_WRAP_Y), MaxPSVersion == 0);
 	m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_FILTER_INVERT), CompPSVersion==0);
 	m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_FILTER_BRIGHTEN), CompPSVersion==0);
 	m_menuPost.EnableItem(wasabiApiLangString(IDS_MENU_FILTER_DARKEN), CompPSVersion==0);
@@ -8865,24 +8869,24 @@ void CPlugin::BuildMenus()
 	m_menuMotion.AddItem(MEN_T(IDS_MENU_SCALING_Y),				&m_pState->m_fStretchY,			MENUITEMTYPE_LOGBLENDABLE, MEN_TT(IDS_MENU_SCALING_Y_TT));
 
 	m_menuPost.AddItem(MEN_T(IDS_MENU_SUSTAIN_LEVEL),			&m_pState->m_fDecay,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_SUSTAIN_LEVEL_TT),   0.50f, 1.0f);
-    m_menuPost.AddItem(MEN_T(IDS_MENU_SUSTAIN_LEVEL_R),			&m_pState->m_fDecayR,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_SUSTAIN_LEVEL_R_TT), 0.50f, 1.0f);
-	m_menuPost.AddItem(MEN_T(IDS_MENU_SUSTAIN_LEVEL_G),			&m_pState->m_fDecayG,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_SUSTAIN_LEVEL_G_TT), 0.50f, 1.0f);
-	m_menuPost.AddItem(MEN_T(IDS_MENU_SUSTAIN_LEVEL_B),			&m_pState->m_fDecayB,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_SUSTAIN_LEVEL_B_TT), 0.50f, 1.0f);
+    m_menuPost.AddItem(MEN_T(IDS_MENU_SUSTAIN_LEVEL_R),			&m_pState->m_fDecayR,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_SUSTAIN_LEVEL_R_TT), 0.0f, 1.0f);
+	m_menuPost.AddItem(MEN_T(IDS_MENU_SUSTAIN_LEVEL_G),			&m_pState->m_fDecayG,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_SUSTAIN_LEVEL_G_TT), 0.0f, 1.0f);
+	m_menuPost.AddItem(MEN_T(IDS_MENU_SUSTAIN_LEVEL_B),			&m_pState->m_fDecayB,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_SUSTAIN_LEVEL_B_TT), 0.0f, 1.0f);
 	m_menuPost.AddItem(MEN_T(IDS_MENU_DARKEN_CENTER),			&m_pState->m_bDarkenCenter,		MENUITEMTYPE_BOOL,      MEN_TT(IDS_MENU_DARKEN_CENTER_TT));
 	m_menuPost.AddItem(MEN_T(IDS_MENU_GAMMA_ADJUSTMENT),		&m_pState->m_fGammaAdj,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_GAMMA_ADJUSTMENT_TT), 1.0f, 8.0f);
 	m_menuPost.AddItem(MEN_T(IDS_MENU_HUE_SHADER),				&m_pState->m_fShader,			MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_HUE_SHADER_TT), 0.0f, 1.0f);
 	m_menuPost.AddItem(MEN_T(IDS_MENU_VIDEO_ECHO_ALPHA),		&m_pState->m_fVideoEchoAlpha,	MENUITEMTYPE_BLENDABLE, MEN_TT(IDS_MENU_VIDEO_ECHO_ALPHA_TT), 0.0f, 1.0f);
 	m_menuPost.AddItem(MEN_T(IDS_MENU_VIDEO_ECHO_ZOOM),			&m_pState->m_fVideoEchoZoom,	MENUITEMTYPE_LOGBLENDABLE, MEN_TT(IDS_MENU_VIDEO_ECHO_ZOOM_TT));
 	m_menuPost.AddItem(MEN_T(IDS_MENU_VIDEO_ECHO_ORIENTATION),	&m_pState->m_nVideoEchoOrientation, MENUITEMTYPE_INT,	MEN_TT(IDS_MENU_VIDEO_ECHO_ORIENTATION_TT), 0.0f, 3.0f);
-	 m_menuPost.AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP),			&m_pState->m_bTexWrap,              MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_TEXTURE_WRAP_TT));
     m_menuPost.AddItem(MEN_T(IDS_MENU_ECHO_WRAP_X), &m_pState->m_nEchoWrapX,
-        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_AXIS_WRAP_TT), -1, 2);
+        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_ECHO_WRAP_X_TT), 0, 2);
     m_menuPost.AddItem(MEN_T(IDS_MENU_ECHO_WRAP_Y), &m_pState->m_nEchoWrapY,
-        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_AXIS_WRAP_TT), -1, 2);
+        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_ECHO_WRAP_Y_TT), 0, 2);
+	 m_menuPost.AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP),			&m_pState->m_bTexWrap,              MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_TEXTURE_WRAP_TT));
     m_menuPost.AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP_X), &m_pState->m_nWrapModeX,
-        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_AXIS_WRAP_TT), -1, 2);
+        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_TEXTURE_WRAP_X_TT), 0, 2);
     m_menuPost.AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP_Y), &m_pState->m_nWrapModeY,
-        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_AXIS_WRAP_TT), -1, 2);
+        MENUITEMTYPE_INT, MEN_TT(IDS_MENU_TEXTURE_WRAP_Y_TT), 0, 2);
 	//m_menuPost.AddItem("stereo 3D",               &m_pState->m_bRedBlueStereo,        MENUITEMTYPE_BOOL, "displays the image in stereo 3D; you need 3D glasses (with red and blue lenses) for this.");
 	m_menuPost.AddItem(MEN_T(IDS_MENU_FILTER_INVERT),			&m_pState->m_bInvert,			MENUITEMTYPE_BOOL, MEN_TT(IDS_MENU_FILTER_INVERT_TT));
 	m_menuPost.AddItem(MEN_T(IDS_MENU_FILTER_BRIGHTEN),			&m_pState->m_bBrighten,			MENUITEMTYPE_BOOL, MEN_TT(IDS_MENU_FILTER_BRIGHTEN_TT));
@@ -8939,10 +8943,10 @@ void CPlugin::BuildMenus()
 	    m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_RADIUS),				&m_pState->m_shape[i].rad,		MENUITEMTYPE_LOGFLOAT, MEN_TT(IDS_MENU_RADIUS_TT));
 	    m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_ANGLE),				&m_pState->m_shape[i].ang,		MENUITEMTYPE_FLOAT,	MEN_TT(IDS_MENU_ANGLE_TT), 0, 3.1415927f*2.0f);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURED),			&m_pState->m_shape[i].textured,	MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_TEXTURED_TT)); // bool
-        m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP_X), &m_pState->m_shape[i].x_wrap_mode,
-            MENUITEMTYPE_INT, MEN_TT(IDS_MENU_AXIS_WRAP_TT), -1, 2);
-        m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_WRAP_Y), &m_pState->m_shape[i].y_wrap_mode,
-            MENUITEMTYPE_INT, MEN_TT(IDS_MENU_AXIS_WRAP_TT), -1, 2);
+        m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_SHAPE_WRAP_X), &m_pState->m_shape[i].x_wrap_mode,
+            MENUITEMTYPE_INT, MEN_TT(IDS_MENU_SHAPE_WRAP_X_TT), 0, 2);
+        m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_SHAPE_WRAP_Y), &m_pState->m_shape[i].y_wrap_mode,
+            MENUITEMTYPE_INT, MEN_TT(IDS_MENU_SHAPE_WRAP_Y_TT), 0, 2);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_CAPTURE), &m_pState->m_shape[i].tex_capture, MENUITEMTYPE_BOOL, MEN_TT(IDS_MENU_TEXTURE_CAPTURE_TT));
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_CENTER_X), &m_pState->m_shape[i].tex_cx, MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_TEXTURE_CENTER_X_TT), 0, 1);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_CENTER_Y), &m_pState->m_shape[i].tex_cy, MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_TEXTURE_CENTER_Y_TT), 0, 1);
@@ -12236,10 +12240,10 @@ void CPlugin::GenWarpPShaderText(char *szShaderText, float decay, float decay_r,
 	// p += sprintf(p, "    ret = tex2D( sampler%s_main, uv ).xyz;%c", bWrap ? L"" : L"_fc", LF);
     p += sprintf(p, "    %c", LF);
     p += sprintf(p, "    // darken (decay) over time%c", LF);
-    if (decay_r == 1.0f && decay_g == 1.0f && decay_b == 1.0f)
+    if (decay_r == 0.0f && decay_g == 0.0f && decay_b == 0.0f)
         p += sprintf(p, "    ret *= %.2f; //or try: ret -= 0.004;%c", decay, LF);
     else
-        p += sprintf(p, "    ret *= float3(%.3f, %.3f, %.3f);%c", decay * decay_r, decay * decay_g, decay * decay_b, LF);
+        p += sprintf(p, "    ret *= float3(%.3f, %.3f, %.3f);%c", ResolveChannelDecay(decay_r, decay), ResolveChannelDecay(decay_g, decay), ResolveChannelDecay(decay_b, decay), LF);
     //p += sprintf(p, "    %c", LF);
     //p += sprintf(p, "    ret.w = vDiffuse.w; // pass alpha along - req'd for preset blending%c", LF);
     p += sprintf(p, "}%c", LF);

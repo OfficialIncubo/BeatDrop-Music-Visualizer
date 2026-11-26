@@ -51,6 +51,11 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define NUM_T_VAR 8
 #define NUM_W_VAR 8
 
+constexpr double ResolveChannelDecay(double channel, double scalar)
+{
+    return channel == 0.0 ? scalar : channel;
+}
+
 #define MAX_BIGSTRING_LEN    32768
 
 class CBlendableFloat
@@ -116,7 +121,7 @@ public:
     float tex_ang, tex_zoom;
     float tex_cx, tex_cy;
     int tex_capture;
-    int x_wrap_mode = -1, y_wrap_mode = -1;
+    int x_wrap_mode = 1, y_wrap_mode = 1;
 
     char  m_szInit[MAX_BIGSTRING_LEN]; // note: only executed once -> don't need to save codehandle
     char  m_szPerFrame[MAX_BIGSTRING_LEN];
@@ -278,14 +283,14 @@ public:
 	CBlendableFloat 	m_fVideoEchoAlpha;
 	float				m_fVideoEchoAlphaOld;
 	int					m_nVideoEchoOrientation;
-    int m_nEchoWrapX = -1, m_nEchoWrapY = -1;
+    int m_nEchoWrapX = 1, m_nEchoWrapY = 1;
 	int					m_nVideoEchoOrientationOld;
 
 	// fps-dependant:
 	CBlendableFloat		m_fDecay;			// 1.0 = none, 0.95 = heavy decay
-	CBlendableFloat		m_fDecayR;			// 1.0 = none, red channel decay
-	CBlendableFloat		m_fDecayG;			// 1.0 = none, green channel decay
-	CBlendableFloat		m_fDecayB;			// 1.0 = none, blue channel decay
+	CBlendableFloat		m_fDecayR; // Zero inherits scalar decay.
+	CBlendableFloat		m_fDecayG; // Zero inherits scalar decay.
+	CBlendableFloat		m_fDecayB; // Zero inherits scalar decay.
 
 	// FFT shader - attack and decay
 	CBlendableFloat		m_fFFTAttack;// (0...1)
@@ -310,7 +315,7 @@ public:
 	CBlendableFloat		m_fShader;			// 0 = no color shader, 1 = full color shader
 	bool				m_bMaximizeWaveColor;
 	bool				m_bTexWrap;
-    int m_nWrapModeX = -1, m_nWrapModeY = -1;
+    int m_nWrapModeX = 1, m_nWrapModeY = 1;
 	bool				m_bDarkenCenter;
 	bool				m_bRedBlueStereo;
 	bool				m_bBrighten;
