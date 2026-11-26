@@ -5157,7 +5157,7 @@ void CPlugin::MyRenderFn(int redraw)
     if (!redraw)
         DoCustomSoundAnalysis();    // emulates old pre-vms milkdrop sound analysis
 
-    RenderFrame(redraw);  // see milkdropfs.cpp
+    m_spoutFrameReady = RenderFrame(redraw);  // see milkdropfs.cpp
 
     if (!redraw)
     {

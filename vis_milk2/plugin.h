@@ -312,7 +312,7 @@ public:
 
     HdrPresenter m_hdr;
     void SaveHdrSettings();
-    void SendSpoutFrame();
+    void SendSpoutFrame(bool hdrFrame);
     bool m_bHdr = false; // intentionally session-only until validated
     void ToggleHdr(bool notify = true)
     {
@@ -753,7 +753,8 @@ public:
 
    //====[ 2. methods added: ]=====================================================================================
 
-        void RenderFrame(int bRedraw);
+        bool RenderFrame(int bRedraw);
+        bool m_spoutFrameReady = false;
         void AlignWave(int nSamples);
 
         void        DrawTooltip(wchar_t* str, int xR, int yB);

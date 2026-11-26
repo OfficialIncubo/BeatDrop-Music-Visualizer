@@ -2472,11 +2472,24 @@ void CPluginShell::DrawAndDisplay(int redraw)
         g_plugin.m_hdr.Reset();
     }
 
-	const bool sceneStarted = D3D_OK == m_lpDX->m_lpDevice->BeginScene();
-	if (sceneStarted)
+	bool sceneOpen = D3D_OK == m_lpDX->m_lpDevice->BeginScene();
+	bool sceneFinished = false;
+	if (sceneOpen)
 	{
 		MyRenderFn(redraw);
 
+		// SDR Spout shares the backbuffer. Finish the visual scene before
+		// copying it, then open another scene for the local UI.
+		if (!hdrFrame && g_plugin.bSpoutOut)
+		{
+			if (SUCCEEDED(m_lpDX->m_lpDevice->EndScene()))
+				g_plugin.SendSpoutFrame(false);
+			sceneOpen = SUCCEEDED(m_lpDX->m_lpDevice->BeginScene());
+		}
+	}
+
+	if (sceneOpen)
+	{
 		PrepareFor2DDrawing_B(GetDevice(), GetWidth(), GetHeight());
 
 		if (!m_vjd3d9_device)   // in VJ mode, this renders to different context, so do it after BeginScene() on 2nd device.
@@ -2488,15 +2501,18 @@ void CPluginShell::DrawAndDisplay(int redraw)
 		if (!m_vjd3d9_device)
 			m_text.DrawNow();
 
-		m_lpDX->m_lpDevice->EndScene();
+		sceneFinished = SUCCEEDED(m_lpDX->m_lpDevice->EndScene());
 	}
 
-    if (hdrFrame && (!sceneStarted || !g_plugin.m_hdr.EndFrame(GetDevice())))
+    // The HDR export is already a separate SDR surface captured before the UI.
+    if (hdrFrame && sceneFinished)
+        g_plugin.SendSpoutFrame(true);
+
+    if (hdrFrame && (!sceneFinished || !g_plugin.m_hdr.EndFrame(GetDevice())))
     {
         g_plugin.m_bHdr = false;
         g_plugin.m_hdr.Reset();
     }
-    g_plugin.SendSpoutFrame();
 
 	// VJ Mode:
 	if (m_vj_mode && m_vjd3d9_device && !m_hidden_textwnd && D3D_OK==m_vjd3d9_device->BeginScene())

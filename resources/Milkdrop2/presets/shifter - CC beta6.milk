@@ -528,7 +528,7 @@ shape_1_per_frame15=g2 = .8 + .2*sin(ti + 2.0944);
 shape_1_per_frame16=b2 = .8 + .2*sin(ti + 4.1888);
 shape_1_per_frame17=
 shape_1_per_frame18=
-shape_1_per_frame19=ty = if(q2,rand(1001)*.001,ty);
+shape_1_per_frame19=ty = if(q2,int(rand(1001))*.001,ty);
 shape_1_per_frame20=
 shape_1_per_frame21=tex_cy = ty;
 shapecode_2_enabled=0
