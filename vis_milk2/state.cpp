@@ -1146,6 +1146,7 @@ void CState::Default(DWORD ApplyFlags)
 	    m_bDarken				= false;
 	    m_bTexWrap				= true;
         m_nWrapModeX = m_nWrapModeY = 1;
+        m_bInheritedWrapModeX = m_bInheritedWrapModeY = true;
 	    m_bDarkenCenter			= false;
 	    m_bSolarize				= false;
 	    m_bInvert				= false;
@@ -1535,8 +1536,11 @@ bool CState::Export(const wchar_t *szIniFile)
 	fprintf(fOut, "%s=%d\n", "bModWaveAlphaByVolume",  m_bModWaveAlphaByVolume);
 	fprintf(fOut, "%s=%d\n", "bMaximizeWaveColor",     m_bMaximizeWaveColor);
 	fprintf(fOut, "%s=%d\n", "bTexWrap",               m_bTexWrap			);
-    fprintf(fOut, "nWrapMode_x=%d\n", m_nWrapModeX);
-    fprintf(fOut, "nWrapMode_y=%d\n", m_nWrapModeY);
+    // Missing axes continue to follow bTexWrap when reloaded.
+    if (!m_bInheritedWrapModeX)
+        fprintf(fOut, "nWrapMode_x=%d\n", m_nWrapModeX);
+    if (!m_bInheritedWrapModeY)
+        fprintf(fOut, "nWrapMode_y=%d\n", m_nWrapModeY);
 	fprintf(fOut, "%s=%d\n", "bDarkenCenter",          m_bDarkenCenter		);
 	fprintf(fOut, "%s=%d\n", "bRedBlueStereo",         m_bRedBlueStereo     );
 	fprintf(fOut, "%s=%d\n", "bBrighten",              m_bBrighten			);
@@ -1982,8 +1986,13 @@ bool CState::Import(const wchar_t *szIniFile, float fTime, CState* pOldState, DW
 	    m_fStretchX				= GetFastFloat("sx",m_fStretchX.eval(-1),f);
 	    m_fStretchY				= GetFastFloat("sy",m_fStretchY.eval(-1),f);
         m_bTexWrap			    = (GetFastInt ("bTexWrap", m_bTexWrap,f) != 0);
-        m_nWrapModeX = NormalizeTextureWrap(GetFastInt("nWrapMode_x", 1, f));
-        m_nWrapModeY = NormalizeTextureWrap(GetFastInt("nWrapMode_y", 1, f));
+        const int defaultWrapMode = m_bTexWrap ? 1 : 0;
+        const int wrapX = GetFastInt("nWrapMode_x", -1, f);
+        const int wrapY = GetFastInt("nWrapMode_y", -1, f);
+        m_bInheritedWrapModeX = wrapX == -1;
+        m_bInheritedWrapModeY = wrapY == -1;
+        m_nWrapModeX = wrapX == -1 ? defaultWrapMode : NormalizeTextureWrap(wrapX);
+        m_nWrapModeY = wrapY == -1 ? defaultWrapMode : NormalizeTextureWrap(wrapY);
 	    m_bDarkenCenter			= (GetFastInt ("bDarkenCenter", m_bDarkenCenter,f) != 0);
 	    m_fWarpAnimSpeed        = GetFastFloat("fWarpAnimSpeed",m_fWarpAnimSpeed,f);
 	    m_fWarpScale            = GetFastFloat("fWarpScale",m_fWarpScale.eval(-1),f);

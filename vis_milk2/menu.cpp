@@ -532,6 +532,8 @@ LRESULT CMilkMenu::HandleKeydown(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
                     break;
 				case MENUITEMTYPE_BOOL:
 					*((bool *)addr) = !(*((bool *)addr));
+                    if (pItem->m_pCallbackFn)
+                        pItem->m_pCallbackFn(pItem->m_wParam, pItem->m_lParam);
 					break;
 				case MENUITEMTYPE_INT:
 					m_bEditingCurSel = true;
@@ -633,6 +635,11 @@ LRESULT CMilkMenu::HandleKeydown(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
 			//if (pItem->m_type == MENUITEMTYPE_STRING)
 			//	... won't ever happen - see OnWaitStringAccept()
 
+            if (pItem->m_type == MENUITEMTYPE_INT && pItem->m_pCallbackFn &&
+                *reinterpret_cast<int*>(addr) != pItem->m_original_value)
+            {
+                pItem->m_pCallbackFn(pItem->m_wParam, pItem->m_lParam);
+            }
 			m_bEditingCurSel = false;
 			return 0;
 

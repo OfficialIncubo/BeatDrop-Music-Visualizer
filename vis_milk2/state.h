@@ -316,6 +316,7 @@ public:
 	bool				m_bMaximizeWaveColor;
 	bool				m_bTexWrap;
     int m_nWrapModeX = 1, m_nWrapModeY = 1;
+    bool m_bInheritedWrapModeX = true, m_bInheritedWrapModeY = true;
 	bool				m_bDarkenCenter;
 	bool				m_bRedBlueStereo;
 	bool				m_bBrighten;

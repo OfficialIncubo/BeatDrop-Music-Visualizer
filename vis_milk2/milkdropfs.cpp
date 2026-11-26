@@ -710,8 +710,10 @@ void CPlugin::LoadPerFrameEvallibVars(CState* pState)
     *pState->var_pf_wrap          = (double)pState->m_bTexWrap;
     *pState->var_pf_x_echo_wrap = pState->m_nEchoWrapX;
     *pState->var_pf_y_echo_wrap = pState->m_nEchoWrapY;
-    *pState->var_pf_x_wrap_mode = pState->m_nWrapModeX;
-    *pState->var_pf_y_wrap_mode = pState->m_nWrapModeY;
+    // Inherited axes follow the master switch, including changes from frame code.
+    const int defaultWrapMode = pState->m_bTexWrap ? 1 : 0;
+    *pState->var_pf_x_wrap_mode = pState->m_bInheritedWrapModeX && pState->m_nWrapModeX == defaultWrapMode ? 1 : pState->m_nWrapModeX;
+    *pState->var_pf_y_wrap_mode = pState->m_bInheritedWrapModeY && pState->m_nWrapModeY == defaultWrapMode ? 1 : pState->m_nWrapModeY;
     *pState->var_pf_invert        = (double)pState->m_bInvert;
     *pState->var_pf_brighten      = (double)pState->m_bBrighten;
     *pState->var_pf_darken        = (double)pState->m_bDarken;
