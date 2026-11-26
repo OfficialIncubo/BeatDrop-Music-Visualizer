@@ -8963,9 +8963,9 @@ void CPlugin::BuildMenus()
 	    m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_ANGLE),				&m_pState->m_shape[i].ang,		MENUITEMTYPE_FLOAT,	MEN_TT(IDS_MENU_ANGLE_TT), 0, 3.1415927f*2.0f);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURED),			&m_pState->m_shape[i].textured,	MENUITEMTYPE_BOOL,	MEN_TT(IDS_MENU_TEXTURED_TT)); // bool
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_SHAPE_WRAP_X), &m_pState->m_shape[i].x_wrap_mode,
-            MENUITEMTYPE_INT, MEN_TT(IDS_MENU_SHAPE_WRAP_X_TT), 0, 2);
+            MENUITEMTYPE_INT, MEN_TT(IDS_MENU_SHAPE_WRAP_X_TT), -1, 2);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_SHAPE_WRAP_Y), &m_pState->m_shape[i].y_wrap_mode,
-            MENUITEMTYPE_INT, MEN_TT(IDS_MENU_SHAPE_WRAP_Y_TT), 0, 2);
+            MENUITEMTYPE_INT, MEN_TT(IDS_MENU_SHAPE_WRAP_Y_TT), -1, 2);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_CAPTURE), &m_pState->m_shape[i].tex_capture, MENUITEMTYPE_BOOL, MEN_TT(IDS_MENU_TEXTURE_CAPTURE_TT));
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_CENTER_X), &m_pState->m_shape[i].tex_cx, MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_TEXTURE_CENTER_X_TT), 0, 1);
         m_menuShapecode[i].AddItem(MEN_T(IDS_MENU_TEXTURE_CENTER_Y), &m_pState->m_shape[i].tex_cy, MENUITEMTYPE_FLOAT, MEN_TT(IDS_MENU_TEXTURE_CENTER_Y_TT), 0, 1);

@@ -58,7 +58,7 @@ namespace
         ScopedTextureAddress(IDirect3DDevice9* device, double x, double y, bool enabled = true)
             : ScopedTextureAddress(device)
         {
-            if (enabled)
+            if (enabled && (x != -1.0 || y != -1.0))
                 Set(x, y);
         }
 
@@ -70,7 +70,8 @@ namespace
                     return;
 
                 // Capture only the two sampler axes, including on pure devices.
-                SetAxes(m_device, x, y);
+                m_device->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
+                m_device->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
                 if (FAILED(m_device->EndStateBlock(&m_previous)) || !m_previous)
                     return;
                 if (FAILED(m_previous->Capture()))
@@ -105,8 +106,10 @@ namespace
 
         static void SetAxes(IDirect3DDevice9* device, double x, double y)
         {
-            device->SetSamplerState(0, D3DSAMP_ADDRESSU, Address(x));
-            device->SetSamplerState(0, D3DSAMP_ADDRESSV, Address(y));
+            if (x != -1.0)
+                device->SetSamplerState(0, D3DSAMP_ADDRESSU, Address(x));
+            if (y != -1.0)
+                device->SetSamplerState(0, D3DSAMP_ADDRESSV, Address(y));
         }
 
         IDirect3DDevice9* m_device;
@@ -2883,7 +2886,6 @@ void CPlugin::DrawCustomShapes(bool background)
     if (!lpDevice)
         return;
 
-    ScopedTextureAddress shapeAddress(lpDevice);
 
 	int num_reps = (m_pState->m_bBlending) ? 2 : 1;
 	for (int rep=0; rep<num_reps; rep++)
@@ -3012,7 +3014,8 @@ void CPlugin::DrawCustomShapes(bool background)
                         if (capture.texture || !background)
                         {
                             lpDevice->SetTexture(0, capture.texture ? capture.texture.get() : m_lpVS[0]);
-                            shapeAddress.Set(*pState->m_shape[i].var_pf_x_wrap_mode,
+                            // Legacy shapes inherit the sampler, including clamp after the blur pass.
+                            const ScopedTextureAddress shapeAddress(lpDevice, *pState->m_shape[i].var_pf_x_wrap_mode,
                                 *pState->m_shape[i].var_pf_y_wrap_mode);
                             lpDevice->SetVertexShader( NULL );
                             lpDevice->SetFVF( SPRITEVERTEX_FORMAT );

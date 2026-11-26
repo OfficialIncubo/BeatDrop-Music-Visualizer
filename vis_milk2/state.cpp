@@ -1218,7 +1218,7 @@ void CState::Default(DWORD ApplyFlags)
             m_shape[i].sides   = 4;
             m_shape[i].additive = 0;
             m_shape[i].thickOutline = 0;
-            m_shape[i].x_wrap_mode = m_shape[i].y_wrap_mode = 1;
+            m_shape[i].x_wrap_mode = m_shape[i].y_wrap_mode = -1;
             m_shape[i].bDrawBack = 0;
             m_shape[i].textured = 0;
             m_shape[i].instances = 1;
@@ -1683,8 +1683,8 @@ int  CShape::Export(FILE* fOut, const wchar_t *szFile, int i)
 	fprintf(f2, "shapecode_%d_%s=%.5f\n", i, "tex_ang",    tex_ang);
 	fprintf(f2, "shapecode_%d_%s=%.5f\n", i, "tex_zoom",   tex_zoom);
 	fprintf(f2, "shapecode_%d_tex_capture=%d\n", i, tex_capture);
-    fprintf(f2, "shapecode_%d_x_wrap_mode=%d\n", i, x_wrap_mode);
-    fprintf(f2, "shapecode_%d_y_wrap_mode=%d\n", i, y_wrap_mode);
+    if (x_wrap_mode >= 0) fprintf(f2, "shapecode_%d_x_wrap_mode=%d\n", i, x_wrap_mode);
+    if (y_wrap_mode >= 0) fprintf(f2, "shapecode_%d_y_wrap_mode=%d\n", i, y_wrap_mode);
 	fprintf(f2, "shapecode_%d_tex_cx=%.6f\n", i, tex_cx);
 	fprintf(f2, "shapecode_%d_tex_cy=%.6f\n", i, tex_cy);
 	fprintf(f2, "shapecode_%d_%s=%.3f\n", i, "r",          r);
@@ -1788,8 +1788,10 @@ int  CShape::Import(FILE* f, const wchar_t* szFile, int i)
 	sprintf(buf, "shapecode_%d_%s", i, "tex_ang"     ); tex_ang      = GetFastFloat(buf, tex_ang     , f2);
 	sprintf(buf, "shapecode_%d_%s", i, "tex_zoom"    ); tex_zoom     = GetFastFloat(buf, tex_zoom    , f2);
 	sprintf(buf, "shapecode_%d_tex_capture", i); tex_capture = GetFastInt(buf, 1, f2) != 0;
-    sprintf(buf, "shapecode_%d_x_wrap_mode", i); x_wrap_mode = NormalizeTextureWrap(GetFastInt(buf, 1, f2));
-    sprintf(buf, "shapecode_%d_y_wrap_mode", i); y_wrap_mode = NormalizeTextureWrap(GetFastInt(buf, 1, f2));
+    sprintf(buf, "shapecode_%d_x_wrap_mode", i); x_wrap_mode = GetFastInt(buf, -1, f2);
+    sprintf(buf, "shapecode_%d_y_wrap_mode", i); y_wrap_mode = GetFastInt(buf, -1, f2);
+    if (x_wrap_mode != -1) x_wrap_mode = NormalizeTextureWrap(x_wrap_mode);
+    if (y_wrap_mode != -1) y_wrap_mode = NormalizeTextureWrap(y_wrap_mode);
 	sprintf(buf, "shapecode_%d_tex_cx", i); tex_cx = GetFastFloat(buf, 0.5f, f2);
 	sprintf(buf, "shapecode_%d_tex_cy", i); tex_cy = GetFastFloat(buf, 0.5f, f2);
 	sprintf(buf, "shapecode_%d_%s", i, "r"           ); r            = GetFastFloat(buf, r           , f2);
