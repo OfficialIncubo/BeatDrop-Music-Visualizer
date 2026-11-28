@@ -65,5 +65,5 @@ per_frame_1=warp = 0;
 per_frame_2=wave_r = .3 + .2*sin(time);
 per_frame_3=wave_g = .3 + .2*sin(time*.888);
 per_frame_4=wave_b = .3 + .2*sin(time*1.222);
-per_pixel_1=zoom = zoom + rad*(.5|bass-.5);
+per_pixel_1=zoom = zoom + rad*(int(bass-1+.5));
 per_pixel_2=zoom = if(below(zoom,1),1,zoom);
