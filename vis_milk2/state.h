@@ -139,6 +139,7 @@ public:
 	//double *var_pf_t1, *var_pf_t2, *var_pf_t3, *var_pf_t4, *var_pf_t5, *var_pf_t6, *var_pf_t7, *var_pf_t8;
     double* var_pf_q[NUM_Q_VAR];
     double* var_pf_w[NUM_W_VAR];
+    unsigned local_pf_w = 0;
     double* var_pf_t[NUM_T_VAR];
 	double *var_pf_bass, *var_pf_mid, *var_pf_treb, *var_pf_bass_att, *var_pf_mid_att, *var_pf_treb_att;
 	double *var_pf_r, *var_pf_g, *var_pf_b, *var_pf_a;
@@ -201,6 +202,7 @@ public:
 	//double *var_pf_t1, *var_pf_t2, *var_pf_t3, *var_pf_t4, *var_pf_t5, *var_pf_t6, *var_pf_t7, *var_pf_t8;
     double* var_pf_q[NUM_Q_VAR];
     double* var_pf_w[NUM_W_VAR];
+    unsigned local_pf_w = 0;
     double* var_pf_t[NUM_T_VAR];
 	double *var_pf_bass, *var_pf_mid, *var_pf_treb, *var_pf_bass_att, *var_pf_mid_att, *var_pf_treb_att;
 	double *var_pf_r, *var_pf_g, *var_pf_b, *var_pf_a;
@@ -215,6 +217,7 @@ public:
 	//double *var_pp_t1, *var_pp_t2, *var_pp_t3, *var_pp_t4, *var_pp_t5, *var_pp_t6, *var_pp_t7, *var_pp_t8;
     double* var_pp_q[NUM_Q_VAR];
     double* var_pp_w[NUM_W_VAR];
+    unsigned local_pp_w = 0;
     double* var_pp_t[NUM_T_VAR];
 	double *var_pp_bass, *var_pp_mid, *var_pp_treb, *var_pp_bass_att, *var_pp_mid_att, *var_pp_treb_att;
     double *var_pp_sample, *var_pp_value1, *var_pp_value2;
@@ -421,6 +424,7 @@ public:
 	//double *var_pf_q1, *var_pf_q2, *var_pf_q3, *var_pf_q4, *var_pf_q5, *var_pf_q6, *var_pf_q7, *var_pf_q8;
     double* var_pf_q[NUM_Q_VAR];
     double* var_pf_w[NUM_W_VAR];
+    unsigned local_pf_w = 0;
 	double *var_pf_progress;
 	double *var_pf_ob_size, *var_pf_ob_r, *var_pf_ob_g, *var_pf_ob_b, *var_pf_ob_a;
 	double *var_pf_ib_size, *var_pf_ib_r, *var_pf_ib_g, *var_pf_ib_b, *var_pf_ib_a;
@@ -467,6 +471,7 @@ public:
 	//double *var_pv_q1, *var_pv_q2, *var_pv_q3, *var_pv_q4, *var_pv_q5, *var_pv_q6, *var_pv_q7, *var_pv_q8;
     double* var_pv_q[NUM_Q_VAR];
     double* var_pv_w[NUM_W_VAR];
+    unsigned local_pv_w = 0;
 	double *var_pv_progress;
     double *var_pv_meshx, *var_pv_meshy;
     double *var_pv_pixelsx, *var_pv_pixelsy;

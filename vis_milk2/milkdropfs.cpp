@@ -664,7 +664,8 @@ void CPlugin::LoadPerFrameEvallibVars(CState* pState)
     for (int vi=0; vi<NUM_Q_VAR; vi++)
 	    *pState->var_pf_q[vi]	= pState->q_values_after_init_code[vi];//0.0f;
     for (int wi = 0; wi < NUM_W_VAR; ++wi)
-        *pState->var_pf_w[wi] = pState->w_values_from_wave[wi];
+        if (!(pState->local_pf_w & (1u << wi)))
+            *pState->var_pf_w[wi] = pState->w_values_from_wave[wi];
     *pState->var_pf_monitor     = pState->monitor_after_init_code;
 	*pState->var_pf_progress    = (GetTime() - m_fPresetStartTime) / (m_fNextPresetTime - m_fPresetStartTime);
 
@@ -901,7 +902,8 @@ void CPlugin::RunPerFrameEquations(int code)
         for (int vi=0; vi<NUM_Q_VAR; vi++)
             *pState->var_pv_q[vi] = *pState->var_pf_q[vi];
         for (int wi = 0; wi < NUM_W_VAR; ++wi)
-            *pState->var_pv_w[wi] = *pState->var_pf_w[wi];
+            if (!(pState->local_pv_w & (1u << wi)))
+                *pState->var_pv_w[wi] = *pState->var_pf_w[wi];
 
         // (a few range checks:)
         *pState->var_pf_gamma     = max(0    , min(    8, *pState->var_pf_gamma    ));
@@ -3110,7 +3112,8 @@ void CPlugin::LoadCustomShapePerFrameEvallibVars(CState* pState, int i, int inst
     for (int vi=0; vi<NUM_Q_VAR; vi++)
         *pState->m_shape[i].var_pf_q[vi] = *pState->var_pf_q[vi];
     for (int wi = 0; wi < NUM_W_VAR; ++wi)
-        *pState->m_shape[i].var_pf_w[wi] = *pState->var_pf_w[wi];
+        if (!(pState->m_shape[i].local_pf_w & (1u << wi)))
+            *pState->m_shape[i].var_pf_w[wi] = *pState->var_pf_w[wi];
     for (vi=0; vi<NUM_T_VAR; vi++)
 	    *pState->m_shape[i].var_pf_t[vi] = pState->m_shape[i].t_values_after_init_code[vi];
 	*pState->m_shape[i].var_pf_x        = pState->m_shape[i].x;
@@ -3159,7 +3162,8 @@ void CPlugin::LoadCustomWavePerFrameEvallibVars(CState* pState, int i)
     for (int vi=0; vi<NUM_Q_VAR; vi++)
 	    *pState->m_wave[i].var_pf_q[vi] = *pState->var_pf_q[vi];
     for (int wi = 0; wi < NUM_W_VAR; ++wi)
-        *pState->m_wave[i].var_pf_w[wi] = *pState->var_pf_w[wi];
+        if (!(pState->m_wave[i].local_pf_w & (1u << wi)))
+            *pState->m_wave[i].var_pf_w[wi] = *pState->var_pf_w[wi];
     for (vi=0; vi<NUM_T_VAR; vi++)
 	    *pState->m_wave[i].var_pf_t[vi] = pState->m_wave[i].t_values_after_init_code[vi];
 	*pState->m_wave[i].var_pf_r         = pState->m_wave[i].r;
@@ -3244,7 +3248,8 @@ void CPlugin::DrawCustomWaves(bool background, bool publishWaveValues)
                 for (int vi=0; vi<NUM_Q_VAR; vi++)
                     *pState->m_wave[i].var_pp_q[vi] = *pState->m_wave[i].var_pf_q[vi];
                 for (int wi = 0; wi < NUM_W_VAR; ++wi)
-                    *pState->m_wave[i].var_pp_w[wi] = *pState->m_wave[i].var_pf_w[wi];
+                    if (!(pState->m_wave[i].local_pp_w & (1u << wi)))
+                        *pState->m_wave[i].var_pp_w[wi] = *pState->m_wave[i].var_pf_w[wi];
                 for (vi=0; vi<NUM_T_VAR; vi++)
                     *pState->m_wave[i].var_pp_t[vi] = *pState->m_wave[i].var_pf_t[vi];
 

@@ -2121,6 +2121,43 @@ void CState::StripLinefeedCharsAndComments(char *src, char *dest)
 	PrepareExpressionSource(src, dest);
 }
 
+// Writes to these names predate the beta waveform inputs. Keep them local
+// to their equation context so legacy state can accumulate between calls.
+static unsigned FindLocalWaveVariables(const char* code)
+{
+    const std::string source = LowercaseAscii(code);
+    unsigned local = 0;
+    for (size_t i = 0; i < source.size(); )
+    {
+        if (!IsIdentifierChar(source[i])) { ++i; continue; }
+        const size_t start = i++;
+        while (i < source.size() && IsIdentifierChar(source[i])) ++i;
+        size_t next = source.find_first_not_of(" \t\r\n\v\f", i);
+        if (next == std::string::npos) break;
+
+        auto mark = [&](size_t begin, size_t end) {
+            if (end - begin == 2 && (begin == 0 || source[begin - 1] != '.') &&
+                source[begin] == 'w' && source[begin + 1] >= '1' && source[begin + 1] <= '8')
+                local |= 1u << (source[begin + 1] - '1');
+        };
+        if (source[next] == '=' && source[next + 1] != '=')
+            mark(start, i);
+        else if (next + 1 < source.size() && strchr("+-*/%^&|", source[next]) && source[next + 1] == '=')
+            mark(start, i);
+        else if (source[next] == '(' && i - start == 6 && source.compare(start, 6, "assign") == 0)
+        {
+            const size_t lhs = source.find_first_not_of(" \t\r\n\v\f", next + 1);
+            if (lhs != std::string::npos && lhs + 2 < source.size())
+            {
+                const size_t comma = source.find_first_not_of(" \t\r\n\v\f", lhs + 2);
+                if (comma != std::string::npos && source[comma] == ',')
+                    mark(lhs, lhs + 2);
+            }
+        }
+    }
+    return local;
+}
+
 void CState::RecompileExpressions(int flags, int bReInit)
 {
     // before we get started, if we redo the init code for the preset, we have to redo
@@ -2274,6 +2311,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
         {
             // 1. compile AND EXECUTE preset init code
 		    StripLinefeedCharsAndComments(m_szPerFrameInit, buf);
+	        local_pf_w = FindLocalWaveVariables(buf);
 	        if (buf[0] && bReInit)
 	        {
 		        NSEEL_CODEHANDLE	pf_codehandle_init;
@@ -2309,6 +2347,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 
             // 2. compile preset per-frame code
             StripLinefeedCharsAndComments(m_szPerFrameExpr, buf);
+            local_pf_w |= FindLocalWaveVariables(buf);
 	        if (buf[0])
 	        {
 			    if ( ! (m_pf_codehandle = CompileEelWithSoundFallback(m_pf_eel, buf)))
@@ -2320,6 +2359,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 
             // 3. compile preset per-pixel code
 		    StripLinefeedCharsAndComments(m_szPerPixelExpr, buf);
+	        local_pv_w = FindLocalWaveVariables(buf);
 	        if (buf[0])
 	        {
 			    if ( ! (m_pp_codehandle = CompileEelWithSoundFallback(m_pv_eel, buf)))
@@ -2338,6 +2378,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
             {
                 // 1. compile AND EXECUTE custom waveform init code
 		        StripLinefeedCharsAndComments(m_wave[i].m_szInit, buf);
+                m_wave[i].local_pf_w = FindLocalWaveVariables(buf);
 	            if (buf[0] && bReInit)
                 {
 		            #ifndef _NO_EXPR_
@@ -2378,6 +2419,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 
                 // 2. compile custom waveform per-frame code
 		        StripLinefeedCharsAndComments(m_wave[i].m_szPerFrame, buf);
+                m_wave[i].local_pf_w |= FindLocalWaveVariables(buf);
 	            if (buf[0])
                 {
 		            #ifndef _NO_EXPR_
@@ -2393,6 +2435,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 
                 // 3. compile custom waveform per-point code
 		        StripLinefeedCharsAndComments(m_wave[i].m_szPerPoint, buf);
+                m_wave[i].local_pp_w = FindLocalWaveVariables(buf);
 	            if (buf[0])
                 {
 			        if ( ! (m_wave[i].m_pp_codehandle = CompileEelWithSoundFallback(m_wave[i].m_pp_eel, buf)))
@@ -2412,6 +2455,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
             {
                 // 1. compile AND EXECUTE custom shape init code
 		        StripLinefeedCharsAndComments(m_shape[i].m_szInit, buf);
+                m_shape[i].local_pf_w = FindLocalWaveVariables(buf);
 	            if (buf[0] && bReInit)
                 {
 		            #ifndef _NO_EXPR_
@@ -2452,6 +2496,7 @@ void CState::RecompileExpressions(int flags, int bReInit)
 
                 // 2. compile custom shape per-frame code
 		        StripLinefeedCharsAndComments(m_shape[i].m_szPerFrame, buf);
+                m_shape[i].local_pf_w |= FindLocalWaveVariables(buf);
 	            if (buf[0])
                 {
 		            #ifndef _NO_EXPR_
